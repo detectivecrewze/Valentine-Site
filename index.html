@@ -402,32 +402,28 @@
                     </div>
                 </div>
 
-                <!-- Navigation Buttons (Fixed Bottom Flow) -->
-                <div class="w-full mt-auto pb-8 z-50 pointer-events-none">
-                    <div class="nav-bottom-grid max-w-2xl mx-auto px-4">
-                        <!-- Previous Button Container -->
-                        <div class="flex justify-start">
-                            <button onclick="MapsTo('page-3', 'page-4')" class="nav-btn-standard">
-                                <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
-                                <span>Previous</span>
-                            </button>
-                        </div>
+            </div>
+        </div>
 
-                        <!-- Camera Button (Center) -->
-                        <div class="flex justify-center">
-                            <button onclick="captureMusicCard()" class="nav-camera-btn">
-                                <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                            </button>
-                        </div>
-
-                        <!-- Next Button Container -->
-                        <div class="flex justify-end">
-                            <button onclick="MapsTo('page-3', 'page-2')" class="nav-btn-standard">
-                                <span>Next</span>
-                                <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                            </button>
-                        </div>
-                    </div>
+        <!-- Fixed Navigation Bar -->
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
+            <div class="nav-bottom-grid max-w-2xl mx-auto">
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-3', 'page-4')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Previous</span>
+                    </button>
+                </div>
+                <div class="flex justify-center">
+                    <button onclick="captureMusicCard()" class="nav-camera-btn">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                    </button>
+                </div>
+                <div class="flex justify-end">
+                    <button onclick="MapsTo('page-3', 'page-2')" class="nav-btn-standard">
+                        <span>Next</span>
+                        <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -478,49 +474,37 @@
                             Forever & Always
                         </div>
                     </div>
-                    <!-- Navigation Buttons (Back & Next) -->
-                    <div class="w-full mt-8 pb-4 z-50 pointer-events-none">
-                        <div class="nav-bottom-grid max-w-[500px] mx-auto">
-                            <!-- Back Button Container -->
-                            <div class="flex justify-start">
-                                <button onclick="MapsTo('page-4', 'page-1')" class="nav-btn-standard">
-                                    <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
-                                    <span>Back</span>
-                                </button>
-                            </div>
-
-                            <!-- Camera Button (Center) -->
-                            <div class="flex justify-center">
-                                <button onclick="captureGreetingCard()" class="nav-camera-btn">
-                                    <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                                </button>
-                            </div>
-
-                            <!-- Next Button Container -->
-                            <div class="flex justify-end">
-                                <button onclick="MapsTo('page-4', 'page-3')" class="nav-btn-standard">
-                                    <span>Next</span>
-                                    <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Background Blurs (Inside scroll wrapper so they move with content) -->
-                <div class="absolute top-[10%] right-[15%] opacity-30 pointer-events-none">
-                    <div class="w-72 h-72 bg-white rounded-full blur-[100px]"></div>
-                </div>
-                <div class="absolute bottom-[5%] left-[10%] opacity-20 pointer-events-none">
-                    <div class="w-80 h-80 bg-rosegold rounded-full blur-[120px]"></div>
                 </div>
             </div>
         </div>
 
-        <div class="hidden">
-            <div data-alt="Frosted glass greeting card with pink bow and roses"></div>
-            <div data-alt="Dreamy pink and peach gradient background with grain"></div>
+        <!-- Fixed Navigation Bar -->
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
+            <div class="nav-bottom-grid max-w-2xl mx-auto">
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-4', 'page-1')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
+                    </button>
+                </div>
+                <div class="flex justify-center">
+                    <button onclick="captureGreetingCard()" class="nav-camera-btn">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                    </button>
+                </div>
+                <div class="flex justify-end">
+                    <button onclick="MapsTo('page-4', 'page-3')" class="nav-btn-standard">
+                        <span>Next</span>
+                        <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                    </button>
+                </div>
+            </div>
         </div>
+    </section>
+    <div class="hidden">
+        <div data-alt="Frosted glass greeting card with pink bow and roses"></div>
+        <div data-alt="Dreamy pink and peach gradient background with grain"></div>
+    </div>
     </section>
     <!-- Page 5: Trivia Quiz (Formerly Page 4) -->
     <section id="page-5" class="page hidden fixed inset-0 z-20 w-full h-full text-left">
@@ -587,33 +571,29 @@
                     <p class="mt-4 text-rose-900/40 font-display italic text-2xl">Testing your heart...</p>
                 </div>
 
-                <!-- Navigation Buttons (Back & Next) -->
-                <div class="w-full mt-8 pb-4 z-50 pointer-events-none">
-                    <div class="nav-bottom-grid max-w-2xl mx-auto">
-                        <!-- Back Button Container -->
-                        <div class="flex justify-start">
-                            <button onclick="MapsTo('page-5', 'page-4')" class="nav-btn-standard">
-                                <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
-                                <span>Back</span>
-                            </button>
-                        </div>
+            </div>
+        </div>
 
-                        <!-- Camera Button (Center) -->
-                        <div class="flex justify-center">
-                            <button onclick="captureQuizCard()" class="nav-camera-btn">
-                                <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                            </button>
-                        </div>
-
-                        <!-- Next Button Container -->
-                        <div class="flex justify-end">
-                            <div id="p4-next-container" class="hidden">
-                                <button onclick="MapsTo('page-5', 'page-6')" class="nav-btn-standard">
-                                    <span>Next</span>
-                                    <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                                </button>
-                            </div>
-                        </div>
+        <!-- Fixed Navigation Bar -->
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
+            <div class="nav-bottom-grid max-w-2xl mx-auto">
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-5', 'page-4')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
+                    </button>
+                </div>
+                <div class="flex justify-center">
+                    <button onclick="captureQuizCard()" class="nav-camera-btn">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                    </button>
+                </div>
+                <div class="flex justify-end">
+                    <div id="p4-next-container" class="hidden">
+                        <button onclick="MapsTo('page-5', 'page-6')" class="nav-btn-standard">
+                            <span>Next</span>
+                            <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -641,35 +621,29 @@
                         <!-- Polaroids injected via JS -->
                     </div>
 
-                    <!-- Navigation Buttons -->
-                    <div class="w-full mt-20 pb-4 z-50 pointer-events-none">
-                        <div class="nav-bottom-grid max-w-6xl mx-auto">
-                            <!-- Back Button Container -->
-                            <div class="flex justify-start">
-                                <button onclick="MapsTo('page-6', 'page-5')" class="nav-btn-standard">
-                                    <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
-                                    <span>Back</span>
-                                </button>
-                            </div>
+                </div>
+            </div>
+        </div>
 
-                            <!-- Camera Button (Center) -->
-                            <div class="flex justify-center">
-                                <button onclick="captureGallery()" class="nav-camera-btn">
-                                    <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                                </button>
-                            </div>
-
-                            <!-- Next Button Container -->
-                            <div class="flex justify-end">
-                                <button onclick="MapsTo('page-6', 'page-7')" class="nav-btn-standard">
-                                    <span>Next</span>
-                                    <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-
+        <!-- Fixed Navigation Bar -->
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
+            <div class="nav-bottom-grid max-w-6xl mx-auto">
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-6', 'page-5')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
+                    </button>
+                </div>
+                <div class="flex justify-center">
+                    <button onclick="captureGallery()" class="nav-camera-btn">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                    </button>
+                </div>
+                <div class="flex justify-end">
+                    <button onclick="MapsTo('page-6', 'page-7')" class="nav-btn-standard">
+                        <span>Next</span>
+                        <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -714,7 +688,7 @@
             </div>
 
             <!-- Navigation Buttons -->
-            <div class="fixed bottom-6 left-0 right-0 z-[1000] px-6 pointer-events-none">
+            <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
                 <div class="nav-bottom-grid max-w-6xl mx-auto">
                     <div class="flex justify-start">
                         <button onclick="MapsTo('page-7', 'page-6')" class="nav-btn-standard">
@@ -811,7 +785,7 @@
         </div>
 
         <!-- Navigation Buttons (Stay fixed at bottom) -->
-        <div class="w-full fixed bottom-6 md:bottom-10 left-0 right-0 z-[1000] px-6 pointer-events-none">
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-6xl mx-auto">
                 <!-- Back Button Container -->
                 <div class="flex justify-start">
@@ -890,7 +864,7 @@
         </main>
 
         <!-- Back Button -->
-        <div class="fixed bottom-6 left-0 right-0 z-[1000] px-6 pointer-events-none">
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-6xl mx-auto">
                 <div class="flex justify-start">
                     <button onclick="MapsTo('page-9', 'page-8')" class="nav-btn-standard">
@@ -969,7 +943,7 @@
         </main>
 
         <!-- Navigation Buttons (Finale) -->
-        <div class="fixed bottom-6 left-0 right-0 z-[1000] px-6 pointer-events-none">
+        <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-4xl mx-auto">
                 <!-- Back Button -->
                 <div class="flex justify-start">
