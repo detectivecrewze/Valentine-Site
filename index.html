@@ -218,7 +218,7 @@
         <div class="grain-overlay"></div>
         <!-- Scrollable Main Container -->
         <main
-            class="h-full w-full dreamy-gradient flex flex-col items-center justify-start py-12 px-6 relative overflow-y-auto overflow-x-hidden">
+            class="h-full w-full dreamy-gradient flex flex-col items-center justify-start py-12 px-6 pb-32 relative overflow-y-auto overflow-x-hidden">
 
 
             <article class="story-card rounded-3xl p-6 flex flex-col justify-between z-10 relative bg-cream">
@@ -275,10 +275,11 @@
                 </div>
             </article>
 
-            <!-- Navigation Buttons with Screenshot -->
-            <div class="w-full flex justify-between items-center gap-8 mt-8 pb-8 px-6 z-40 max-w-[380px]">
+            <!-- Navigation Buttons (Fixed Bottom) -->
+            <div
+                class="fixed bottom-0 left-0 w-full flex justify-between items-center gap-4 md:gap-8 pb-6 pt-4 px-6 z-50 pointer-events-none">
                 <!-- Back Button Container -->
-                <div class="flex-1 flex justify-start">
+                <div class="flex-1 flex justify-start pointer-events-auto">
                     <button onclick="MapsTo('page-2', 'page-3')"
                         class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
                         <span
@@ -289,12 +290,12 @@
 
                 <!-- Camera/Screenshot Button -->
                 <button id="screenshot-btn" onclick="captureWrappedCard()"
-                    class="screenshot-btn-class bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
+                    class="screenshot-btn-class pointer-events-auto bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
                     <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
                 </button>
 
                 <!-- Next Button -->
-                <div class="flex-1 flex justify-end">
+                <div class="flex-1 flex justify-end pointer-events-auto">
                     <button onclick="MapsTo('page-2', 'page-5')"
                         class="screenshot-btn-class bg-white/40 backdrop-blur-md border border-white/60 flex items-center gap-3 px-6 py-3 rounded-full shadow-lg hover:bg-white/60 transition-all group">
                         <span class="text-rose-900 font-sans font-medium tracking-widest text-sm uppercase">Next
@@ -304,11 +305,11 @@
                     </button>
                 </div>
             </div>
-        </main>
     </section>
 
     <!-- Page 3: Polaroid Player (Formerly Page 2) -->
     <section id="page-3" class="page hidden fixed inset-0 z-20 w-full h-full bg-white">
+
         <div class="grain-overlay"></div>
         <!-- Decorations removed to keep it clean -->
         <!-- Main Content (Dreamy Gradient) -->
@@ -905,17 +906,18 @@
                 </div>
             </div>
 
-            <!-- Back Button -->
-            <div class="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-[1000]">
-                <button onclick="MapsTo('page-9', 'page-8')"
-                    class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                    <span
-                        class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
-                    <span
-                        class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
-                </button>
-            </div>
         </main>
+
+        <!-- Back Button -->
+        <div class="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-[1000]">
+            <button onclick="MapsTo('page-9', 'page-8')"
+                class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
+                <span
+                    class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
+                <span
+                    class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
+            </button>
+        </div>
     </section>
 
     <!-- Page 10: Treasure Hunt Finale -->
