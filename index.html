@@ -276,33 +276,30 @@
             </article>
 
             <!-- Navigation Buttons (Fixed Bottom) -->
-            <div
-                class="fixed bottom-0 left-0 w-full flex justify-between items-center gap-4 md:gap-8 pb-6 pt-4 px-6 z-50 pointer-events-none">
-                <!-- Back Button Container -->
-                <div class="flex-1 flex justify-start pointer-events-auto">
-                    <button onclick="MapsTo('page-2', 'page-3')"
-                        class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                        <span
-                            class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-xl">arrow_back_ios</span>
-                        <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Previous</span>
-                    </button>
-                </div>
+            <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
+                <div class="nav-bottom-grid max-w-2xl mx-auto">
+                    <!-- Back Button Container -->
+                    <div class="flex justify-start">
+                        <button onclick="MapsTo('page-2', 'page-4')" class="nav-btn-standard">
+                            <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                            <span>Previous</span>
+                        </button>
+                    </div>
 
-                <!-- Camera/Screenshot Button -->
-                <button id="screenshot-btn" onclick="captureWrappedCard()"
-                    class="screenshot-btn-class pointer-events-auto bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
-                    <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
-                </button>
+                    <!-- Camera/Screenshot Button -->
+                    <div class="flex justify-center">
+                        <button id="screenshot-btn" onclick="captureWrappedCard()" class="nav-camera-btn">
+                            <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                        </button>
+                    </div>
 
-                <!-- Next Button -->
-                <div class="flex-1 flex justify-end pointer-events-auto">
-                    <button onclick="MapsTo('page-2', 'page-5')"
-                        class="screenshot-btn-class bg-white/40 backdrop-blur-md border border-white/60 flex items-center gap-3 px-6 py-3 rounded-full shadow-lg hover:bg-white/60 transition-all group">
-                        <span class="text-rose-900 font-sans font-medium tracking-widest text-sm uppercase">Next
-                            Chapter</span>
-                        <span
-                            class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-                    </button>
+                    <!-- Next Button -->
+                    <div class="flex justify-end">
+                        <button onclick="MapsTo('page-2', 'page-5')" class="nav-btn-standard">
+                            <span>Next</span>
+                            <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                        </button>
+                    </div>
                 </div>
             </div>
     </section>
@@ -405,34 +402,31 @@
                     </div>
                 </div>
 
-                <!-- Navigation Buttons (Static Bottom Flow) -->
-                <div class="w-full flex justify-between items-center gap-4 mt-12 pb-8 max-w-2xl px-6">
-                    <!-- Previous Button Container -->
-                    <div class="flex-1 flex justify-start">
-                        <button onclick="MapsTo('page-3', 'page-4')"
-                            class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                            <span
-                                class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-xl">arrow_back_ios</span>
-                            <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Previous</span>
-                        </button>
-                    </div>
+                <!-- Navigation Buttons (Fixed Bottom Flow) -->
+                <div class="w-full mt-auto pb-8 z-50 pointer-events-none">
+                    <div class="nav-bottom-grid max-w-2xl mx-auto px-4">
+                        <!-- Previous Button Container -->
+                        <div class="flex justify-start">
+                            <button onclick="MapsTo('page-3', 'page-4')" class="nav-btn-standard">
+                                <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                                <span>Previous</span>
+                            </button>
+                        </div>
 
-                    <!-- Camera Button (Center) -->
-                    <div>
-                        <button onclick="captureMusicCard()"
-                            class="screenshot-btn-class bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
-                            <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
-                        </button>
-                    </div>
+                        <!-- Camera Button (Center) -->
+                        <div class="flex justify-center">
+                            <button onclick="captureMusicCard()" class="nav-camera-btn">
+                                <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                            </button>
+                        </div>
 
-                    <!-- Next Button Container -->
-                    <div class="flex-1 flex justify-end">
-                        <button onclick="MapsTo('page-3', 'page-2')"
-                            class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                            <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Next Chapter</span>
-                            <span
-                                class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform text-xl">arrow_forward_ios</span>
-                        </button>
+                        <!-- Next Button Container -->
+                        <div class="flex justify-end">
+                            <button onclick="MapsTo('page-3', 'page-2')" class="nav-btn-standard">
+                                <span>Next</span>
+                                <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -485,34 +479,30 @@
                         </div>
                     </div>
                     <!-- Navigation Buttons (Back & Next) -->
-                    <div class="w-full flex justify-between items-center mt-8 pb-4 px-4 md:px-0 gap-2">
-                        <!-- Back Button Container -->
-                        <div class="flex-1 basis-0 flex justify-start">
-                            <button onclick="MapsTo('page-4', 'page-1')"
-                                class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group whitespace-nowrap">
-                                <span
-                                    class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-xl">arrow_back_ios</span>
-                                <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Back</span>
-                            </button>
-                        </div>
+                    <div class="w-full mt-8 pb-4 z-50 pointer-events-none">
+                        <div class="nav-bottom-grid max-w-[500px] mx-auto">
+                            <!-- Back Button Container -->
+                            <div class="flex justify-start">
+                                <button onclick="MapsTo('page-4', 'page-1')" class="nav-btn-standard">
+                                    <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                                    <span>Back</span>
+                                </button>
+                            </div>
 
-                        <!-- Camera Button (Center) -->
-                        <div class="flex-none">
-                            <button onclick="captureGreetingCard()"
-                                class="screenshot-btn-class bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
-                                <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
-                            </button>
-                        </div>
+                            <!-- Camera Button (Center) -->
+                            <div class="flex justify-center">
+                                <button onclick="captureGreetingCard()" class="nav-camera-btn">
+                                    <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                                </button>
+                            </div>
 
-                        <!-- Next Button Container -->
-                        <div class="flex-1 basis-0 flex justify-end">
-                            <button onclick="MapsTo('page-4', 'page-3')"
-                                class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group whitespace-nowrap">
-                                <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Next
-                                    Chapter</span>
-                                <span
-                                    class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform text-xl">arrow_forward_ios</span>
-                            </button>
+                            <!-- Next Button Container -->
+                            <div class="flex justify-end">
+                                <button onclick="MapsTo('page-4', 'page-3')" class="nav-btn-standard">
+                                    <span>Next</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -598,34 +588,31 @@
                 </div>
 
                 <!-- Navigation Buttons (Back & Next) -->
-                <div class="w-full flex justify-between items-center mt-8 pb-4 px-4 md:px-0 gap-4">
-                    <!-- Back Button Container -->
-                    <div class="flex-1 flex justify-start">
-                        <button onclick="MapsTo('page-5', 'page-4')"
-                            class="screenshot-btn-class flex items-center gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-6 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                            <span
-                                class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform">arrow_back_ios</span>
-                            <span class="text-rose-900 font-sans font-medium tracking-wide">Back</span>
-                        </button>
-                    </div>
-
-                    <!-- Camera Button (Center) -->
-                    <div>
-                        <button onclick="captureQuizCard()"
-                            class="screenshot-btn-class bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
-                            <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
-                        </button>
-                    </div>
-
-                    <!-- Next Button Container -->
-                    <div class="flex-1 flex justify-end">
-                        <div id="p4-next-container" class="hidden">
-                            <button onclick="MapsTo('page-5', 'page-6')"
-                                class="screenshot-btn-class flex items-center gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-6 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                                <span class="text-rose-900 font-sans font-medium tracking-wide">Next Chapter</span>
-                                <span
-                                    class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
+                <div class="w-full mt-8 pb-4 z-50 pointer-events-none">
+                    <div class="nav-bottom-grid max-w-2xl mx-auto">
+                        <!-- Back Button Container -->
+                        <div class="flex justify-start">
+                            <button onclick="MapsTo('page-5', 'page-4')" class="nav-btn-standard">
+                                <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                                <span>Back</span>
                             </button>
+                        </div>
+
+                        <!-- Camera Button (Center) -->
+                        <div class="flex justify-center">
+                            <button onclick="captureQuizCard()" class="nav-camera-btn">
+                                <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                            </button>
+                        </div>
+
+                        <!-- Next Button Container -->
+                        <div class="flex justify-end">
+                            <div id="p4-next-container" class="hidden">
+                                <button onclick="MapsTo('page-5', 'page-6')" class="nav-btn-standard">
+                                    <span>Next</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -655,33 +642,30 @@
                     </div>
 
                     <!-- Navigation Buttons -->
-                    <div class="w-full flex justify-between items-center mt-20 pb-4 max-w-6xl px-4 md:px-0 gap-4">
-                        <!-- Back Button Container -->
-                        <div class="flex-1 flex justify-start">
-                            <button onclick="MapsTo('page-6', 'page-5')"
-                                class="screenshot-btn-class flex items-center gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-6 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                                <span
-                                    class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform">arrow_back_ios</span>
-                                <span class="text-rose-900 font-sans font-medium tracking-wide">Back</span>
-                            </button>
-                        </div>
+                    <div class="w-full mt-20 pb-4 z-50 pointer-events-none">
+                        <div class="nav-bottom-grid max-w-6xl mx-auto">
+                            <!-- Back Button Container -->
+                            <div class="flex justify-start">
+                                <button onclick="MapsTo('page-6', 'page-5')" class="nav-btn-standard">
+                                    <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                                    <span>Back</span>
+                                </button>
+                            </div>
 
-                        <!-- Camera Button (Center) -->
-                        <div>
-                            <button onclick="captureGallery()"
-                                class="screenshot-btn-class bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
-                                <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
-                            </button>
-                        </div>
+                            <!-- Camera Button (Center) -->
+                            <div class="flex justify-center">
+                                <button onclick="captureGallery()" class="nav-camera-btn">
+                                    <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                                </button>
+                            </div>
 
-                        <!-- Next Button Container -->
-                        <div class="flex-1 flex justify-end">
-                            <button onclick="MapsTo('page-6', 'page-7')"
-                                class="screenshot-btn-class flex items-center gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-6 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                                <span class="text-rose-900 font-sans font-medium tracking-wide">Next Chapter</span>
-                                <span
-                                    class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-                            </button>
+                            <!-- Next Button Container -->
+                            <div class="flex justify-end">
+                                <button onclick="MapsTo('page-6', 'page-7')" class="nav-btn-standard">
+                                    <span>Next</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -730,24 +714,26 @@
             </div>
 
             <!-- Navigation Buttons -->
-            <div class="fixed bottom-6 left-16 md:bottom-10 md:left-10 z-[1000]">
-                <button onclick="MapsTo('page-7', 'page-6')"
-                    class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                    <span
-                        class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
-                    <span
-                        class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
-                </button>
-            </div>
-
-            <div class="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[1000]">
-                <button onclick="MapsTo('page-7', 'page-8')"
-                    class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 md:px-8 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                    <span class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Next
-                        Chapter</span>
-                    <span
-                        class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform text-lg md:text-2xl">arrow_forward_ios</span>
-                </button>
+            <div class="fixed bottom-6 left-0 right-0 z-[1000] px-6 pointer-events-none">
+                <div class="nav-bottom-grid max-w-6xl mx-auto">
+                    <div class="flex justify-start">
+                        <button onclick="MapsTo('page-7', 'page-6')" class="nav-btn-standard">
+                            <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                            <span>Back</span>
+                        </button>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="w-12 h-12 flex items-center justify-center opacity-40">
+                            <span class="material-symbols-outlined text-rose-300 text-4xl">explore</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="MapsTo('page-7', 'page-8')" class="nav-btn-standard">
+                            <span>Next</span>
+                            <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div
@@ -826,32 +812,27 @@
 
         <!-- Navigation Buttons (Stay fixed at bottom) -->
         <div class="w-full fixed bottom-6 md:bottom-10 left-0 right-0 z-[1000] px-6 pointer-events-none">
-            <div class="max-w-6xl mx-auto flex justify-between items-center gap-4 pointer-events-auto">
+            <div class="nav-bottom-grid max-w-6xl mx-auto">
                 <!-- Back Button Container -->
-                <div class="flex-1 basis-0 flex justify-start">
-                    <button onclick="MapsTo('page-8', 'page-7')"
-                        class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group whitespace-nowrap">
-                        <span
-                            class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-xl">arrow_back_ios</span>
-                        <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Back</span>
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-8', 'page-7')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
                     </button>
                 </div>
 
                 <!-- Camera Button (Center) -->
-                <div class="flex-none">
-                    <button onclick="captureLetter()"
-                        class="screenshot-btn-class bg-rose-100/60 backdrop-blur-md border border-rose-300/60 p-3 rounded-full shadow-lg hover:bg-rose-200/60 transition-all group">
-                        <span class="material-symbols-outlined text-rose-800 text-2xl">photo_camera</span>
+                <div class="flex justify-center">
+                    <button onclick="captureLetter()" class="nav-camera-btn">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
                     </button>
                 </div>
 
                 <!-- Next Button Container -->
-                <div class="flex-1 basis-0 flex justify-end">
-                    <button onclick="MapsTo('page-8', 'page-9')"
-                        class="screenshot-btn-class flex items-center gap-2 bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-3 rounded-full shadow-xl hover:bg-white/60 transition-all group whitespace-nowrap">
-                        <span class="text-rose-900 font-sans font-medium tracking-wide text-sm">Next Chapter</span>
-                        <span
-                            class="material-symbols-outlined text-rose-800 group-hover:translate-x-1 transition-transform text-xl">arrow_forward_ios</span>
+                <div class="flex justify-end">
+                    <button onclick="MapsTo('page-8', 'page-9')" class="nav-btn-standard">
+                        <span>Next</span>
+                        <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                     </button>
                 </div>
             </div>
@@ -909,14 +890,15 @@
         </main>
 
         <!-- Back Button -->
-        <div class="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-[1000]">
-            <button onclick="MapsTo('page-9', 'page-8')"
-                class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                <span
-                    class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
-                <span
-                    class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
-            </button>
+        <div class="fixed bottom-6 left-0 right-0 z-[1000] px-6 pointer-events-none">
+            <div class="nav-bottom-grid max-w-6xl mx-auto">
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-9', 'page-8')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -986,26 +968,32 @@
 
         </main>
 
-        <!-- Restart Button (Fixed Bottom Right) -->
-        <div class="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-[1000] pointer-events-auto">
-            <button onclick="location.reload()"
-                class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                <span
-                    class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Restart</span>
-                <span
-                    class="material-symbols-outlined text-rose-800 group-hover:rotate-180 transition-transform text-lg md:text-2xl">restart_alt</span>
-            </button>
-        </div>
+        <!-- Navigation Buttons (Finale) -->
+        <div class="fixed bottom-6 left-0 right-0 z-[1000] px-6 pointer-events-none">
+            <div class="nav-bottom-grid max-w-4xl mx-auto">
+                <!-- Back Button -->
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-10', 'page-4')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
+                    </button>
+                </div>
 
-        <!-- Back Button -->
-        <div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-[1000] pointer-events-auto">
-            <button onclick="MapsTo('page-10', 'page-4')"
-                class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                <span
-                    class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
-                <span
-                    class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
-            </button>
+                <!-- Center: Heart Icon Decoration -->
+                <div class="flex justify-center">
+                    <div class="w-12 h-12 flex items-center justify-center opacity-40">
+                        <span class="material-symbols-outlined text-rose-500 text-3xl animate-pulse">favorite</span>
+                    </div>
+                </div>
+
+                <!-- Restart Button -->
+                <div class="flex justify-end">
+                    <button onclick="location.reload()" class="nav-btn-standard">
+                        <span>Restart</span>
+                        <span class="material-symbols-outlined text-lg">restart_alt</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
