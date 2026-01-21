@@ -227,6 +227,9 @@ function loadSong(index) {
         bgMusic.dataset.originalSrc = newSrc;
         bgMusic.src = newSrc;
 
+        // When source changes, it's always paused initially. Force UI sync.
+        updatePlayIcon();
+
         // Setting .src triggers load automatically. No .load() needed.
     }
 }
@@ -278,14 +281,14 @@ function initMusicPlayer() {
         changeSong(1);
     });
 
-    // SYNC UI with Audio State
-    bgMusic.addEventListener('play', () => updatePlayIcon());
-    bgMusic.addEventListener('pause', () => updatePlayIcon());
-    bgMusic.addEventListener('waiting', () => {
-        // Option: could show a loading spinner
-    });
-    bgMusic.addEventListener('playing', () => updatePlayIcon());
-    bgMusic.addEventListener('error', () => updatePlayIcon());
+    // SYNC UI with Audio State - The most reliable way for all platforms
+    bgMusic.addEventListener('play', updatePlayIcon);
+    bgMusic.addEventListener('pause', updatePlayIcon);
+    bgMusic.addEventListener('playing', updatePlayIcon);
+    bgMusic.addEventListener('waiting', updatePlayIcon);
+    bgMusic.addEventListener('stalled', updatePlayIcon);
+    bgMusic.addEventListener('error', updatePlayIcon);
+    bgMusic.addEventListener('loadstart', updatePlayIcon);
 }
 
 // --- Quiz Logic ---
@@ -722,20 +725,26 @@ function updatePlayIcon() {
     const playIcon = document.getElementById('play-icon');
     if (!playIcon) return;
 
-    // Check if definitely playing or paused
-    // material icon 'pause' = is playing. 'play_arrow' = is paused.
-    if (!bgMusic.paused && !bgMusic.ended) {
-        playIcon.textContent = 'pause';
+    // Strict Verification of playing state
+    // bgMusic.paused is true if the music is not playing
+    // bgMusic.readyState < 3 means it's still buffering (HAVE_FUTURE_DATA)
+    const isActuallyPlaying = !bgMusic.paused && !bgMusic.ended && bgMusic.readyState >= 2;
+
+    if (isActuallyPlaying) {
+        playIcon.textContent = 'pause'; // Showing "Pause" button means it's playing
     } else {
-        playIcon.textContent = 'play_arrow';
+        playIcon.textContent = 'play_arrow'; // Showing "Play" button means it's paused/stopped
     }
 }
 
 function changeSong(direction) {
     loadSong(currentSongIndex + direction);
 
-    // Ensure we attempt to play
-    playMusic();
+    // Slight delay to allow the .src change to settle before .play() 
+    // This often helps with mobile browsers state transitions
+    setTimeout(() => {
+        playMusic();
+    }, 50);
 }
 
 function playMusic() {
@@ -748,16 +757,18 @@ function playMusic() {
     if (playPromise !== undefined) {
         playPromise
             .then(() => {
+                // Playback started successfully
                 updatePlayIcon();
             })
             .catch(e => {
-                console.log("Auto-play failed:", e);
+                console.log("Auto-play blocked or failed:", e);
+                // Ensure UI resets to 'play' icon if it fails
                 updatePlayIcon();
             });
+    } else {
+        // Fallback for very old browsers
+        updatePlayIcon();
     }
-
-    // Fallback sync
-    updatePlayIcon();
 }
 
 function pauseMusic() {
