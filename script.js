@@ -215,29 +215,22 @@ function loadSong(index) {
         setTimeout(() => lyrics.style.opacity = 0.8, 100);
     }
 
-    // Load audio source using Blob to bypass IDM
+    // Load audio source directly (Fastest performance, avoids Blob download delay)
     const newSrc = song.audioSrc;
     if (bgMusic.dataset.originalSrc !== newSrc) {
-        // Revoke previous blob if exists to prevent memory leaks
+
+        // Clean up any old blob URLs if they exist from previous sessions
         if (bgMusic.src && bgMusic.src.startsWith('blob:')) {
             URL.revokeObjectURL(bgMusic.src);
         }
 
-        bgMusic.dataset.originalSrc = newSrc; // Track original source
+        bgMusic.dataset.originalSrc = newSrc;
+        bgMusic.src = newSrc;
+        bgMusic.load();
 
-        fetch(newSrc)
-            .then(response => response.blob())
-            .then(blob => {
-                const blobUrl = URL.createObjectURL(blob);
-                bgMusic.src = blobUrl;
-                bgMusic.load();
-            })
-            .catch(err => {
-                console.error("Failed to load audio via Blob:", err);
-                // Fallback to direct source
-                bgMusic.src = newSrc;
-                bgMusic.load();
-            });
+        // Auto-play if checking next song (Music player behavior)
+        // We can check if the player was already playing, but usually user expects autoplay on 'next'
+        // Let's rely on the playMusic() call that usually follows loadSong() in the click handlers
     }
 }
 
