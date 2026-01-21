@@ -226,11 +226,9 @@ function loadSong(index) {
 
         bgMusic.dataset.originalSrc = newSrc;
         bgMusic.src = newSrc;
-        bgMusic.load();
 
-        // Auto-play if checking next song (Music player behavior)
-        // We can check if the player was already playing, but usually user expects autoplay on 'next'
-        // Let's rely on the playMusic() call that usually follows loadSong() in the click handlers
+        // Removed .load() to prevent iOS playback reset issues. 
+        // Setting .src already triggers the necessary resource selection.
     }
 }
 
