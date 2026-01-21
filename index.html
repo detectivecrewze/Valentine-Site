@@ -982,37 +982,31 @@
                 </div>
             </div>
 
-            <!-- Restart Button (Fixed Bottom Right) -->
-            <div class="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[1000] pointer-events-auto">
-                <button onclick="location.reload()"
-                    class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                    <span
-                        class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Restart</span>
-                    <span
-                        class="material-symbols-outlined text-rose-800 group-hover:rotate-180 transition-transform text-lg md:text-2xl">restart_alt</span>
-                </button>
-            </div>
-
-            <!-- Enhanced Decorative Blurs -->
-            <div
-                class="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-rose-200/30 rounded-full blur-[120px] pointer-events-none">
-            </div>
-            <div
-                class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-pink-100/20 rounded-full blur-[150px] pointer-events-none">
-            </div>
-
-            <!-- Back Button -->
-            <div class="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-[1000] pointer-events-auto">
-                <button onclick="MapsTo('page-10', 'page-9')"
-                    class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
-                    <span
-                        class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
-                    <span
-                        class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
-                </button>
-            </div>
         </main>
+
+        <!-- Restart Button (Fixed Bottom Right) -->
+        <div class="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-[1000] pointer-events-auto">
+            <button onclick="location.reload()"
+                class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
+                <span
+                    class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Restart</span>
+                <span
+                    class="material-symbols-outlined text-rose-800 group-hover:rotate-180 transition-transform text-lg md:text-2xl">restart_alt</span>
+            </button>
+        </div>
+
+        <!-- Back Button -->
+        <div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-[1000] pointer-events-auto">
+            <button onclick="MapsTo('page-10', 'page-4')"
+                class="flex items-center gap-2 md:gap-3 bg-white/40 backdrop-blur-xl border border-white/60 px-4 py-3 md:px-6 md:py-4 rounded-full shadow-xl hover:bg-white/60 transition-all group">
+                <span
+                    class="material-symbols-outlined text-rose-800 group-hover:-translate-x-1 transition-transform text-lg md:text-2xl">arrow_back_ios</span>
+                <span
+                    class="text-rose-900 font-sans font-medium tracking-widest uppercase text-xs md:text-sm">Back</span>
+            </button>
+        </div>
     </section>
+
 
     <div id="video-overlay" class="hidden"></div> <!-- Placeholder for script safety -->
 
