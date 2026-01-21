@@ -1,0 +1,406 @@
+.glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(126, 12, 35, 0.05);
+}
+
+.dreamy-gradient {
+    background: radial-gradient(circle at top left, #fee2e2 0%, #fce7f3 30%, #fdf2f8 70%, #fff1f2 100%);
+}
+
+.option-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.option-button:hover {
+    border-color: #fb7185;
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+.aesthetic-image-shadow {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+}
+
+.grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.04;
+    background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKGknlB-KxaIGCLnTlbc4Nl4TkEFPgcawululOaTjrPN1TjAXh5-VF4xHrr9ynM5yX31NDpYR9RHV2UmbTm20_2PelSIGaLyd6umPnVXMyK5b2UtcHLG3b7jdMErP-Ln0xg5L0HyGn5OoJ1P4RzpWNxI46kDviC-kSSVyGCXAzO7mApHsoqMZkysiUBK5Dw6oeM04dK5WKl4LGHCmneeyiRbiz0D6NcA8NpUWZPs19QE-FuTH8tKsNYadHZHpxk8bnqYdtBBXl9b34");
+}
+
+.dreamy-bg {
+    background: linear-gradient(135deg, #fadceb 0%, #fef3e2 50%, #e0e7ff 100%);
+}
+
+.dark .dreamy-bg {
+    background: linear-gradient(135deg, #211114 0%, #3d1a21 50%, #1a1a2e 100%);
+}
+
+.glow-btn {
+    box-shadow: 0 0 20px rgba(126, 12, 35, 0.4);
+}
+
+/* Animations */
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.delay-200 {
+    animation-delay: 200ms;
+}
+
+.delay-400 {
+    animation-delay: 400ms;
+}
+
+.shake {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+/* Page 5: Memory Gallery */
+.polaroid-frame {
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 320px;
+    /* Standardize size */
+    flex-shrink: 0;
+}
+
+.polaroid-frame:hover {
+    transform: scale(1.02) rotate(0deg) !important;
+    z-index: 20;
+}
+
+.scratch-layer {
+    background-color: #d1d5db;
+    background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApjqyuhBDkbp8531fUhy07Zr0dMh0Ip8cw436Z4ymZnKrwdvZaQ0ocHZTWtCj3hSxfo0Qj6SIEzstdnoZITegbTBaOXBb20bczW6kwXruYtumUWCVpPfT9gaLdfsl8RVCAaH8-sNyI-I4venhL9G16mX1Z6-u8AFyHkHFjwTJ2TLp7HZzfJqX5WBDKEsTKwuCjonS4tdxxtbeobDcI-vPW9pmzrfDYGJ3n0Cbk3YxgFslimIP6muiGz8BjzpLWBIEetw5aHmheeuT5");
+    cursor: pointer;
+}
+
+.washi-tape {
+    background: rgba(244, 212, 218, 0.8);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(2px);
+}
+
+.washi-tape-gold {
+    background: rgba(212, 175, 55, 0.3);
+    border-left: 1px dashed rgba(255, 255, 255, 0.5);
+    border-right: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* Page 6: Atlas of Us - Map Styles */
+#map {
+    z-index: 1;
+}
+
+/* The Coquette Filter for Map Tiles */
+.map-tiles img {
+    filter: sepia(100%) hue-rotate(320deg) brightness(95%) contrast(90%) saturate(120%) !important;
+}
+
+.leaflet-container {
+    background: #fdf2f2 !important;
+}
+
+.custom-div-icon {
+    background: none;
+    border: none;
+}
+
+.heart-marker {
+    color: #9f1239;
+    font-size: 32px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Rose Popup Aesthetics */
+.rose-popup .leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+    padding: 4px;
+}
+
+.rose-popup .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Custom Zoom Controls */
+.leaflet-bar {
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.leaflet-bar a {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(4px);
+    color: #9f1239 !important;
+    border-bottom: 1px solid #fee2e2 !important;
+}
+
+.leaflet-bar a:hover {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    color: #7e0c23 !important;
+}
+
+.polaroid-shadow {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.polaroid-shadow:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Page 2: Relationship Wrapped */
+.story-card {
+    background-color: #fffdf5;
+    /* aspect-ratio: 9 / 16; Removed to prevent cropping when content is large or width is small */
+    min-height: 650px;
+    /* Ensure tall "story" feel */
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 25px 50px -12px rgba(159, 18, 57, 0.15);
+    border: 1px solid #9f1239;
+    position: relative;
+    overflow: hidden;
+}
+
+.swirl-bg {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 0% 0%, #ffe4e6 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, #ffe4e6 0%, transparent 50%);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.photo-frame {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.custom-list {
+    list-style: none;
+    counter-reset: wrapped-counter;
+}
+
+.custom-list li {
+    counter-increment: wrapped-counter;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.custom-list li::before {
+    content: counter(wrapped-counter) ".";
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #9f1239;
+}
+
+/* Page 8: Heartfelt Letter */
+.letter-paper {
+    background-color: #fffdf5;
+    box-shadow:
+        0 10px 30px -5px rgba(0, 0, 0, 0.1),
+        inset 0 0 40px rgba(0, 0, 0, 0.02);
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center center;
+}
+
+.wax-seal {
+    background: radial-gradient(circle at 30% 30%, #be123c, #9f1239);
+    box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+    border: 2px solid #881337;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#fate-letter.is-crumpled {
+    transform: scale(0.3) rotate(-15deg);
+    filter: brightness(0.9);
+    cursor: pointer;
+}
+
+#fate-letter.is-crumpled .letter-content {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#fate-letter.is-crumpled .wax-seal {
+    transform: scale(2.5) translate(50%, -50%);
+    /* Adjusted for right alignment */
+    top: 50%;
+    right: 50%;
+}
+
+#fate-letter:not(.is-crumpled) #open-hint {
+    display: none;
+}
+
+@keyframes pulse-hint {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+
+.pulse-hint-anim {
+    animation: pulse-hint 2s ease-in-out infinite;
+}
+
+.font-cursive {
+    font-family: 'Mrs Saint Delafield', cursive;
+    padding-left: 0.15em;
+}
+
+.font-serif-body {
+    font-family: 'Crimson Text', serif;
+}
+
+/* Page 9: Invitation */
+.pebble-card {
+    background-color: #fffdf5;
+    border-radius: 6rem;
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.12), 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.paper-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuABHlh62WcH0h7mMJBiqfUd2VxFUKUmPDeL1UwKcqgrfIehN_iXuQlEJqlfIiBZ4pqL8aVmT5CcPl2wdzKFawjAwf6WJ9pen4pWN6XcbbVw7rgEAE1oSM9GKN96FLGFFJXQE2UU5Ov4g1Y2RqQyn05GATGp2oVnvCjVaRR-1qy-BNt7Z6gf0B6vVvpxp0i518ohO1yV1f1XQzQ15lrMq-hh2V4Wgb01Y1wAoqakXVKa60UiuEutkO5qIzcvmrf69pvJ3WSWZdFDoE7V);
+    opacity: 0.03;
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+}
+
+.glow-soft {
+    box-shadow: 0 10px 30px -5px rgba(251, 113, 133, 0.4);
+}
+
+#no-btn {
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+    z-index: 50;
+}
+
+/* Page 10: Treasure Hunt */
+.treasure-item {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 0 10px rgba(251, 113, 133, 0.2));
+    animation: float-heart 3s ease-in-out infinite;
+}
+
+.treasure-item:hover {
+    transform: scale(1.2) rotate(5deg);
+    filter: drop-shadow(0 0 15px rgba(251, 113, 133, 0.5));
+}
+
+@keyframes float-heart {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(5deg);
+    }
+}
+
+.glass-card-finale {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.found-animation {
+    animation: heart-pop 0.6s forwards;
+}
+
+@keyframes heart-pop {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Page 10 Video Responsiveness */
+#finale-video-container video,
+#finale-video-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    /* Prevents cropping */
+}
+
+@media (max-width: 640px) {
+    #video-lock-overlay h2 {
+        font-size: 1.5rem;
+    }
+
+    #video-lock-overlay p {
+        font-size: 1.25rem;
+    }
+}
