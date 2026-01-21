@@ -1,6 +1,6 @@
 const CONFIG = {
     login: {
-        password: "cintaislam",
+        password: "cintaislam1234512345",
         errorMessage: "Incorrect password, try again!",
         // Page 1 Content
         collectionText: "For you, Always",
