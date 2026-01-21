@@ -215,7 +215,7 @@ function loadSong(index) {
         setTimeout(() => lyrics.style.opacity = 0.8, 100);
     }
 
-    // Load audio source directly (Fastest performance, avoids Blob download delay)
+    // Load audio source directly
     const newSrc = song.audioSrc;
     if (bgMusic.dataset.originalSrc !== newSrc) {
 
@@ -227,8 +227,7 @@ function loadSong(index) {
         bgMusic.dataset.originalSrc = newSrc;
         bgMusic.src = newSrc;
 
-        // Removed .load() to prevent iOS playback reset issues. 
-        // Setting .src already triggers the necessary resource selection.
+        // Setting .src triggers load automatically. No .load() needed.
     }
 }
 
@@ -279,9 +278,14 @@ function initMusicPlayer() {
         changeSong(1);
     });
 
-    // SYNC UI with Audio State (Most reliable way)
-    bgMusic.addEventListener('play', updatePlayIcon);
-    bgMusic.addEventListener('pause', updatePlayIcon);
+    // SYNC UI with Audio State
+    bgMusic.addEventListener('play', () => updatePlayIcon());
+    bgMusic.addEventListener('pause', () => updatePlayIcon());
+    bgMusic.addEventListener('waiting', () => {
+        // Option: could show a loading spinner
+    });
+    bgMusic.addEventListener('playing', () => updatePlayIcon());
+    bgMusic.addEventListener('error', () => updatePlayIcon());
 }
 
 // --- Quiz Logic ---
@@ -716,31 +720,49 @@ function toggleMapCard() {
 
 function updatePlayIcon() {
     const playIcon = document.getElementById('play-icon');
-    if (playIcon) {
-        playIcon.textContent = bgMusic.paused ? 'play_arrow' : 'pause';
+    if (!playIcon) return;
+
+    // Check if definitely playing or paused
+    // material icon 'pause' = is playing. 'play_arrow' = is paused.
+    if (!bgMusic.paused && !bgMusic.ended) {
+        playIcon.textContent = 'pause';
+    } else {
+        playIcon.textContent = 'play_arrow';
     }
 }
 
 function changeSong(direction) {
     loadSong(currentSongIndex + direction);
+
+    // Ensure we attempt to play
     playMusic();
 }
 
 function playMusic() {
-    // Aggressive protection: try to hide IDM panels if they inject anything
+    // Hide IDM panels
     const idmPanels = document.querySelectorAll('[id^="idm_"], [class^="idm_"]');
     idmPanels.forEach(p => p.style.display = 'none');
 
-    bgMusic.play().catch(e => {
-        console.log("Audio play failed (interaction required or invalid source):", e);
-        // Explicitly ensuring the icon reflects the failed state
-        updatePlayIcon();
-    });
+    const playPromise = bgMusic.play();
+
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                updatePlayIcon();
+            })
+            .catch(e => {
+                console.log("Auto-play failed:", e);
+                updatePlayIcon();
+            });
+    }
+
+    // Fallback sync
+    updatePlayIcon();
 }
 
 function pauseMusic() {
     bgMusic.pause();
-    // Icon updates via the 'pause' event listener
+    updatePlayIcon();
 }
 
 // Page 1: Login Logic (unchanged but re-included for completeness)
