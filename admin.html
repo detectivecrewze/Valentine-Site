@@ -254,12 +254,15 @@
             <span class="page-badge">PAGE 4</span>
             <div class="section-header">
                 <span class="material-symbols-outlined section-icon">quiz</span>
-                <h2 class="text-xl font-bold">Love Quiz (5 Questions)</h2>
+                <h2 class="text-xl font-bold">Love Quiz</h2>
             </div>
             <div id="quizList" class="space-y-4">
                 <!-- Questions injected here -->
             </div>
-            <!-- Buttons to add/remove if needed? User wants 5. Fixed 5 is safer for layout. -->
+            <button onclick="addQuizQuestion()"
+                class="mt-4 w-full py-2 border-2 border-rose-300 text-rose-500 rounded-lg hover:bg-rose-50 font-bold transition dashed-border flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">add_circle</span> Add Question
+            </button>
         </div>
 
         <!-- 5. PAGE 5: GALLERY -->
@@ -388,6 +391,7 @@
             const container = document.getElementById('quizList');
             container.innerHTML = initialQuiz.map((q, i) => `
                 <div class="dynamic-item">
+                    <button onclick="removeQuiz(${i})" class="remove-btn">×</button>
                     <div class="mb-2 font-bold text-sm text-gray-500">Question ${i + 1}</div>
                     <input type="text" class="q-q w-full mb-2 rounded border-gray-300" placeholder="Question" value="${q.q}">
                     <div class="grid grid-cols-2 gap-2 mb-2">
@@ -421,6 +425,11 @@
                 </div>
             `).join('');
         }
+        window.removeQuiz = (i) => { initialQuiz.splice(i, 1); renderQuiz(); };
+        window.addQuizQuestion = () => {
+            initialQuiz.push({ q: "", o: ["", "", "", ""], c: 0, ok: "Correct!", no: "Wrong!" });
+            renderQuiz();
+        };
 
         function renderGallery() {
             const container = document.getElementById('galleryList');
