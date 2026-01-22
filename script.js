@@ -75,7 +75,15 @@ function MapsTo(fromId, toId) {
 
                     // Play custom SFX when printing starts
                     printerSfx.currentTime = 0;
-                    printerSfx.play().catch(e => console.log("SFX play blocked:", e));
+                    printerSfx.volume = 1.0; // Ensure volume is up
+                    const playPromise = printerSfx.play();
+
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.error("Auto-play was prevented:", error);
+                            // Fallback: maybe show a visual indicator or try muted?
+                        });
+                    }
 
                     // Stop after 6s (matches updated timing)
                     setTimeout(() => {
@@ -622,10 +630,10 @@ function initScratchCard(index) {
                 e.clientY || (e.touches ? e.touches[0].clientY : 0));
         }
 
-        // Play scratch sound
-        if (scratchSfx.paused) {
-            scratchSfx.play().catch(err => console.log('SFX blocked:', err));
-        }
+        // Play scratch sound - DISABLED by User Request
+        // if (scratchSfx.paused) {
+        //     scratchSfx.play().catch(err => console.log('SFX blocked:', err));
+        // }
 
         // Check reveal percentage occasionally
         if (Math.random() > 0.9) {
