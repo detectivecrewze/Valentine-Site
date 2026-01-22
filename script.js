@@ -3,6 +3,10 @@ const bgMusic = new Audio(); // Global Audio Object
 let currentSongIndex = 0;
 let mapInstance = null;
 let revealedMemories = []; // Persistent state for gallery
+const printerSfx = new Audio('assets/sfx1.mp3'); // User's custom printer SFX
+printerSfx.loop = true;
+const scratchSfx = new Audio('assets/sfx1.mp3'); // Fallback to printer sfx if no scratch sfx, or user can update
+scratchSfx.volume = 0.4;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDynamicContent();
@@ -17,30 +21,88 @@ function MapsTo(fromId, toId) {
     const fromPage = document.getElementById(fromId);
     const toPage = document.getElementById(toId);
 
-    if (fromPage) fromPage.classList.add('hidden');
+    if (fromPage && toPage) {
+        // Start 3D Flip Animation
+        fromPage.classList.add('page-flip-exit');
+        toPage.classList.remove('hidden');
+        toPage.classList.add('page-flip-enter');
+
+        // Cleanup fromPage specific state
+        if (fromId === 'page-4') {
+            const printerComp = document.getElementById('printer-comp');
+            const printerDevice = document.getElementById('printer-device');
+            const printerLed = document.getElementById('printer-led');
+
+            if (printerComp) printerComp.classList.remove('is-printing');
+            if (printerDevice) printerDevice.classList.remove('printer-vibrating');
+            if (printerLed) printerLed.classList.remove('led-printing');
+
+            printerSfx.pause();
+            printerSfx.currentTime = 0;
+        }
+
+        // Finalize transition after animation duration
+        setTimeout(() => {
+            fromPage.classList.add('hidden');
+            fromPage.classList.remove('page-flip-exit');
+            toPage.classList.remove('page-flip-enter');
+        }, 2500);
+    } else {
+        // Fallback for missing elements or initial entry
+        if (fromPage) fromPage.classList.add('hidden');
+        if (toPage) {
+            toPage.classList.remove('hidden');
+            toPage.classList.add('animate-fade-in-up');
+        }
+    }
 
     if (toPage) {
-        toPage.classList.remove('hidden');
-        toPage.classList.add('animate-fade-in-up');
+        // Page-Specific Logic
+        if (toId === 'page-4') {
+            const printerComp = document.getElementById('printer-comp');
+            const printerDevice = document.getElementById('printer-device');
+            const printerLed = document.getElementById('printer-led');
 
-        // Logic for specific pages
-        if (toId === 'page-2') {
-            // Wrapped Page - No specific init needed unless dynamic data loading
-            // Ensure music continues if playing, or starts if configured
+            if (printerComp) {
+                printerComp.classList.remove('is-printing');
+                if (printerDevice) printerDevice.classList.remove('printer-vibrating');
+                if (printerLed) printerLed.classList.remove('led-printing');
+
+                setTimeout(() => {
+                    printerComp.classList.add('is-printing');
+                    if (printerDevice) printerDevice.classList.add('printer-vibrating');
+                    if (printerLed) printerLed.classList.add('led-printing');
+
+                    // Play custom SFX when printing starts
+                    printerSfx.currentTime = 0;
+                    printerSfx.play().catch(e => console.log("SFX play blocked:", e));
+
+                    // Stop after 6s (matches updated timing)
+                    setTimeout(() => {
+                        printerSfx.pause();
+                        if (printerDevice) printerDevice.classList.remove('printer-vibrating');
+                        if (printerLed) printerLed.classList.remove('led-printing');
+                    }, 6000);
+                }, 300);
+            }
         } else if (toId === 'page-3') {
             loadSong(currentSongIndex);
-            playMusic();
+            setTimeout(() => {
+                playMusic();
+            }, 300);
         } else if (toId === 'page-5') {
             if (typeof loadQuiz === 'function') loadQuiz();
         } else if (toId === 'page-6') {
             if (typeof loadGallery === 'function') loadGallery();
         } else if (toId === 'page-7') {
-            // Automatically mark all gallery items as revealed when reaching the map
+            /* 
+            // Auto-reveal disabled
             if (CONFIG.gallery && CONFIG.gallery.memories) {
                 CONFIG.gallery.memories.forEach((_, idx) => {
                     revealedMemories[idx] = true;
                 });
             }
+            */
             if (typeof initMap === 'function') initMap();
         } else if (toId === 'page-8') {
             if (typeof resetLetterPage === 'function') resetLetterPage();
@@ -146,16 +208,10 @@ function loadDynamicContent() {
             const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
             recipientEl.textContent = `${greeting},`;
         }
-        if (signatureEl) signatureEl.textContent = CONFIG.letter.signature;
+        if (signatureEl) signatureEl.textContent = ''; // Clear for typewriter
 
         if (bodyEl) {
-            bodyEl.innerHTML = ''; // Clear
-            const paragraphs = CONFIG.letter.message.split('\n\n');
-            paragraphs.forEach(p => {
-                const pEl = document.createElement('p');
-                pEl.textContent = p;
-                bodyEl.appendChild(pEl);
-            });
+            bodyEl.innerHTML = ''; // Keep empty for typewriter effect
         }
     }
     // Page 9: Invitation
@@ -213,6 +269,14 @@ function loadSong(index) {
         // Reset opacity for a subtle fade-in effect when song changes
         lyrics.style.opacity = 0;
         setTimeout(() => lyrics.style.opacity = 0.8, 100);
+    }
+
+    // Polaroid Shake Effect
+    const card = document.getElementById('music-card');
+    if (card) {
+        card.classList.remove('polaroid-shake');
+        void card.offsetWidth; // trigger reflow
+        card.classList.add('polaroid-shake');
     }
 
     // Load audio source directly
@@ -368,9 +432,10 @@ function checkAnswer(selectedIndex, btnElement, data) {
 
     if (selectedIndex === data.correctIndex) {
         // Correct Answer
-        // Safely remove/add classes instead of replace
+        createSparkles(btnElement);
+
         btnElement.classList.remove('bg-white/70', 'border-transparent');
-        btnElement.classList.add('bg-rose-100', 'border-rose-400');
+        btnElement.classList.add('bg-rose-100', 'border-rose-400', 'scale-105');
 
         // Show Feedback
         if (feedbackMsg) {
@@ -402,19 +467,22 @@ function checkAnswer(selectedIndex, btnElement, data) {
         }
     } else {
         // Wrong Answer
-        btnElement.classList.remove('bg-white/70');
-        btnElement.classList.add('bg-red-50', 'shake');
+        const quizContainer = document.querySelector('#page-4 main');
+        if (quizContainer) {
+            quizContainer.classList.add('screen-shake');
+            setTimeout(() => quizContainer.classList.remove('screen-shake'), 400);
+        }
 
-        // Remove shake after animation (500ms) and re-enable
+        btnElement.classList.add('withered');
+
+        // Re-enable all buttons for retry after a short delay
         setTimeout(() => {
-            btnElement.classList.remove('shake');
-            btnElement.classList.remove('bg-red-50');
-            btnElement.classList.add('bg-white/70'); // Restore background
-
-            // Re-enable all buttons for retry
             allBtns.forEach(b => {
-                b.disabled = false;
-                b.classList.remove('cursor-not-allowed', 'opacity-60');
+                // Only re-enable if NOT withered (the one they already guessed wrong)
+                if (!b.classList.contains('withered')) {
+                    b.disabled = false;
+                    b.classList.remove('cursor-not-allowed', 'opacity-60');
+                }
             });
         }, 500);
     }
@@ -467,13 +535,21 @@ function loadGallery() {
                 <div class="${mem.tape} absolute -top-3 ${mem.rotation.includes('-') ? '-left-4' : '-right-3'} w-14 h-6 z-10"></div>
                 <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100">
                     ${mediaHTML}
-                    ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-20"></canvas>`}
+                    ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
                 </div>
                 <div class="pt-4 pb-2 text-center">
                     <p id="caption-${index}" class="font-display italic text-xl leading-snug text-rose-900 ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">${mem.caption}</p>
                 </div>
             `;
             gridEl.appendChild(card);
+
+            // Force play video if already revealed (uncovered)
+            if (revealedMemories[index]) {
+                const video = card.querySelector('video');
+                if (video) {
+                    video.play().catch(e => console.log("Manual play block:", e));
+                }
+            }
 
             // Initialize the canvas only if it exists
             if (!revealedMemories[index]) {
@@ -492,9 +568,9 @@ function initScratchCard(index) {
     const container = canvas.parentElement;
 
     // Set internal resolution to match display size
-    const rect = container.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
+    // Use offsetWidth to avoid 0 size during 3D transform
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
 
     // Fill with scratch color/pattern
     ctx.fillStyle = '#d1d5db'; // Silver/Gray
@@ -511,6 +587,12 @@ function initScratchCard(index) {
 
     function scratch(e) {
         if (!isDrawing) return;
+
+        // Start video playback on interaction if it's not already playing
+        const video = canvas.parentElement.querySelector('video');
+        if (video && video.paused) {
+            video.play().catch(err => { });
+        }
 
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - rect.left;
@@ -534,10 +616,44 @@ function initScratchCard(index) {
         lastX = x;
         lastY = y;
 
+        // Create glitter particles
+        if (Math.random() > 0.3) {
+            createGlitter(e.clientX || (e.touches ? e.touches[0].clientX : 0),
+                e.clientY || (e.touches ? e.touches[0].clientY : 0));
+        }
+
+        // Play scratch sound
+        if (scratchSfx.paused) {
+            scratchSfx.play().catch(err => console.log('SFX blocked:', err));
+        }
+
         // Check reveal percentage occasionally
         if (Math.random() > 0.9) {
             checkReveal();
         }
+    }
+
+    function createGlitter(x, y) {
+        const particle = document.createElement('div');
+        particle.className = 'glitter-particle';
+
+        // Random golden/pinkish colors
+        const colors = ['#FFD700', '#FFA500', '#FF69B4', '#FFFFFF'];
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+
+        // Random trajectory
+        const tx = (Math.random() - 0.5) * 100;
+        const ty = Math.random() * 100 + 50;
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+
+        particle.style.animation = `fall-and-fade ${Math.random() * 1 + 0.5}s forwards`;
+
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1500);
     }
 
     function checkReveal() {
@@ -723,17 +839,24 @@ function toggleMapCard() {
 
 function updatePlayIcon() {
     const playIcon = document.getElementById('play-icon');
+    const visualizer = document.getElementById('music-visualizer');
     if (!playIcon) return;
 
-    // Strict Verification of playing state
-    // bgMusic.paused is true if the music is not playing
-    // bgMusic.readyState < 3 means it's still buffering (HAVE_FUTURE_DATA)
-    const isActuallyPlaying = !bgMusic.paused && !bgMusic.ended && bgMusic.readyState >= 2;
+    // UI should show "Pause" if the user has triggered play, even if buffering
+    const isPlaying = !bgMusic.paused && !bgMusic.ended;
 
-    if (isActuallyPlaying) {
-        playIcon.textContent = 'pause'; // Showing "Pause" button means it's playing
+    if (isPlaying) {
+        playIcon.textContent = 'pause';
+        if (visualizer) {
+            visualizer.classList.add('is-playing');
+            visualizer.classList.remove('opacity-0');
+        }
     } else {
-        playIcon.textContent = 'play_arrow'; // Showing "Play" button means it's paused/stopped
+        playIcon.textContent = 'play_arrow';
+        if (visualizer) {
+            visualizer.classList.remove('is-playing');
+            visualizer.classList.add('opacity-0');
+        }
     }
 }
 
@@ -751,6 +874,9 @@ function playMusic() {
     // Hide IDM panels
     const idmPanels = document.querySelectorAll('[id^="idm_"], [class^="idm_"]');
     idmPanels.forEach(p => p.style.display = 'none');
+
+    // Ensure it's not muted
+    bgMusic.muted = false;
 
     const playPromise = bgMusic.play();
 
@@ -786,7 +912,15 @@ function initLogin() {
         const val = loginInput.value.trim().toLowerCase();
 
         if (val === CONFIG.login.password) {
-            MapsTo('page-1', 'page-4');
+            const btn = document.getElementById('login-btn');
+            if (btn) {
+                createHeartExplosion(btn);
+            }
+
+            // Delay transition to allow explosion to be seen
+            setTimeout(() => {
+                MapsTo('page-1', 'page-2');
+            }, 800);
         } else {
             if (errorMsg) {
                 errorMsg.classList.remove('opacity-0');
@@ -805,16 +939,89 @@ function initLogin() {
     }
 }
 
-// Page 8: Heartfelt Letter Interaction
+let letterTyped = false;
+
 function initLetterPage() {
     const letter = document.getElementById('fate-letter');
-    // Logic is now handled via inline onclick toggle for better responsiveness
-    // and CSS for hint visibility.
+}
+
+function handleLetterInteraction() {
+    const letter = document.getElementById('fate-letter');
+    if (letter) {
+        if (letter.classList.contains('is-crumpled')) {
+            letter.classList.remove('is-crumpled');
+            if (!letterTyped) {
+                startLetterTyping();
+            }
+        } else {
+            letter.classList.add('is-crumpled');
+        }
+    }
+}
+
+async function startLetterTyping() {
+    if (letterTyped) return;
+    letterTyped = true;
+    const bodyEl = document.getElementById('letter-body');
+    if (!bodyEl || !CONFIG.letter.message) return;
+
+    const fullText = CONFIG.letter.message;
+    const paragraphs = fullText.split('\n\n');
+
+    bodyEl.innerHTML = '';
+
+    for (const pText of paragraphs) {
+        if (!letterTyped) break; // Stop if reset
+        const pEl = document.createElement('p');
+        bodyEl.appendChild(pEl);
+        await typeTarget(pEl, pText);
+    }
+
+    // Type Closing
+    const closingEl = document.getElementById('letter-closing');
+    if (closingEl && letterTyped) {
+        await typeTarget(closingEl, "With all my love,");
+    }
+
+    // Type Signature
+    const signatureEl = document.getElementById('letter-signature');
+    if (signatureEl && letterTyped && CONFIG.letter.signature) {
+        await typeTarget(signatureEl, CONFIG.letter.signature);
+    }
+}
+
+function typeTarget(element, text) {
+    return new Promise(resolve => {
+        let i = 0;
+        const speed = 40; // Typing speed in ms
+        function type() {
+            if (!letterTyped) {
+                resolve();
+                return;
+            }
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
 }
 
 function resetLetterPage() {
     const letter = document.getElementById('fate-letter');
     const hint = document.getElementById('open-hint');
+    const bodyEl = document.getElementById('letter-body');
+    const closingEl = document.getElementById('letter-closing');
+    const signatureEl = document.getElementById('letter-signature');
+
+    letterTyped = false; // Reset typewriter state
+    if (bodyEl) bodyEl.innerHTML = ''; // Clear typed text
+    if (closingEl) closingEl.textContent = '';
+    if (signatureEl) signatureEl.textContent = '';
 
     if (letter) {
         letter.classList.add('is-crumpled');
@@ -942,15 +1149,42 @@ function foundHeart(el) {
 
 function createSparkles(el) {
     const rect = el.getBoundingClientRect();
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) {
         const sparkle = document.createElement('div');
-        sparkle.className = 'fixed pointer-events-none text-rose-300 z-50 animate-ping';
+        sparkle.className = 'fixed pointer-events-none text-rose-400 z-50 animate-ping';
         sparkle.innerHTML = '✨';
-        sparkle.style.left = `${rect.left + rect.width / 2}px`;
-        sparkle.style.top = `${rect.top + rect.height / 2}px`;
-        sparkle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 100}px)`;
+        sparkle.style.left = `${rect.left + Math.random() * rect.width}px`;
+        sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
+        sparkle.style.fontSize = `${Math.random() * 20 + 10}px`;
+        sparkle.style.transform = `translate(${(Math.random() - 0.5) * 150}px, ${(Math.random() - 0.5) * 150}px)`;
         document.body.appendChild(sparkle);
         setTimeout(() => sparkle.remove(), 1000);
+    }
+}
+
+function createHeartExplosion(el) {
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 24; i++) {
+        const p = document.createElement('div');
+        p.className = 'heart-particle';
+        p.innerHTML = Math.random() > 0.5 ? '❤️' : '🌹';
+        p.style.left = centerX + 'px';
+        p.style.top = centerY + 'px';
+        p.style.fontSize = `${Math.random() * 20 + 10}px`;
+
+        const tx = (Math.random() - 0.5) * 400;
+        const ty = (Math.random() - 0.5) * 400;
+        const tr = (Math.random() - 0.5) * 720;
+
+        p.style.setProperty('--tx', `${tx}px`);
+        p.style.setProperty('--ty', `${ty}px`);
+        p.style.setProperty('--tr', `${tr}deg`);
+
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
     }
 }
 

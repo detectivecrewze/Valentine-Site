@@ -61,7 +61,7 @@ function captureMusicCard() {
 
 function captureGreetingCard() {
     // Page 4 - Capture full container
-    captureElement('#page-4-container', 'valentine-card.png');
+    captureElement('#page-2-container', 'valentine-card.png');
 }
 
 function captureQuizCard() {

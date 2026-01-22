@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Config Generator</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #be123c;
+            border-bottom: 2px solid #be123c;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="p-8 max-w-5xl mx-auto">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg border border-rose-200">
+        <h1 class="text-3xl font-bold text-center text-rose-800 mb-2">💘 Config Generator</h1>
+        <p class="text-center text-gray-500 mb-8">Isi form ini untuk membuat kode `data.js` secara otomatis.</p>
+
+        <form id="configForm" onsubmit="event.preventDefault(); generateCode();">
+
+            <!-- 1. LOGIN -->
+            <div class="mb-8">
+                <h2 class="section-title">1. Login & Dasar</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="text" id="password"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500"
+                            value="cintaislam1234512345">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Collection Name</label>
+                        <input type="text" id="collectionText"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500"
+                            value="For you, Always">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. WRAPPED -->
+            <div class="mb-8">
+                <h2 class="section-title">2. Relationship Stats</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Minutes Together</label>
+                        <input type="text" id="minutes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="525,600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Vibe</label>
+                        <input type="text" id="vibe" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="Bonnie & Clyde">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Main Photo (Wrapped)</label>
+                        <input type="text" id="wrappedImage"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="assets/images/photo2.jpg" placeholder="assets/...">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Top 3 Places</label>
+                        <input type="text" class="place-input mb-2 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="The Sunset Pier">
+                        <input type="text" class="place-input mb-2 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="Corner Bakery">
+                        <input type="text" class="place-input block w-full rounded-md border-gray-300 shadow-sm"
+                            value="Botanical Garden">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Top 3 Core Memories</label>
+                        <input type="text" class="memory-input mb-2 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="The Rainy Hike">
+                        <input type="text" class="memory-input mb-2 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="First Road Trip">
+                        <input type="text" class="memory-input block w-full rounded-md border-gray-300 shadow-sm"
+                            value="Cooking Fail">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. MUSIC -->
+            <div class="mb-8">
+                <h2 class="section-title">3. Music Playlist (3 Songs)</h2>
+                <div id="musicContainer" class="space-y-4">
+                    <!-- Music items will be generated here or hardcoded for simplicity -->
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="font-bold text-sm mb-2">Song 1</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="song1_title" placeholder="Title" value="Selfless"
+                                class="rounded border-gray-300">
+                            <input type="text" id="song1_artist" placeholder="Artist" value="The Strokes"
+                                class="rounded border-gray-300">
+                            <input type="text" id="song1_lyrics" placeholder="Lyrics snippet"
+                                value="Life is too short..." class="col-span-2 rounded border-gray-300">
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="font-bold text-sm mb-2">Song 2</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="song2_title" placeholder="Title" value="Ivy"
+                                class="rounded border-gray-300">
+                            <input type="text" id="song2_artist" placeholder="Artist" value="Frank Ocean"
+                                class="rounded border-gray-300">
+                            <input type="text" id="song2_lyrics" placeholder="Lyrics snippet"
+                                value="I thought that I was dreaming..." class="col-span-2 rounded border-gray-300">
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="font-bold text-sm mb-2">Song 3</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="song3_title" placeholder="Title" value="L-O-V-E"
+                                class="rounded border-gray-300">
+                            <input type="text" id="song3_artist" placeholder="Artist" value="Nat King Cole"
+                                class="rounded border-gray-300">
+                            <input type="text" id="song3_lyrics" placeholder="Lyrics snippet"
+                                value="L is for the way you look..." class="col-span-2 rounded border-gray-300">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.5 QUIZ -->
+            <div class="mb-8">
+                <h2 class="section-title">4. Love Quiz (5 Questions)</h2>
+                <p class="text-sm text-gray-500 mb-4">Note: Options are comma-separated. Correct Index starts at 0 (A=0,
+                    B=1, C=2, D=3).</p>
+
+                <div class="space-y-6">
+                    <!-- Q1 -->
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Question 1</span>
+                        <input type="text" id="q1_text" placeholder="Question Text"
+                            value="Where was our very first date?"
+                            class="block w-full mt-1 mb-2 rounded border-gray-300">
+                        <input type="text" id="q1_opts" placeholder="Options (comma separated)"
+                            value="Starbucks KIP, Cinema XXI, Parks & Rec, Dinner at McD"
+                            class="block w-full mb-2 rounded border-gray-300">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="q1_correct" placeholder="Correct Index (0-3)" value="0"
+                                class="rounded border-gray-300">
+                            <input type="text" id="q1_msg" placeholder="Success Message" value="You remembered! ❤️"
+                                class="rounded border-gray-300">
+                        </div>
+                    </div>
+                    <!-- Q2 -->
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Question 2</span>
+                        <input type="text" id="q2_text" placeholder="Question Text"
+                            value="What is my favorite color on you?"
+                            class="block w-full mt-1 mb-2 rounded border-gray-300">
+                        <input type="text" id="q2_opts" placeholder="Options (comma separated)"
+                            value="Rose Pink, Soft Blue, Sage Green, Classic Black"
+                            class="block w-full mb-2 rounded border-gray-300">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="q2_correct" placeholder="Correct Index (0-3)" value="2"
+                                class="rounded border-gray-300">
+                            <input type="text" id="q2_msg" placeholder="Wrong Message (Optional)"
+                                value="Listen closely to your heart... 🎶" class="rounded border-gray-300">
+                        </div>
+                    </div>
+                    <!-- Q3 -->
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Question 3</span>
+                        <input type="text" id="q3_text" placeholder="Question Text"
+                            value="Where do I want to travel with you?"
+                            class="block w-full mt-1 mb-2 rounded border-gray-300">
+                        <input type="text" id="q3_opts" placeholder="Options (comma separated)"
+                            value="Paris, Tokyo, Santorini, Bali" class="block w-full mb-2 rounded border-gray-300">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="q3_correct" placeholder="Correct Index (0-3)" value="0"
+                                class="rounded border-gray-300">
+                            <input type="text" id="q3_msg" placeholder="Success Message"
+                                value="Oui! The city of love 🗼" class="rounded border-gray-300">
+                        </div>
+                    </div>
+                    <!-- Q4 -->
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Question 4</span>
+                        <input type="text" id="q4_text" placeholder="Question Text"
+                            value="What do I love most about you?"
+                            class="block w-full mt-1 mb-2 rounded border-gray-300">
+                        <input type="text" id="q4_opts" placeholder="Options (comma separated)"
+                            value="Your smile, Your kindness, Your eyes, Everything"
+                            class="block w-full mb-2 rounded border-gray-300">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="q4_correct" placeholder="Correct Index (0-3)" value="3"
+                                class="rounded border-gray-300">
+                            <input type="text" id="q4_msg" placeholder="Success Message"
+                                value="Correct! I love it all ❤️" class="rounded border-gray-300">
+                        </div>
+                    </div>
+                    <!-- Q5 -->
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Question 5</span>
+                        <input type="text" id="q5_text" placeholder="Question Text"
+                            value="What is our favorite thing to do together?"
+                            class="block w-full mt-1 mb-2 rounded border-gray-300">
+                        <input type="text" id="q5_opts" placeholder="Options (comma separated)"
+                            value="Watching Movies, Going on walks, Eating out, Just being together"
+                            class="block w-full mb-2 rounded border-gray-300">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="q5_correct" placeholder="Correct Index (0-3)" value="3"
+                                class="rounded border-gray-300">
+                            <input type="text" id="q5_msg" placeholder="Success Message"
+                                value="Being with you is always my favorite! ✨" class="rounded border-gray-300">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. GALLERY -->
+            <div class="mb-8">
+                <h2 class="section-title">5. Memory Gallery (6 Items)</h2>
+                <p class="text-sm text-gray-500 mb-4">Note: Rotation and Tape style are randomized/preset for
+                    simplicity.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 6 Items -->
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Item 1 (Video)</span>
+                        <input type="text" id="gal1_src" placeholder="Source (assets/...)"
+                            value="assets/images/video1.mp4" class="block w-full mt-1 text-sm rounded border-gray-300">
+                        <input type="text" id="gal1_cap" placeholder="Caption" value="The day we met..."
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Item 2 (Image)</span>
+                        <input type="text" id="gal2_src" placeholder="Source" value="assets/images/photo2.jpg"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                        <input type="text" id="gal2_cap" placeholder="Caption" value="Our first coffee"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Item 3 (Image)</span>
+                        <input type="text" id="gal3_src" placeholder="Source" value="assets/images/photo3.jpg"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                        <input type="text" id="gal3_cap" placeholder="Caption" value="Golden hour"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Item 4 (Video)</span>
+                        <input type="text" id="gal4_src" placeholder="Source" value="assets/images/video1.mp4"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                        <input type="text" id="gal4_cap" placeholder="Caption" value="Late night talks"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Item 5 (Image)</span>
+                        <input type="text" id="gal5_src" placeholder="Source" value="assets/images/photo4.jpg"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                        <input type="text" id="gal5_cap" placeholder="Caption" value="Under the stars"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Item 6 (Image)</span>
+                        <input type="text" id="gal6_src" placeholder="Source" value="assets/images/photo5.jpg"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                        <input type="text" id="gal6_cap" placeholder="Caption" value="Forever with you"
+                            class="block w-full mt-1 text-sm rounded border-gray-300">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. MAP LOCATIONS -->
+            <div class="mb-8">
+                <h2 class="section-title">6. Atlas of Us (Map)</h2>
+                <div class="space-y-4">
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Location 1</span>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <input type="text" id="map1_lat" placeholder="Latitude (-6.2...)"
+                                value="-6.2462588514622155" class="rounded border-gray-300">
+                            <input type="text" id="map1_lng" placeholder="Longitude (106.9...)"
+                                value="106.9913550792795" class="rounded border-gray-300">
+                            <input type="text" id="map1_title" placeholder="Title" value="Where we first met"
+                                class="col-span-2 rounded border-gray-300">
+                            <input type="text" id="map1_mem" placeholder="Memory" value="The air was sweet..."
+                                class="col-span-2 rounded border-gray-300">
+                        </div>
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Location 2</span>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <input type="text" id="map2_lat" placeholder="Latitude" value="-6.268617941810974"
+                                class="rounded border-gray-300">
+                            <input type="text" id="map2_lng" placeholder="Longitude" value="106.97607564606952"
+                                class="rounded border-gray-300">
+                            <input type="text" id="map2_title" placeholder="Title" value="Our favorite coffee spot"
+                                class="col-span-2 rounded border-gray-300">
+                            <input type="text" id="map2_mem" placeholder="Memory" value="The aroma of roasted beans..."
+                                class="col-span-2 rounded border-gray-300">
+                        </div>
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50">
+                        <span class="font-bold">Location 3</span>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <input type="text" id="map3_lat" placeholder="Latitude" value="-6.268579003998055"
+                                class="rounded border-gray-300">
+                            <input type="text" id="map3_lng" placeholder="Longitude" value="106.98123604300862"
+                                class="rounded border-gray-300">
+                            <input type="text" id="map3_title" placeholder="Title" value="That midnight walk"
+                                class="col-span-2 rounded border-gray-300">
+                            <input type="text" id="map3_mem" placeholder="Memory" value="City lights..."
+                                class="col-span-2 rounded border-gray-300">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. LETTER -->
+            <div class="mb-8">
+                <h2 class="section-title">7. The Letter</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Recipient Name</label>
+                        <input type="text" id="recipientName"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="Dearest Love">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Message Body</label>
+                        <textarea id="letterMessage" rows="6"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">I find myself sitting here, trying to put into words everything my heart has been carrying...</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Signature</label>
+                        <input type="text" id="signature" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            value="Your Favorite Person">
+                    </div>
+                </div>
+            </div>
+
+            <div class="sticky bottom-4">
+                <button type="submit"
+                    class="w-full bg-rose-600 text-white font-bold py-4 px-8 rounded-xl shadow-xl hover:bg-rose-700 transition-all transform hover:scale-105">
+                    ✨ GENERATE CODE
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Result Area -->
+        <div id="resultArea" class="hidden mt-8 border-t pt-8">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Has been generated!</h2>
+            <p class="mb-2 text-sm text-gray-600">Copy code below and overwrite content of <code>data.js</code>.</p>
+            <textarea id="outputCode" class="w-full h-96 p-4 font-mono text-sm bg-gray-900 text-green-400 rounded-lg"
+                readonly></textarea>
+            <button onclick="copyCode()" class="mt-4 bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-700">Copy
+                to Clipboard</button>
+        </div>
+
+    </div>
+
+    <script>
+        function generateCode() {
+            // Helpers to get array values
+            const getValues = (cls) => Array.from(document.querySelectorAll('.' + cls)).map(i => i.value);
+
+            // Collect Data
+            const data = {
+                login: {
+                    password: document.getElementById('password').value,
+                    errorMessage: "Incorrect password, try again!",
+                    collectionText: document.getElementById('collectionText').value,
+                    title: "Key to My Heart",
+                    instruction: "Enter the secret password",
+                    placeholder: "*your secret word...*"
+                },
+                countdown: {
+                    targetDate: "2026-02-14T22:00:00+07:00",
+                    finishMessage: "It's Time! ❤️",
+                    finishLabel: "Happy Valentine's Day!"
+                },
+                wrapped: {
+                    topPlacesLabel: "Top Places",
+                    topPlaces: getValues('place-input'),
+                    coreMemoriesLabel: "Core Memories",
+                    coreMemories: getValues('memory-input'),
+                    HoursTogetherLabel: "Minutes Together",
+                    HoursTogether: document.getElementById('minutes').value,
+                    vibeLabel: "Our Vibe",
+                    vibe: document.getElementById('vibe').value,
+                    imageSrc: document.getElementById('wrappedImage').value,
+                    footerLabel: document.getElementById('collectionText').value
+                },
+                greeting: {
+                    title: "Happy Valentine’s Day",
+                    message: "I made this little archive to celebrate us...",
+                    imageSrc: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjCiPAZpKoZUPKq2k9RMl1HDqkC09tPS1hSbQyiLqcDJ5Deo2xRCOMH0-lL_rTLA_BI35XexOZBr_1e8GLZDu44iwCZ934eWq2N3iCjqZHzdaPLhjuXcqunh7oktZclBX3d25pMvwKQtQmCzC0QGvslEa_eVBJoCec5xjNveFEEPJpBgovtRVKa5rwNI0Hm0qqhUD9IIG-APqVy56MT94vC3rkmVxW5i7Dz4hSMJ7Ra7Ecm6Gw91INYcBw_aU3h6YPmnfKxLbnJnjc",
+                    footerText: document.getElementById('collectionText').value
+                },
+                quiz: {
+                    questions: [
+                        { question: document.getElementById('q1_text').value, options: document.getElementById('q1_opts').value.split(',').map(s => s.trim()), correctIndex: parseInt(document.getElementById('q1_correct').value), correctMessage: document.getElementById('q1_msg').value },
+                        { question: document.getElementById('q2_text').value, options: document.getElementById('q2_opts').value.split(',').map(s => s.trim()), correctIndex: parseInt(document.getElementById('q2_correct').value), wrongMessage: document.getElementById('q2_msg').value },
+                        { question: document.getElementById('q3_text').value, options: document.getElementById('q3_opts').value.split(',').map(s => s.trim()), correctIndex: parseInt(document.getElementById('q3_correct').value), correctMessage: document.getElementById('q3_msg').value, wrongMessage: "Good guess, but no!" },
+                        { question: document.getElementById('q4_text').value, options: document.getElementById('q4_opts').value.split(',').map(s => s.trim()), correctIndex: parseInt(document.getElementById('q4_correct').value), correctMessage: document.getElementById('q4_msg').value, wrongMessage: "Trying again? 😉" },
+                        { question: document.getElementById('q5_text').value, options: document.getElementById('q5_opts').value.split(',').map(s => s.trim()), correctIndex: parseInt(document.getElementById('q5_correct').value), correctMessage: document.getElementById('q5_msg').value, wrongMessage: "Nope!" }
+                    ]
+                },
+                music: [
+                    { songTitle: document.getElementById('song1_title').value, artist: document.getElementById('song1_artist').value, audioSrc: "assets/song1.mp3", coverSrc: "assets/cover1.jpg", lyrics: document.getElementById('song1_lyrics').value },
+                    { songTitle: document.getElementById('song2_title').value, artist: document.getElementById('song2_artist').value, audioSrc: "assets/song2.mp3", coverSrc: "assets/cover2.jpg", lyrics: document.getElementById('song2_lyrics').value },
+                    { songTitle: document.getElementById('song3_title').value, artist: document.getElementById('song3_artist').value, audioSrc: "assets/song3.mp3", coverSrc: "https://picsum.photos/400/400?random=3", lyrics: document.getElementById('song3_lyrics').value }
+                ],
+                gallery: {
+                    title: "Our Memory Gallery",
+                    subtitle: "Scratch to reveal a piece of my heart",
+                    memories: [
+                        { type: "video", src: document.getElementById('gal1_src').value, caption: document.getElementById('gal1_cap').value, tape: "washi-tape", rotation: "-rotate-1" },
+                        { type: "image", src: document.getElementById('gal2_src').value, caption: document.getElementById('gal2_cap').value, tape: "washi-tape-gold", rotation: "rotate-2" },
+                        { type: "image", src: document.getElementById('gal3_src').value, caption: document.getElementById('gal3_cap').value, tape: "washi-tape", rotation: "rotate-1" },
+                        { type: "video", src: document.getElementById('gal4_src').value, caption: document.getElementById('gal4_cap').value, tape: "washi-tape-gold", rotation: "-rotate-2" },
+                        { type: "image", src: document.getElementById('gal5_src').value, caption: document.getElementById('gal5_cap').value, tape: "washi-tape", rotation: "rotate-1" },
+                        { type: "image", src: document.getElementById('gal6_src').value, caption: document.getElementById('gal6_cap').value, tape: "washi-tape-gold", rotation: "-rotate-1" }
+                    ]
+                },
+                map: {
+                    locations: [
+                        { coordinates: [parseFloat(document.getElementById('map1_lat').value), parseFloat(document.getElementById('map1_lng').value)], title: document.getElementById('map1_title').value, memory: document.getElementById('map1_mem').value, date: "Jan 2020", imageSrc: "assets/images/photo1.jpg" },
+                        { coordinates: [parseFloat(document.getElementById('map2_lat').value), parseFloat(document.getElementById('map2_lng').value)], title: document.getElementById('map2_title').value, memory: document.getElementById('map2_mem').value, date: "Feb 2020", imageSrc: "" },
+                        { coordinates: [parseFloat(document.getElementById('map3_lat').value), parseFloat(document.getElementById('map3_lng').value)], title: document.getElementById('map3_title').value, memory: document.getElementById('map3_mem').value, date: "March 2020", imageSrc: "" }
+                    ]
+                },
+                letter: {
+                    recipientName: document.getElementById('recipientName').value,
+                    message: document.getElementById('letterMessage').value,
+                    signature: document.getElementById('signature').value
+                },
+                invitation: { title: "Will you be my Valentine?", subtitle: "One Final Question...", yesText: "YES! ", noText: "No" },
+                finale: { title: "Happy Valentine's Day!", message: "Every second with you is a memory I'll cherish forever.", videoSrc: "assets/images/video2.mp4" }
+            };
+
+            const code = "const CONFIG = " + JSON.stringify(data, null, 4) + ";";
+            document.getElementById('outputCode').value = code;
+            document.getElementById('resultArea').classList.remove('hidden');
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function copyCode() {
+            const copyText = document.getElementById("outputCode");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard! Now paste it into data.js");
+        }
+    </script>
+</body>
+
+</html>

@@ -98,6 +98,61 @@
     }
 }
 
+.screen-shake {
+    animation: screen-shake-anim 0.4s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes screen-shake-anim {
+
+    10%,
+    90% {
+        transform: translateX(-2px);
+    }
+
+    20%,
+    80% {
+        transform: translateX(4px);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translateX(-8px);
+    }
+
+    40%,
+    60% {
+        transform: translateX(8px);
+    }
+}
+
+.withered {
+    filter: grayscale(1) opacity(0.5);
+    background: #e5e7eb !important;
+    border-color: #d1d5db !important;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+.heart-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    animation: heart-explode 1.2s ease-out forwards;
+}
+
+@keyframes heart-explode {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0) rotate(var(--tr));
+        opacity: 0;
+    }
+}
+
 /* Page 5: Memory Gallery */
 .polaroid-frame {
     transition: transform 0.3s ease;
@@ -110,6 +165,29 @@
 .polaroid-frame:hover {
     transform: scale(1.02) rotate(0deg) !important;
     z-index: 20;
+}
+
+/* Memory Gallery Glitter */
+.glitter-particle {
+    position: fixed;
+    pointer-events: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    z-index: 100;
+    filter: blur(1px);
+}
+
+@keyframes fall-and-fade {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
 }
 
 .scratch-layer {
@@ -134,6 +212,7 @@
 #map {
     z-index: 1;
 }
+
 
 /* The Coquette Filter for Map Tiles */
 .map-tiles img {
@@ -194,18 +273,205 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-/* Page 2: Relationship Wrapped */
+/* Music Player Visualizer */
+.v-bar {
+    animation: bar-dance 1s ease-in-out infinite alternate;
+    animation-play-state: paused;
+}
+
+.is-playing .v-bar {
+    animation-play-state: running;
+}
+
+@keyframes bar-dance {
+    0% {
+        height: 4px;
+    }
+
+    50% {
+        height: 12px;
+    }
+
+    100% {
+        height: 8px;
+    }
+}
+
+.v-bar:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.v-bar:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.v-bar:nth-child(4) {
+    animation-delay: 0.1s;
+}
+
+.v-bar:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+/* Polaroid Shake Effect */
+.polaroid-shake {
+    animation: polaroid-shake-anim 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes polaroid-shake-anim {
+
+    10%,
+    90% {
+        transform: rotate(1deg) translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: rotate(1deg) translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: rotate(1deg) translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: rotate(1deg) translate3d(4px, 0, 0);
+    }
+}
+
+/* Page 2: Relationship Wrapped - Sophisticated Printer Effect */
+:root {
+    --printer-plastic: #fff5f5;
+    /* Muted rose-tinted cream */
+    --plastic-texture: url(https://www.transparenttextures.com/patterns/white-diamond.png);
+}
+
+.printer-container {
+    perspective: 1000px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 30;
+    margin-bottom: -40px;
+    /* Overlap with the content below */
+}
+
+.printer-body {
+    background-color: var(--printer-plastic);
+    background-image: var(--plastic-texture);
+    box-shadow:
+        inset -2px -2px 5px rgba(0, 0, 0, 0.05),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.9),
+        0 10px 25px rgba(126, 12, 35, 0.1);
+    border-bottom: 4px solid #fecaca;
+    /* rose-200 */
+    position: relative;
+    z-index: 40;
+}
+
+.led-pulse {
+    animation: led-pulse-anim 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes led-pulse-anim {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.led-printing {
+    animation: led-fast-pulse-anim 0.4s ease-in-out infinite;
+    background-color: #22c55e !important;
+    /* Force green when printing */
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+}
+
+@keyframes led-fast-pulse-anim {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+.printer-vibrating {
+    animation: printer-shake 0.1s ease-in-out infinite;
+}
+
+@keyframes printer-shake {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0);
+    }
+
+    25% {
+        transform: translate(0.5px, 0.5px) rotate(0.1deg);
+    }
+
+    75% {
+        transform: translate(-0.5px, -0.5px) rotate(-0.1deg);
+    }
+}
+
+.printer-slot-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+    margin-top: -10px;
+    /* Slight tuck under printer body */
+}
+
 .story-card {
     background-color: #fffdf5;
-    /* aspect-ratio: 9 / 16; Removed to prevent cropping when content is large or width is small */
     min-height: 650px;
-    /* Ensure tall "story" feel */
     width: 100%;
     max-width: 380px;
-    box-shadow: 0 25px 50px -12px rgba(159, 18, 57, 0.15);
     border: 1px solid #9f1239;
     position: relative;
     overflow: hidden;
+    transform: translateY(-100%);
+    /* Start hidden inside/behind printer */
+    transition: transform 6s linear;
+    /* Even slower and constant speed for mechanical feel */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.is-printing .story-card {
+    transform: translateY(0);
+}
+
+/* Jagged Edge for Receipt */
+.story-card::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: linear-gradient(-45deg, #fffdf5 5px, transparent 0),
+        linear-gradient(45deg, #fffdf5 5px, transparent 0);
+    background-size: 10px 10px;
+    z-index: 10;
 }
 
 .swirl-bg {
@@ -427,7 +693,8 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     white-space: nowrap;
-    color: #9f1239; /* rose-800 */
+    color: #9f1239;
+    /* rose-800 */
     font-family: 'Inter', sans-serif;
     font-weight: 500;
     font-size: 0.8rem;
@@ -452,8 +719,10 @@
 }
 
 .nav-camera-btn {
-    background: rgba(255, 241, 242, 0.6); /* rose-50/60 */
-    border: 1px solid rgba(253, 164, 175, 0.6); /* rose-300/60 */
+    background: rgba(255, 241, 242, 0.6);
+    /* rose-50/60 */
+    border: 1px solid rgba(253, 164, 175, 0.6);
+    /* rose-300/60 */
     padding: 0.6rem;
     border-radius: 9999px;
     backdrop-filter: blur(8px);
@@ -474,4 +743,45 @@
 .nav-camera-btn:hover {
     background: rgba(254, 226, 226, 0.8);
     transform: scale(1.1);
+}
+
+/* 3D Page Flip Transitions */
+.page {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+.page-flip-exit {
+    animation: flipExit 2.5s cubic-bezier(0.455, 0.03, 0.515, 0.95) forwards;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.page-flip-enter {
+    animation: flipEnter 2.5s cubic-bezier(0.455, 0.03, 0.515, 0.95) forwards;
+    z-index: 10;
+}
+
+@keyframes flipExit {
+    0% {
+        transform: perspective(1500px) rotateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: perspective(1500px) rotateY(-90deg);
+        opacity: 0;
+    }
+}
+
+@keyframes flipEnter {
+    0% {
+        transform: perspective(1500px) rotateY(90deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: perspective(1500px) rotateY(0);
+        opacity: 1;
+    }
 }
