@@ -23,7 +23,34 @@ function captureElement(selector, filename) {
             allowTaint: true,
             scrollY: -window.scrollY, // Correct for page scroll
             windowWidth: document.documentElement.offsetWidth,
-            windowHeight: element.scrollHeight || document.documentElement.offsetHeight
+            windowHeight: element.scrollHeight || document.documentElement.offsetHeight,
+            onclone: (clonedDoc) => {
+                // Ensure the cloned elements have the right visual state for capture
+                const clonedDate = clonedDoc.getElementById('lock-date');
+                if (clonedDate) {
+                    clonedDate.style.opacity = '1';
+                    clonedDate.style.visibility = 'visible';
+                    clonedDate.style.color = '#7e0c23'; // Darker for better contrast in screenshot
+                }
+
+                const clonedFinalMsg = clonedDoc.getElementById('lock-final-message-container');
+                if (clonedFinalMsg) {
+                    clonedFinalMsg.style.opacity = '1';
+                    clonedFinalMsg.style.visibility = 'visible';
+                }
+
+                const clonedPadlock = clonedDoc.querySelector('.padlock-body');
+                if (clonedPadlock) {
+                    // Force the background color for better rendering in case gradient fails
+                    clonedPadlock.style.backgroundColor = '#e5b4a2';
+                }
+
+                // Hide cinematic bars during screenshot if they are active
+                const topBar = clonedDoc.getElementById('cinematic-top-bar');
+                const bottomBar = clonedDoc.getElementById('cinematic-bottom-bar');
+                if (topBar) topBar.style.display = 'none';
+                if (bottomBar) bottomBar.style.display = 'none';
+            }
         }).then(canvas => {
             // Show buttons again
             buttons.forEach(btn => btn.style.display = '');
@@ -77,4 +104,9 @@ function captureGallery() {
 function captureLetter() {
     // Page 8 - Capture full container
     captureElement('#page-8-container', 'heartfelt-letter.png');
+}
+
+function captureLockPage() {
+    // Page 9 - Capture full container
+    captureElement('#page-9 main', 'our-love-locked.png');
 }

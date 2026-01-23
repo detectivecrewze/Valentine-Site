@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine Login - Key to My Heart</title>
 
+    <!-- SEO & Social Media Preview -->
+    <meta name="description" content="A collection of our best moments.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Valentine Login - Key to My Heart">
+    <meta property="og:description" content="A collection of our best moments.">
+    <meta property="og:image" content="https://lh3.googleusercontent.com/...">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Valentine Login - Key to My Heart">
+    <meta name="twitter:description" content="A collection of our best moments.">
+    <meta name="twitter:image" content="https://lh3.googleusercontent.com/...">
+
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
@@ -41,8 +52,8 @@
                         "background-dark": "#211114",
                     },
                     fontFamily: {
-                        "display": ["Playfair Display", "serif"],
-                        "sans": ["Inter", "sans-serif"],
+                        "display": ["var(--font-display)", "Playfair Display", "serif"],
+                        "sans": ["var(--font-sans)", "Inter", "sans-serif"],
                         "dancing": ["Dancing Script", "cursive"],
                         "cursive": ["Mrs Saint Delafield", "cursive"],
                         "nunito": ["Nunito", "sans-serif"]
@@ -69,6 +80,7 @@
 
 <body class="font-display overflow-hidden h-screen w-screen selection:bg-rosegold/30" oncontextmenu="return false">
     <div class="grain-overlay"></div>
+    <div id="particle-container"></div>
 
     <!-- Global Music Helper -->
     <div class="fixed top-4 right-4 z-50">
@@ -246,7 +258,7 @@
                                 <div
                                     class="w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-white/80 overflow-hidden aesthetic-image-shadow transition-transform duration-700 hover:scale-105">
                                     <img id="p3-image" alt="Pink roses aesthetic" class="w-full h-full object-cover"
-                                        src="" />
+                                        src="" referrerpolicy="no-referrer" />
                                 </div>
                             </div>
                         </div>
@@ -306,7 +318,7 @@
                             class="relative aspect-square w-full overflow-hidden bg-rose-50 rounded-md shadow-inner mb-5 group">
                             <img id="music-cover" alt="Album Art"
                                 class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                src="" />
+                                src="" referrerpolicy="no-referrer" />
 
                             <!-- Vinyl Record Shine Effect -->
                             <div
@@ -470,8 +482,8 @@
                         <div class="swirl-bg"></div>
                         <div class="relative z-10 pt-6">
                             <div class="photo-frame bg-white p-3 aspect-square w-full overflow-hidden shadow-sm">
-                                <div id="wrapped-image"
-                                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-sm"></div>
+                                <img id="wrapped-image" src="" alt="Wrapped Memory"
+                                    class="w-full h-full object-cover rounded-sm" referrerpolicy="no-referrer" />
                             </div>
                         </div>
                         <div class="relative z-10 mt-4 grid grid-cols-2 gap-6">
@@ -512,14 +524,6 @@
                                         class="font-display italic text-lg text-deep-red font-bold mt-1"></span>
                                 </div>
 
-                            </div>
-                            <div class="mt-5 flex justify-center">
-                                <div class="flex items-center gap-1 opacity-40">
-                                    <span class="material-symbols-outlined text-deep-red text-xs">favorite</span>
-                                    <span id="wrapped-footer-label"
-                                        class="text-[8px] font-bold uppercase tracking-[0.3em] text-deep-red">Wrapped
-                                        2024</span>
-                                </div>
                             </div>
                         </div>
                     </article>
@@ -763,10 +767,6 @@
                 </div>
             </div>
 
-            <div
-                class="absolute bottom-10 left-1/2 -translate-x-1/2 z-[1000] opacity-40 pointer-events-none hidden md:block">
-                <span class="material-symbols-outlined text-rose-300 text-5xl">explore</span>
-            </div>
         </main>
     </section>
     <!-- Page 8: Heartfelt Letter -->
@@ -836,7 +836,6 @@
                 </div>
         </div>
         </main>
-        </div>
 
         <!-- Navigation Buttons (Stay fixed at bottom) -->
         <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
@@ -849,19 +848,129 @@
                     </button>
                 </div>
 
-                <!-- Restart Button (Center) -->
+                <!-- Restart Button Removed per user request -->
                 <div class="flex justify-center">
-                    <button onclick="location.reload()" class="nav-btn-standard">
-                        <span>Restart</span>
-                        <span class="material-symbols-outlined text-lg">restart_alt</span>
-                    </button>
                 </div>
 
+                <!-- Finale Button Container (Initially Hidden) -->
                 <div class="flex justify-end invisible">
                     <button class="nav-btn-standard">
                         <span>Next</span>
                         <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                     </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 9: Love-Lock Finale -->
+    <section id="page-9" class="page hidden fixed inset-0 z-20 w-full h-full text-left">
+        <div class="grain-overlay"></div>
+        <main class="min-h-screen w-full dreamy-pink-gradient flex flex-col items-center justify-center p-6 relative">
+            <!-- Background Shimmer Particles -->
+            <div class="absolute inset-0 pointer-events-none">
+                <div class="shimmer-particle absolute w-2 h-2 rounded-full top-[10%] left-[20%] opacity-40"></div>
+                <div class="shimmer-particle absolute w-3 h-3 rounded-full top-[30%] right-[15%] opacity-30"></div>
+                <div class="shimmer-particle absolute w-1.5 h-1.5 rounded-full bottom-[20%] left-[10%] opacity-50">
+                </div>
+                <div class="shimmer-particle absolute w-4 h-4 rounded-full bottom-[40%] right-[25%] opacity-20">
+                </div>
+                <div class="shimmer-particle absolute w-2 h-2 rounded-full top-[60%] left-[40%] opacity-40"></div>
+            </div>
+
+            <div class="relative z-10 flex flex-col items-center">
+                <!-- Padlock Container -->
+                <div id="padlock-container" onclick="lockTheHeart()"
+                    class="relative w-64 h-80 mb-16 flex flex-col items-center cursor-pointer group transition-transform duration-700 hover:scale-105 lock-float">
+
+                    <!-- Floating Key (Vanishes on lock) -->
+                    <div id="padlock-key" class="absolute -right-8 top-16 z-20 transition-all duration-1000 opacity-60">
+                        <span class="material-symbols-outlined text-4xl text-rose-gold rotate-45">key</span>
+                    </div>
+
+                    <!-- Shackle (Pengait) -->
+                    <div id="padlock-shackle"
+                        class="relative w-32 h-40 -mb-10 transition-transform duration-700 translate-y-4 -translate-x-4 -rotate-12 group-active:translate-y-6">
+                        <div class="padlock-shackle w-full h-full"></div>
+                    </div>
+                    <!-- Padlock Body -->
+                    <div
+                        class="padlock-body relative w-56 h-48 rounded-[40%] flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 bg-rose-gold opacity-10"></div>
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span id="lock-initials"
+                                class="engraving font-display text-4xl font-bold tracking-tighter opacity-70">
+                                A + B
+                            </span>
+                            <div class="w-12 h-1 bg-black/5 mt-2 rounded-full"></div>
+                        </div>
+                        <div class="absolute bottom-8 w-4 h-8 bg-black/10 rounded-full blur-[1px]"></div>
+                    </div>
+                    <!-- Shadow -->
+                    <div class="absolute -bottom-8 w-48 h-8 bg-rose-300/20 blur-2xl rounded-full"></div>
+                </div>
+
+                <!-- Text & Messages -->
+                <div class="text-center space-y-6">
+                    <p id="lock-instruction"
+                        class="font-sans text-rose-900/60 uppercase tracking-[0.3em] text-xs sm:text-sm font-light">
+                        Click to lock our love forever...
+                    </p>
+                    <div id="lock-final-message-container"
+                        class="opacity-0 pointer-events-none transition-all duration-1000">
+                        <h2 id="lock-final-message" class="font-display italic text-2xl md:text-3xl text-rose-900">
+                            Safely locked in my heart. Always.
+                        </h2>
+                        <!-- Locked Date Certificate -->
+                        <p id="lock-date"
+                            class="mt-4 font-serif italic text-rose-900/40 text-sm tracking-widest opacity-0 transition-opacity duration-1000 delay-500">
+                            Locked on February 14, 2024
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page-Specific Decorations -->
+            <div class="lock-decoration absolute top-10 right-10 opacity-20 transition-opacity duration-1000">
+                <span class="material-symbols-outlined text-rose-400 text-5xl font-light">auto_awesome</span>
+            </div>
+            <div class="lock-decoration absolute bottom-10 left-10 opacity-20 transition-opacity duration-1000">
+                <span class="material-symbols-outlined text-rose-400 text-4xl font-light">favorite</span>
+            </div>
+
+            <!-- Cinematic Overlays -->
+            <div id="cinematic-top-bar"
+                class="fixed top-0 left-0 w-full h-0 bg-black z-[100] transition-all duration-[2s] ease-in-out"></div>
+            <div id="cinematic-bottom-bar"
+                class="fixed bottom-0 left-0 w-full h-0 bg-black z-[100] transition-all duration-[2s] ease-in-out">
+            </div>
+            <div id="final-cinematic-fade"
+                class="fixed inset-0 bg-black z-[110] opacity-0 pointer-events-none transition-opacity duration-[3s]">
+            </div>
+            <div id="cinematic-vignette"
+                class="fixed inset-0 z-[105] opacity-0 pointer-events-none transition-opacity duration-[3s]"
+                style="background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%);">
+            </div>
+        </main>
+
+        <!-- Navigation Buttons -->
+        <div id="page-9-nav"
+            class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8 transition-all duration-1000">
+            <div class="nav-bottom-grid max-w-6xl mx-auto">
+                <div class="flex justify-start">
+                    <button onclick="MapsTo('page-9', 'page-8')" class="nav-btn-standard">
+                        <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                        <span>Back</span>
+                    </button>
+                </div>
+                <div class="flex justify-center">
+                    <button id="lock-screenshot-btn" onclick="captureLockPage()"
+                        class="nav-camera-btn hidden transition-all duration-500">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                    </button>
+                </div>
+                <div class="flex justify-end pr-4">
+                    <!-- Restart button removed for auto-restart experience -->
                 </div>
             </div>
         </div>

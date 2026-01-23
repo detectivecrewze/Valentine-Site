@@ -4,28 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Admin Valentine</title>
+    <title>Sistem Admin Valentine v2</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital@0;1&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: { extend: { colors: { rose: { 50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#881337' } } } }
+            theme: {
+                extend: {
+                    colors: {
+                        rose: { 50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#881337' },
+                        cream: '#F5E6D3'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif']
+                    }
+                }
+            }
         }
     </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background: #f8fafc;
+            color: #334155;
         }
 
         .page-card {
             background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
             border: 1px solid #e2e8f0;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .page-card::before {
@@ -33,14 +49,16 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 6px;
+            width: 8px;
             height: 100%;
             background: #cbd5e1;
+            transition: background 0.3s ease;
         }
 
         .page-card:hover {
             border-color: #fda4af;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
         }
 
         .page-card:hover::before {
@@ -50,344 +68,809 @@
         .section-header {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            color: #334155;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .section-icon {
-            background: #f1f5f9;
-            padding: 0.5rem;
-            border-radius: 9999px;
-            color: #64748b;
+            background: #fff1f2;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            color: #e11d48;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .page-badge {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 1.5rem;
+            right: 1.5rem;
             background: #f1f5f9;
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 1rem;
             border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 800;
             color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .dynamic-item {
             position: relative;
             background: #f8fafc;
-            border: 1px dashed #cbd5e1;
-            padding: 1rem;
-            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            padding: 1.25rem;
+            border-radius: 1rem;
             margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .dynamic-item:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
         }
 
         .remove-btn {
             position: absolute;
             top: -0.5rem;
             right: -0.5rem;
-            background: #ef4444;
+            background: #be123c;
             color: white;
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.75rem;
+            height: 1.75rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.1);
+            background: #9f1239;
+        }
+
+        .form-input {
+            width: 100%;
+            border-radius: 0.75rem;
+            border-color: #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #f43f5e;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(254, 205, 211, 0.5);
+        }
+
+        .btn-add {
+            margin-top: 1rem;
+            width: 100%;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-width: 2px;
+            border-style: dashed;
+            border-color: #e2e8f0;
+            border-radius: 0.75rem;
+            color: #9ca3af;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add:hover {
+            border-color: #fda4af;
+            color: #f43f5e;
+            background-color: #fff1f2;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        #outputCode {
+            scrollbar-width: thin;
+            scrollbar-color: #4b5563 #111827;
         }
     </style>
 </head>
 
-<body class="p-4 md:p-8 max-w-6xl mx-auto">
+<body class="pb-24">
 
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800">Valentine Configurator</h1>
-            <p class="text-gray-500">Buat file `data.js` tanpa menyentuh kodingan.</p>
+    <!-- Header Area -->
+    <header class="glass-header sticky top-0 z-40 mb-12">
+        <div class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-display italic font-bold text-gray-900 leading-none">Valentine Configurator
+                </h1>
+                <p class="text-sm text-gray-500 mt-1 font-sans">Level up your gift: Create `data.js` with style.</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="generateCode()"
+                    class="bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-rose-700 flex items-center gap-2 shadow-xl shadow-rose-200 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <span class="material-symbols-outlined">code</span> GENERATE CONFIG
+                </button>
+            </div>
         </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6">
+        <form id="configForm" onsubmit="return false;">
+
+            <!-- 0. THEME SETTINGS -->
+            <div class="page-card bg-gradient-to-br from-indigo-50/50 to-rose-50/50 border-2 border-indigo-100">
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon !bg-indigo-100 !text-indigo-600">palette</span>
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold text-gray-800">Theme Aesthetics</h2>
+                        <p class="text-xs text-indigo-500 font-bold uppercase tracking-widest mt-0.5">Preset & Custom
+                            Styling</p>
+                    </div>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="mb-8 p-4 bg-white/50 rounded-2xl border border-indigo-100">
+                    <label class="block text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Quick Presets
+                        (SaaS Ready)</label>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="applyThemePreset('vintage')"
+                            class="flex-1 min-w-[140px] px-4 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-900 font-bold hover:bg-amber-100 transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">history_edu</span> Vintage
+                        </button>
+                        <button onclick="applyThemePreset('midnight')"
+                            class="flex-1 min-w-[140px] px-4 py-3 rounded-xl border-2 border-slate-700 bg-slate-900 text-slate-100 font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">dark_mode</span> Midnight
+                        </button>
+                        <button onclick="applyThemePreset('cute')"
+                            class="flex-1 min-w-[140px] px-4 py-3 rounded-xl border-2 border-rose-200 bg-rose-50 text-rose-700 font-bold hover:bg-rose-100 transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">favorite</span> Cute
+                        </button>
+                        <button onclick="applyThemePreset('modern')"
+                            class="flex-1 min-w-[140px] px-4 py-3 rounded-xl border-2 border-blue-100 bg-white text-blue-900 font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">auto_awesome</span> Modern
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Custom Background Image</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="theme_bg" class="form-input"
+                                placeholder="assets/bg.png or Leave empty for default craft paper" value="">
+                            <label
+                                class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-gray-500">upload_file</span>
+                                <input type="file" class="hidden" accept="image/*"
+                                    onchange="uploadImage(this, 'theme_bg')">
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Fallback Background Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="theme_color_picker" class="w-12 h-11 rounded-lg border-gray-200"
+                                value="#F5E6D3" oninput="document.getElementById('theme_color').value = this.value">
+                            <input type="text" id="theme_color" class="form-input" value="#F5E6D3">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Primary Font (Main Titles)</label>
+                        <select id="theme_font_display" class="form-input">
+                            <option value="Playfair Display, serif">Playfair Display (Vintage)</option>
+                            <option value="Inter, sans-serif">Inter (Modern)</option>
+                            <option value="Dancing Script, cursive">Dancing Script (Elegant)</option>
+                            <option value="Pacifico, cursive">Pacifico (Playful)</option>
+                            <option value="Montserrat, sans-serif">Montserrat (Clean)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Secondary Font (Body Text)</label>
+                        <select id="theme_font_sans" class="form-input">
+                            <option value="Inter, sans-serif">Inter (Standard)</option>
+                            <option value="Roboto, sans-serif">Roboto (Clean)</option>
+                            <option value="Courier New, monospace">Courier New (Old School)</option>
+                            <option value="Lora, serif">Lora (Classic)</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Atmospheric Particle Effect</label>
+                        <select id="theme_particles" class="form-input">
+                            <option value="none">None (Clean)</option>
+                            <option value="hearts">Hearts & Petals (Romantic / Cute)</option>
+                            <option value="stars">Twinkling Stars (Midnight / Magic)</option>
+                            <option value="dust">Vintage Dust (Nostalgic / Paper)</option>
+                            <option value="bubbles">Floating Bubbles (Modern / Dreamy)</option>
+                        </select>
+                        <p class="text-[10px] text-gray-400 mt-2 italic">Note: Keep it subtle. These float gently in the
+                            background.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 0.1 SEO & SOCIAL PREVIEW -->
+            <div class="page-card border-2 border-emerald-100 bg-emerald-50/20">
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon !bg-emerald-100 !text-emerald-600">public</span>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold text-gray-800">SEO & Social Preview</h2>
+                        <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-0.5">WhatsApp / IG
+                            / Share Preview</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Site Title (Meta Title)</label>
+                        <input type="text" id="seo_title" class="form-input" value="Valentine Login - Key to My Heart"
+                            placeholder="e.g. A Special Surprise for [Name]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Site Description (Meta Desc)</label>
+                        <input type="text" id="seo_desc" class="form-input" value="A collection of our best moments."
+                            placeholder="e.g. Open this only if you love me!">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-gray-600 mb-2">Social Share Image (OG Image)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="seo_image" class="form-input"
+                                placeholder="URL to your sharing thumbnail"
+                                value="https://lh3.googleusercontent.com/...">
+                            <label
+                                class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-gray-500">upload_file</span>
+                                <input type="file" class="hidden" accept="image/*"
+                                    onchange="uploadImage(this, 'seo_image')">
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-2 italic">Recommendation: Use a 1200x630px image for best
+                            results on IG/WA.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. LOGIN & COUNTDOWN -->
+            <div class="page-card">
+                <span class="page-badge">PAGE 1</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon">lock_person</span>
+                    <h2 class="text-xl font-bold">Entry & Countdown</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Secret Password</label>
+                        <input type="text" id="password" class="form-input" value="cintaislam1234512345">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Collection
+                            Subtitle</label>
+                        <input type="text" id="collectionText" class="form-input" value="For you, Always">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Main Title</label>
+                        <input type="text" id="p1_title" class="form-input" value="Key to My Heart">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Instruction Hint</label>
+                        <input type="text" id="p1_instr" class="form-input" value="Enter the secret password">
+                    </div>
+                    <div
+                        class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                        <div>
+                            <label class="block text-sm font-bold text-rose-800 mb-1">Target Date (Count to...)</label>
+                            <input type="datetime-local" id="count_date" class="form-input border-rose-200"
+                                value="2026-02-14T22:00">
+                            <p class="text-[10px] text-rose-400 mt-1">Automatically converted to ISO format.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-rose-800 mb-1">Finish Message</label>
+                            <input type="text" id="count_finish" class="form-input border-rose-200"
+                                value="It's Time! ❤️">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. GREETING CARD -->
+            <div class="page-card">
+                <span class="page-badge">PAGE 2</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon text-pink-500">favorite</span>
+                    <h2 class="text-xl font-bold font-display italic">Greeting Card</h2>
+                </div>
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-gray-600 mb-1">Card Hero Title</label>
+                            <input type="text" id="greet_title" class="form-input" value="Happy Valentine’s Day">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-gray-600 mb-1">Personal Message</label>
+                            <textarea id="greet_msg" class="form-input"
+                                rows="3">I made this little archive to celebrate us. A collection of moments, secrets, and reasons why I love you.</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-600 mb-1">Hero Image</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="greet_img" class="form-input"
+                                    value="https://lh3.googleusercontent.com/...">
+                                <label
+                                    class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
+                                    <span class="material-symbols-outlined text-gray-400">add_photo_alternate</span>
+                                    <input type="file" class="hidden" accept="image/*"
+                                        onchange="uploadImage(this, 'greet_img')">
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-600 mb-1">Footer Tagline</label>
+                            <input type="text" id="greet_footer" class="form-input" value="For you, Always">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. MUSIC PLAYER -->
+            <div class="page-card">
+                <span class="page-badge">PAGE 3</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon text-indigo-500">music_note</span>
+                    <h2 class="text-xl font-bold">Playlist Strategy</h2>
+                </div>
+                <p class="text-sm text-gray-500 mb-4">Add your favorite tracks that define your journey.</p>
+                <div id="musicList" class="space-y-4">
+                    <!-- Music items injected here -->
+                </div>
+                <button onclick="addMusicItem()" class="btn-add">
+                    <span class="material-symbols-outlined">add_circle</span> Add Track
+                </button>
+            </div>
+
+            <!-- 4. RELATIONSHIP WRAPPED (LIFE PAGES) -->
+            <div class="page-card border-2 border-rose-200 bg-rose-50/20">
+                <span class="page-badge">PAGE 4</span>
+                <div class="section-header">
+                    <span
+                        class="material-symbols-outlined section-icon !bg-rose-500 !text-white shadow-lg shadow-rose-200">print</span>
+                    <h2 class="text-xl font-bold">Relationship Wrapped <span
+                            class="text-rose-400 font-normal ml-1">(Life Pages)</span></h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Side: Labels and Vibe -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm">
+                            <h3 class="font-bold text-rose-800 mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">label</span> Identity & Titles
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100">
+                                    <label
+                                        class="block text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-2">Vibe
+                                        Section</label>
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-[9px] text-gray-400 mb-1">Label (e.g. Our Vibe)</span>
+                                            <input type="text" id="lbl_vibe" class="form-input text-sm"
+                                                value="Our Vibe">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[9px] text-gray-400 mb-1">Status (e.g. Bonnie &
+                                                Clyde)</span>
+                                            <input type="text" id="val_vibe" class="form-input text-sm font-bold"
+                                                value="Bonnie & Clyde">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100">
+                                    <label
+                                        class="block text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-2">Time
+                                        Counter Section</label>
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-[9px] text-gray-400 mb-1">Label (e.g. Minutes
+                                                Together)</span>
+                                            <input type="text" id="lbl_time" class="form-input text-sm"
+                                                value="Minutes Together">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[9px] text-gray-400 mb-1">Value (e.g. 525,600)</span>
+                                            <input type="text" id="val_time" class="form-input text-sm font-bold"
+                                                value="525,600">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm">
+                            <h3 class="font-bold text-rose-800 mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">image</span> Featured Display
+                            </h3>
+                            <div class="flex flex-col gap-2">
+                                <span class="text-[9px] text-gray-400">Main Wrapped Image URL</span>
+                                <div class="flex gap-2">
+                                    <input type="text" id="wrap_img" class="form-input"
+                                        value="assets/images/photo2.jpg">
+                                    <label
+                                        class="cursor-pointer bg-cream/30 border border-gray-200 rounded-xl px-4 flex items-center hover:bg-cream/50 transition-colors">
+                                        <span class="material-symbols-outlined text-rose-700">photo_library</span>
+                                        <input type="file" class="hidden" accept="image/*"
+                                            onchange="uploadImage(this, 'wrap_img')">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Dynamic Lists -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm">
+                            <div class="flex flex-col gap-3 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="font-bold text-rose-800 flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-sm">location_on</span> Top Places
+                                    </h3>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[9px] text-gray-400 mb-1">Section Title</span>
+                                    <input type="text" id="lbl_place"
+                                        class="form-input !py-1 text-xs font-bold text-rose-500" value="Top Places">
+                                </div>
+                            </div>
+                            <div id="wrappedPlacesList" class="space-y-2">
+                                <!-- Dynamic place items -->
+                            </div>
+                            <button onclick="addWrappedPlace()"
+                                class="btn-add !mt-4 !py-2 !text-xs !border-rose-200 !text-rose-400 hover:!border-rose-400 hover:!text-rose-600">
+                                <span class="material-symbols-outlined text-sm">add</span> Add New Place
+                            </button>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm">
+                            <div class="flex flex-col gap-3 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="font-bold text-rose-800 flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-sm">history_edu</span> Core Memories
+                                    </h3>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[9px] text-gray-400 mb-1">Section Title</span>
+                                    <input type="text" id="lbl_mem"
+                                        class="form-input !py-1 text-xs font-bold text-rose-500" value="Core Memories">
+                                </div>
+                            </div>
+                            <div id="wrappedMemoriesList" class="space-y-2">
+                                <!-- Dynamic memory items -->
+                            </div>
+                            <button onclick="addWrappedMemory()"
+                                class="btn-add !mt-4 !py-2 !text-xs !border-rose-200 !text-rose-400 hover:!border-rose-400 hover:!text-rose-600">
+                                <span class="material-symbols-outlined text-sm">add</span> Add New Memory
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TRIVIA QUIZ -->
+            <div class="page-card">
+                <span class="page-badge">PAGE 5</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon !bg-amber-100 !text-amber-600">psychology</span>
+                    <h2 class="text-xl font-bold">Personalized Trivia</h2>
+                </div>
+                <div id="quizList" class="space-y-6">
+                    <!-- Quiz cards injected -->
+                </div>
+                <button onclick="addQuizQuestion()"
+                    class="btn-add hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50">
+                    <span class="material-symbols-outlined">quiz</span> Create New Question
+                </button>
+            </div>
+
+            <!-- 6. MEMORY GALLERY -->
+            <div class="page-card">
+                <span class="page-badge">PAGE 6</span>
+                <div class="section-header">
+                    <span
+                        class="material-symbols-outlined section-icon !bg-emerald-100 !text-emerald-600">auto_stories</span>
+                    <h2 class="text-xl font-bold">Scratch Gallery</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-1">Gallery Header</label>
+                        <input type="text" id="gal_title" class="form-input" value="Our Memory Gallery">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-1">Gallery Hint</label>
+                        <input type="text" id="gal_sub" class="form-input"
+                            value="Scratch to reveal a piece of my heart">
+                    </div>
+                </div>
+                <div id="galleryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Gallery cards -->
+                </div>
+                <button onclick="addGalleryItem()"
+                    class="btn-add hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50">
+                    <span class="material-symbols-outlined">add_photo_alternate</span> Append to Moments
+                </button>
+            </div>
+
+            <!-- 7. ATLAS OF US (MAP) -->
+            <div class="page-card">
+                <span class="page-badge">PAGE 7</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon !bg-sky-100 !text-sky-600">map</span>
+                    <h2 class="text-xl font-bold">Interactive Atlas</h2>
+                </div>
+                <div id="mapList" class="space-y-6">
+                    <!-- Map items -->
+                </div>
+                <button onclick="addMapLocation()"
+                    class="btn-add hover:border-sky-400 hover:text-sky-600 hover:bg-sky-50">
+                    <span class="material-symbols-outlined">push_pin</span> Mark a Location
+                </button>
+            </div>
+
+            <!-- 8. HEARTFELT LETTER -->
+            <div class="page-card bg-amber-50/10">
+                <span class="page-badge">PAGE 8</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon !bg-amber-100 !text-amber-700">mail</span>
+                    <h2 class="text-xl font-bold font-display italic">Digital Parchment</h2>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Name</label>
+                        <input type="text" id="let_rec" class="form-input" value="Dearest Love">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">The Letter Content</label>
+                        <textarea id="let_msg" class="form-input font-serif italic text-lg leading-relaxed"
+                            rows="8">I find myself sitting here...</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Your Signature</label>
+                        <input type="text" id="let_sig" class="form-input" value="Your Favorite Person">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. LOVE-LOCK FINALE -->
+            <div class="page-card border-l-4 border-rose-500 bg-rose-50/10">
+                <span class="page-badge !bg-rose-500">PAGE 9</span>
+                <div class="section-header">
+                    <span class="material-symbols-outlined section-icon !bg-rose-100 !text-rose-600">lock_open</span>
+                    <h2 class="text-xl font-bold">The Love-Lock Finale</h2>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Padlock Initials (Engraving)</label>
+                        <input type="text" id="lock_init" class="form-input" value="A + B" placeholder="e.g. A + B">
+                        <p class="text-[10px] text-gray-400 mt-1 italic">Short initials look best on the gembok.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Lock Instruction Text</label>
+                        <input type="text" id="lock_instr" class="form-input" value="Click to lock our love forever...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Final Emotional Message</label>
+                        <textarea id="lock_msg" class="form-input"
+                            rows="3">Safely locked in my heart. Always.</textarea>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+        </form>
+    </main>
+
+    <!-- Result / Footer Area -->
+    <footer class="fixed bottom-0 left-0 w-full p-4 glass-header flex justify-center items-center z-50">
         <button onclick="generateCode()"
-            class="bg-rose-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-rose-700 flex items-center gap-2 shadow-lg hover:scale-105 transition-transform">
-            <span class="material-symbols-outlined">code</span> GENERATE CODE
+            class="bg-gray-900 text-white px-12 py-4 rounded-2xl font-bold hover:bg-black flex items-center gap-3 shadow-2xl hover:scale-[1.05] transition-all">
+            <span class="material-symbols-outlined fill-1 text-rose-500">sparkles</span> GENERATE YOUR GIFT DATA
         </button>
-    </div>
+    </footer>
 
-    <form id="configForm" onsubmit="return false;">
-
-        <!-- 0. THEME SETTINGS -->
-        <div class="page-card bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
-            <div class="flex items-center gap-2 mb-4">
-                <span class="material-symbols-outlined text-purple-600 text-3xl">palette</span>
-                <h2 class="text-2xl font-bold text-purple-800">Theme Settings</h2>
-            </div>
-            <div class="grid grid-cols-1 gap-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Background Image</label>
-                    <p class="text-xs text-gray-500 mb-2">Leave empty to use default paper texture</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="theme_bg" class="w-full rounded-lg border-gray-300"
-                            placeholder="assets/backgrounds/custom.png or leave empty for default" value="">
-                        <label
-                            class="cursor-pointer bg-purple-100 border border-purple-300 rounded-lg px-3 flex items-center hover:bg-purple-200">
-                            <span class="material-symbols-outlined text-purple-600">upload_file</span>
-                            <input type="file" class="hidden" accept="image/*" onchange="uploadImage(this, 'theme_bg')">
-                        </label>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Background Color (Fallback)</label>
-                    <input type="text" id="theme_color" class="w-full rounded-lg border-gray-300" placeholder="#F5E6D3"
-                        value="#F5E6D3">
-                </div>
-            </div>
-        </div>
-
-        <!-- 1. LOGIN & BASIC -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 1</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">lock</span>
-                <h2 class="text-xl font-bold">Login & Countdown</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Secret Password</label>
-                    <input type="text" id="password" class="w-full rounded-lg border-gray-300 focus:ring-rose-500"
-                        value="cintaislam1234512345">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Collection Name (Subtitle)</label>
-                    <input type="text" id="collectionText" class="w-full rounded-lg border-gray-300 focus:ring-rose-500"
-                        value="For you, Always">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Main Title</label>
-                    <input type="text" id="p1_title" class="w-full rounded-lg border-gray-300 focus:ring-rose-500"
-                        value="Key to My Heart">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Instruction Text</label>
-                    <input type="text" id="p1_instr" class="w-full rounded-lg border-gray-300 focus:ring-rose-500"
-                        value="Enter the secret password">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Input Placeholder</label>
-                    <input type="text" id="p1_place" class="w-full rounded-lg border-gray-300 focus:ring-rose-500"
-                        value="*your secret word...*">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Countdown Date (ISO Format)</label>
-                    <input type="text" id="count_date" class="w-full rounded-lg border-gray-300 focus:ring-rose-500"
-                        value="2026-02-14T22:00:00+07:00">
-                    <p class="text-xs text-gray-400 mt-1">Format: YYYY-MM-DDTHH:mm:ss+OFFSET</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. WRAPPED -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 2</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">bar_chart</span>
-                <h2 class="text-xl font-bold">Relationship Wrapped</h2>
-            </div>
-            <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Top Places Label</label>
-                        <input type="text" id="lbl_place" class="w-full rounded-lg border-gray-300" value="Top Places">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Top 3 Places (Comma
-                            Separated)</label>
-                        <input type="text" id="val_place" class="w-full rounded-lg border-gray-300"
-                            value="The Sunset Pier, Corner Bakery, Botanical Garden">
-                    </div>
-                </div>
-                <!-- ... similar structure for Memories ... -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Core Memories Label</label>
-                        <input type="text" id="lbl_mem" class="w-full rounded-lg border-gray-300" value="Core Memories">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Top 3 Memories (Comma
-                            Separated)</label>
-                        <input type="text" id="val_mem" class="w-full rounded-lg border-gray-300"
-                            value="The Rainy Hike, First Road Trip, Cooking Fail">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-1">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Time Label</label>
-                        <input type="text" id="lbl_time" class="w-full rounded-lg border-gray-300"
-                            value="Minutes Together">
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Time Value</label>
-                        <input type="text" id="val_time" class="w-full rounded-lg border-gray-300" value="525,600">
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-1">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Vibe Label</label>
-                        <input type="text" id="lbl_vibe" class="w-full rounded-lg border-gray-300" value="Our Vibe">
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Vibe Value</label>
-                        <input type="text" id="val_vibe" class="w-full rounded-lg border-gray-300"
-                            value="Bonnie & Clyde">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 gap-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Wrapped Main Image</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="wrap_img" class="w-full rounded-lg border-gray-300"
-                            value="assets/images/photo2.jpg">
-                        <label
-                            class="cursor-pointer bg-gray-100 border border-gray-300 rounded-lg px-3 flex items-center hover:bg-gray-200">
-                            <span class="material-symbols-outlined text-gray-600">upload_file</span>
-                            <input type="file" class="hidden" accept="image/*" onchange="uploadImage(this, 'wrap_img')">
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. PAGE 3: GREETING -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 3</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">favorite_border</span>
-                <h2 class="text-xl font-bold">Greeting & Music</h2>
-            </div>
-            <!-- Music Playlist (Dynamic) -->
-            <label class="block text-sm font-bold text-gray-700 mb-2">Music Playlist (3 Songs)</label>
-            <div id="musicList">
-                <!-- Items will be injected -->
-            </div>
-            <!-- GREETING CONFIG -->
-            <div class="mt-6 border-t pt-4">
-                <h3 class="font-bold text-gray-600 mb-2">Greeting Text</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <input type="text" id="greet_title" class="w-full rounded-lg border-gray-300"
-                        value="Happy Valentine’s Day">
-                    <textarea id="greet_msg" class="w-full rounded-lg border-gray-300"
-                        rows="2">I made this little archive to celebrate us. A collection of moments, secrets, and reasons why I love you.</textarea>
-                    <div class="flex gap-2">
-                        <input type="text" id="greet_img" class="w-full rounded-lg border-gray-300"
-                            placeholder="Greeting Image URL" value="https://lh3.googleusercontent.com/...">
-                        <label
-                            class="cursor-pointer bg-gray-100 border border-gray-300 rounded-lg px-3 flex items-center hover:bg-gray-200">
-                            <span class="material-symbols-outlined text-gray-600">upload_file</span>
-                            <input type="file" class="hidden" accept="image/*"
-                                onchange="uploadImage(this, 'greet_img')">
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. PAGE 4: QUIZ -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 4</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">quiz</span>
-                <h2 class="text-xl font-bold">Love Quiz</h2>
-            </div>
-            <div id="quizList" class="space-y-4">
-                <!-- Questions injected here -->
-            </div>
-            <button onclick="addQuizQuestion()"
-                class="mt-4 w-full py-2 border-2 border-rose-300 text-rose-500 rounded-lg hover:bg-rose-50 font-bold transition dashed-border flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined">add_circle</span> Add Question
+    <!-- GENERATED CODE MODAL -->
+    <div id="resultModal"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-fade-in">
+        <div
+            class="bg-gray-900 border border-gray-800 rounded-3xl w-full max-w-5xl max-h-[90vh] flex flex-col p-8 shadow-2xl relative">
+            <button onclick="document.getElementById('resultModal').classList.add('hidden')"
+                class="absolute -top-4 -right-4 bg-white text-black p-2 rounded-full hover:scale-110 active:scale-90 transition-transform shadow-xl">
+                <span class="material-symbols-outlined">close</span>
             </button>
-        </div>
-
-        <!-- 5. PAGE 5: GALLERY -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 5</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">photo_library</span>
-                <h2 class="text-xl font-bold">Memory Gallery (Scratch)</h2>
-            </div>
-            <div class="mb-4">
-                <input type="text" id="gal_title" class="w-full mb-2 rounded-lg border-gray-300 font-bold"
-                    value="Our Memory Gallery">
-                <input type="text" id="gal_sub" class="w-full rounded-lg border-gray-300 text-sm"
-                    value="Scratch to reveal a piece of my heart">
-            </div>
-
-            <div id="galleryList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Gallery Items injected here -->
-            </div>
-            <button onclick="addGalleryItem()"
-                class="mt-4 w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-rose-500 hover:text-rose-500 transition">+
-                Add Item</button>
-        </div>
-
-        <!-- 6. PAGE 6: MAP -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 6</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">map</span>
-                <h2 class="text-xl font-bold">Atlas of Us</h2>
-            </div>
-            <div id="mapList" class="space-y-4">
-                <!-- Map Locations injected here -->
-            </div>
-            <button onclick="addMapLocation()"
-                class="mt-4 w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-rose-500 hover:text-rose-500 transition">+
-                Add Location</button>
-        </div>
-
-        <!-- 7. LETTER (PAGE 8) -->
-        <div class="page-card">
-            <span class="page-badge">PAGE 8</span>
-            <div class="section-header">
-                <span class="material-symbols-outlined section-icon">mail</span>
-                <h2 class="text-xl font-bold">The Letter</h2>
-            </div>
-            <div class="space-y-6">
+            <div class="flex justify-between items-center mb-6">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700">The Letter</label>
-                    <input type="text" id="let_rec" class="w-full mt-1 mb-2 rounded-lg border-gray-300"
-                        value="Dearest Love">
-                    <textarea id="let_msg" class="w-full mb-2 rounded-lg border-gray-300"
-                        rows="4">I find myself sitting here...</textarea>
-                    <input type="text" id="let_sig" class="w-full rounded-lg border-gray-300"
-                        value="Your Favorite Person">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <span class="material-symbols-outlined text-green-400">check_circle</span>
+                        Config Generated!
+                    </h2>
+                    <p class="text-gray-400 text-sm mt-1">Copy the code below and replace everything in your <code
+                            class="bg-gray-800 px-2 py-0.5 rounded text-rose-400 italic">data.js</code> file.</p>
                 </div>
             </div>
-        </div>
 
-    </form>
-
-    <!-- Result Area -->
-    <div id="resultModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">Code Generated!</h2>
-                <button onclick="document.getElementById('resultModal').classList.add('hidden')"
-                    class="text-gray-500 hover:text-gray-800">Close</button>
-            </div>
-            <textarea id="outputCode"
-                class="w-full flex-grow font-mono text-xs bg-gray-900 text-green-400 p-4 rounded-lg resize-none"
-                readonly></textarea>
-            <div class="mt-4 flex justify-end gap-2">
-                <button onclick="copyCode()" class="bg-rose-600 text-white px-6 py-2 rounded-lg font-bold">Copy to
-                    Clipboard</button>
+            <div class="relative flex-grow group">
+                <textarea id="outputCode"
+                    class="w-full h-full font-mono text-sm bg-black text-emerald-400 p-6 rounded-2xl border border-gray-800 focus:ring-0 resize-none outline-none leading-relaxed"
+                    readonly></textarea>
+                <div class="absolute bottom-4 right-4 flex gap-2">
+                    <button onclick="copyCode()"
+                        class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined">content_copy</span> Copy Code
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- TEMPLATES & LOGIC -->
     <script>
-        // --- HELPER: Image Upload ---
+        // --- DATA STATE ---
+        let musicItems = [
+            { t: "Selfless", a: "The Strokes", s: "assets/song1.mp3", c: "assets/cover1.jpg", l: "Life is too short..." },
+            { t: "Ivy", a: "Frank Ocean.", s: "assets/song2.mp3", c: "assets/cover2.jpg", l: "I thought that I was dreaming..." },
+            { t: "L-O-V-E", a: "Nat King Cole", s: "assets/song3.mp3", c: "https://picsum.photos/400/400?random=3", l: "L is for the way..." }
+        ];
+
+        let quizItems = [
+            { q: "Where was our very first date?", o: ["Starbucks KIP", "Cinema XXI", "Parks & Rec", "Dinner at McD"], c: 0, ok: "You remembered! ❤️", no: "Nope!" },
+            { q: "What is my favorite color on you?", o: ["Rose Pink", "Soft Blue", "Sage Green", "Classic Black"], c: 2, ok: "Yes!", no: "Listen closely..." },
+            { q: "Where do I want to travel with you?", o: ["Paris", "Tokyo", "Santorini", "Bali"], c: 0, ok: "Oui! 🗼", no: "Good guess, but no" },
+            { q: "What do I love most about you?", o: ["Your smile", "Your kindness", "Your eyes", "Everything"], c: 3, ok: "Correct! ❤️", no: "I love that too..." },
+            { q: "What is our favorite thing to do together?", o: ["Watching Movies", "Going on walks", "Eating out", "Just being together"], c: 3, ok: "Favorite! ✨", no: "Almost..." },
+        ];
+
+        let galleryItems = [
+            { t: 'video', s: 'assets/images/video1.mp4', c: 'The day we met...', tp: 'washi-tape', r: '-rotate-1' },
+            { t: 'image', s: 'assets/images/photo2.jpg', c: 'Our first coffee', tp: 'washi-tape-gold', r: 'rotate-2' },
+            { t: 'image', s: 'assets/images/photo3.jpg', c: 'Golden hour walks', tp: 'washi-tape', r: 'rotate-1' },
+            { t: 'video', s: 'assets/images/video1.mp4', c: 'Late night talks', tp: 'washi-tape-gold', r: '-rotate-2' },
+            { t: 'image', s: 'assets/images/photo4.jpg', c: 'Under the stars', tp: 'washi-tape', r: 'rotate-1' },
+            { t: 'image', s: 'assets/images/photo5.jpg', c: 'Forever with you', tp: 'washi-tape-gold', r: '-rotate-1' },
+        ];
+
+        let mapItems = [
+            { lat: -6.24625885, lng: 106.9913550, t: "Where we first met", m: "The air was sweet...", d: "Jan 2020", i: "assets/images/photo1.jpg" },
+            { lat: -6.26861794, lng: 106.9760756, t: "Our favorite coffee spot", m: "Roasted beans...", d: "Feb 2020", i: "" },
+            { lat: -6.26857900, lng: 106.9812360, t: "That midnight walk", m: "City lights...", d: "March 2020", i: "" }
+        ];
+
+        let wrappedPlaces = ["The Sunset Pier", "Corner Bakery", "Botanical Garden"];
+        let wrappedMemories = ["The Rainy Hike", "First Road Trip", "Cooking Fail"];
+
+        // --- NEW: THEME PRESETS ---
+        function applyThemePreset(theme) {
+            const presets = {
+                vintage: {
+                    bg: "",
+                    color: "#F5E6D3",
+                    fontDisplay: "Playfair Display, serif",
+                    fontSans: "Inter, sans-serif",
+                    particles: "dust"
+                },
+                midnight: {
+                    bg: "https://images.unsplash.com/photo-1534796633326-59fdb124f2b3?q=80&w=2070&auto=format&fit=crop",
+                    color: "#0f172a",
+                    fontDisplay: "Dancing Script, cursive",
+                    fontSans: "Inter, sans-serif",
+                    particles: "stars"
+                },
+                cute: {
+                    bg: "",
+                    color: "#fff1f2",
+                    fontDisplay: "Pacifico, cursive",
+                    fontSans: "Inter, sans-serif",
+                    particles: "hearts"
+                },
+                modern: {
+                    bg: "https://images.unsplash.com/photo-1483730120419-9067de06d2c4?q=80&w=2076&auto=format&fit=crop",
+                    color: "#ffffff",
+                    fontDisplay: "Montserrat, sans-serif",
+                    fontSans: "Inter, sans-serif",
+                    particles: "bubbles"
+                }
+            };
+
+            const data = presets[theme];
+            if (!data) return;
+
+            // Set values
+            document.getElementById('theme_bg').value = data.bg;
+            document.getElementById('theme_color').value = data.color;
+            document.getElementById('theme_color_picker').value = data.color;
+            document.getElementById('theme_font_display').value = data.fontDisplay;
+            document.getElementById('theme_font_sans').value = data.fontSans;
+            document.getElementById('theme_particles').value = data.particles || 'none';
+
+            // Visual feedback on the button
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined text-sm">done</span> Applied!';
+            setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+
+            generateCode();
+        }
+
+        // --- HELPERS ---
+        function syncAllLists() {
+            // Sync Music
+            const musicList = document.getElementById('musicList');
+            if (musicList && musicList.children.length > 0) {
+                musicItems = Array.from(musicList.children).map(el => ({
+                    t: el.querySelector('.mus-t').value,
+                    a: el.querySelector('.mus-a').value,
+                    s: el.querySelector('.mus-s').value,
+                    c: el.querySelector('.mus-c').value,
+                    l: el.querySelector('.mus-l').value
+                }));
+            }
+
+            // Sync Quiz
+            const quizList = document.getElementById('quizList');
+            if (quizList && quizList.children.length > 0) {
+                quizItems = Array.from(quizList.children).map(el => ({
+                    q: el.querySelector('.q-q').value,
+                    o: [
+                        el.querySelector('.q-o1').value,
+                        el.querySelector('.q-o2').value,
+                        el.querySelector('.q-o3').value,
+                        el.querySelector('.q-o4').value,
+                    ],
+                    c: parseInt(el.querySelector('.q-c').value),
+                    ok: el.querySelector('.q-ok').value,
+                    no: el.querySelector('.q-no').value
+                }));
+            }
+
+            // Sync Gallery
+            const galleryList = document.getElementById('galleryList');
+            if (galleryList && galleryList.children.length > 0) {
+                galleryItems = Array.from(galleryList.children).map(el => ({
+                    t: el.querySelector('.gal-type').value,
+                    s: el.querySelector('.gal-src').value,
+                    c: el.querySelector('.gal-cap').value,
+                    tp: el.querySelector('.gal-tape').value,
+                    r: el.querySelector('.gal-rot').value
+                }));
+            }
+
+            // Sync Map
+            const mapList = document.getElementById('mapList');
+            if (mapList && mapList.children.length > 0) {
+                mapItems = Array.from(mapList.children).map(el => ({
+                    lat: parseFloat(el.querySelector('.map-lat').value) || 0,
+                    lng: parseFloat(el.querySelector('.map-lng').value) || 0,
+                    t: el.querySelector('.map-title').value,
+                    m: el.querySelector('.map-mem').value,
+                    d: el.querySelector('.map-date').value,
+                    i: el.querySelector('.map-img').value
+                }));
+            }
+
+            // Sync Wrapped Places
+            const placeInputs = document.querySelectorAll('.wrapped-place-input');
+            if (placeInputs.length > 0) {
+                wrappedPlaces = Array.from(placeInputs).map(el => el.value);
+            }
+
+            // Sync Wrapped Memories
+            const memInputs = document.querySelectorAll('.wrapped-memory-input');
+            if (memInputs.length > 0) {
+                wrappedMemories = Array.from(memInputs).map(el => el.value);
+            }
+        }
+
         function uploadImage(input, targetId) {
             const file = input.files[0];
             if (!file) return;
@@ -401,171 +884,197 @@
         function uploadDynamicImage(input) {
             const file = input.files[0];
             if (!file) return;
-            // Find the sibling text input (it's in the same flex container)
             const textInput = input.parentElement.previousElementSibling;
-            if (textInput && textInput.type === 'text') {
+            if (textInput && (textInput.tagName === 'INPUT' || textInput.tagName === 'TEXTAREA')) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    textInput.value = e.target.result;
-                };
+                reader.onload = (e) => { textInput.value = e.target.result; };
                 reader.readAsDataURL(file);
             }
         }
 
-        // --- INITIAL DATA & RENDERERS ---
-        const initialMusic = [
-            { t: "Selfless", a: "The Strokes", s: "assets/song1.mp3", c: "assets/cover1.jpg", l: "Life is too short..." },
-            { t: "Ivy", a: "Frank Ocean.", s: "assets/song2.mp3", c: "assets/cover2.jpg", l: "I thought that I was dreaming..." },
-            { t: "L-O-V-E", a: "Nat King Cole", s: "assets/song3.mp3", c: "https://picsum.photos/400/400?random=3", l: "L is for the way..." }
-        ];
-
-        const initialQuiz = [
-            { q: "Where was our very first date?", o: ["Starbucks KIP", "Cinema XXI", "Parks & Rec", "Dinner at McD"], c: 0, ok: "You remembered! ❤️", no: "Nope!" },
-            { q: "What is my favorite color on you?", o: ["Rose Pink", "Soft Blue", "Sage Green", "Classic Black"], c: 2, ok: "Yes!", no: "Listen closely..." },
-            { q: "Where do I want to travel with you?", o: ["Paris", "Tokyo", "Santorini", "Bali"], c: 0, ok: "Oui! 🗼", no: "Good guess, but no" },
-            { q: "What do I love most about you?", o: ["Your smile", "Your kindness", "Your eyes", "Everything"], c: 3, ok: "Correct! ❤️", no: "I love that too..." },
-            { q: "What is our favorite thing to do together?", o: ["Watching Movies", "Going on walks", "Eating out", "Just being together"], c: 3, ok: "Favorite! ✨", no: "Almost..." },
-        ];
-
-        const initialGallery = [
-            { t: 'video', s: 'assets/images/video1.mp4', c: 'The day we met...', tp: 'washi-tape', r: '-rotate-1' },
-            { t: 'image', s: 'assets/images/photo2.jpg', c: 'Our first coffee', tp: 'washi-tape-gold', r: 'rotate-2' },
-            { t: 'image', s: 'assets/images/photo3.jpg', c: 'Golden hour walks', tp: 'washi-tape', r: 'rotate-1' },
-            { t: 'video', s: 'assets/images/video1.mp4', c: 'Late night talks', tp: 'washi-tape-gold', r: '-rotate-2' },
-            { t: 'image', s: 'assets/images/photo4.jpg', c: 'Under the stars', tp: 'washi-tape', r: 'rotate-1' },
-            { t: 'image', s: 'assets/images/photo5.jpg', c: 'Forever with you', tp: 'washi-tape-gold', r: '-rotate-1' },
-        ];
-
-        const initialMap = [
-            { lat: -6.24625885, lng: 106.9913550, t: "Where we first met", m: "The air was sweet...", d: "Jan 2020", i: "assets/images/photo1.jpg" },
-            { lat: -6.26861794, lng: 106.9760756, t: "Our favorite coffee spot", m: "Roasted beans...", d: "Feb 2020", i: "" },
-            { lat: -6.26857900, lng: 106.9812360, t: "That midnight walk", m: "City lights...", d: "March 2020", i: "" }
-        ];
-
+        // --- RENDERERS ---
         function renderMusic() {
             const container = document.getElementById('musicList');
-            container.innerHTML = initialMusic.map((m, i) => `
-                <div class="dynamic-item grid grid-cols-2 gap-2">
-                    <input type="text" class="mus-t w-full rounded border-gray-300 text-sm" placeholder="Title" value="${m.t}">
-                    <input type="text" class="mus-a w-full rounded border-gray-300 text-sm" placeholder="Artist" value="${m.a}">
-                    <input type="text" class="mus-s w-full rounded border-gray-300 text-sm" placeholder="MP3 Path" value="${m.s}">
-                    <input type="text" class="mus-c w-full rounded border-gray-300 text-sm" placeholder="Cover Path" value="${m.c}">
-                    <input type="text" class="mus-l col-span-2 w-full rounded border-gray-300 text-sm" placeholder="Lyrics" value="${m.l}">
+            container.innerHTML = musicItems.map((m, i) => `
+                <div class="dynamic-item">
+                    <button type="button" onclick="removeMusic(${i})" class="remove-btn">×</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                             <label class="block text-[8px] font-bold uppercase text-gray-400 mb-1">Song Title</label>
+                             <input type="text" class="mus-t form-input !py-2 text-sm" placeholder="Title" value="${m.t}">
+                        </div>
+                        <div>
+                             <label class="block text-[8px] font-bold uppercase text-gray-400 mb-1">Artist Name</label>
+                             <input type="text" class="mus-a form-input !py-2 text-sm" placeholder="Artist" value="${m.a}">
+                        </div>
+                        <div>
+                             <label class="block text-[8px] font-bold uppercase text-gray-400 mb-1">Audio Source (.mp3)</label>
+                             <div class="flex gap-1">
+                                <input type="text" class="mus-s form-input !py-2 text-xs" placeholder="Path" value="${m.s}">
+                                <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-2 flex items-center hover:bg-gray-50">
+                                    <span class="material-symbols-outlined text-xs">audio_file</span>
+                                    <input type="file" class="hidden" accept="audio/*" onchange="uploadDynamicImage(this)">
+                                </label>
+                             </div>
+                        </div>
+                        <div>
+                             <label class="block text-[8px] font-bold uppercase text-gray-400 mb-1">Cover Art Source</label>
+                              <div class="flex gap-1">
+                                <input type="text" class="mus-c form-input !py-2 text-xs" placeholder="Path" value="${m.c}">
+                                <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-2 flex items-center hover:bg-gray-50">
+                                    <span class="material-symbols-outlined text-xs">image</span>
+                                    <input type="file" class="hidden" accept="image/*" onchange="uploadDynamicImage(this)">
+                                </label>
+                             </div>
+                        </div>
+                        <div class="md:col-span-2">
+                             <label class="block text-[8px] font-bold uppercase text-gray-400 mb-1">Dynamic Lyrics Overlay</label>
+                             <input type="text" class="mus-l form-input !py-2 text-sm italic" placeholder="Lyrics" value="${m.l}">
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
+        window.addMusicItem = () => { syncAllLists(); musicItems.push({ t: "", a: "", s: "", c: "", l: "" }); renderMusic(); };
+        window.removeMusic = (i) => { syncAllLists(); musicItems.splice(i, 1); renderMusic(); };
 
         function renderQuiz() {
             const container = document.getElementById('quizList');
-            container.innerHTML = initialQuiz.map((q, i) => `
-                <div class="dynamic-item">
-                    <button onclick="removeQuiz(${i})" class="remove-btn">×</button>
-                    <div class="mb-2 font-bold text-sm text-gray-500">Question ${i + 1}</div>
-                    <input type="text" class="q-q w-full mb-2 rounded border-gray-300" placeholder="Question" value="${q.q}">
-                    <div class="grid grid-cols-2 gap-2 mb-2">
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-xs">1.</span>
-                            <input type="text" class="q-o1 w-full pl-8 rounded border-gray-300 text-sm" value="${q.o[0]}" placeholder="Option 1">
-                        </div>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-xs">2.</span>
-                            <input type="text" class="q-o2 w-full pl-8 rounded border-gray-300 text-sm" value="${q.o[1]}" placeholder="Option 2">
-                        </div>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-xs">3.</span>
-                            <input type="text" class="q-o3 w-full pl-8 rounded border-gray-300 text-sm" value="${q.o[2]}" placeholder="Option 3">
-                        </div>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-xs">4.</span>
-                            <input type="text" class="q-o4 w-full pl-8 rounded border-gray-300 text-sm" value="${q.o[3]}" placeholder="Option 4">
-                        </div>
+            container.innerHTML = quizItems.map((q, i) => `
+                <div class="dynamic-item !p-6 bg-white border-2 border-slate-100 shadow-sm">
+                    <button type="button" onclick="removeQuiz(${i})" class="remove-btn">×</button>
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-400 mb-1">Question ${i + 1}</label>
+                        <input type="text" class="q-q form-input font-bold text-gray-800" placeholder="e.g. What is my favorite food?" value="${q.q}">
                     </div>
-                    <div class="flex gap-2">
-                        <select class="q-c w-32 rounded border-gray-300 text-sm">
-                            <option value="0" ${q.c === 0 ? 'selected' : ''}>Option 1 Correct</option>
-                            <option value="1" ${q.c === 1 ? 'selected' : ''}>Option 2 Correct</option>
-                            <option value="2" ${q.c === 2 ? 'selected' : ''}>Option 3 Correct</option>
-                            <option value="3" ${q.c === 3 ? 'selected' : ''}>Option 4 Correct</option>
-                        </select>
-                        <input type="text" class="q-ok w-full rounded border-gray-300 text-sm" placeholder="Success Msg" value="${q.ok}">
-                         <input type="text" class="q-no w-full rounded border-gray-300 text-sm" placeholder="Fail Msg" value="${q.no || ''}">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        ${[0, 1, 2, 3].map(idx => `
+                            <div class="relative group">
+                                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300 group-hover:text-rose-400">${idx + 1}</div>
+                                <input type="text" class="q-o${idx + 1} form-input pl-8 text-sm !py-2" value="${q.o[idx]}" placeholder="Option ${idx + 1}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                        <div>
+                             <label class="block text-[10px] font-bold text-amber-600 mb-1">Correct Choice</label>
+                             <select class="q-c form-input !py-2 text-sm">
+                                ${[0, 1, 2, 3].map(idx => `<option value="${idx}" ${q.c === idx ? 'selected' : ''}>Option ${idx + 1}</option>`).join('')}
+                             </select>
+                        </div>
+                        <div class="space-y-2">
+                             <input type="text" class="q-ok form-input !py-2 text-xs" placeholder="Positive Feedback Message" value="${q.ok}">
+                             <input type="text" class="q-no form-input !py-2 text-xs" placeholder="Negative Feedback Message" value="${q.no || ''}">
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
-        window.removeQuiz = (i) => { initialQuiz.splice(i, 1); renderQuiz(); };
-        window.addQuizQuestion = () => {
-            initialQuiz.push({ q: "", o: ["", "", "", ""], c: 0, ok: "Correct!", no: "Wrong!" });
-            renderQuiz();
-        };
+        window.addQuizQuestion = () => { syncAllLists(); quizItems.push({ q: "", o: ["", "", "", ""], c: 0, ok: "Correct!", no: "Wrong!" }); renderQuiz(); };
+        window.removeQuiz = (i) => { syncAllLists(); quizItems.splice(i, 1); renderQuiz(); };
 
         function renderGallery() {
             const container = document.getElementById('galleryList');
-            container.innerHTML = initialGallery.map((g, i) => `
-                <div class="dynamic-item">
-                    <button onclick="removeGallery(${i})" class="remove-btn">×</button>
-                    <select class="gal-type w-full mb-2 rounded border-gray-300 text-sm">
-                        <option value="image" ${g.t === 'image' ? 'selected' : ''}>Image</option>
-                        <option value="video" ${g.t === 'video' ? 'selected' : ''}>Video</option>
+            container.innerHTML = galleryItems.map((g, i) => `
+                <div class="dynamic-item !p-4 bg-white shadow-sm border-slate-200">
+                    <button type="button" onclick="removeGallery(${i})" class="remove-btn">×</button>
+                    <div class="aspect-square bg-gray-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative">
+                         ${g.t === 'image' ? `<img src="${g.s}" class="w-full h-full object-cover">` : `<video src="${g.s}" class="w-full h-full object-cover"></video>`}
+                         <div class="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                             <span class="text-white text-[10px] uppercase font-bold tracking-widest">${g.t} Preview</span>
+                         </div>
+                    </div>
+                    <select class="gal-type form-input !py-1.5 text-xs mb-3" onchange="syncAllLists(); galleryItems[${i}].t = this.value; renderGallery()">
+                        <option value="image" ${g.t === 'image' ? 'selected' : ''}>Image Asset</option>
+                        <option value="video" ${g.t === 'video' ? 'selected' : ''}>Video Asset</option>
                     </select>
-                    <div class="flex gap-2 mb-2">
-                        <input type="text" class="gal-src w-full rounded border-gray-300 text-sm" placeholder="Source Path (URL or File)" value="${g.s}">
-                        <label class="cursor-pointer bg-gray-100 border border-gray-300 rounded px-2 flex items-center hover:bg-gray-200">
-                             <span class="material-symbols-outlined text-gray-600 text-sm">upload_file</span>
-                             <input type="file" class="hidden" accept="image/*,video/*" onchange="uploadDynamicImage(this)">
+                    <div class="flex gap-1 mb-3">
+                         <input type="text" class="gal-src form-input !py-1 text-[10px]" placeholder="Path" value="${g.s}">
+                         <label class="cursor-pointer bg-white border border-gray-100 rounded-lg px-2 flex items-center hover:bg-emerald-50 transition-colors">
+                            <span class="material-symbols-outlined text-emerald-500 text-sm">cloud_upload</span>
+                            <input type="file" class="hidden" accept="${g.t === 'image' ? 'image/*' : 'video/*'}" onchange="uploadDynamicImage(this)">
                         </label>
                     </div>
-                    <input type="text" class="gal-cap w-full mb-2 rounded border-gray-300 text-sm" placeholder="Caption" value="${g.c}">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" class="gal-rot w-full rounded border-gray-300 text-xs" value="${g.r}">
-                         <input type="text" class="gal-tape w-full rounded border-gray-300 text-xs" value="${g.tp}">
+                    <input type="text" class="gal-cap form-input !py-1.5 text-xs italic mb-2" placeholder="Caption" value="${g.c}">
+                    <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-50">
+                         <input type="text" class="gal-rot form-input !py-1 text-[9px]" placeholder="Rotation Class" value="${g.r}">
+                         <input type="text" class="gal-tape form-input !py-1 text-[9px]" placeholder="Tape Class" value="${g.tp}">
                     </div>
                 </div>
             `).join('');
         }
-        window.removeGallery = (i) => { initialGallery.splice(i, 1); renderGallery(); };
-        window.addGalleryItem = () => { initialGallery.push({ t: 'image', s: '', c: '', tp: 'washi-tape', r: 'rotate-1' }); renderGallery(); };
+        window.addGalleryItem = () => { syncAllLists(); galleryItems.push({ t: 'image', s: '', c: '', tp: 'washi-tape', r: 'rotate-1' }); renderGallery(); };
+        window.removeGallery = (i) => { syncAllLists(); galleryItems.splice(i, 1); renderGallery(); };
 
         function renderMap() {
             const container = document.getElementById('mapList');
-            container.innerHTML = initialMap.map((m, i) => `
-                 <div class="dynamic-item">
-                    <button onclick="removeMap(${i})" class="remove-btn">×</button>
-                     <div class="grid grid-cols-2 gap-2 mb-2">
-                        <input type="text" class="map-lat w-full rounded border-gray-300 text-sm" placeholder="Lat" value="${m.lat}">
-                        <input type="text" class="map-lng w-full rounded border-gray-300 text-sm" placeholder="Lng" value="${m.lng}">
-                     </div>
-                     <input type="text" class="map-date w-full mb-2 rounded border-gray-300 text-sm" placeholder="Date (e.g. Jan 2020)" value="${m.d}">
-                     <input type="text" class="map-title w-full mb-2 rounded border-gray-300 font-bold" placeholder="Title" value="${m.t}">
-                     <textarea class="map-mem w-full mb-2 rounded border-gray-300 text-sm" rows="2" placeholder="Memory">${m.m}</textarea>
-                     <div class="flex gap-2">
-                        <input type="text" class="map-img w-full rounded border-gray-300 text-sm" placeholder="Image URL (Optional)" value="${m.i || ''}">
-                         <label class="cursor-pointer bg-gray-100 border border-gray-300 rounded px-2 flex items-center hover:bg-gray-200">
-                             <span class="material-symbols-outlined text-gray-600 text-sm">upload_file</span>
-                             <input type="file" class="hidden" accept="image/*" onchange="uploadDynamicImage(this)">
-                        </label>
-                     </div>
+            container.innerHTML = mapItems.map((m, i) => `
+                <div class="dynamic-item !p-6 bg-white flex flex-col md:flex-row gap-6">
+                    <button type="button" onclick="removeMap(${i})" class="remove-btn">×</button>
+                    <div class="w-full md:w-1/3">
+                         <label class="block text-[8px] font-bold text-sky-600 mb-1">Cordinates (Lat, Lng)</label>
+                         <div class="grid grid-cols-2 gap-2 mb-4">
+                            <input type="text" class="map-lat form-input !py-1.5 text-xs" placeholder="Lat" value="${m.lat}">
+                            <input type="text" class="map-lng form-input !py-1.5 text-xs" placeholder="Lng" value="${m.lng}">
+                         </div>
+                         <label class="block text-[8px] font-bold text-sky-600 mb-1">Date Signature</label>
+                         <input type="text" class="map-date form-input !py-1.5 text-xs" placeholder="Jan 2024" value="${m.d}">
+                    </div>
+                    <div class="w-full md:w-2/3">
+                         <label class="block text-[8px] font-bold text-sky-600 mb-1">Moment Title & Story</label>
+                         <input type="text" class="map-title form-input !py-2 text-sm font-bold mb-2" placeholder="Where we matched..." value="${m.t}">
+                         <textarea class="map-mem form-input !py-2 text-sm italic" rows="2" placeholder="Describe the feeling...">${m.m}</textarea>
+                         <div class="mt-4 flex gap-2">
+                            <input type="text" class="map-img form-input !py-1.5 text-[10px]" placeholder="Optional Memory Image URL" value="${m.i || ''}">
+                            <label class="cursor-pointer bg-sky-50 border border-sky-100 rounded-xl px-4 flex items-center hover:bg-sky-100 transition-colors">
+                                <span class="material-symbols-outlined text-sky-600 text-lg">image</span>
+                                <input type="file" class="hidden" accept="image/*" onchange="uploadDynamicImage(this)">
+                            </label>
+                         </div>
+                    </div>
                 </div>
             `).join('');
         }
-        window.removeMap = (i) => { initialMap.splice(i, 1); renderMap(); };
-        window.addMapLocation = () => { initialMap.push({ lat: 0, lng: 0, t: '', m: '', d: '', i: '' }); renderMap(); };
+        window.addMapLocation = () => { syncAllLists(); mapItems.push({ lat: 0, lng: 0, t: '', m: '', d: '', i: '' }); renderMap(); };
+        window.removeMap = (i) => { syncAllLists(); mapItems.splice(i, 1); renderMap(); };
 
-        // INITIALIZE
-        renderMusic(); renderQuiz(); renderGallery(); renderMap();
+        // --- WRAPPED (LIFE PAGES) RENDERERS ---
+        function renderWrappedPlaces() {
+            const container = document.getElementById('wrappedPlacesList');
+            container.innerHTML = wrappedPlaces.map((p, i) => `
+                <div class="flex gap-1 group">
+                    <input type="text" class="wrapped-place-input form-input !py-1 !px-3 text-xs flex-grow" value="${p}">
+                    <button type="button" onclick="removeWrappedPlace(${i})" class="text-rose-300 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100">
+                        <span class="material-symbols-outlined text-sm">remove_circle</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+        function renderWrappedMemories() {
+            const container = document.getElementById('wrappedMemoriesList');
+            container.innerHTML = wrappedMemories.map((m, i) => `
+                <div class="flex gap-1 group">
+                    <input type="text" class="wrapped-memory-input form-input !py-1 !px-3 text-xs flex-grow" value="${m}">
+                    <button type="button" onclick="removeWrappedMemory(${i})" class="text-rose-300 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100">
+                        <span class="material-symbols-outlined text-sm">remove_circle</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+        window.addWrappedPlace = () => { syncAllLists(); wrappedPlaces.push(""); renderWrappedPlaces(); };
+        window.removeWrappedPlace = (i) => { syncAllLists(); wrappedPlaces.splice(i, 1); renderWrappedPlaces(); };
+        window.addWrappedMemory = () => { syncAllLists(); wrappedMemories.push(""); renderWrappedMemories(); };
+        window.removeWrappedMemory = (i) => { syncAllLists(); wrappedMemories.splice(i, 1); renderWrappedMemories(); };
 
-        // --- GENERATOR LOGIC ---
+        // --- INITIALIZE ALL ---
+        renderMusic(); renderQuiz(); renderGallery(); renderMap(); renderWrappedPlaces(); renderWrappedMemories();
+
+        // --- CODE GENERATOR ---
         function generateCode() {
-            // Helpers
             const val = (id) => document.getElementById(id).value;
-            const getGroup = (cls, mapFn) => Array.from(document.querySelectorAll('.dynamic-item')).map(el => mapFn(el)).filter(x => x);
 
-            // Scrape Dynamic Lists
-            // Note: querySelectorAll returns ALL items, so we filter by parent container or context.
-            // Actually, simplified approach: re-query specific classes globally works if we iterate carefully, 
-            // but safer to query inside the specific containers.
-
-            const musicItems = Array.from(document.getElementById('musicList').children).map(el => ({
+            // Collect Dynamic Data
+            const musicData = Array.from(document.getElementById('musicList').children).map(el => ({
                 songTitle: el.querySelector('.mus-t').value,
                 artist: el.querySelector('.mus-a').value,
                 audioSrc: el.querySelector('.mus-s').value,
@@ -573,7 +1082,7 @@
                 lyrics: el.querySelector('.mus-l').value
             }));
 
-            const quizItems = Array.from(document.getElementById('quizList').children).map(el => ({
+            const quizData = Array.from(document.getElementById('quizList').children).map(el => ({
                 question: el.querySelector('.q-q').value,
                 options: [
                     el.querySelector('.q-o1').value,
@@ -586,7 +1095,7 @@
                 wrongMessage: el.querySelector('.q-no').value || "Incorrect!"
             }));
 
-            const galleryItems = Array.from(document.getElementById('galleryList').children).map(el => ({
+            const galleryData = Array.from(document.getElementById('galleryList').children).map(el => ({
                 type: el.querySelector('.gal-type').value,
                 src: el.querySelector('.gal-src').value,
                 caption: el.querySelector('.gal-cap').value,
@@ -594,7 +1103,7 @@
                 rotation: el.querySelector('.gal-rot').value
             }));
 
-            const mapItems = Array.from(document.getElementById('mapList').children).map(el => ({
+            const mapData = Array.from(document.getElementById('mapList').children).map(el => ({
                 coordinates: [parseFloat(el.querySelector('.map-lat').value), parseFloat(el.querySelector('.map-lng').value)],
                 title: el.querySelector('.map-title').value,
                 memory: el.querySelector('.map-mem').value,
@@ -602,11 +1111,30 @@
                 imageSrc: el.querySelector('.map-img').value
             }));
 
-            // Struct
+            const placesData = Array.from(document.querySelectorAll('.wrapped-place-input')).map(el => el.value).filter(v => v.trim() !== "");
+            const memoriesData = Array.from(document.querySelectorAll('.wrapped-memory-input')).map(el => el.value).filter(v => v.trim() !== "");
+
+            // ISO Format Date Converter
+            let targetDate = val('count_date');
+            try {
+                if (targetDate) {
+                    const d = new Date(targetDate);
+                    targetDate = d.toISOString().split('.')[0] + "+07:00"; // Assuming WIB for the user but can be refined
+                }
+            } catch (e) { }
+
             const CONFIG = {
                 theme: {
                     backgroundImage: val('theme_bg') || '',
-                    backgroundColor: val('theme_color') || '#F5E6D3'
+                    backgroundColor: val('theme_color') || '#F5E6D3',
+                    fontDisplay: val('theme_font_display'),
+                    fontSans: val('theme_font_sans'),
+                    particles: val('theme_particles')
+                },
+                seo: {
+                    title: val('seo_title'),
+                    description: val('seo_desc'),
+                    image: val('seo_image')
                 },
                 login: {
                     password: val('password'),
@@ -614,55 +1142,67 @@
                     collectionText: val('collectionText'),
                     title: val('p1_title'),
                     instruction: val('p1_instr'),
-                    placeholder: val('p1_place')
+                    placeholder: "*your secret word...*"
                 },
                 countdown: {
-                    targetDate: val('count_date'),
-                    finishMessage: "It's Time! ❤️",
+                    targetDate: targetDate,
+                    finishMessage: val('count_finish'),
                     finishLabel: "Happy Valentine's Day!"
                 },
                 wrapped: {
                     topPlacesLabel: val('lbl_place'),
-                    topPlaces: val('val_place').split(',').map(s => s.trim()),
+                    topPlaces: placesData,
                     coreMemoriesLabel: val('lbl_mem'),
-                    coreMemories: val('val_mem').split(',').map(s => s.trim()),
+                    coreMemories: memoriesData,
                     HoursTogetherLabel: val('lbl_time'),
                     HoursTogether: val('val_time'),
                     vibeLabel: val('lbl_vibe'),
                     vibe: val('val_vibe'),
-                    imageSrc: val('wrap_img'),
-                    footerLabel: val('collectionText')
+                    imageSrc: val('wrap_img')
                 },
                 greeting: {
                     title: val('greet_title'),
                     message: val('greet_msg'),
                     imageSrc: val('greet_img'),
-                    footerText: val('collectionText')
+                    footerText: val('greet_footer')
                 },
-                quiz: { questions: quizItems },
-                music: musicItems,
+                quiz: { questions: quizData },
+                music: musicData,
                 gallery: {
                     title: val('gal_title'),
                     subtitle: val('gal_sub'),
-                    memories: galleryItems
+                    memories: galleryData
                 },
-                map: { locations: mapItems },
+                map: { locations: mapData },
                 letter: {
                     recipientName: val('let_rec'),
                     message: val('let_msg'),
                     signature: val('let_sig')
+                },
+                lock: {
+                    initials: val('lock_init'),
+                    instruction: val('lock_instr'),
+                    finalMessage: val('lock_msg')
                 }
             };
 
-            const code = "const CONFIG = " + JSON.stringify(CONFIG, null, 4) + ";";
-            document.getElementById('outputCode').value = code;
+            const codeOutput = "const CONFIG = " + JSON.stringify(CONFIG, null, 4) + ";";
+            document.getElementById('outputCode').value = codeOutput;
             document.getElementById('resultModal').classList.remove('hidden');
         }
 
         function copyCode() {
-            document.getElementById("outputCode").select();
+            const textarea = document.getElementById("outputCode");
+            textarea.select();
             document.execCommand("copy");
-            // alert("Copied!");
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined">done_all</span> Copied!';
+            btn.classList.replace('bg-emerald-500', 'bg-emerald-600');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-emerald-600', 'bg-emerald-500');
+            }, 2000);
         }
     </script>
 </body>

@@ -9,13 +9,85 @@ const scratchSfx = new Audio('assets/sfx1.mp3'); // Fallback to printer sfx if n
 scratchSfx.volume = 0.4;
 
 document.addEventListener('DOMContentLoaded', () => {
+    updateSEO(); // Update SEO/OG tags
     applyTheme(); // Apply theme first
+    initParticles(); // Initialize background atmosphere
     loadDynamicContent();
     initLogin();
     initCountdown(); // Start the countdown
     initMusicPlayer();
     initLetterPage();
 });
+
+// Update SEO/OG Settings
+function updateSEO() {
+    if (CONFIG.seo) {
+        const { title, description, image } = CONFIG.seo;
+
+        // Update browser title
+        if (title) document.title = title;
+
+        // Update description
+        const descTag = document.querySelector('meta[name="description"]');
+        if (descTag) descTag.setAttribute('content', description);
+
+        // Update OpenGraph
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', title);
+
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', description);
+
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        if (ogImage) ogImage.setAttribute('content', image);
+
+        // Update Twitter
+        const twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', title);
+
+        const twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute('content', description);
+
+        const twImage = document.querySelector('meta[name="twitter:image"]');
+        if (twImage) twImage.setAttribute('content', image);
+    }
+}
+
+// Particle System
+function initParticles() {
+    const container = document.getElementById('particle-container');
+    if (!container || !CONFIG.theme || !CONFIG.theme.particles || CONFIG.theme.particles === 'none') return;
+
+    const type = CONFIG.theme.particles;
+    const count = 20; // Maintain performance
+
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = `particle particle-${type}`;
+
+        // Randomize starting positions
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = Math.random() * (type === 'hearts' ? 20 : 10) + 5;
+        const delay = Math.random() * 10;
+        const duration = Math.random() * 10 + 5;
+
+        p.style.left = `${x}%`;
+        p.style.top = `${y}%`;
+        p.style.width = `${size}px`;
+        p.style.height = `${size}px`;
+        p.style.animationDelay = `${delay}s`;
+        p.style.animationDuration = `${duration}s`;
+
+        if (type === 'hearts') {
+            p.innerHTML = '❤️';
+            p.style.fontSize = `${size}px`;
+            p.style.background = 'none';
+        }
+
+        container.appendChild(p);
+    }
+}
 
 // Apply Theme Settings
 function applyTheme() {
@@ -29,7 +101,14 @@ function applyTheme() {
         if (CONFIG.theme.backgroundImage && CONFIG.theme.backgroundImage.trim() !== '') {
             document.body.style.backgroundImage = `url('${CONFIG.theme.backgroundImage}')`;
         }
-        // If empty, CSS default will be used automatically
+
+        // Apply dynamic fonts
+        if (CONFIG.theme.fontDisplay) {
+            document.documentElement.style.setProperty('--font-display', CONFIG.theme.fontDisplay);
+        }
+        if (CONFIG.theme.fontSans) {
+            document.documentElement.style.setProperty('--font-sans', CONFIG.theme.fontSans);
+        }
     }
 }
 
@@ -193,19 +272,20 @@ function loadDynamicContent() {
         if (minutesEl) minutesEl.textContent = CONFIG.wrapped.HoursTogether;
         if (vibeEl) vibeEl.textContent = CONFIG.wrapped.vibe;
 
-        if (wrappedImg) wrappedImg.style.backgroundImage = `url('${CONFIG.wrapped.imageSrc}')`;
+        if (wrappedImg) {
+            wrappedImg.src = CONFIG.wrapped.imageSrc;
+            wrappedImg.onerror = function () {
+                // Fallback if Imgur fails or 403s
+                this.src = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=400&auto=format&fit=crop";
+                console.warn("Wrapped image failed to load, using fallback.");
+            };
+        }
 
         if (topPlacesList && CONFIG.wrapped.topPlaces) {
             topPlacesList.innerHTML = CONFIG.wrapped.topPlaces.map(place => `<li>${place}</li>`).join('');
         }
         if (coreMemoriesList && CONFIG.wrapped.coreMemories) {
             coreMemoriesList.innerHTML = CONFIG.wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
-        }
-
-        // Footer label
-        const footerLabel = document.getElementById('wrapped-footer-label');
-        if (footerLabel && CONFIG.wrapped.footerLabel) {
-            footerLabel.textContent = CONFIG.wrapped.footerLabel;
         }
     }
 
@@ -252,17 +332,32 @@ function loadDynamicContent() {
         if (noBtn) noBtn.textContent = CONFIG.invitation.noText;
     }
 
-    // Page 10: Finale
-    if (CONFIG.finale) {
-        const finaleTitle = document.getElementById('finale-title');
-        const finaleMessage = document.getElementById('finale-message');
+    // Page 9: Love-Lock Finale
+    if (CONFIG.lock) {
+        const lockInitials = document.getElementById('lock-initials');
+        const lockInstr = document.getElementById('lock-instruction');
+        const lockFinal = document.getElementById('lock-final-message');
 
-        if (finaleTitle) finaleTitle.textContent = CONFIG.finale.title;
-        if (finaleMessage) finaleMessage.textContent = CONFIG.finale.message;
+        if (lockInitials) lockInitials.textContent = CONFIG.lock.initials || "A + B";
+        if (lockInstr) lockInstr.textContent = CONFIG.lock.instruction || "Click to lock our love forever...";
+        if (lockFinal) lockFinal.textContent = CONFIG.lock.finalMessage || "Safely locked in my heart. Always.";
     }
 }
 
-function loadSong(index) {
+
+// --- IDM SHIELD: Fetch Media as Blob ---
+async function fetchMediaBlob(url) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+    } catch (e) {
+        console.error("Failed to fetch media blob:", e);
+        return url; // Fallback to original URL
+    }
+}
+
+async function loadSong(index) {
     if (!CONFIG.music || CONFIG.music.length === 0) return;
 
     // Safety Wrap for playlist boundaries
@@ -283,7 +378,6 @@ function loadSong(index) {
 
     if (musicCover) {
         musicCover.src = song.coverSrc;
-        // Fallback for broken images (avoids "box" icons)
         musicCover.onerror = () => {
             musicCover.src = "https://images.unsplash.com/photo-1518193583867-0ef427db9aa2?q=80&w=400&h=400&auto=format&fit=crop";
         };
@@ -291,35 +385,22 @@ function loadSong(index) {
 
     if (lyrics) {
         lyrics.textContent = song.lyrics || "";
-        // Reset opacity for a subtle fade-in effect when song changes
         lyrics.style.opacity = 0;
         setTimeout(() => lyrics.style.opacity = 0.8, 100);
     }
 
-    // Polaroid Shake Effect
-    const card = document.getElementById('music-card');
-    if (card) {
-        card.classList.remove('polaroid-shake');
-        void card.offsetWidth; // trigger reflow
-        card.classList.add('polaroid-shake');
-    }
-
-    // Load audio source directly
+    // Load audio source as blob to hide from IDM
     const newSrc = song.audioSrc;
     if (bgMusic.dataset.originalSrc !== newSrc) {
-
-        // Clean up any old blob URLs if they exist from previous sessions
         if (bgMusic.src && bgMusic.src.startsWith('blob:')) {
             URL.revokeObjectURL(bgMusic.src);
         }
 
+        const blobUrl = await fetchMediaBlob(newSrc);
         bgMusic.dataset.originalSrc = newSrc;
-        bgMusic.src = newSrc;
+        bgMusic.src = blobUrl;
 
-        // When source changes, it's always paused initially. Force UI sync.
         updatePlayIcon();
-
-        // Setting .src triggers load automatically. No .load() needed.
     }
 }
 
@@ -539,21 +620,25 @@ function loadGallery() {
 
     if (gridEl) {
         gridEl.innerHTML = '';
-        CONFIG.gallery.memories.forEach((mem, index) => {
+        CONFIG.gallery.memories.forEach(async (mem, index) => {
             const card = document.createElement('div');
             card.className = `polaroid-frame bg-white p-3 shadow-2xl relative ${mem.rotation} group`;
 
             // Determine media HTML based on type
             let mediaHTML = "";
             if (mem.type === "video") {
+                const blobUrl = await fetchMediaBlob(mem.src);
                 mediaHTML = `
-                    <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="auto">
-                        <source src="${mem.src}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>`;
+                    <div class="relative w-full h-full">
+                        <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="auto">
+                            <source src="${blobUrl}" type="video/mp4">
+                        </video>
+                        <!-- IDM Shield for Gallery Video -->
+                        <div class="absolute inset-0 z-20 bg-transparent"></div>
+                    </div>`;
             } else {
                 // handles "image" and default
-                mediaHTML = `<img alt="Memory" class="w-full h-full object-cover" src="${mem.src}" />`;
+                mediaHTML = `<img alt="Memory" class="w-full h-full object-cover" src="${mem.src}" referrerpolicy="no-referrer" />`;
             }
 
             card.innerHTML = `
@@ -785,7 +870,7 @@ function initMap() {
             if (loc.imageSrc && loc.imageSrc.trim() !== '') {
                 popupContent += `
                     <div class="mb-3 rounded-lg overflow-hidden shadow-md">
-                        <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-32 object-cover">
+                        <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-32 object-cover" referrerpolicy="no-referrer">
                     </div>`;
             }
 
@@ -1012,6 +1097,11 @@ async function startLetterTyping() {
     const signatureEl = document.getElementById('letter-signature');
     if (signatureEl && letterTyped && CONFIG.letter.signature) {
         await typeTarget(signatureEl, CONFIG.letter.signature);
+    }
+
+    // Finished! Show the Finale button
+    if (typeof checkLetterCompletion === 'function') {
+        checkLetterCompletion();
     }
 }
 
@@ -1340,3 +1430,97 @@ function initCountdown() {
     const timerInterval = setInterval(updateTimer, 1000);
 }
 
+// --- LOVE-LOCK FINALE LOGIC ---
+function lockTheHeart() {
+    const shackle = document.getElementById('padlock-shackle');
+    const container = document.getElementById('padlock-container');
+    const instruction = document.getElementById('lock-instruction');
+    const finalMsg = document.getElementById('lock-final-message-container');
+    const lockDate = document.getElementById('lock-date');
+    const key = document.getElementById('padlock-key');
+    const screenshotBtn = document.getElementById('lock-screenshot-btn');
+
+    if (!shackle || shackle.classList.contains('shackle-locked')) return;
+
+    // 1. Play Lock Sound
+    const lockSfx = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+    lockSfx.volume = 0.6;
+    lockSfx.play().catch(e => console.log("Sound blocked"));
+
+    // 1b. Stop Background Music
+    if (bgMusic) {
+        bgMusic.pause();
+        if (typeof updatePlayIcon === 'function') updatePlayIcon();
+    }
+
+    // 2. Animate Shackle
+    shackle.classList.add('shackle-locked');
+
+    // 3. Stop Floating Animation
+    container.classList.remove('lock-float');
+
+    // 4. Vanishing Key Animation
+    if (key) {
+        key.classList.add('key-vanish');
+    }
+
+    // 5. Update UI & Date
+    if (lockDate) {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        lockDate.textContent = `Locked on ${now.toLocaleDateString('en-US', options)}`;
+    }
+
+    instruction.style.opacity = '0';
+    setTimeout(() => {
+        instruction.classList.add('hidden');
+        finalMsg.classList.remove('pointer-events-none');
+        finalMsg.style.opacity = '1';
+        if (lockDate) lockDate.style.opacity = '0.4';
+        if (screenshotBtn) screenshotBtn.classList.remove('hidden');
+
+        // 6. CINEMATIC SEQUENCES
+        startCinematicOutro();
+    }, 1000);
+}
+
+function startCinematicOutro() {
+    setTimeout(() => {
+        // Slide in cinematic bars
+        document.body.classList.add('cinematic-active');
+
+        // Final Fade to black and Restart
+        setTimeout(() => {
+            const finalFade = document.getElementById('final-cinematic-fade');
+            if (finalFade) {
+                finalFade.classList.add('fade-to-black');
+            }
+
+            // Final Restart to Page 1
+            setTimeout(() => {
+                location.reload();
+            }, 3500);
+        }, 7000); // 7 seconds of cinematic focus before total fade
+    }, 3500); // Wait 3.5 seconds after lock before starting cinematic bars
+}
+
+function captureLockPage() {
+    const container = document.querySelector('#page-9 main');
+    if (typeof captureElement === 'function') {
+        captureElement(container, 'Our-Love-Locked.png');
+    }
+}
+
+// Ensure Page 8 "Next" logic is visible if it needs to go to Page 9
+function checkLetterCompletion() {
+    const nextBtnContainer = document.querySelector('#page-8 .nav-bottom-grid div:last-child');
+    if (nextBtnContainer) {
+        nextBtnContainer.classList.remove('invisible');
+        nextBtnContainer.innerHTML = `
+            <button onclick="MapsTo('page-8', 'page-9')" class="nav-btn-standard">
+                <span>Finale</span>
+                <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+            </button>
+        `;
+    }
+}
