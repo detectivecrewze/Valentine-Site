@@ -1,4 +1,9 @@
 const CONFIG = {
+    // Theme Settings (leave empty for default)
+    theme: {
+        backgroundImage: '', // Leave empty to use default paper texture from CSS
+        backgroundColor: '#F5E6D3' // Fallback color
+    },
     login: {
         password: "cintaislam1234512345",
         errorMessage: "Incorrect password, try again!",

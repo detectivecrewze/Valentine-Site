@@ -9,12 +9,29 @@ const scratchSfx = new Audio('assets/sfx1.mp3'); // Fallback to printer sfx if n
 scratchSfx.volume = 0.4;
 
 document.addEventListener('DOMContentLoaded', () => {
+    applyTheme(); // Apply theme first
     loadDynamicContent();
     initLogin();
     initCountdown(); // Start the countdown
     initMusicPlayer();
     initLetterPage();
 });
+
+// Apply Theme Settings
+function applyTheme() {
+    if (CONFIG.theme) {
+        // Apply background color
+        if (CONFIG.theme.backgroundColor) {
+            document.body.style.backgroundColor = CONFIG.theme.backgroundColor;
+        }
+
+        // Apply custom background image if specified (overrides CSS default)
+        if (CONFIG.theme.backgroundImage && CONFIG.theme.backgroundImage.trim() !== '') {
+            document.body.style.backgroundImage = `url('${CONFIG.theme.backgroundImage}')`;
+        }
+        // If empty, CSS default will be used automatically
+    }
+}
 
 // Helper Function: MapsTo
 function MapsTo(fromId, toId) {
