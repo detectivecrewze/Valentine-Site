@@ -67,9 +67,7 @@
     <script defer src="script.js"></script>
 </head>
 
-<body
-    class="font-display bg-background-light dark:bg-background-dark overflow-hidden h-screen w-screen selection:bg-rosegold/30"
-    oncontextmenu="return false">
+<body class="font-display overflow-hidden h-screen w-screen selection:bg-rosegold/30" oncontextmenu="return false">
     <div class="grain-overlay"></div>
 
     <!-- Global Music Helper -->
@@ -81,7 +79,7 @@
     </div>
 
     <!-- Page 1: Login (User Design) -->
-    <section id="page-1" class="page flex h-full w-full items-center justify-center dreamy-bg px-6 relative z-10">
+    <section id="page-1" class="page flex h-full w-full items-center justify-center px-6 relative z-10">
         <div class="layout-container flex flex-col items-center w-full max-w-[420px] relative z-10">
             <!-- Navigation / Top Header -->
             <header class="w-full flex justify-between items-center py-6 px-2 mb-4">
@@ -214,12 +212,12 @@
     </section>
 
     <!-- Page 2: Greeting Card (Formerly Page 4) -->
-    <section id="page-2" class="page hidden fixed inset-0 z-20 w-full h-full bg-white/90">
+    <section id="page-2" class="page hidden fixed inset-0 z-20 w-full h-full">
         <div class="grain-overlay"></div>
 
         <!-- Scrollable Content Wrapper -->
         <div id="page-2-container" class="w-full h-full overflow-y-auto">
-            <div class="min-h-screen w-full flex items-center justify-center dreamy-bg px-6 py-12">
+            <div class="min-h-screen w-full flex items-center justify-center px-6 py-12">
                 <div class="layout-container flex flex-col items-center w-full max-w-[500px] relative z-10">
                     <div class="glass-card w-full rounded-2xl p-8 md:p-12 flex flex-col items-center text-center">
                         <div class="mb-8 text-rosegold/80">
@@ -286,13 +284,13 @@
     </section>
 
     <!-- Page 3: Polaroid Player (Formerly Page 2) -->
-    <section id="page-3" class="page hidden fixed inset-0 z-20 w-full h-full bg-white">
+    <section id="page-3" class="page hidden fixed inset-0 z-20 w-full h-full">
 
         <div class="grain-overlay"></div>
         <!-- Decorations removed to keep it clean -->
         <!-- Main Content (Dreamy Gradient) -->
         <div id="page-3-container" class="h-full w-full overflow-y-auto">
-            <div class="min-h-screen w-full dreamy-bg flex flex-col items-center justify-center p-6 py-12 relative">
+            <div class="min-h-screen w-full flex flex-col items-center justify-center p-6 py-12 relative">
 
 
                 <div class="flex flex-col items-center max-w-2xl w-full relative">
@@ -421,11 +419,11 @@
 
     <!-- Placeholder Sections for Page 3-8 (to ensure IDs exist) -->
     <!-- Page 4: Relationship Wrapped (Formerly Page 2) -->
-    <section id="page-4" class="page hidden fixed inset-0 z-20 w-full h-full text-left bg-background-light">
+    <section id="page-4" class="page hidden fixed inset-0 z-20 w-full h-full text-left">
         <div class="grain-overlay"></div>
         <!-- Scrollable Main Container -->
         <main
-            class="h-full w-full dreamy-gradient flex flex-col items-center justify-start pt-0 pb-32 px-6 relative overflow-y-auto overflow-x-hidden">
+            class="h-full w-full flex flex-col items-center justify-start pt-0 pb-32 px-6 relative overflow-y-auto overflow-x-hidden">
 
 
             <!-- High-Fidelity Printer Container -->
@@ -565,7 +563,7 @@
     <section id="page-5" class="page hidden fixed inset-0 z-20 w-full h-full text-left">
         <div class="grain-overlay"></div>
         <div id="page-5-container"
-            class="min-h-screen w-full h-full overflow-y-auto dreamy-gradient flex items-start justify-center py-6 px-4 md:py-12 md:px-6 relative">
+            class="min-h-screen w-full h-full overflow-y-auto flex items-start justify-center py-6 px-4 md:py-12 md:px-6 relative">
 
             <!-- Decorations (Now inside container for screenshot capture) -->
             <div class="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
@@ -658,7 +656,7 @@
     <section id="page-6" class="page hidden fixed inset-0 z-20 w-full h-full text-left">
         <div class="grain-overlay"></div>
         <div id="page-6-container" class="h-full w-full overflow-y-auto">
-            <div class="min-h-screen w-full dreamy-bg px-4 py-16 md:px-8 relative flex flex-col items-center">
+            <div class="min-h-screen w-full px-4 py-16 md:px-8 relative flex flex-col items-center">
 
 
                 <div class="max-w-6xl w-full mx-auto relative z-10 flex flex-col items-center">
@@ -704,7 +702,7 @@
         </div>
     </section>
     <!-- Page 7: The Atlas of Us (Interactive Map) (Formerly Page 6) -->
-    <section id="page-7" class="page hidden fixed inset-0 z-20 w-full h-full bg-background-light overflow-hidden">
+    <section id="page-7" class="page hidden fixed inset-0 z-20 w-full h-full overflow-hidden">
         <main class="h-full w-full relative overflow-hidden">
             <div id="map" class="h-full w-full"></div>
 
@@ -776,7 +774,7 @@
         <div class="grain-overlay"></div>
         <div id="page-8-scroll-wrapper" class="h-full w-full overflow-y-auto">
             <main id="page-8-container"
-                class="min-h-screen w-full dreamy-gradient flex items-start justify-center py-12 pb-48 px-6 relative">
+                class="min-h-screen w-full flex items-start justify-center py-12 pb-48 px-6 relative">
                 <!-- Background Decorations -->
                 <div class="absolute top-20 left-20 opacity-20 animate-pulse">
                     <span class="material-symbols-outlined text-rose-300 text-6xl">favorite</span>
