@@ -94,7 +94,7 @@
     <section id="page-1" class="page flex h-full w-full items-center justify-center px-6 relative z-10">
         <div class="layout-container flex flex-col items-center w-full max-w-[420px] relative z-10">
             <!-- Navigation / Top Header -->
-            <header class="w-full flex justify-between items-center py-6 px-2 mb-4">
+            <header class="w-full flex justify-between items-center pt-32 pb-2 px-2 mb-0">
                 <div class="flex items-center gap-2 text-primary dark:text-pink-200">
                     <span class="material-symbols-outlined scale-75">diamond</span>
                     <h2 id="p1-subtitle" class="text-sm font-bold uppercase tracking-widest opacity-80">Collection 2024
@@ -262,9 +262,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="p3-footer"
-                            class="text-[10px] font-sans uppercase tracking-[0.3em] text-primary/40 dark:text-white/20">
-                            Forever & Always
+                        <div class="flex items-center gap-2 text-primary/40 dark:text-white/20">
+                            <span class="material-symbols-outlined scale-75"
+                                style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                                diamond
+                            </span>
+                            <div id="p3-footer" class="text-[10px] font-sans uppercase tracking-[0.3em]">
+                                FOR YOU, ALWAYS
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -480,7 +485,19 @@
                 <div class="printer-slot-wrapper">
                     <article class="story-card rounded-3xl p-6 flex flex-col justify-between z-10 relative bg-cream">
                         <div class="swirl-bg"></div>
-                        <div class="relative z-10 pt-6">
+
+                        <!-- Brand Logo on Receipt -->
+                        <div class="relative z-10 flex items-center justify-center gap-2 text-primary/30 mb-2">
+                            <span class="material-symbols-outlined scale-75"
+                                style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                                diamond
+                            </span>
+                            <span class="text-[10px] font-sans uppercase tracking-[0.3em] font-bold">
+                                FOR YOU, ALWAYS
+                            </span>
+                        </div>
+
+                        <div class="relative z-10 pt-2">
                             <div class="photo-frame bg-white p-3 aspect-square w-full overflow-hidden shadow-sm">
                                 <img id="wrapped-image" src="" alt="Wrapped Memory"
                                     class="w-full h-full object-cover rounded-sm" referrerpolicy="no-referrer" />
@@ -569,18 +586,7 @@
         <div id="page-5-container"
             class="min-h-screen w-full h-full overflow-y-auto flex items-start justify-center py-6 px-4 md:py-12 md:px-6 relative">
 
-            <!-- Decorations (Now inside container for screenshot capture) -->
-            <div class="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
-                <div class="absolute top-[10%] left-[15%] opacity-10 rotate-12">
-                    <span class="material-symbols-outlined text-9xl text-rose-900">favorite</span>
-                </div>
-                <div class="absolute bottom-[20%] right-[10%] opacity-10 -rotate-12">
-                    <span class="material-symbols-outlined text-[120px] text-rose-900">auto_awesome</span>
-                </div>
-                <div class="absolute top-[40%] right-[15%] opacity-5">
-                    <span class="material-symbols-outlined text-8xl text-rose-900">flutter_dash</span>
-                </div>
-            </div>
+
             <div class="max-w-2xl w-full">
                 <div class="glass-card rounded-[2rem] p-6 md:p-12 shadow-2xl relative">
                     <div class="flex flex-col items-center mb-6 md:mb-10">
@@ -665,6 +671,16 @@
 
                 <div class="max-w-6xl w-full mx-auto relative z-10 flex flex-col items-center">
                     <header class="text-center mb-16">
+                        <!-- Brand Logo for Gallery -->
+                        <div class="flex items-center justify-center gap-2 text-primary/40 mb-4">
+                            <span class="material-symbols-outlined scale-75"
+                                style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                                diamond
+                            </span>
+                            <span class="text-[10px] font-sans uppercase tracking-[0.3em] font-bold">
+                                FOR YOU, ALWAYS
+                            </span>
+                        </div>
                         <h2 id="gallery-title" class="font-display italic text-rose-900 text-4xl md:text-5xl mb-4">Our
                             Memory Gallery</h2>
                         <p id="gallery-subtitle" class="text-primary/60 font-sans tracking-widest text-xs uppercase">
@@ -718,54 +734,67 @@
                     class="bg-white/60 md:bg-white/40 backdrop-blur-xl border border-white/60 p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl pointer-events-auto relative">
 
                     <!-- Header with Toggle Button -->
-                    <div class="flex justify-between items-start">
-                        <h1
-                            class="text-deep-red font-display text-2xl md:text-5xl font-bold mb-2 md:mb-3 text-center md:text-left flex-1">
-                            The Atlas of Us</h1>
-                        <button onclick="toggleMapCard()"
-                            class="md:hidden p-1 text-rose-900/60 hover:text-rose-900 transition-colors">
-                            <span id="map-card-chevron"
-                                class="material-symbols-outlined transition-transform duration-300">expand_less</span>
-                        </button>
-                    </div>
+                    <div class="flex flex-col mb-2">
+                        <!-- Brand Logo for Map -->
+                        <div class="flex items-center justify-center md:justify-start gap-2 text-primary/40 mb-2">
+                            <span class="material-symbols-outlined scale-75"
+                                style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                                diamond
+                            </span>
+                            <span class="text-[10px] font-sans uppercase tracking-[0.3em] font-bold">
+                                FOR YOU, ALWAYS
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <h1
+                                class="text-deep-red font-display text-2xl md:text-5xl font-bold mb-2 md:mb-3 text-center md:text-left flex-1">
+                                The Atlas of Us</h1>
+                            <button onclick="toggleMapCard()"
+                                class="md:hidden p-1 text-rose-900/60 hover:text-rose-900 transition-colors">
+                                <span id="map-card-chevron"
+                                    class="material-symbols-outlined transition-transform duration-300">expand_less</span>
+                            </button>
+                        </div>
 
-                    <!-- Collapsible Content -->
-                    <div id="map-card-content"
-                        class="overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
-                        <p class="text-rose-900/80 font-serif italic text-sm md:text-lg leading-relaxed">
-                            A cartography of the moments that defined our story. Every pin is a heartbeat, every line a
-                            path we walked together.
-                        </p>
-                        <div class="mt-4 md:mt-6 flex gap-3 text-rose-400 justify-center md:justify-start">
-                            <span class="material-symbols-outlined text-lg md:text-2xl">auto_awesome</span>
-                            <span class="material-symbols-outlined text-rose-300 text-lg md:text-2xl">favorite</span>
+                        <!-- Collapsible Content -->
+                        <div id="map-card-content"
+                            class="overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                            <p class="text-rose-900/80 font-serif italic text-sm md:text-lg leading-relaxed">
+                                A cartography of the moments that defined our story. Every pin is a heartbeat, every
+                                line a
+                                path we walked together.
+                            </p>
+                            <div class="mt-4 md:mt-6 flex gap-3 text-rose-400 justify-center md:justify-start">
+                                <span class="material-symbols-outlined text-lg md:text-2xl">auto_awesome</span>
+                                <span
+                                    class="material-symbols-outlined text-rose-300 text-lg md:text-2xl">favorite</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Navigation Buttons -->
-            <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
-                <div class="nav-bottom-grid max-w-6xl mx-auto">
-                    <div class="flex justify-start">
-                        <button onclick="MapsTo('page-7', 'page-6')" class="nav-btn-standard">
-                            <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
-                            <span>Back</span>
-                        </button>
-                    </div>
-                    <div class="flex justify-center">
-                        <div class="w-12 h-12 flex items-center justify-center opacity-40">
-                            <span class="material-symbols-outlined text-rose-300 text-4xl">explore</span>
+                <!-- Navigation Buttons -->
+                <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
+                    <div class="nav-bottom-grid max-w-6xl mx-auto">
+                        <div class="flex justify-start">
+                            <button onclick="MapsTo('page-7', 'page-6')" class="nav-btn-standard">
+                                <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
+                                <span>Back</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-center">
+                            <div class="w-12 h-12 flex items-center justify-center opacity-40">
+                                <span class="material-symbols-outlined text-rose-300 text-4xl">explore</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="MapsTo('page-7', 'page-8')" class="nav-btn-standard">
+                                <span>Next</span>
+                                <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="flex justify-end">
-                        <button onclick="MapsTo('page-7', 'page-8')" class="nav-btn-standard">
-                            <span>Next</span>
-                            <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
 
         </main>
     </section>
@@ -879,6 +908,16 @@
             </div>
 
             <div class="relative z-10 flex flex-col items-center">
+                <!-- Brand Logo for Finale -->
+                <div class="flex items-center justify-center gap-2 text-primary/40 mb-10">
+                    <span class="material-symbols-outlined scale-75"
+                        style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                        diamond
+                    </span>
+                    <span class="text-[10px] font-sans uppercase tracking-[0.3em] font-bold">
+                        FOR YOU, ALWAYS
+                    </span>
+                </div>
                 <!-- Padlock Container -->
                 <div id="padlock-container" onclick="lockTheHeart()"
                     class="relative w-64 h-80 mb-16 flex flex-col items-center cursor-pointer group transition-transform duration-700 hover:scale-105 lock-float">

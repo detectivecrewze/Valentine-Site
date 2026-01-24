@@ -193,7 +193,7 @@ function MapsTo(fromId, toId) {
             loadSong(currentSongIndex);
             setTimeout(() => {
                 playMusic();
-            }, 300);
+            }, 800);
         } else if (toId === 'page-5') {
             if (typeof loadQuiz === 'function') loadQuiz();
         } else if (toId === 'page-6') {
@@ -1026,6 +1026,9 @@ function initLogin() {
             if (btn) {
                 createHeartExplosion(btn);
             }
+
+            // Start music on first interaction (login) to bypass autoplay restrictions
+            playMusic();
 
             // Delay transition to allow explosion to be seen
             setTimeout(() => {
