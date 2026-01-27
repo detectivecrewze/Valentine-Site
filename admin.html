@@ -2178,8 +2178,12 @@
                     sidebar.classList.toggle('force-hidden');
                 } else {
                     // Mobile: Toggle Modal
-                    sidebar.classList.toggle('mobile-open');
-                    if (sidebar.classList.contains('mobile-open')) syncToPreview();
+                    if (sidebar.classList.contains('mobile-open')) {
+                        closeMobilePreview();
+                    } else {
+                        // Use the existing sync logic that handles button creation
+                        syncPreviewToPage(null);
+                    }
                 }
             }
         }
