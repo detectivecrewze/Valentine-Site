@@ -1,112 +1,94 @@
-// Generic Screenshot functionality
+// ========================================
+// SCREENSHOT FUNCTIONALITY - FULL PAGE V3.3
+// Fix: Judul teks terpotong di Music Player
+// ========================================
+
 function captureElement(selector, filename) {
     const element = document.querySelector(selector);
-    // Hide all navigation and screenshot buttons temporarily
-    const buttons = document.querySelectorAll('.screenshot-btn-class');
+    const isMap = selector.includes('page-7');
 
     if (!element) {
         console.error('Content to capture not found:', selector);
-        alert('Content to capture not found!');
         return;
     }
 
-    // Hide buttons temporarily
-    buttons.forEach(btn => btn.style.display = 'none');
+    // Identifikasi tombol navigasi
+    const navButtons = document.querySelectorAll('.nav-bottom-grid, .nav-camera-btn, .nav-btn-standard');
 
-    // Use html2canvas
-    if (typeof html2canvas !== 'undefined') {
+    // Tampilkan loading
+    const loadingDiv = document.createElement('div');
+    loadingDiv.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        background: rgba(255,255,255,0.98); padding: 25px; border-radius: 15px; 
+        z-index: 100000; box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        font-family: sans-serif; text-align: center; color: #7e0c23; border: 2px solid #fecdd3;
+    `;
+    loadingDiv.innerHTML = '<div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">📸 Menyimpan Seluruh Halaman</div><div style="font-size: 13px; color: #666;">Membereskan detail teks...</div>';
+    document.body.appendChild(loadingDiv);
+
+    // Sembunyikan tombol agar tidak masuk foto
+    navButtons.forEach(btn => btn.style.visibility = 'hidden');
+
+    // Capture dimensions
+    const captureHeight = isMap ? window.innerHeight : element.scrollHeight;
+
+    setTimeout(() => {
         html2canvas(element, {
-            backgroundColor: '#ffffff', // Prevent black background on transparency
-            scale: 2, // Higher quality
-            logging: false,
+            backgroundColor: '#fff1f2',
             useCORS: true,
-            allowTaint: true,
-            scrollY: -window.scrollY, // Correct for page scroll
-            windowWidth: document.documentElement.offsetWidth,
-            windowHeight: element.scrollHeight || document.documentElement.offsetHeight,
+            scale: 2,
+            logging: false,
+            height: captureHeight,
+            windowHeight: captureHeight,
             onclone: (clonedDoc) => {
-                // Ensure the cloned elements have the right visual state for capture
-                const clonedDate = clonedDoc.getElementById('lock-date');
-                if (clonedDate) {
-                    clonedDate.style.opacity = '1';
-                    clonedDate.style.visibility = 'visible';
-                    clonedDate.style.color = '#7e0c23'; // Darker for better contrast in screenshot
+                // FIX: Mencegah teks judul terpotong
+                const titles = clonedDoc.querySelectorAll('#song-title, #artist-name, .font-display');
+                titles.forEach(el => {
+                    el.style.overflow = 'visible';
+                    el.style.whiteSpace = 'normal';
+                    el.style.lineHeight = '1.4';
+                    el.style.paddingTop = '5px';
+                    el.classList.remove('truncate');
+                });
+
+                const clonedElement = clonedDoc.querySelector(selector);
+                if (clonedElement) {
+                    // For maps, keep the fixed height to avoid blank tiles
+                    if (!isMap) {
+                        clonedElement.style.height = 'auto';
+                    } else {
+                        clonedElement.style.height = window.innerHeight + 'px';
+                    }
+                    clonedElement.style.overflow = 'visible';
                 }
 
-                const clonedFinalMsg = clonedDoc.getElementById('lock-final-message-container');
-                if (clonedFinalMsg) {
-                    clonedFinalMsg.style.opacity = '1';
-                    clonedFinalMsg.style.visibility = 'visible';
-                }
-
-                const clonedPadlock = clonedDoc.querySelector('.padlock-body');
-                if (clonedPadlock) {
-                    // Force the background color for better rendering in case gradient fails
-                    clonedPadlock.style.backgroundColor = '#e5b4a2';
-                }
-
-                // Hide cinematic bars during screenshot if they are active
-                const topBar = clonedDoc.getElementById('cinematic-top-bar');
-                const bottomBar = clonedDoc.getElementById('cinematic-bottom-bar');
-                if (topBar) topBar.style.display = 'none';
-                if (bottomBar) bottomBar.style.display = 'none';
+                // Sembunyi elemen yang tidak perlu
+                const skip = clonedDoc.querySelectorAll('.grain-overlay, #particle-container, #global-music-toggle');
+                skip.forEach(el => el.style.display = 'none');
             }
         }).then(canvas => {
-            // Show buttons again
-            buttons.forEach(btn => btn.style.display = '');
+            navButtons.forEach(btn => btn.style.visibility = 'visible');
+            if (loadingDiv.parentNode) document.body.removeChild(loadingDiv);
 
-            // Convert to blob and download
-            canvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = filename || 'memory.png';
-                link.href = url;
-                link.click();
-                URL.revokeObjectURL(url);
-            });
+            const link = document.createElement('a');
+            link.download = filename || 'full-memory.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
         }).catch(err => {
-            console.error('Screenshot failed:', err);
-            buttons.forEach(btn => btn.style.display = '');
-            alert('Screenshot failed. Please try again.');
+            console.error('Screenshot Error:', err);
+            navButtons.forEach(btn => btn.style.visibility = 'visible');
+            if (loadingDiv.parentNode) document.body.removeChild(loadingDiv);
+            alert('Gagal mengambil gambar halaman penuh.');
         });
-    } else {
-        buttons.forEach(btn => btn.style.display = '');
-        alert('Screenshot library not loaded. Please refresh the page.');
-    }
+    }, 1200); // Increased delay for map tiles to settle
 }
 
-// Specific wrappers
-function captureWrappedCard() {
-    // Page 2 - Card has its own background color
-    captureElement('.story-card', 'wrapped-2024.png');
-}
-
-function captureMusicCard() {
-    // Page 3 - Capture full container
-    captureElement('#page-3-container', 'our-song.png');
-}
-
-function captureGreetingCard() {
-    // Page 4 - Capture full container
-    captureElement('#page-2-container', 'valentine-card.png');
-}
-
-function captureQuizCard() {
-    // Page 5 - Capture full container with decorations
-    captureElement('#page-5-container', 'quiz-result.png');
-}
-
-function captureGallery() {
-    // Page 6 - Capture full container
-    captureElement('#page-6-container', 'memory-gallery.png');
-}
-
-function captureLetter() {
-    // Page 8 - Capture full container
-    captureElement('#page-8-container', 'heartfelt-letter.png');
-}
-
-function captureLockPage() {
-    // Page 9 - Capture full container
-    captureElement('#page-9 main', 'our-love-locked.png');
-}
+// Wrapper functions
+function captureWrappedCard() { captureElement('#page-4 main', 'full-wrapped.png'); }
+function captureMusicCard() { captureElement('#page-3-container', 'full-playlist.png'); }
+function captureGreetingCard() { captureElement('#page-2-container', 'full-greeting.png'); }
+function captureQuizCard() { captureElement('#page-5-container', 'full-quiz.png'); }
+function captureGallery() { captureElement('#page-6-container', 'full-gallery.png'); }
+function captureMap() { captureElement('#page-7-container', 'full-map-journey.png'); }
+function captureLetter() { captureElement('#page-8-container', 'full-letter.png'); }
+function captureLockPage() { captureElement('#page-9 main', 'full-love-locked.png'); }

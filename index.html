@@ -77,6 +77,13 @@
     <div class="grain-overlay"></div>
     <div id="particle-container"></div>
 
+    <!-- Page Indicator -->
+    <div id="global-page-indicator"
+        class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-white/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/40 shadow-sm transition-all duration-300 opacity-0 pointer-events-none">
+        <span id="page-indicator-text"
+            class="text-[10px] font-sans font-bold text-primary tracking-widest leading-none">1/9</span>
+    </div>
+
     <!-- Global Music Helper -->
     <div class="fixed top-4 right-4 z-50">
         <button id="global-music-toggle"
@@ -723,7 +730,7 @@
     </section>
     <!-- Page 7: The Atlas of Us (Interactive Map) (Formerly Page 6) -->
     <section id="page-7" class="page hidden fixed inset-0 z-20 w-full h-full overflow-hidden">
-        <main class="h-full w-full relative overflow-hidden">
+        <main id="page-7-container" class="h-full w-full relative overflow-hidden">
             <div id="map" class="h-full w-full"></div>
 
             <!-- Map Overlay Info -->
@@ -779,6 +786,9 @@
                         </button>
                     </div>
                     <div class="flex justify-center">
+                        <button onclick="captureMap()" class="nav-camera-btn">
+                            <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                        </button>
                     </div>
                     <div class="flex justify-end">
                         <button onclick="MapsTo('page-7', 'page-8')" class="nav-btn-standard">
@@ -806,7 +816,7 @@
                 </div>
 
                 <!-- Letter Paper - m-8 added to give space for overlaps in screenshots -->
-                <article class="letter-paper is-crumpled relative w-full max-w-lg m-8 px-6 py-8 md:px-12 md:py-12 z-10"
+                <article class="letter-paper is-crumpled relative w-full max-w-2xl m-8 px-6 py-8 md:px-12 md:py-12 z-10"
                     id="fate-letter" onclick="handleLetterInteraction()">
                     <!-- Click to Read Hint -->
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-rose-900 font-display italic text-2xl whitespace-nowrap pulse-hint-anim pointer-events-none"
@@ -872,6 +882,9 @@
 
                 <!-- Restart Button Removed per user request -->
                 <div class="flex justify-center">
+                    <button onclick="captureLetter()" class="nav-camera-btn">
+                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
+                    </button>
                 </div>
 
                 <!-- Finale Button Container (Initially Hidden) -->

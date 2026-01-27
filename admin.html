@@ -601,6 +601,36 @@
                                     value="It's Time! ❤️">
                             </div>
                         </div>
+
+                        <!-- NEW: Global Navigation Settings -->
+                        <div
+                            class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 mt-4">
+                            <div class="flex items-center justify-between p-2">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-900">Show Page Indicator</label>
+                                    <p class="text-[10px] text-indigo-400 font-medium">Show "3/9" at the top center</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="show_indicator" class="sr-only peer" checked>
+                                    <div
+                                        class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600">
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between p-2">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-900">Enable Mobile Swipe</label>
+                                    <p class="text-[10px] text-indigo-400 font-medium">Allow swiping left/right to
+                                        navigate</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="enable_swipe" class="sr-only peer" checked>
+                                    <div
+                                        class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600">
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1406,7 +1436,7 @@
                                     <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400 group-focus-within:bg-rose-100 group-focus-within:text-rose-500 transition-colors">${i + 1}</div>
                                     <input type="text" placeholder="Answer Option ${i + 1}" value="${item.options && item.options[i] ? item.options[i] : ''}"
                                         oninput="updateDynamicOption('${uniqueId}', ${idx}, ${i}, this.value)"
-                                        class="form-input text-xs flex-1 ${item.correctIndex === i ? 'border-emerald-500 bg-emerald-50/50 ring-1 ring-emerald-500/20' : ''}">
+                                        class="form-input text-xs flex-1">
                                 </div>
                              `).join('')}
                         </div>
@@ -1470,8 +1500,23 @@
             } else if (itemType === 'location') {
                 return `
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="Location Name" value="${item.title || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'title', this.value)" class="form-input text-sm font-bold">
-                        <input type="date" value="${item.date || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'date', this.value)" class="form-input text-sm">
+                        <div class="col-span-1">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Marker Icon</label>
+                            <select onchange="updateDynamicItem('${uniqueId}', ${idx}, 'icon', this.value)" class="form-input text-sm">
+                                <option value="favorite" ${item.icon === 'favorite' || !item.icon ? 'selected' : ''}>❤️ Heart</option>
+                                <option value="star" ${item.icon === 'star' ? 'selected' : ''}>⭐ Star</option>
+                                <option value="location_on" ${item.icon === 'location_on' ? 'selected' : ''}>📍 Location</option>
+                                <option value="restaurant" ${item.icon === 'restaurant' ? 'selected' : ''}>🍴 Food</option>
+                                <option value="park" ${item.icon === 'park' ? 'selected' : ''}>🌳 Park</option>
+                                <option value="theater_comedy" ${item.icon === 'theater_comedy' ? 'selected' : ''}>🎬 Cinema</option>
+                                <option value="photo_camera" ${item.icon === 'photo_camera' ? 'selected' : ''}>📸 Photo</option>
+                            </select>
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Date</label>
+                            <input type="date" value="${item.date || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'date', this.value)" class="form-input text-sm">
+                        </div>
+                        <input type="text" placeholder="Location Name" value="${item.title || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'title', this.value)" class="form-input text-sm font-bold col-span-2">
                         <div class="flex gap-1 col-span-2">
                             <input type="text" placeholder="Lat" value="${item.lat || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'lat', this.value)" class="form-input text-xs flex-1">
                             <input type="text" placeholder="Lng" value="${item.lng || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'lng', this.value)" class="form-input text-xs flex-1">
@@ -1540,7 +1585,7 @@
             if (itemType === 'song') newItem = { songTitle: '', artist: '', audioSrc: '', coverSrc: '', lyrics: '' };
             else if (itemType === 'question') newItem = { question: '', options: ['', '', '', ''], correctIndex: 0, correctMessage: 'Correct!', wrongMessage: 'Wrong!' };
             else if (itemType === 'memory') newItem = { type: 'image', src: '', caption: '', tape: 'washi-tape', rotation: 'rotate-1' };
-            else if (itemType === 'location') newItem = { lat: '', lng: '', title: '', memory: '', date: '', imageSrc: '' };
+            else if (itemType === 'location') newItem = { lat: '', lng: '', title: '', memory: '', date: '', imageSrc: '', icon: 'favorite' };
 
             if (!configData.pages[pageIndex][fieldKey]) configData.pages[pageIndex][fieldKey] = [];
             configData.pages[pageIndex][fieldKey].push(newItem);
@@ -1661,7 +1706,8 @@
                     title: l.title || "",
                     memory: l.memory || "",
                     date: l.date || "",
-                    imageSrc: l.imageSrc || ""
+                    imageSrc: l.imageSrc || "",
+                    icon: l.icon || "favorite"
                 })) : []
             };
 
@@ -1698,13 +1744,19 @@
 
 
             // ISO Format Date Converter
-            let targetDate = val('count_date');
+            let rawTargetDate = val('count_date');
+            let targetDate = rawTargetDate;
             try {
-                if (targetDate) {
-                    const d = new Date(targetDate);
-                    targetDate = d.toISOString().split('.')[0] + "+07:00";
+                if (rawTargetDate) {
+                    const d = new Date(rawTargetDate);
+                    if (!isNaN(d.getTime())) {
+                        // Use a safer format: YYYY-MM-DDTHH:mm:ss+07:00
+                        targetDate = rawTargetDate + ":00+07:00";
+                    }
                 }
-            } catch (e) { }
+            } catch (e) {
+                console.warn("[Admin] Date conversion failed:", e);
+            }
 
             // Invitation
             const invitePage = findPage('invitation-section');
@@ -1722,6 +1774,10 @@
                     fontDisplay: val('theme_font_display'),
                     fontSans: val('theme_font_sans'),
                     particles: val('theme_particles')
+                },
+                navigation: {
+                    showPageIndicator: document.getElementById('show_indicator') ? document.getElementById('show_indicator').checked : true,
+                    enableSwipe: document.getElementById('enable_swipe') ? document.getElementById('enable_swipe').checked : true
                 },
                 seo: {
                     title: val('seo_title'),
@@ -2058,7 +2114,7 @@
                 if (response.ok) {
                     btn.innerHTML = '<span class="material-symbols-outlined">verified</span> BERHASIL!';
                     btn.className = btn.className.replace('bg-rose-600', 'bg-emerald-500');
-                    alert("File data.js telah dikirim ke Telegram Anda!");
+                    alert("Berhasil dikirim ke Admin!");
                     localStorage.removeItem(LS_KEY);
                 } else {
                     const errorData = await response.json();

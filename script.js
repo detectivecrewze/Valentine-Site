@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.data && event.data.type === 'UPDATE_CONFIG') {
             try {
                 const newConfig = event.data.config;
-                console.log("[Preview] Syncing changes...", newConfig);
+                console.log("[Preview] UPDATE_CONFIG received for countdown:",
+                    newConfig.countdown ? newConfig.countdown.targetDate : "N/A");
 
                 // Shallow merge for first-level keys
                 for (let key in newConfig) {
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof applyTheme === 'function') applyTheme();
                 if (typeof updateSEO === 'function') updateSEO();
                 if (typeof loadDynamicContent === 'function') loadDynamicContent();
+                if (typeof initCountdown === 'function') initCountdown();
 
                 // Refresh current page if needed
                 const activePage = document.querySelector('.page:not(.hidden)');
@@ -172,11 +174,31 @@ function applyTheme() {
         // Apply dynamic fonts
         if (CONFIG.theme.fontDisplay) {
             document.documentElement.style.setProperty('--font-display', CONFIG.theme.fontDisplay);
+            loadGoogleFont(CONFIG.theme.fontDisplay);
         }
         if (CONFIG.theme.fontSans) {
             document.documentElement.style.setProperty('--font-sans', CONFIG.theme.fontSans);
+            loadGoogleFont(CONFIG.theme.fontSans);
         }
     }
+}
+
+// Dynamic Font Loader helper
+function loadGoogleFont(fontFamily) {
+    if (!fontFamily) return;
+    const name = fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+    // Skip if it's a generic family
+    const generics = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy'];
+    if (generics.includes(name.toLowerCase())) return;
+
+    const fontId = `font-dyn-${name.toLowerCase().replace(/\s+/g, '-')}`;
+    if (document.getElementById(fontId)) return;
+
+    const link = document.createElement('link');
+    link.id = fontId;
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/\s+/g, '+')}:wght@400;600;700&display=swap`;
+    document.head.appendChild(link);
 }
 
 // Helper Function: MapsTo
@@ -185,6 +207,9 @@ function MapsTo(fromId, toId) {
     const toPage = document.getElementById(toId);
 
     if (fromPage && toPage) {
+        // Update Navigation UI
+        updateNavigationUI(toId);
+
         // Start 3D Flip Animation
         fromPage.classList.add('page-flip-exit');
         toPage.classList.remove('hidden');
@@ -216,6 +241,7 @@ function MapsTo(fromId, toId) {
         if (toPage) {
             toPage.classList.remove('hidden');
             toPage.classList.add('animate-fade-in-up');
+            updateNavigationUI(toId);
         }
     }
 
@@ -284,6 +310,76 @@ function MapsTo(fromId, toId) {
         } else if (toId === 'page-10') {
             initFinalePage();
         }
+    }
+}
+
+// --- Navigation UI & Swipe Support ---
+const TOTAL_PAGES = 9;
+
+function updateNavigationUI(pageId) {
+    const pageIndicator = document.getElementById('global-page-indicator');
+    const pageText = document.getElementById('page-indicator-text');
+
+    if (!pageId) return;
+
+    // Respect configuration
+    const showIndicator = CONFIG.navigation ? CONFIG.navigation.showPageIndicator !== false : true;
+
+    const pageNum = parseInt(pageId.split('-')[1]);
+    if (isNaN(pageNum)) return;
+
+    // Hide indicator on Login (Page 1) or if disabled in config
+    if (pageNum === 1 || !showIndicator) {
+        if (pageIndicator) {
+            pageIndicator.classList.remove('opacity-100');
+            pageIndicator.classList.add('opacity-0');
+        }
+    } else {
+        if (pageIndicator) {
+            pageIndicator.classList.remove('opacity-0');
+            pageIndicator.classList.add('opacity-100');
+        }
+    }
+
+    if (pageText) {
+        pageText.textContent = `${pageNum}/${TOTAL_PAGES}`;
+    }
+}
+
+// Swipe Navigation Logic
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, false);
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, false);
+
+function handleSwipe() {
+    // Respect configuration
+    if (CONFIG.navigation && CONFIG.navigation.enableSwipe === false) return;
+
+    const swipeDistance = touchEndX - touchStartX;
+    const threshold = 100;
+    const activePage = document.querySelector('.page:not(.hidden)');
+
+    // Don't swipe on login or quiz (can mess up options)
+    if (!activePage || activePage.id === 'page-1' || activePage.id === 'page-5') return;
+
+    const buttons = Array.from(activePage.querySelectorAll('button[onclick*="MapsTo"]'));
+
+    if (swipeDistance < -threshold) {
+        // Swipe Left -> Next
+        const next = buttons.find(b => b.innerText.toLowerCase().includes('next') || b.innerText.toLowerCase().includes('confirm') || b.innerText.toLowerCase().includes('skip'));
+        if (next) next.click();
+    } else if (swipeDistance > threshold) {
+        // Swipe Right -> Back
+        const back = buttons.find(b => b.innerText.toLowerCase().includes('back') || b.innerText.toLowerCase().includes('prev'));
+        if (back) back.click();
     }
 }
 
@@ -790,8 +886,10 @@ function loadGallery() {
                     ${mediaHTML}
                     ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
                 </div>
-                <div class="pt-4 pb-2 text-center">
-                    <p id="caption-${index}" class="font-display italic text-xl leading-snug text-rose-900 ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">${mem.caption}</p>
+                <div class="pt-5 pb-3 px-2 text-center overflow-hidden">
+                    <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
+                        ${mem.caption}
+                    </p>
                 </div>
             `;
             gridEl.appendChild(card);
@@ -959,9 +1057,10 @@ function initScratchCard(index) {
 
 // --- Map Logic (Atlas of Us) ---
 let mapMarkers = [];
+let mapPolyline = null;
 
-function initMap() {
-    console.log("Initializing Map...");
+async function initMap() {
+    console.log("Initializing Map with Journey Animation...");
     if (!window.L) {
         console.error("Leaflet (L) not loaded!");
         return;
@@ -1002,30 +1101,40 @@ function initMap() {
             }
         });
     } else {
-        // Just refresh size if container visibility changed
         setTimeout(() => {
             mapInstance.invalidateSize();
         }, 300);
     }
 
-    // Clear and redraw markers if config changed
+    // Clear old elements
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
     mapMarkers = [];
+    if (mapPolyline) {
+        mapInstance.removeLayer(mapPolyline);
+        mapPolyline = null;
+    }
 
-    // Custom Heart Marker Icon
-    const heartIcon = L.divIcon({
-        html: '<span class="material-symbols-outlined heart-marker">favorite</span>',
-        className: 'custom-div-icon',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
-    });
+    // Prepare journey data
+    if (CONFIG.map && CONFIG.map.locations && CONFIG.map.locations.length > 0) {
+        const routeCoords = [];
 
-    // Add markers from CONFIG
-    if (CONFIG.map && CONFIG.map.locations) {
-        CONFIG.map.locations.forEach(loc => {
-            if (!loc.coordinates || !Array.isArray(loc.coordinates) || loc.coordinates.length < 2) return;
+        // Show markers one by one with animation
+        for (let i = 0; i < CONFIG.map.locations.length; i++) {
+            const loc = CONFIG.map.locations[i];
+            if (!loc.coordinates || !Array.isArray(loc.coordinates) || loc.coordinates.length < 2) continue;
 
-            // Create popup content with optional image
+            routeCoords.push(loc.coordinates);
+
+            // Custom Icon per location or default to heart
+            const iconName = loc.icon || 'favorite';
+            const markerIcon = L.divIcon({
+                html: `<span class="material-symbols-outlined heart-marker animate-bounce-short" style="font-variation-settings: 'FILL' 1">${iconName}</span>`,
+                className: 'custom-div-icon',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32]
+            });
+
+            // Create popup content
             let popupContent = `
                 <div class="font-sans p-2">
                     <h3 class="font-display text-deep-red font-bold text-lg mb-1">${loc.title}</h3>
@@ -1043,7 +1152,10 @@ function initMap() {
                 </div>
             `;
 
-            const marker = L.marker(loc.coordinates, { icon: heartIcon })
+            // Add marker with a slight delay
+            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 800));
+
+            const marker = L.marker(loc.coordinates, { icon: markerIcon })
                 .addTo(mapInstance)
                 .bindPopup(popupContent, {
                     className: 'rose-popup',
@@ -1052,16 +1164,32 @@ function initMap() {
 
             mapMarkers.push(marker);
 
-            // Auto-zoom and open popup when marker is clicked
+            // Draw/Update Polyline
+            if (routeCoords.length > 1) {
+                if (mapPolyline) mapInstance.removeLayer(mapPolyline);
+                mapPolyline = L.polyline(routeCoords, {
+                    color: '#7e0c23',
+                    weight: 3,
+                    opacity: 0.6,
+                    dashArray: '10, 10',
+                    lineJoin: 'round'
+                }).addTo(mapInstance);
+            }
+
+            // Optional: Pan to marker as it appears
+            mapInstance.panTo(loc.coordinates, { animate: true, duration: 1 });
+
+            // Interaction
             marker.on('click', function () {
                 mapInstance.setView(loc.coordinates, 18, {
                     animate: true,
                     duration: 1.0
                 });
             });
-        });
+        }
     }
-    // Add Zoom control to bottom left
+
+    // Add Zoom control to bottom left if missing
     if (!document.querySelector('.leaflet-control-zoom') && mapInstance) {
         L.control.zoom({
             position: 'bottomleft'
@@ -1566,11 +1694,21 @@ function unlockFinale() {
 }
 
 // --- Countdown Timer Logic ---
-function initCountdown() {
-    if (!CONFIG.countdown || !CONFIG.countdown.targetDate) return;
+let countdownInterval = null; // Global to allow clearing
 
-    // Target Date from CONFIG
-    const targetDate = new Date(CONFIG.countdown.targetDate).getTime();
+function initCountdown() {
+    if (!CONFIG.countdown || !CONFIG.countdown.targetDate) {
+        console.warn("[Countdown] No target date in CONFIG");
+        return;
+    }
+
+    console.log("[Countdown] Initializing with:", CONFIG.countdown.targetDate);
+
+    // Clear existing interval if re-initializing
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
 
     const daysEl = document.getElementById('days');
     const hoursEl = document.getElementById('hours');
@@ -1582,12 +1720,17 @@ function initCountdown() {
     if (!counterDiv) return;
 
     function updateTimer() {
+        // Re-read target date from CONFIG every time (to support live updates)
+        const targetDate = new Date(CONFIG.countdown.targetDate).getTime();
         const now = new Date().getTime();
         const distance = targetDate - now;
 
         if (distance < 0) {
             // Timer expired
-            clearInterval(timerInterval);
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
             if (counterDiv) counterDiv.innerHTML = `<span class="text-3xl font-display font-bold text-primary dark:text-rose-100 animate-pulse">${CONFIG.countdown.finishMessage}</span>`;
             if (labelEl) labelEl.textContent = CONFIG.countdown.finishLabel;
             return;
@@ -1604,11 +1747,18 @@ function initCountdown() {
         if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
         if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
         if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+
+        // Update Label if it contains date info
+        if (labelEl && CONFIG.countdown.targetDate) {
+            const d = new Date(CONFIG.countdown.targetDate);
+            const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            labelEl.textContent = `Counting down to ${d.toLocaleDateString('en-US', options)}`;
+        }
     }
 
     // Run immediately then interval
     updateTimer();
-    const timerInterval = setInterval(updateTimer, 1000);
+    countdownInterval = setInterval(updateTimer, 1000);
 }
 
 // --- LOVE-LOCK FINALE LOGIC ---
@@ -1684,7 +1834,7 @@ function startCinematicOutro() {
             setTimeout(() => {
                 location.reload();
             }, 3500);
-        }, 7000); // 7 seconds of cinematic focus before total fade
+        }, 15000); // FIXED: 15 seconds (was 7) - gives users time to take screenshot
     }, 3500); // Wait 3.5 seconds after lock before starting cinematic bars
 }
 

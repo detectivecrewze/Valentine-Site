@@ -173,6 +173,30 @@ body {
     z-index: 20;
 }
 
+/* Page 6: Specific Polaroid Caption Styling */
+.polaroid-caption {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: #1e293b;
+    /* Dark slate "ink" color */
+    transform: rotate(-1.5deg);
+    display: inline-block;
+    transition: opacity 1.5s ease, transform 0.5s ease;
+    line-height: 1.2;
+    padding: 0 5px;
+    user-select: none;
+}
+
+.polaroid-frame:hover .polaroid-caption {
+    transform: rotate(0deg) scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .polaroid-caption {
+        font-size: 1.25rem;
+    }
+}
+
 /* Memory Gallery Glitter */
 .glitter-particle {
     position: fixed;
