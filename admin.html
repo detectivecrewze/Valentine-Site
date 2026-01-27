@@ -322,6 +322,209 @@
         .btn-hint span {
             font-size: 1.1rem !important;
         }
+
+        /* ============================================
+           MOBILE RESPONSIVE FIXES
+           ============================================ */
+
+        /* Mobile: Improve preview button */
+        @media (max-width: 1023px) {
+            header {
+                padding: 1rem !important;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+                gap: 0.5rem !important;
+            }
+
+            .header-actions button {
+                padding: 0.75rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+
+            .header-actions button span.material-symbols-outlined {
+                font-size: 1rem !important;
+            }
+
+            button[onclick*="syncPreviewToPage"] {
+                background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%) !important;
+                color: white !important;
+                font-weight: bold !important;
+                border: none !important;
+                box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3) !important;
+            }
+
+            .page-card {
+                padding: 1.5rem !important;
+                margin-bottom: 1.5rem !important;
+                border-radius: 1rem !important;
+            }
+
+            .section-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.75rem !important;
+            }
+
+            .section-header h2 {
+                font-size: 1.25rem !important;
+            }
+
+            .form-input,
+            input[type="text"],
+            input[type="email"],
+            input[type="url"],
+            input[type="password"],
+            textarea,
+            select {
+                font-size: 16px !important;
+                padding: 0.75rem !important;
+            }
+
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+
+            label[class*="cursor-pointer"] {
+                padding: 0.5rem !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+            }
+
+            label[class*="cursor-pointer"] span.material-symbols-outlined {
+                font-size: 1.25rem !important;
+            }
+
+            .bg-blue-50,
+            .bg-purple-50,
+            .bg-green-50 {
+                padding: 0.75rem !important;
+            }
+
+            .dynamic-item {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            button[onclick*="applyThemePreset"] {
+                padding: 0.75rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            .admin-wrapper {
+                padding: 0 1rem !important;
+                gap: 1.5rem !important;
+            }
+
+            .sticky-sidebar.mobile-open {
+                padding: 1rem !important;
+            }
+
+            .sticky-sidebar.mobile-open .smartphone-frame {
+                max-width: 100% !important;
+                max-height: 90vh !important;
+            }
+
+            .preview-close-btn {
+                position: fixed !important;
+                top: 1rem !important;
+                right: 1rem !important;
+                z-index: 2001 !important;
+                background: white !important;
+                color: #e11d48 !important;
+                border-radius: 50% !important;
+                width: 48px !important;
+                height: 48px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            .img-preview-mini {
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .nav-btn-standard {
+                padding: 0.75rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+
+            .material-symbols-outlined {
+                font-size: 1.25rem !important;
+            }
+
+            .page-badge {
+                font-size: 0.75rem !important;
+                padding: 0.25rem 0.75rem !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page-card {
+                padding: 1rem !important;
+                border-radius: 0.75rem !important;
+            }
+
+            .section-header h2 {
+                font-size: 1.125rem !important;
+            }
+
+            .form-input,
+            input,
+            textarea,
+            select {
+                font-size: 16px !important;
+                padding: 0.625rem !important;
+            }
+
+            button {
+                font-size: 0.813rem !important;
+                padding: 0.625rem 0.875rem !important;
+            }
+
+            .header-actions {
+                flex-direction: column !important;
+                width: 100% !important;
+            }
+
+            .header-actions button {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .flex.gap-2 {
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+            }
+
+            label[class*="cursor-pointer"] {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+        }
+
+        @media (min-width: 640px) and (max-width: 1023px) {
+            .admin-wrapper {
+                padding: 0 1.5rem !important;
+            }
+        }
+
+        @media (max-width: 1023px) {
+
+            button,
+            a,
+            label[class*="cursor"],
+            [onclick] {
+                min-width: 44px !important;
+                min-height: 44px !important;
+                touch-action: manipulation;
+            }
+        }
     </style>
 </head>
 
@@ -759,9 +962,39 @@
         // --- LIVE PREVIEW SYNC ---
         let syncTimeout;
 
+        // ============================================
+        // MOBILE PREVIEW IMPROVEMENTS
+        // ============================================
+
+        function isMobile() {
+            return window.innerWidth < 1024;
+        }
+
         function syncPreviewToPage(pageId) {
             console.log(`📡 Manual Sync: Scrolling to ${pageId}`);
             const iframe = document.getElementById('livePreview');
+            const sidebar = document.querySelector('.sticky-sidebar');
+
+            if (!iframe || !sidebar) return;
+
+            // On mobile, open as modal
+            if (isMobile()) {
+                sidebar.classList.add('mobile-open');
+
+                // Create close button if not exists
+                let closeBtn = document.querySelector('.preview-close-btn');
+                if (!closeBtn) {
+                    closeBtn = document.createElement('button');
+                    closeBtn.className = 'preview-close-btn';
+                    closeBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
+                    closeBtn.onclick = closeMobilePreview;
+                    document.body.appendChild(closeBtn);
+                }
+
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Navigate iframe
             if (iframe && iframe.contentWindow) {
                 iframe.contentWindow.postMessage({
                     type: 'NAVIGATE_TO_PAGE',
@@ -769,6 +1002,40 @@
                 }, '*');
             }
         }
+
+        function closeMobilePreview() {
+            const sidebar = document.querySelector('.sticky-sidebar');
+            const closeBtn = document.querySelector('.preview-close-btn');
+
+            if (sidebar) {
+                sidebar.classList.remove('mobile-open');
+            }
+
+            if (closeBtn) {
+                closeBtn.remove();
+            }
+
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!isMobile()) return;
+
+            const sidebar = document.querySelector('.sticky-sidebar.mobile-open');
+            if (sidebar && e.target === sidebar) {
+                closeMobilePreview();
+            }
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (!isMobile()) {
+                    closeMobilePreview();
+                }
+            }, 250);
+        });
 
         // --- DATA STATE (Config Data is initialized in initProject/DOMContentLoaded) ---
 
