@@ -1093,11 +1093,21 @@ async function initMap() {
         // Zoom out when clicking the background
         mapInstance.on('click', (e) => {
             if (e.originalEvent.target.id === 'map' || e.originalEvent.target.classList.contains('leaflet-container')) {
-                mapInstance.setView(defaultCenter, 13, {
-                    animate: true,
-                    duration: 1.0
-                });
+                if (mapMarkers.length > 0) {
+                    const group = new L.featureGroup(mapMarkers);
+                    mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true });
+                } else {
+                    mapInstance.setView(defaultCenter, 13, { animate: true, duration: 1.0 });
+                }
                 mapInstance.closePopup();
+            }
+        });
+
+        // Optional: Zoom out when popup is closed via the 'X' button
+        mapInstance.on('popupclose', () => {
+            if (mapMarkers.length > 0) {
+                const group = new L.featureGroup(mapMarkers);
+                mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true });
             }
         });
     } else {
@@ -1186,6 +1196,14 @@ async function initMap() {
                     duration: 1.0
                 });
             });
+        }
+
+        // Zoom out to show all markers after the journey
+        if (mapMarkers.length > 0) {
+            setTimeout(() => {
+                const group = new L.featureGroup(mapMarkers);
+                mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true });
+            }, 1500);
         }
     }
 

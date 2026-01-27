@@ -103,7 +103,7 @@ var CONFIG = {
             "lyrics": "I thought that I was dreaming, when you said you loved me.."
         }
     ],
-    "musicSectionTitle": "",
+    "musicSectionTitle": "Our Playlist",
     "gallery": {
         "title": "Scratch Gallery",
         "subtitle": "Scratch to reveal a piece of my heart",
@@ -177,6 +177,39 @@ var CONFIG = {
                 "date": "2021-02-25",
                 "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769528278191-msp7m.jpg",
                 "icon": "star"
+            },
+            {
+                "coordinates": [
+                    -6.224108,
+                    106.840748
+                ],
+                "title": "Our First Dinner Date",
+                "memory": "The spaghetti was great, but your smile was better. I knew then that this was special.",
+                "date": "2020-02-14",
+                "imageSrc": "",
+                "icon": "restaurant"
+            },
+            {
+                "coordinates": [
+                    -6.175392,
+                    106.827153
+                ],
+                "title": "City Stroll",
+                "memory": "Walking around the city center under the night lights. You held my hand so tight.",
+                "date": "2021-05-12",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769536406487-5ezp2.jpg",
+                "icon": "auto_awesome"
+            },
+            {
+                "coordinates": [
+                    -6.258421,
+                    106.852102
+                ],
+                "title": "Arcade Champion",
+                "memory": "That time you beat me at every single game. I let you win, of course! (Maybe not...)",
+                "date": "2022-08-19",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769536388053-f323do.jpg",
+                "icon": "sports_esports"
             }
         ]
     },

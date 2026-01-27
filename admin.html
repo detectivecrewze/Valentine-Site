@@ -10,6 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@700&family=Pacifico&family=Montserrat:wght@400;700&family=Great+Vibes&family=Cinzel:wght@700&family=Poppins:wght@300;400;600&family=Cormorant+Garamond:ital,wght@1,600&family=Lobster&family=Sacramento&display=swap"
         rel="stylesheet">
+    <script src="data.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -333,13 +334,14 @@
         <div class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-display italic font-bold text-gray-900 leading-none flex items-center gap-3">
-                    Valentine Configurator
+                    Valentine Surprise Maker
                     <span id="syncStatus"
                         class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-[10px] font-sans font-bold text-slate-400 uppercase tracking-tighter transition-all">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Disconnected
                     </span>
                 </h1>
-                <p class="text-sm text-gray-500 mt-1 font-sans">Level up your gift: Create `data.js` with style.</p>
+                <p class="text-sm text-gray-500 mt-1 font-sans">Craft your perfect gift. Your progress is auto-saved in
+                    this browser.</p>
             </div>
             <div class="flex gap-4">
                 <button onclick="togglePreview()"
@@ -355,9 +357,19 @@
                     class="bg-rose-100 text-rose-700 px-6 py-3.5 rounded-2xl font-bold hover:bg-rose-200 flex items-center gap-2 shadow-sm transition-all">
                     <span class="material-symbols-outlined text-lg">code</span> View Code
                 </button>
+                <button onclick="openWelcomeModal()"
+                    class="bg-white text-blue-600 p-3.5 rounded-2xl font-bold border border-blue-100 hover:bg-blue-50 flex items-center justify-center shadow-sm transition-all"
+                    title="How to Use">
+                    <span class="material-symbols-outlined">help_center</span>
+                </button>
+                <button onclick="saveToLocalStorageManual()"
+                    class="bg-blue-100 text-blue-700 px-6 py-3.5 rounded-2xl font-bold hover:bg-blue-200 flex items-center gap-2 shadow-sm transition-all"
+                    title="Save Draft to Browser">
+                    <span class="material-symbols-outlined text-lg">save</span> Save
+                </button>
                 <button onclick="submitToAdmin()"
                     class="bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-rose-700 flex items-center gap-2 shadow-xl shadow-rose-200 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                    <span class="material-symbols-outlined">send</span> FINISH & SEND TO ADMIN
+                    <span class="material-symbols-outlined">send</span> FINISH & SUBMIT
                 </button>
             </div>
         </div>
@@ -1232,15 +1244,6 @@
                     { key: 'finalMessage', label: 'Final Message', type: 'textarea' }
                 ]
             },
-            'invitation-section': {
-                icon: 'auto_awesome',
-                fields: [
-                    { key: 'title', label: 'Question', type: 'text' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'text' },
-                    { key: 'yesText', label: 'Yes Button', type: 'text' },
-                    { key: 'noText', label: 'No Button', type: 'text' }
-                ]
-            }
         };
 
         function renderPages() {
@@ -1826,67 +1829,74 @@
             // Init Dynamic Engine (Migration Defaults)
             if (configData.pages.length === 0) {
                 if (!loadFromLocalStorage()) {
-                    // 1. Music (PAGE 3)
-                    configData.pages.push({
-                        type: 'music-section',
-                        songTitle: 'Our Playlist',
-                        music: [
-                            { songTitle: "Selfless", artist: "The Strokes", audioSrc: "assets/song1.dat", coverSrc: "assets/cover1.jpg", lyrics: "Life is too short..." },
-                            { songTitle: "Ivy", artist: "Frank Ocean", audioSrc: "assets/song2.dat", coverSrc: "assets/cover2.jpg", lyrics: "I thought that I was dreaming..." },
-                            { songTitle: "Song 3", artist: "Unknown", audioSrc: "assets/song3.dat", coverSrc: "", lyrics: "" }
-                        ]
-                    });
-                    // 2. Wrapped (PAGE 4)
-                    configData.pages.push({
-                        type: 'wrapped-section',
-                        vibeLabel: "Our Vibe", vibe: "Bonnie & Clyde",
-                        HoursTogetherLabel: "Minutes Together", HoursTogether: "525,600",
-                        imageSrc: "assets/images/photo2.jpg",
-                        topPlaces: ["The Sunset Pier", "Corner Bakery", "Botanical Garden"],
-                        coreMemories: ["The Rainy Hike", "First Road Trip", "Cooking Fail"]
-                    });
-                    // 3. Quiz
-                    configData.pages.push({
-                        type: 'quiz-section',
-                        title: 'Personalized Trivia',
-                        questions: [
-                            { question: "Where was our very first date?", options: ["Starbucks KIP", "Cinema XXI", "Parks & Rec", "Dinner at McD"], correctIndex: 0, correctMessage: "You remembered! ❤️", wrongMessage: "Nope!" },
-                            { question: "What is my favorite color on you?", options: ["Rose Pink", "Soft Blue", "Sage Green", "Classic Black"], correctIndex: 2, correctMessage: "Yes!", wrongMessage: "Listen closely..." }
-                        ]
-                    });
-                    // 4. Gallery
-                    configData.pages.push({
-                        type: 'gallery-section',
-                        title: 'Scratch Gallery',
-                        subtitle: 'Scratch to reveal a piece of my heart',
-                        memories: [
-                            { type: 'image', src: 'assets/images/photo2.jpg', caption: 'Our first coffee', tape: 'washi-tape-gold', rotation: 'rotate-2' },
-                            { type: 'image', src: 'assets/images/photo3.jpg', caption: 'Golden hour', tape: 'washi-tape', rotation: 'rotate-1' }
-                        ]
-                    });
-                    // 5. Map
-                    configData.pages.push({
-                        type: 'map-section',
-                        title: 'The Atlas of Us',
-                        description: 'A cartography of the moments that defined our story. Every pin is a heartbeat, every line a path we walked together.',
-                        locations: [
-                            { lat: -6.24625885, lng: 106.9913550, title: "Where we first met", memory: "The air was sweet...", date: "2020-01-20" }
-                        ]
-                    });
-                    // 6. Letter
-                    configData.pages.push({
-                        type: 'letter-section',
-                        recipient: 'Dearest Love',
-                        message: 'I find myself sitting here...',
-                        signature: 'Your Favorite Person'
-                    });
-                    // 7. Lock
-                    configData.pages.push({
-                        type: 'lock-section',
-                        initials: 'A + B',
-                        instruction: 'Click to lock our love forever...',
-                        finalMessage: 'Safely locked in my heart. Always.'
-                    });
+                    // Try to load from the embedded data.js (CONFIG variable)
+                    if (typeof CONFIG !== 'undefined') {
+                        console.log("[Admin] Loading data from data.js...");
+                        loadFromConfig(CONFIG);
+                    } else {
+                        // Fallback to defaults
+                        // 1. Music (PAGE 3)
+                        configData.pages.push({
+                            type: 'music-section',
+                            songTitle: 'Our Playlist',
+                            music: [
+                                { songTitle: "Selfless", artist: "The Strokes", audioSrc: "assets/song1.dat", coverSrc: "assets/cover1.jpg", lyrics: "Life is too short..." },
+                                { songTitle: "Ivy", artist: "Frank Ocean", audioSrc: "assets/song2.dat", coverSrc: "assets/cover2.jpg", lyrics: "I thought that I was dreaming..." },
+                                { songTitle: "Song 3", artist: "Unknown", audioSrc: "assets/song3.dat", coverSrc: "", lyrics: "" }
+                            ]
+                        });
+                        // 2. Wrapped (PAGE 4)
+                        configData.pages.push({
+                            type: 'wrapped-section',
+                            vibeLabel: "Our Vibe", vibe: "Bonnie & Clyde",
+                            HoursTogetherLabel: "Minutes Together", HoursTogether: "525,600",
+                            imageSrc: "assets/images/photo2.jpg",
+                            topPlaces: ["The Sunset Pier", "Corner Bakery", "Botanical Garden"],
+                            coreMemories: ["The Rainy Hike", "First Road Trip", "Cooking Fail"]
+                        });
+                        // 3. Quiz
+                        configData.pages.push({
+                            type: 'quiz-section',
+                            title: 'Personalized Trivia',
+                            questions: [
+                                { question: "Where was our very first date?", options: ["Starbucks KIP", "Cinema XXI", "Parks & Rec", "Dinner at McD"], correctIndex: 0, correctMessage: "You remembered! ❤️", wrongMessage: "Nope!" },
+                                { question: "What is my favorite color on you?", options: ["Rose Pink", "Soft Blue", "Sage Green", "Classic Black"], correctIndex: 2, correctMessage: "Yes!", wrongMessage: "Listen closely..." }
+                            ]
+                        });
+                        // 4. Gallery
+                        configData.pages.push({
+                            type: 'gallery-section',
+                            title: 'Scratch Gallery',
+                            subtitle: 'Scratch to reveal a piece of my heart',
+                            memories: [
+                                { type: 'image', src: 'assets/images/photo2.jpg', caption: 'Our first coffee', tape: 'washi-tape-gold', rotation: 'rotate-2' },
+                                { type: 'image', src: 'assets/images/photo3.jpg', caption: 'Golden hour', tape: 'washi-tape', rotation: 'rotate-1' }
+                            ]
+                        });
+                        // 5. Map
+                        configData.pages.push({
+                            type: 'map-section',
+                            title: 'The Atlas of Us',
+                            description: 'A cartography of the moments that defined our story. Every pin is a heartbeat, every line a path we walked together.',
+                            locations: [
+                                { lat: -6.24625885, lng: 106.9913550, title: "Where we first met", memory: "The air was sweet...", date: "2020-01-20" }
+                            ]
+                        });
+                        // 6. Letter
+                        configData.pages.push({
+                            type: 'letter-section',
+                            recipient: 'Dearest Love',
+                            message: 'I find myself sitting here...',
+                            signature: 'Your Favorite Person'
+                        });
+                        // 7. Lock
+                        configData.pages.push({
+                            type: 'lock-section',
+                            initials: 'A + B',
+                            instruction: 'Click to lock our love forever...',
+                            finalMessage: 'Safely locked in my heart. Always.'
+                        });
+                    }
                 }
             }
             renderPages();
@@ -1921,6 +1931,17 @@
         const TELEGRAM_BOT_TOKEN = '7954042042:AAF-a7XQn0XufnODKzJn1bQKXvt9Slmbixs';
         const TELEGRAM_CHAT_ID = '972162604';
 
+        function saveToLocalStorageManual() {
+            const config = getConfig();
+            const data = {
+                config: config,
+                pages: configData.pages
+            };
+            localStorage.setItem(LS_KEY, JSON.stringify(data));
+            updateStatus('Manual Saved', 'green');
+            showToast('✅ Progress saved to browser!', 'success');
+        }
+
         function saveToLocalStorage() {
             clearTimeout(window._lsTimeout);
             window._lsTimeout = setTimeout(() => {
@@ -1934,26 +1955,120 @@
             }, 500);
         }
 
-        function repairData(data) {
-            if (!data || !data.pages) return data;
-            data.pages.forEach(p => {
-                if (p.type === 'music-section') {
-                    if (!p.music) p.music = [];
-                    if (p.music.length === 0) {
-                        p.music = [
-                            { songTitle: "Selfless", artist: "The Strokes", audioSrc: "assets/song1.dat", coverSrc: "assets/cover1.jpg", lyrics: "Life is too short..." },
-                            { songTitle: "Ivy", artist: "Frank Ocean", audioSrc: "assets/song2.dat", coverSrc: "assets/cover2.jpg", lyrics: "I thought that I was dreaming..." },
-                            { songTitle: "Song 3", artist: "Unknown", audioSrc: "assets/song3.dat", coverSrc: "", lyrics: "" }
-                        ];
-                    }
-                    p.music.forEach(s => {
-                        if (s.s && !s.songTitle) s.songTitle = s.s;
-                        if (s.a && !s.artist) s.artist = s.a;
-                        if (s.src && !s.audioSrc) s.audioSrc = s.src;
-                    });
+        function loadFromConfig(configDataObj) {
+            if (!configDataObj) return;
+            const config = configDataObj.config || configDataObj;
+            const pages = configDataObj.pages;
+
+            if (pages) configData.pages = pages;
+
+            // Restoring standard inputs
+            if (config.theme) {
+                setVal('theme_bg', config.theme.backgroundImage);
+                setVal('theme_color', config.theme.backgroundColor);
+                setVal('theme_font_display', config.theme.fontDisplay);
+                setVal('theme_font_sans', config.theme.fontSans);
+                setVal('theme_particles', config.theme.particles);
+            }
+            if (config.seo) {
+                setVal('seo_title', config.seo.title);
+                setVal('seo_desc', config.seo.description);
+                setVal('seo_image', config.seo.image);
+            }
+            if (config.login) {
+                setVal('password', config.login.password);
+                setVal('collectionText', config.login.collectionText);
+                setVal('p1_title', config.login.title);
+                setVal('p1_instr', config.login.instruction);
+            }
+            if (config.countdown) {
+                if (config.countdown.targetDate) {
+                    try {
+                        const d = new Date(config.countdown.targetDate);
+                        if (!isNaN(d.getTime())) {
+                            const localTime = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+                            setVal('count_date', localTime);
+                        }
+                    } catch (e) { console.warn("Date restore fail", e); }
                 }
-            });
-            return data;
+                setVal('count_finish', config.countdown.finishMessage);
+            }
+            if (config.greeting) {
+                setVal('greet_title', config.greeting.title);
+                setVal('greet_msg', config.greeting.message);
+                setVal('greet_img', config.greeting.imageSrc);
+                setVal('greet_footer', config.greeting.footerText);
+            }
+
+            // Restore from CONFIG structure for pages if available
+            if (!pages && config.wrapped) {
+                // Backup mapping for cases where pages array is missing (pure data.js load)
+                configData.pages = [];
+
+                // Reconstruct Music (Page 3)
+                configData.pages.push({
+                    type: 'music-section',
+                    songTitle: config.musicSectionTitle || 'Our Playlist',
+                    music: config.music || []
+                });
+
+                // Reconstruct Wrapped (Page 4)
+                configData.pages.push({
+                    type: 'wrapped-section',
+                    ...config.wrapped
+                });
+
+                // Reconstruct Quiz
+                configData.pages.push({
+                    type: 'quiz-section',
+                    title: config.quiz?.title || 'Personalized Trivia',
+                    questions: config.quiz?.questions || []
+                });
+
+                // Reconstruct Gallery
+                configData.pages.push({
+                    type: 'gallery-section',
+                    title: config.gallery?.title || 'Gallery',
+                    subtitle: config.gallery?.subtitle || '',
+                    memories: config.gallery?.memories || []
+                });
+
+                // Reconstruct Map
+                configData.pages.push({
+                    type: 'map-section',
+                    title: config.map?.title || 'The Atlas of Us',
+                    description: config.map?.description || '',
+                    locations: config.map?.locations ? config.map.locations.map(l => ({
+                        lat: l.coordinates?.[0] || 0,
+                        lng: l.coordinates?.[1] || 0,
+                        title: l.title || "",
+                        memory: l.memory || "",
+                        date: l.date || "",
+                        imageSrc: l.imageSrc || "",
+                        icon: l.icon || "favorite"
+                    })) : []
+                });
+
+                // Reconstruct Letter
+                configData.pages.push({
+                    type: 'letter-section',
+                    recipient: config.letter?.recipientName || '',
+                    message: config.letter?.message || '',
+                    signature: config.letter?.signature || ''
+                });
+
+                // Reconstruct Lock
+                configData.pages.push({
+                    type: 'lock-section',
+                    initials: config.lock?.initials || '',
+                    instruction: config.lock?.instruction || '',
+                    finalMessage: config.lock?.finalMessage || ''
+                });
+
+            }
+
+            renderPages();
+            syncToPreview();
         }
 
         function loadFromLocalStorage() {
@@ -1962,48 +2077,7 @@
             try {
                 const rawData = JSON.parse(saved);
                 const data = repairData(rawData);
-                if (data.pages) configData.pages = data.pages;
-
-                // Restoring standard inputs
-                setTimeout(() => {
-                    const config = data.config;
-                    if (config.theme) {
-                        setVal('theme_bg', config.theme.backgroundImage);
-                        setVal('theme_color', config.theme.backgroundColor);
-                        setVal('theme_font_display', config.theme.fontDisplay);
-                        setVal('theme_font_sans', config.theme.fontSans);
-                        setVal('theme_particles', config.theme.particles);
-                    }
-                    if (config.seo) {
-                        setVal('seo_title', config.seo.title);
-                        setVal('seo_desc', config.seo.description);
-                        setVal('seo_image', config.seo.image);
-                    }
-                    if (config.login) {
-                        setVal('password', config.login.password);
-                        setVal('collectionText', config.login.collectionText);
-                        setVal('p1_title', config.login.title);
-                        setVal('p1_instr', config.login.instruction);
-                    }
-                    if (config.countdown) {
-                        // ISO to local datetime-local
-                        if (config.countdown.targetDate) {
-                            const d = new Date(config.countdown.targetDate);
-                            const localTime = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                            setVal('count_date', localTime);
-                        }
-                        setVal('count_finish', config.countdown.finishMessage);
-                    }
-                    if (config.greeting) {
-                        setVal('greet_title', config.greeting.title);
-                        setVal('greet_msg', config.greeting.message);
-                        setVal('greet_img', config.greeting.imageSrc);
-                        setVal('greet_footer', config.greeting.footerText);
-                    }
-
-                    renderPages();
-                    syncToPreview();
-                }, 100);
+                setTimeout(() => loadFromConfig(data), 100);
                 return true;
             } catch (e) {
                 console.error("Load fail", e);
@@ -2013,7 +2087,22 @@
 
         function setVal(id, val) {
             const el = document.getElementById(id);
-            if (el) el.value = val || "";
+            if (el) {
+                el.value = val || "";
+                // Terkadang oninput tidak terpanggil saat value diubah via JS
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+
+                // Cari preview image untuk field ini jika ada
+                const previewImg = document.getElementById('prev_' + id);
+                if (previewImg) {
+                    if (val && val.trim() !== '') {
+                        previewImg.src = val;
+                        previewImg.classList.remove('hidden');
+                    } else {
+                        previewImg.classList.add('hidden');
+                    }
+                }
+            }
         }
 
         function syncToPreview() {
@@ -2115,7 +2204,8 @@
                     btn.innerHTML = '<span class="material-symbols-outlined">verified</span> BERHASIL!';
                     btn.className = btn.className.replace('bg-rose-600', 'bg-emerald-500');
                     alert("Berhasil dikirim ke Admin!");
-                    localStorage.removeItem(LS_KEY);
+                    // JANGAN DIHAPUS agar user tidak kehilangan draft di browser
+                    // localStorage.removeItem(LS_KEY); 
                 } else {
                     const errorData = await response.json();
                     throw new Error(errorData.description || "Gagal mengirim");
@@ -2142,6 +2232,79 @@
             </div>
         </div>
     </div>
+    <!-- WELCOME MODAL -->
+    <div id="welcome-modal"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[200] items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-xl flex flex-col p-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-rose-50 rounded-full blur-3xl opacity-50"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
+            <div class="relative">
+                <div class="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined">magic_button</span>
+                </div>
+                <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">Welcome, Lovebirds!</h2>
+                <p class="text-gray-500 mb-8 leading-relaxed text-sm">Follow these simple steps to curate your digital
+                    Valentine's surprise.</p>
+                <div class="space-y-6 mb-10 text-sm">
+                    <div class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center font-bold flex-shrink-0">
+                            1</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Personalize:</strong>
+                            Fill in your names, special dates, and love letters in the form below.</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold flex-shrink-0">
+                            2</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Upload Media:</strong>
+                            Use the upload buttons to add your photos and videos. We'll host them for you!</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold flex-shrink-0">
+                            3</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Live Preview:</strong>
+                            Check the phone frame on the left (or click PREVIEW) to see your changes in real-time.</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold flex-shrink-0">
+                            4</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Submit:</strong> Once
+                            you're happy, click <span
+                                class="bg-rose-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">FINISH &
+                                SUBMIT</span> to send your data to us for final setup.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button onclick="closeWelcomeModal()"
+                        class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200 active:scale-95">
+                        Got it, let's start!
+                    </button>
+                    <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">Progress is
+                        saved automatically per browser</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openWelcomeModal() {
+            document.getElementById('welcome-modal').classList.remove('hidden');
+            document.getElementById('welcome-modal').classList.add('flex');
+        }
+        function closeWelcomeModal() {
+            document.getElementById('welcome-modal').classList.add('hidden');
+            document.getElementById('welcome-modal').classList.remove('flex');
+            localStorage.setItem('welcome_guided', 'true');
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('welcome_guided')) {
+                setTimeout(openWelcomeModal, 800);
+            }
+        });
+    </script>
 </body>
 
 </html>
