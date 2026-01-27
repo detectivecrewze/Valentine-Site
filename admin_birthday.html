@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Engine | Admin Tool</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand-primary: #6366f1;
+            --brand-primary-soft: rgba(99, 102, 241, 0.1);
+            --brand-secondary: #c2a382;
+            --brand-paper: #fcfcfd;
+            --brand-ink: #1e293b;
+            --glass-white: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--brand-paper);
+            color: var(--brand-ink);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.03), transparent),
+                radial-gradient(circle at bottom left, rgba(194, 163, 130, 0.03), transparent);
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            padding: 28px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.07);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .input-field {
+            width: 100%;
+            border: 1.5px solid #edf2f7;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            background: white;
+            box-shadow: 0 0 0 4px var(--brand-primary-soft);
+            transform: translateY(-1px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .label-text {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-primary), #4f46e5);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #64748b;
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #334155;
+        }
+
+        .btn-danger {
+            color: #ef4444;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+            transform: scale(1.1);
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .badge-indigo {
+            background: var(--brand-primary-soft);
+            color: var(--brand-primary);
+        }
+
+        .badge-rose {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+        .badge-amber {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .step-number {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--brand-primary), #4f46e5);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+        }
+
+        .step-card {
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--card-shadow);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .modal-overlay {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .img-thumbnail {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Improved Grid for Page Picker */
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .type-card {
+            padding: 20px;
+            border: 2px solid #f1f5f9;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .type-card:hover {
+            border-color: var(--brand-primary);
+            background: var(--brand-primary-soft);
+            transform: translateY(-3px);
+        }
+
+        .type-card.selected {
+            border-color: var(--brand-primary);
+            background: var(--brand-primary-soft);
+            box-shadow: 0 0 0 4px var(--brand-primary-soft);
+        }
+
+        .type-card span {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+            color: #64748b;
+        }
+
+        .type-card:hover span {
+            color: var(--brand-primary);
+        }
+
+        .type-card h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+        }
+
+        .preset-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px #e2e8f0;
+        }
+
+        .preset-dot:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .glass-nav {
+                height: auto;
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .glass-nav .flex.items-center.gap-6 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .glass-nav .flex.items-center.gap-4 {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+
+            #sync-indicator {
+                position: absolute;
+                top: 70px;
+                left: 16px;
+                z-index: 60;
+            }
+        }
+
+        main {
+            transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body:not(.preview-active) main {
+            max-width: 80rem;
+            /* 7xl equivalent */
+        }
+
+        body.preview-active main {
+            max-width: 64rem;
+            /* 5xl equivalent */
+        }
+
+        @media (max-width: 1400px) {
+            body.preview-active main {
+                margin-left: 2rem;
+                margin-right: 420px;
+                max-width: calc(100% - 460px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body.preview-active main {
+                margin-right: auto;
+                margin-left: auto;
+                max-width: 100%;
+            }
+
+            .step-card {
+                padding: 20px;
+            }
+
+            .grid.grid-cols-2,
+            .grid.md\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+
+            #preview-panel {
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                border-radius: 0;
+                border: none;
+                transform: translateX(100%);
+            }
+
+            #preview-panel.is-open {
+                transform: translateX(0);
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 10px;
+            }
+        }
+
+        /* Drag & Drop Styles */
+        .card[draggable="true"] {
+            cursor: grab;
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            border: 2px dashed var(--brand-primary);
+            cursor: grabbing;
+        }
+
+        .card.drag-over {
+            border-top: 4px solid var(--brand-primary);
+            margin-top: 10px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-item:hover {
+            background: var(--brand-primary-soft);
+            border-color: var(--brand-primary);
+            color: var(--brand-primary);
+        }
+
+        .icon-item span {
+            font-size: 24px;
+        }
+
+        .icon-item label {
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sticky Navigation -->
+    <nav class="glass-nav sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg rotate-3 overflow-hidden">
+                <span class="material-symbols-outlined text-2xl">celebration</span>
+            </div>
+            <div>
+                <h1 class="font-serif text-xl font-bold text-slate-900 leading-tight">Birthday Engine</h1>
+                <p class="text-[10px] text-indigo-500 uppercase tracking-[0.2em] font-black">Creative Suite Dashboard
+                </p>
+            </div>
+        </div>
+        <div class="hidden lg:flex items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+            <div
+                class="px-5 py-2 rounded-xl bg-white shadow-sm text-xs font-bold text-indigo-600 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                1. Design & Theme
+            </div>
+            <div class="px-5 py-2 text-xs font-bold text-slate-400">2. Content & Media</div>
+            <div class="px-5 py-2 text-xs font-bold text-slate-400">3. Final Export</div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div id="sync-indicator"
+                class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 opacity-0 transition-opacity duration-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[10px] font-black uppercase tracking-tighter text-nowrap">Live Sync Active</span>
+            </div>
+            <div class="flex items-center gap-2 bg-indigo-50 p-1 rounded-xl border border-indigo-100">
+                <button onclick="togglePreview()"
+                    class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-md hover:bg-indigo-700 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">devices</span>
+                    Live Preview
+                </button>
+                <a href="index.html" target="_blank"
+                    class="px-4 py-2 rounded-lg text-indigo-600 text-xs font-bold hover:bg-white transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+            </div>
+            <button onclick="generateCode()" class="btn-primary py-2.5 px-6">
+                <span class="material-symbols-outlined text-sm">auto_fix_high</span>
+                Generate
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+
+        <!-- Welcome Guide -->
+        <div
+            class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-600 rounded-[2rem] p-10 text-white shadow-2xl border-4 border-white/10 group">
+            <div
+                class="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700">
+            </div>
+            <div
+                class="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-400/20 rounded-full blur-3xl group-hover:bg-indigo-300/30 transition-all duration-700">
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <div
+                    class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-4xl shadow-inner border border-white/20">
+                    ✨
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-black mb-3 tracking-tight">Design Your Story</h2>
+                    <p class="opacity-90 max-w-xl text-lg font-medium leading-relaxed">
+                        Every great gift starts with a story. Use this creative suite to build a personalized journey
+                        that will be remembered forever.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Global Settings -->
+        <div class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="step-number">STEP 1</div>
+                <h2 class="text-xl font-bold text-slate-800">Choose the Look & Person</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Theme Colors -->
+                <section class="step-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-indigo-600">palette</span>
+                        <h2 class="font-bold text-slate-800">Visual Style</h2>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4" id="theme-inputs">
+                        <!-- Dynamic Theme Inputs -->
+                    </div>
+
+                    <!-- Theme Presets -->
+                    <div class="mt-6 pt-6 border-t border-slate-100">
+                        <label class="label-text mb-3">Or Pick a Mood:</label>
+                        <div class="flex gap-3">
+                            <div onclick="applyPreset('#b33939', '#fdfaf1', '#c2a382', '#2d2926')" class="preset-dot"
+                                style="background: #b33939" title="Classic Vintage"></div>
+                            <div onclick="applyPreset('#2c3e50', '#edf2f7', '#95a5a6', '#2c3e50')" class="preset-dot"
+                                style="background: #2c3e50" title="Modern Midnight"></div>
+                            <div onclick="applyPreset('#6d214f', '#f8efba', '#2c3e50', '#182c61')" class="preset-dot"
+                                style="background: #6d214f" title="Royal Gold"></div>
+                            <div onclick="applyPreset('#1e3799', '#f1f2f6', '#4a69bd', '#0c2461')" class="preset-dot"
+                                style="background: #1e3799" title="Deep Sea"></div>
+                            <div onclick="applyPreset('#009432', '#f7f1e3', '#84817a', '#2c2c2c')" class="preset-dot"
+                                style="background: #009432" title="Forest Tale"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recipient & Date -->
+                <section class="step-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-indigo-600">person</span>
+                        <h2 class="font-bold text-slate-800">The Guest of Honor</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="label-text">What is their Name?</label>
+                            <input type="text" id="recipient-name" class="input-field" placeholder="e.g. Sarah">
+                        </div>
+                        <div>
+                            <label class="label-text">When is their Birthday?</label>
+                            <input type="datetime-local" id="birthday-date" class="input-field">
+                            <p class="text-[10px] text-slate-400 mt-1">The site will show a countdown until this exact
+                                moment!</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Step 2: Pages Configuration -->
+        <div class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="step-number">STEP 2</div>
+                <h2 class="text-xl font-bold text-slate-800">Build the Journey</h2>
+            </div>
+
+            <section class="step-card">
+                <div class="bg-slate-50 border-l-4 border-slate-400 p-6 mb-8 rounded-r-xl">
+                    <div class="flex gap-4">
+                        <div
+                            class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-600 shrink-0">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-1">Pro Tip: Typography Highlighting</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">
+                                Want that signature designer look? You can add a handwritten accent to any part of your
+                                headings.
+                                Just select the text in the box and click the <strong>Highlight</strong> button that
+                                appears below it.
+                                This creates a beautiful underline effect that brings your story to life.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-indigo-600">view_carousel</span>
+                        <h2 class="text-lg font-bold text-slate-800">Pages & Memories</h2>
+                    </div>
+                    <button onclick="openPagePicker()" class="btn-primary">
+                        <span class="material-symbols-outlined">add</span>
+                        Add a New Section
+                    </button>
+                </div>
+
+                <div id="pages-container" class="space-y-6">
+                    <!-- Pages will be injected here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Step 3: Finish -->
+        <div class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="step-number">STEP 3</div>
+                <h2 class="text-xl font-bold text-slate-800">All Done?</h2>
+            </div>
+
+            <div class="step-card text-center py-10">
+                <span class="material-symbols-outlined text-6xl text-indigo-200 mb-4 block">check_circle</span>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">You're ready to launch!</h3>
+                <p class="text-slate-400 text-sm mb-8">All changes are saved automatically to your browser draft.</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="generateCode()" class="btn-primary px-12 py-4 text-lg">
+                        <span class="material-symbols-outlined text-2xl">publish</span>
+                        Finish & Save
+                    </button>
+                    <a href="index.html" target="_blank"
+                        class="flex items-center justify-center gap-2 px-12 py-4 bg-white text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-bold shadow-sm whitespace-nowrap text-lg">
+                        <span class="material-symbols-outlined">visibility</span>
+                        Preview Site
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Page Picker Modal -->
+    <div id="picker-modal" class="modal-overlay">
+        <div class="modal-content overflow-hidden flex flex-col">
+            <div class="px-8 py-6 border-b flex items-center justify-between bg-slate-50/50">
+                <div>
+                    <h3 class="font-bold text-xl text-slate-900">Choose a Section</h3>
+                    <p class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-bold">Select the next chapter of
+                        your journey</p>
+                </div>
+                <button onclick="closePicker()"
+                    class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-8 overflow-y-auto max-h-[70vh]">
+                <div class="type-grid" id="page-type-selector">
+                    <!-- Types populated dynamically -->
+                </div>
+            </div>
+            <div class="p-8 border-t bg-slate-50/50 flex justify-end gap-3">
+                <button onclick="closePicker()" class="btn-outline px-8 border-none">Cancel</button>
+                <button onclick="confirmPageSelection()" class="btn-primary px-10">
+                    Add Section
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Code Generation -->
+    <div id="code-modal" class="modal-overlay">
+        <div class="modal-content p-0 overflow-hidden shadow-2xl flex flex-col">
+            <div class="px-6 py-4 border-b flex items-center justify-between bg-slate-50">
+                <h3 class="font-bold text-slate-800">Generated Configuration</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 bg-slate-900 text-indigo-300 font-mono text-sm overflow-auto max-h-[60vh]">
+                <pre id="code-output" class="whitespace-pre-wrap"></pre>
+            </div>
+            <div class="p-6 border-t flex gap-4 bg-white">
+                <button onclick="copyToClipboard()" class="flex-1 btn-primary justify-center">
+                    <span class="material-symbols-outlined">content_copy</span>
+                    Copy to Clipboard
+                </button>
+                <button onclick="downloadJS()" class="flex-1 btn-outline justify-center">
+                    <span class="material-symbols-outlined">download</span>
+                    Download data.js
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification"
+        class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 z-[100]">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span id="notification-text">Code copied to clipboard!</span>
+    </div>
+
+    <!-- Icon Picker Modal -->
+    <div id="icon-picker-modal" class="modal-overlay">
+        <div class="modal-content overflow-hidden flex flex-col">
+            <div class="px-8 py-6 border-b flex items-center justify-between bg-slate-50/50">
+                <div>
+                    <h3 class="font-bold text-xl text-slate-900">Pick an Icon</h3>
+                    <p class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-bold">Choose a symbol that fits
+                        the memory</p>
+                </div>
+                <button onclick="closeIconPicker()"
+                    class="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 border-b">
+                <input type="text" id="icon-search" oninput="filterIcons(this.value)" class="input-field"
+                    placeholder="Search icons (e.g. heart, travel, music)...">
+            </div>
+            <div class="p-8 overflow-y-auto max-h-[50vh]">
+                <div class="icon-grid" id="icon-grid-container">
+                    <!-- Icons populated dynamically -->
+                </div>
+            </div>
+            <div class="p-8 border-t bg-slate-50/50 flex justify-end">
+                <button onclick="closeIconPicker()" class="btn-outline px-8">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Live Preview Frame -->
+    <div id="preview-panel"
+        class="fixed top-24 right-6 bottom-6 w-[380px] bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border-[8px] border-slate-900 z-50 overflow-hidden transform translate-x-[420px] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+        <!-- Phone Notch -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-6 bg-slate-900 rounded-b-3xl z-20"></div>
+
+        <div class="h-full w-full relative pt-2">
+            <iframe id="preview-iframe" src="index.html" class="w-full h-full border-0" onload="syncPreview()"></iframe>
+        </div>
+
+        <!-- Close Button -->
+        <button onclick="togglePreview()"
+            class="absolute top-4 right-4 w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center shadow-lg transition-colors z-[60]">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <!-- Load existing data -->
+    <script src="data.js"></script>
+
+    <script>
+        // Initial Data Structure based on data.js
+        let configData = {
+            theme: { ribbonColor: "#b33939", paperColor: "#fdfaf1", paperImage: "", cardboardColor: "#c2a382", textColor: "#2d2926" },
+            recipientName: "Sarah",
+            birthdayDate: "2026-01-25T00:00:00",
+            pages: []
+        };
+
+
+        function renderPages() {
+            const container = document.getElementById('pages-container');
+            container.innerHTML = '';
+
+            configData.pages.forEach((page, index) => {
+                const uniqueId = `p${index}`;
+                const pageEl = document.createElement('div');
+                pageEl.className = `card ${page.hidden ? 'opacity-60 grayscale-[0.5]' : ''}`;
+                pageEl.draggable = true;
+                pageEl.addEventListener('dragstart', (e) => handleDragStart(e, index));
+                pageEl.addEventListener('dragover', (e) => handleDragOver(e, index));
+                pageEl.addEventListener('dragleave', (e) => handleDragLeave(e, index));
+                pageEl.addEventListener('drop', (e) => handleDrop(e, index));
+                pageEl.addEventListener('dragend', (e) => handleDragEnd(e));
+
+                const typeInfo = PAGE_TYPES[page.type] || { icon: 'help', fields: [] };
+
+                let fieldsHtml = '';
+                typeInfo.fields.forEach(field => {
+                    const value = page[field.key];
+                    fieldsHtml += renderField(field, value, (newVal) => {
+                        configData.pages[index][field.key] = newVal;
+                        saveToLocal();
+                    }, `${uniqueId}-${field.key}`);
+                });
+
+                pageEl.innerHTML = `
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner">
+                                <span class="material-symbols-outlined text-2xl">${typeInfo.icon}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-slate-800 uppercase tracking-tight text-sm">${page.type.replace(/-/g, ' ')}</h3>
+                                <p class="text-[10px] text-slate-400 font-bold">SECTION #${index + 1}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                            <button onclick="togglePageVisibility(${index})" class="p-2 hover:bg-white rounded-lg transition-all ${page.hidden ? 'text-rose-500' : 'text-slate-400'}" title="${page.hidden ? 'Show Section' : 'Hide Section'}">
+                                <span class="material-symbols-outlined">${page.hidden ? 'visibility_off' : 'visibility'}</span>
+                            </button>
+                            <div class="w-px h-4 bg-slate-200 mx-1"></div>
+                            <button onclick="duplicatePage(${index})" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white rounded-lg transition-all" title="Duplicate">
+                                <span class="material-symbols-outlined">content_copy</span>
+                            </button>
+                            <button onclick="movePage(${index}, -1)" class="p-2 text-slate-400 hover:text-indigo-600 ${index === 0 ? 'opacity-20 pointer-events-none' : ''}">
+                                <span class="material-symbols-outlined">arrow_upward</span>
+                            </button>
+                            <button onclick="movePage(${index}, 1)" class="p-2 text-slate-400 hover:text-indigo-600 ${index === configData.pages.length - 1 ? 'opacity-20 pointer-events-none' : ''}">
+                                <span class="material-symbols-outlined">arrow_downward</span>
+                            </button>
+                            <button onclick="removePage(${index})" class="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ml-2">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        ${fieldsHtml}
+                    </div>
+                `;
+                container.appendChild(pageEl);
+            });
+            saveToLocal();
+        }
+
+        // Page Templates and available fields
+        const PAGE_TYPES = {
+            'memory-box': {
+                icon: 'package_2',
+                fields: [
+                    { key: 'topMessage', label: 'Message above the heading', type: 'text' },
+                    { key: 'mainTitle', label: 'Main Heading (highlight with <span>)', type: 'text' },
+                    { key: 'boxLabel', label: 'Sticker label on the box', type: 'text' },
+                    { key: 'boxTarget', label: "Person's name on the box", type: 'text' },
+                    { key: 'question', label: 'Secret Question to open the box', type: 'text' },
+                    { key: 'placeholder', label: 'Hint inside the answer box', type: 'text' },
+                    { key: 'correctAnswer', label: 'The Secret Answer (all lowercase)', type: 'text' },
+                    { key: 'buttonText', label: 'Unlock Button Text', type: 'text' },
+                    { key: 'countdownEnabled', label: 'Show a live countdown?', type: 'boolean' },
+                    { key: 'rattleSound', label: 'Rattle Sound (Upload/URL)', type: 'file' }
+                ]
+            },
+            'inside-box': {
+                icon: 'drafts',
+                fields: [
+                    { key: 'greeting', label: 'Greeting Header (Top)', type: 'text' },
+                    { key: 'letterTitle', label: 'Letter Heading (highlight with <span>)', type: 'text' },
+                    { key: 'letterBody', label: 'The Main Letter Content', type: 'textarea' },
+                    { key: 'letterSign', label: 'Your Signature (bottom)', type: 'text' },
+                    { key: 'footerText', label: 'Small footer note', type: 'text' },
+                    { key: 'musicTrack', label: 'Background Music (Upload/URL)', type: 'file' }
+                ]
+            },
+            'lifetime-receipt': {
+                icon: 'receipt_long',
+                fields: [
+                    { key: 'birthDate', label: 'Birth Date (YYYY-MM-DD)', type: 'text' },
+                    { key: 'receiptNumber', label: 'Receipt ID Number', type: 'text' },
+                    { key: 'title', label: 'Receipt Header Title', type: 'text' },
+
+                    { label: '✨ Customize Specific Labels (Keep Auto-Calculation)', type: 'header' },
+                    { key: 'labelYears', label: 'Label for "Years" (e.g. Years of Cuteness)', type: 'text', placeholder: 'Default: Years Collected' },
+                    { key: 'labelMonths', label: 'Label for "Months"', type: 'text', placeholder: 'Default: Months Shared' },
+                    { key: 'labelDays', label: 'Label for "Days"', type: 'text', placeholder: 'Default: Days Laughed' },
+                    { key: 'labelHours', label: 'Label for "Hours"', type: 'text', placeholder: 'Default: Hours Treasured' },
+                    { key: 'labelMinutes', label: 'Label for "Minutes"', type: 'text', placeholder: 'Default: Minutes Dreaming' },
+                    { key: 'labelSeconds', label: 'Label for "Seconds"', type: 'text', placeholder: 'Default: Seconds Loved' },
+
+                    { label: '⚠️ Advanced Manual Override (Stops Auto-Calculation)', type: 'header' },
+                    { key: 'customRows', label: 'Manual Receipt Lines', type: 'list', itemType: 'receipt-row', itemLabel: 'Line' },
+
+                    { label: 'Footer Settings', type: 'header' },
+                    { key: 'barcodeText', label: 'Text under the barcode', type: 'text' },
+                    { key: 'footerText', label: 'Finish message at the bottom', type: 'text' },
+                    { key: 'buttonText', label: 'Next Page Button', type: 'text' }
+                ]
+            },
+            'message': {
+                icon: 'chat_bubble',
+                fields: [
+                    { key: 'title', label: 'Title', type: 'text' },
+                    { key: 'content', label: 'Message Content', type: 'textarea' },
+                    { key: 'buttonText', label: 'Button Text', type: 'text' }
+                ]
+            },
+            'birthday-newspaper': {
+                icon: 'newspaper',
+                fields: [
+                    { key: 'title', label: 'Name of the Newspaper', type: 'text' },
+                    { key: 'edition', label: 'Edition Label (e.g. Special Edition)', type: 'text' },
+                    { key: 'date', label: 'Date shown on paper', type: 'text' },
+                    { key: 'price', label: 'Price shown on paper', type: 'text' },
+                    { key: 'mainHeadline', label: 'The BIG Newspaper Headline', type: 'text' },
+                    { key: 'mainPhoto', label: 'Large Newspaper Photo', type: 'file' },
+                    { key: 'articles', label: 'Small Articles (Add 3 stories)', type: 'list', itemType: 'article' },
+                    { key: 'buttonText', label: 'Next Page Button', type: 'text' }
+                ]
+            },
+            'polaroid-stack': {
+                icon: 'photo_library',
+                fields: [
+                    { key: 'title', label: 'Photo Gallery Title', type: 'text' },
+                    { key: 'subtitle', label: 'Small description text', type: 'text' },
+                    { key: 'photos', label: 'Your Polaroid Collection', type: 'list', itemType: 'photo' },
+                    { key: 'buttonText', label: 'Next Page Button', type: 'text' }
+                ]
+            },
+            'traveler-map': {
+                icon: 'map',
+                fields: [
+                    { key: 'title', label: 'Map Section Title', type: 'text' },
+                    { key: 'subtitle', label: 'Small description text', type: 'text' },
+                    { key: 'mapImage', label: 'Map Style (Default: real-map)', type: 'text' },
+                    { key: 'mapCenter', label: 'Map Start Position [lat, lng]', type: 'array' },
+                    { key: 'mapZoom', label: 'Starting Zoom Level (1-20)', type: 'number' },
+                    { key: 'pins', label: 'Memory Pins for the Map', type: 'list', itemType: 'pin' },
+                    { key: 'buttonText', label: 'Next Page Button', type: 'text' }
+                ]
+            },
+            'analog-voice-note': {
+                icon: 'settings_voice',
+                fields: [
+                    { key: 'title', label: 'Voice Note Title', type: 'text' },
+                    { key: 'subtitle', label: 'Small description text', type: 'text' },
+                    { key: 'sideText', label: 'Label on the Cassette', type: 'text' },
+                    { key: 'audioUrl', label: 'Voice Recording File (Upload/URL)', type: 'file' },
+                    { key: 'buttonText', label: 'Next Page Button', type: 'text' }
+                ]
+            },
+            'time-capsule-stitch': {
+                icon: 'inventory_2',
+                fields: [
+                    { key: 'title', label: 'Title (use <span> for accent)', type: 'text' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'text' },
+                    { key: 'placeholder', label: 'Textarea Placeholder', type: 'text' },
+                    { key: 'inisial', label: 'User Initial', type: 'text' },
+                    { key: 'buttonText', label: 'Finish Button Text', type: 'text' },
+                    { key: 'outroText', label: 'Final Outro Message', type: 'textarea' }
+                ]
+            },
+            'scratch-card': {
+                icon: 'auto_fix_high',
+                fields: [
+                    { key: 'title', label: 'Headline (use <span> for accent)', type: 'text' },
+                    { key: 'subtitle', label: 'Small description', type: 'text' },
+                    { key: 'mainPhoto', label: 'Hidden Photo (to be scratched)', type: 'file' },
+                    { key: 'overlayColor', label: 'Scratch Coating Color (Hex)', type: 'text' },
+                    { key: 'brushSize', label: 'Scratch Brush Size (10-100)', type: 'number' },
+                    { key: 'finishMessage', label: 'Message when reveal is 90%', type: 'text' },
+                    { key: 'buttonText', label: 'Next Page Button', type: 'text' }
+                ]
+            },
+        };
+
+        // Initialize Form
+        function initProject() {
+            // Priority 1: Check LocalStorage for recent work
+            const saved = localStorage.getItem('birthday_engine_config');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Merge with current configData (which contains defaults)
+                    configData = { ...configData, ...parsed };
+                    if (parsed.theme) configData.theme = { ...configData.theme, ...parsed.theme };
+                    showNotification('Draf terakhir Anda telah dimuat otomatis!');
+                } catch (e) {
+                    console.error("Gagal memuat draf", e);
+                }
+            } else if (typeof CONFIG !== 'undefined') {
+                // Priority 2: Use the existing data.js
+                configData = JSON.parse(JSON.stringify(CONFIG));
+            }
+
+            // Ensure paperImage and recipientName exist
+            if (!configData.theme) configData.theme = {};
+            if (configData.theme.paperImage === undefined) configData.theme.paperImage = "";
+            if (!configData.recipientName) configData.recipientName = "Sarah";
+
+            renderThemeInputs();
+            renderGlobalInfo();
+            renderPages();
+            applyDashboardTheme();
+
+            console.log("🚀 Admin: Dashboard Ready");
+        }
+
+        function renderThemeInputs() {
+            const container = document.getElementById('theme-inputs');
+            container.innerHTML = '';
+
+            const themeFields = [
+                { key: 'ribbonColor', label: 'Ribbons & Stamps', type: 'color' },
+                { key: 'paperColor', label: 'Site Background', type: 'color' },
+                { key: 'paperImage', label: 'Background Photo (.png / .jpg)', type: 'image' },
+                { key: 'cardboardColor', label: 'Box Textures', type: 'color' },
+                { key: 'textColor', label: 'Main Ink Color', type: 'color' }
+            ];
+
+            themeFields.forEach(field => {
+                const value = configData.theme[field.key] || "";
+
+                if (field.type === 'color') {
+                    container.innerHTML += `
+                        <div>
+                            <label class="label-text">${field.label}</label>
+                            <div class="flex gap-2">
+                                <input type="color" value="${value}" onchange="updateTheme('${field.key}', this.value)" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 overflow-hidden shadow-sm">
+                                <input type="text" value="${value}" onchange="updateTheme('${field.key}', this.value)" class="input-field font-mono text-xs uppercase" placeholder="#000000">
+                            </div>
+                        </div>
+                    `;
+                } else if (field.type === 'image') {
+                    container.innerHTML += `
+                        <div class="col-span-2 space-y-2 mt-2">
+                            <label class="label-text">${field.label}</label>
+                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 shadow-inner">
+                                <div class="w-16 h-16 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center bg-white overflow-hidden shrink-0 shadow-sm">
+                                    ${value ? `<img src="${value}" class="w-full h-full object-cover">` : '<span class="material-symbols-outlined text-slate-300">image</span>'}
+                                </div>
+                                <div class="flex-1 space-y-2">
+                                    <div class="flex gap-2">
+                                        <label class="flex-1 btn-outline bg-white py-2 cursor-pointer justify-center text-xs">
+                                            <span class="material-symbols-outlined text-sm">upload</span>
+                                            ${value ? 'Change File' : 'Upload PNG / JPG'}
+                                            <input type="file" class="hidden" accept=".png,.jpg,.jpeg,.webp" onchange="handleThemeImageUpload(this, '${field.key}')">
+                                        </label>
+                                        ${value ? `
+                                        <button onclick="updateTheme('${field.key}', '')" class="p-2 text-rose-500 hover:bg-rose-100 rounded-lg" title="Remove Background">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                        ` : ''}
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 italic">Recommended: Clean PNG or compressed JPG</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        async function handleThemeImageUpload(input, key) {
+            const file = input.files[0];
+            if (!file) return;
+
+            try {
+                showNotification('Compressing background...');
+                const compressedBase64 = await compressImage(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.8 });
+                updateTheme(key, compressedBase64);
+                showNotification('Background image updated!');
+            } catch (err) {
+                console.error('Compression failed:', err);
+                showNotification('Upload failed. Using original...');
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    updateTheme(key, e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateTheme(key, value) {
+            configData.theme[key] = value;
+            renderThemeInputs();
+            applyDashboardTheme();
+            saveToLocal();
+        }
+
+        function removePage(index) {
+            if (confirm('Are you sure you want to remove this page?')) {
+                configData.pages.splice(index, 1);
+                renderPages();
+                saveToLocal();
+                showNotification('Section removed');
+            }
+        }
+
+        function movePage(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= configData.pages.length) return;
+
+            const page = configData.pages.splice(index, 1)[0];
+            configData.pages.splice(newIndex, 0, page);
+            renderPages();
+            saveToLocal();
+        }
+
+        function togglePageVisibility(index) {
+            configData.pages[index].hidden = !configData.pages[index].hidden;
+            renderPages();
+            saveToLocal();
+            showNotification(configData.pages[index].hidden ? 'Section hidden' : 'Section visible');
+        }
+
+        function duplicatePage(index) {
+            const pageCopy = JSON.parse(JSON.stringify(configData.pages[index]));
+            configData.pages.splice(index + 1, 0, pageCopy);
+            renderPages();
+            saveToLocal();
+            showNotification('Section duplicated');
+        }
+
+        function applyDashboardTheme() {
+            const t = configData.theme;
+
+            // Update Dashboard Theme (Immersion)
+            const root = document.documentElement;
+            root.style.setProperty('--brand-primary', t.ribbonColor);
+            root.style.setProperty('--brand-secondary', t.cardboardColor);
+            root.style.setProperty('--brand-paper', t.paperColor);
+            root.style.setProperty('--brand-ink', t.textColor);
+
+            // Background Image Support
+            if (t.paperImage) {
+                document.body.style.backgroundImage = `url('${t.paperImage}')`;
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundRepeat = "no-repeat";
+                document.body.style.backgroundAttachment = "fixed";
+            } else {
+                document.body.style.backgroundImage = "none";
+            }
+
+        }
+
+        function applyPreset(ribbon, paper, cardboard, text) {
+            configData.theme.ribbonColor = ribbon;
+            configData.theme.paperColor = paper;
+            configData.theme.cardboardColor = cardboard;
+            configData.theme.textColor = text;
+
+            renderThemeInputs();
+            applyDashboardTheme();
+            saveToLocal();
+            showNotification('Theme style applied!');
+        }
+
+        function renderGlobalInfo() {
+            const nameInput = document.getElementById('recipient-name');
+            const dateInput = document.getElementById('birthday-date');
+
+            nameInput.value = configData.recipientName || "";
+
+            if (configData.birthdayDate) {
+                const dt = new Date(configData.birthdayDate);
+                nameInput.dataset.initial = nameInput.value; // Store for smart replacement
+                try {
+                    dateInput.value = dt.toISOString().slice(0, 16);
+                } catch (e) { }
+            }
+
+            // Use 'input' for real-time, 'change' for final save
+            nameInput.oninput = (e) => {
+                const newName = e.target.value;
+                configData.recipientName = newName;
+
+                // Smart Propagation: Update boxTarget, greeting, etc. in existing pages
+                // if they still match the default or previous name
+                configData.pages.forEach(page => {
+                    if (page.boxTarget === nameInput.dataset.initial || page.boxTarget === "Sarah") {
+                        page.boxTarget = newName;
+                    }
+                    if (page.greeting && (page.greeting.includes(nameInput.dataset.initial) || page.greeting.includes("Sarah"))) {
+                        page.greeting = page.greeting.replace(nameInput.dataset.initial || "Sarah", newName);
+                    }
+                });
+
+                nameInput.dataset.initial = newName; // Update for next comparison
+                renderPages(); // Refresh the list UI to show propagated changes
+                syncPreview();
+            };
+            nameInput.onchange = (e) => {
+                saveToLocal();
+                // Optional: Ask to update existing pages? 
+                // For now, let's keep it simple.
+            };
+
+            dateInput.onchange = (e) => {
+                const date = new Date(e.target.value);
+                configData.birthdayDate = date.toISOString();
+                saveToLocal();
+            };
+        }
+
+        function renderPages() {
+            const container = document.getElementById('pages-container');
+            container.innerHTML = '';
+
+            configData.pages.forEach((page, index) => {
+                const typeInfo = PAGE_TYPES[page.type] || { icon: 'help', fields: [] };
+                const isHidden = page.hidden === true;
+
+                const pageEl = document.createElement('div');
+                pageEl.className = `card relative group border-l-4 ${isHidden ? 'border-slate-300 opacity-60' : 'border-indigo-500'} transition-all duration-300`;
+
+                let fieldsHtml = '';
+                typeInfo.fields.forEach(field => {
+                    // Headers don't have keys, handle them separately
+                    if (field.type === 'header') {
+                        fieldsHtml += renderField(field, null, null, null);
+                    } else {
+                        const uniqueId = `p${index}-${field.key}`;
+                        fieldsHtml += renderField(field, page[field.key], (newVal) => {
+                            configData.pages[index][field.key] = newVal;
+                            saveToLocal();
+                        }, uniqueId);
+                    }
+                });
+
+                pageEl.innerHTML = `
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full ${isHidden ? 'bg-slate-100 text-slate-400' : 'bg-indigo-50 text-indigo-600'} flex items-center justify-center font-bold">
+                                ${index + 1}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-bold text-slate-900">${page.type.replace('-', ' ').toUpperCase()}</h3>
+                                    ${isHidden ? '<span class="badge bg-slate-100 text-slate-500 text-[10px] uppercase">Hidden</span>' : ''}
+                                </div>
+                                <select onchange="changePageType(${index}, this.value)" class="text-xs border-0 p-0 text-slate-400 bg-transparent hover:text-indigo-600 focus:ring-0 cursor-pointer">
+                                    ${Object.keys(PAGE_TYPES).map(t => `<option value="${t}" ${t === page.type ? 'selected' : ''}>Change to ${t.replace('-', ' ')}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 group/move">
+                             <div class="p-2 text-slate-200 cursor-grab active:cursor-grabbing hover:text-slate-400">
+                                <span class="material-symbols-outlined">drag_indicator</span>
+                            </div>
+                            <button onclick="togglePageVisibility(${index})" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors" title="${isHidden ? 'Show Page' : 'Hide Page'}">
+                                <span class="material-symbols-outlined">${isHidden ? 'visibility_off' : 'visibility'}</span>
+                            </button>
+                            <button onclick="duplicatePage(${index})" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors" title="Duplicate Page">
+                                <span class="material-symbols-outlined">content_copy</span>
+                            </button>
+                            <div class="w-px h-6 bg-slate-200 mx-1"></div>
+                            <button onclick="movePage(${index}, -1)" class="p-2 text-slate-400 hover:text-indigo-600 ${index === 0 ? 'opacity-20 pointer-events-none' : ''}">
+                                <span class="material-symbols-outlined">arrow_upward</span>
+                            </button>
+                            <button onclick="movePage(${index}, 1)" class="p-2 text-slate-400 hover:text-indigo-600 ${index === configData.pages.length - 1 ? 'opacity-20 pointer-events-none' : ''}">
+                                <span class="material-symbols-outlined">arrow_downward</span>
+                            </button>
+                            <button onclick="removePage(${index})" class="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ml-2">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        ${fieldsHtml}
+                    </div>
+                `;
+                container.appendChild(pageEl);
+            });
+
+            saveToLocal();
+        }
+
+        function renderField(field, value, onChange, uniqueId) {
+            let inputHtml = '';
+            let helperBtn = '';
+
+            if (field.key && (field.key.toLowerCase().includes('title') || field.key.toLowerCase().includes('headline') || field.key.toLowerCase().includes('content') || field.key.toLowerCase().includes('message') || field.key.toLowerCase().includes('body'))) {
+                helperBtn = `
+                    <div class="flex items-center gap-3 mt-2">
+                        <button onclick="wrapSelectedText('${uniqueId}', 'span')" class="text-[10px] text-indigo-600 font-bold hover:underline flex items-center gap-1 group/btn">
+                            <span class="material-symbols-outlined text-xs group-hover/btn:rotate-12 transition-transform" style="font-size: 14px;">ink_highlighter</span>
+                            Highlight Accent
+                        </button>
+                        <button onclick="wrapSelectedText('${uniqueId}', 'b')" class="text-[10px] text-indigo-600 font-bold hover:underline flex items-center gap-1 group/btn">
+                            <span class="material-symbols-outlined text-xs group-hover/btn:scale-125 transition-transform" style="font-size: 14px;">format_bold</span>
+                            Make Bold
+                        </button>
+                    </div>
+                `;
+            }
+
+            if (field.type === 'header') {
+                return `
+                    <div class="col-span-2 mt-8 mb-4 pb-3 border-b border-slate-100 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-sm">subdirectory_arrow_right</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-widest">${field.label}</h4>
+                    </div>
+                `;
+            }
+
+            if (field.type === 'text') {
+                inputHtml = `<input type="text" id="input-${uniqueId}" value="${value || ''}" 
+                    oninput="updateFieldValue('${field.key}', this.value, '${uniqueId}', true)" 
+                    onchange="updateFieldValue('${field.key}', this.value, '${uniqueId}', false)" 
+                    class="input-field" placeholder="Enter ${field.label.toLowerCase()}...">`;
+            } else if (field.type === 'textarea') {
+                inputHtml = `<textarea id="input-${uniqueId}" 
+                    oninput="updateFieldValue('${field.key}', this.value, '${uniqueId}', true)" 
+                    onchange="updateFieldValue('${field.key}', this.value, '${uniqueId}', false)" 
+                    class="input-field h-28 leading-relaxed" placeholder="Write something beautiful...">${value || ''}</textarea>`;
+            } else if (field.type === 'boolean') {
+                inputHtml = `
+                    <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-white hover:border-indigo-200 transition-all">
+                        <div class="relative flex items-center cursor-pointer">
+                            <input type="checkbox" ${value ? 'checked' : ''} onchange="updateFieldValue('${field.key}', this.checked, '${uniqueId}')" class="peer h-5 w-5 cursor-pointer appearance-none rounded border-2 border-slate-300 transition-all checked:border-indigo-600 checked:bg-indigo-600">
+                            <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <span class="text-sm font-semibold text-slate-600">${field.label} Enabled</span>
+                    </label>
+                `;
+            } else if (field.type === 'number') {
+                inputHtml = `<input type="number" value="${value !== undefined ? value : ''}" onchange="updateFieldValue('${field.key}', this.value === '' ? undefined : parseFloat(this.value), '${uniqueId}')" class="input-field">`;
+            } else if (field.type === 'array') {
+                const valStr = Array.isArray(value) ? JSON.stringify(value) : value || '[]';
+                inputHtml = `<input type="text" value='${valStr}' onchange="updateFieldValue('${field.key}', JSON.parse(this.value), '${uniqueId}')" class="input-field font-mono text-xs" placeholder="[lat, lng]">`;
+            } else if (field.type === 'file') {
+                const isAudio = field.key && field.key.toLowerCase().includes('audio') || field.key && field.key.toLowerCase().includes('track') || field.key && field.key.toLowerCase().includes('sound');
+                const previewImg = value && (value.startsWith('data:image') || value.startsWith('http')) && !isAudio
+                    ? `<img src="${value}" class="img-thumbnail" onerror="this.style.display='none'">`
+                    : `<div class="w-16 h-16 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-300 shadow-inner">
+                        <span class="material-symbols-outlined">${isAudio ? 'explicit' : 'image'}</span>
+                       </div>`;
+
+                inputHtml = `
+                    <div class="flex items-center gap-4 bg-slate-50/50 p-3 rounded-2xl border border-dashed border-slate-200">
+                        ${previewImg}
+                        <div class="flex-1 space-y-2">
+                             <input type="text" id="input-${uniqueId}" value="${value || ''}" onchange="updateFieldValue('${field.key}', this.value, '${uniqueId}')" class="input-field !bg-white !py-1.5 text-xs" placeholder="Paste URL or upload below">
+                             <label class="btn-outline !py-1.5 px-3 cursor-pointer text-[10px] w-full bg-white">
+                                <span class="material-symbols-outlined text-xs">cloud_upload</span>
+                                Upload Local ${isAudio ? 'Audio' : 'Media'}
+                                <input type="file" class="hidden" accept="${isAudio ? '.mp3,.wav,.m4a' : '.png,.jpg,.jpeg,.webp'}" onchange="handleFileUpload(this, '${uniqueId}', '${field.key}')">
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (field.type === 'list') {
+                inputHtml = renderListField(field, value, uniqueId);
+            }
+
+            return `
+                <div class="${field.type === 'list' || field.type === 'textarea' ? 'col-span-2' : ''} space-y-2">
+                    <label class="label-text flex items-center gap-2">
+                        ${field.label}
+                    </label>
+                    ${inputHtml}
+                    ${helperBtn}
+                </div>
+            `;
+        }
+
+        function renderListField(field, items = [], uniqueId) {
+            let listHtml = `<div id="list-${uniqueId}" class="space-y-6 mt-4">`;
+            items.forEach((item, idx) => {
+                listHtml += `
+                    <div class="flex items-start gap-4 p-6 rounded-3xl bg-slate-50 border border-slate-100 relative group/item hover:bg-white hover:shadow-xl transition-all duration-300">
+                        <div class="flex-1 grid grid-cols-2 gap-5">
+                            ${renderItemFields(field.itemType, item, uniqueId, idx)}
+                        </div>
+                        <button onclick="removeListItem('${uniqueId}', ${idx})" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 opacity-0 group-hover/item:opacity-100 transition-all">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </div>
+                `;
+            });
+
+            listHtml += `
+                <div class="flex gap-3">
+                    <button onclick="addListItem('${uniqueId}', '${field.itemType}')" class="flex-1 py-4 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 group/addbtn">
+                        <span class="material-symbols-outlined group-hover/addbtn:scale-110 transition-transform">add_circle</span>
+                        Add to ${field.label}
+                    </button>
+                    ${field.itemType === 'photo' ? `
+                        <label class="px-6 py-4 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 hover:border-emerald-300 hover:text-emerald-600 hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 group/bulk cursor-pointer">
+                            <span class="material-symbols-outlined group-hover/bulk:scale-110 transition-transform">photo_library</span>
+                            Bulk Upload
+                            <input type="file" class="hidden" multiple accept=".png,.jpg,.jpeg,.webp" onchange="handleBulkUpload(this, '${uniqueId}', '${field.key}')">
+                        </label>
+                    ` : ''}
+                </div>
+            </div>`;
+
+            return listHtml;
+        }
+
+        function renderItemFields(itemType, item, uniqueId, idx) {
+            if (itemType === 'photo') {
+                const previewImg = item.url && (item.url.startsWith('data:image') || item.url.startsWith('http'))
+                    ? `<img src="${item.url}" class="img-thumbnail !w-14 !h-14">`
+                    : `<div class="w-14 h-14 rounded-xl bg-white border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-300 shadow-inner"><span class="material-symbols-outlined text-sm">photo</span></div>`;
+
+                return `
+                    <div class="col-span-2 flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+                        ${previewImg}
+                        <div class="flex-1 space-y-2">
+                            <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">Polaroid Photo</label>
+                            <div class="flex gap-2">
+                                 <input type="text" value="${item.url || ''}" onchange="updateListItem('${uniqueId}', ${idx}, 'url', this.value)" class="input-field !py-1 text-xs !bg-slate-50" placeholder="Paste URL...">
+                                 <label class="w-10 h-10 border rounded-xl cursor-pointer bg-slate-50 hover:bg-white transition-colors flex items-center justify-center shadow-sm">
+                                    <span class="material-symbols-outlined text-sm">file_upload</span>
+                                    <input type="file" class="hidden" accept=".png,.jpg,.jpeg,.webp" onchange="handleListFileUpload(this, '${uniqueId}', ${idx}, 'url')">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">Date/Label</label>
+                        <input type="text" value="${item.date || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'date', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'date', this.value, false)"
+                            class="input-field" placeholder="e.g. 15 Aug 2023">
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">Short Caption</label>
+                        <input type="text" value="${item.caption || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'caption', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'caption', this.value, false)"
+                            class="input-field" placeholder="Sweet memory...">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">The Story (Revealed on reveal)</label>
+                        <textarea 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'backNote', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'backNote', this.value, false)"
+                            class="input-field h-20 text-sm leading-relaxed" placeholder="Tell the story behind this photo...">${item.backNote || ''}</textarea>
+                    </div>
+                `;
+            } else if (itemType === 'pin') {
+                const previewImg = item.photo && (item.photo.startsWith('data:image') || item.photo.startsWith('http'))
+                    ? `<img src="${item.photo}" class="img-thumbnail !w-14 !h-14">`
+                    : `<div class="w-14 h-14 rounded-xl bg-white border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-300 shadow-inner"><span class="material-symbols-outlined text-sm">location_on</span></div>`;
+
+                return `
+                    <div class="col-span-2 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 flex items-center gap-4">
+                        <div class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-md">
+                            <span class="material-symbols-outlined">explore</span>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[9px] uppercase font-black text-indigo-400 tracking-wider">Coordinates [lat, lng]</label>
+                            <input type="text" value='${JSON.stringify(item.coords || [0, 0])}' onchange="updateListItem('${uniqueId}', ${idx}, 'coords', JSON.parse(this.value))" class="input-field font-mono text-xs !bg-white">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">Pin Label</label>
+                        <input type="text" value="${item.label || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'label', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'label', this.value, false)"
+                            class="input-field" placeholder="e.g. Our First Date">
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">Date</label>
+                        <input type="text" value="${item.date || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'date', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'date', this.value, false)"
+                            class="input-field">
+                    </div>
+                    <div class="col-span-2 space-y-2 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm mt-2">
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider ml-1">Pin Preview Photo</label>
+                         <div class="flex items-center gap-4">
+                             ${previewImg}
+                             <div class="flex-1 flex gap-2">
+                                <input type="text" value="${item.photo || ''}" onchange="updateListItem('${uniqueId}', ${idx}, 'photo', this.value)" class="input-field flex-1 !bg-slate-50" placeholder="Photo URL">
+                                <label class="w-10 h-10 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 flex items-center justify-center transition-colors">
+                                    <span class="material-symbols-outlined text-sm">upload</span>
+                                    <input type="file" class="hidden" onchange="handleListFileUpload(this, '${uniqueId}', ${idx}, 'photo')">
+                                </label>
+                             </div>
+                        </div>
+                    </div>
+                     <div class="col-span-2">
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider">The Memory Note</label>
+                        <input type="text" value="${item.note || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'note', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'note', this.value, false)"
+                            class="input-field" placeholder="A short sentence about this place...">
+                    </div>
+                `;
+            } else if (itemType === 'article') {
+                return `
+                    <div class="col-span-2 flex gap-4">
+                        <div class="w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center text-indigo-600 shadow-inner group/icon">
+                             <span class="material-symbols-outlined text-3xl group-hover/icon:scale-110 transition-transform">${item.icon || 'history'}</span>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-1 block">Memory Icon</label>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide flex-1">
+                                    ${['favorite', 'cake', 'restaurant', 'photo_camera', 'location_on', 'movie', 'auto_stories', 'celebration', 'history', 'home'].map(icon => `
+                                        <button onclick="updateListItem('${uniqueId}', ${idx}, 'icon', '${icon}'); renderPages(); syncPreview();" 
+                                            class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 hover:border-indigo-300 transition-all flex-shrink-0">
+                                            <span class="material-symbols-outlined text-sm text-slate-600">${icon}</span>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                                <button onclick="openIconPicker('${uniqueId}', ${idx}, 'icon')" class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-sm">search</span>
+                                </button>
+                            </div>
+                            <input type="text" value="${item.icon || 'history'}" 
+                                oninput="updateListItem('${uniqueId}', ${idx}, 'icon', this.value, true)"
+                                onchange="updateListItem('${uniqueId}', ${idx}, 'icon', this.value, false)"
+                                class="input-field !text-xs !bg-slate-50" placeholder="Custom Material Icon name...">
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-1 block">Article Headline</label>
+                        <input type="text" value="${item.title || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'title', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'title', this.value, false)"
+                            class="input-field" placeholder="Extra! Extra! Read all about it!">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-1 block">The Main Story</label>
+                        <textarea 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'content', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'content', this.value, false)"
+                            class="input-field h-28 font-serif text-sm leading-relaxed" placeholder="Type the newspaper story here...">${item.content || ''}</textarea>
+                    </div>
+                `;
+            } else if (itemType === 'receipt-row') {
+                return `
+                     <div>
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-1 block">Label (e.g. Years)</label>
+                        <input type="text" value="${item.label || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'label', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'label', this.value, false)"
+                            class="input-field" placeholder="Time Spent...">
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-1 block">Value (e.g. Infinity)</label>
+                        <input type="text" value="${item.value || ''}" 
+                            oninput="updateListItem('${uniqueId}', ${idx}, 'value', this.value, true)"
+                            onchange="updateListItem('${uniqueId}', ${idx}, 'value', this.value, false)"
+                            class="input-field" placeholder="1000000">
+                    </div>
+                `;
+            } else if (itemType === 'question') {
+                return `
+                    <div class="col-span-2 bg-indigo-50/30 p-4 rounded-2xl border border-indigo-100/50 mb-2">
+                        <label class="text-[9px] uppercase font-black text-indigo-400 tracking-wider mb-2 block">Question Text</label>
+                        <input type="text" value="${item.question || ''}" onchange="updateListItem('${uniqueId}', ${idx}, 'question', this.value)" class="input-field !bg-white" placeholder="What is my favorite...">
+                    </div>
+                    <div class="col-span-2">
+                         <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-2 block">Options (Comma separated)</label>
+                         <input type="text" value="${(item.options || []).join(', ')}" onchange="updateListItem('${uniqueId}', ${idx}, 'options', this.value.split(',').map(s=>s.trim()))" class="input-field" placeholder="Option A, Option B, ...">
+                    </div>
+                    <div class="col-span-2 flex items-center gap-4 mt-2">
+                        <div class="flex-1">
+                            <label class="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-1 block">Correct Answer Index</label>
+                            <input type="number" value="${item.correctAnswer || 0}" onchange="updateListItem('${uniqueId}', ${idx}, 'correctAnswer', parseInt(this.value))" class="input-field" min="0">
+                        </div>
+                        <p class="text-[10px] text-slate-400 bg-slate-100 p-3 rounded-xl mt-4">Note: <strong>0</strong> is the first option, <strong>1</strong> is second, etc.</p>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function updateFieldValue(key, value, uniqueId, isInstant = false) {
+            const pageIdx = parseInt(uniqueId.split('-')[0].substring(1));
+            configData.pages[pageIdx][key] = value;
+
+            if (isInstant) {
+                syncPreview();
+            } else {
+                saveToLocal();
+            }
+        }
+
+        function updateListItem(uniqueId, itemIdx, key, value, isInstant = false) {
+            const pageIdx = parseInt(uniqueId.split('-')[0].substring(1));
+            const fieldKey = uniqueId.split('-')[1];
+
+            // Safety check for initialization
+            if (!configData.pages[pageIdx][fieldKey]) return;
+            if (!configData.pages[pageIdx][fieldKey][itemIdx]) return;
+
+            configData.pages[pageIdx][fieldKey][itemIdx][key] = value;
+
+            if (isInstant) {
+                syncPreview();
+            } else {
+                saveToLocal();
+            }
+        }
+
+        function addListItem(uniqueId, itemType) {
+            const pageIdx = parseInt(uniqueId.split('-')[0].substring(1));
+            const fieldKey = uniqueId.split('-')[1];
+            if (!configData.pages[pageIdx][fieldKey]) configData.pages[pageIdx][fieldKey] = [];
+            let newItem = {};
+            if (itemType === 'photo') newItem = { url: "", date: "", caption: "", backNote: "" };
+            if (itemType === 'pin') newItem = { coords: [0, 0], label: "", photo: "", note: "", date: "" };
+            if (itemType === 'article') newItem = { title: "", content: "", icon: "history" };
+            if (itemType === 'question') newItem = { question: "", options: ["", "", "", ""], correctAnswer: 0 };
+            if (itemType === 'receipt-row') newItem = { label: "", value: "" };
+            configData.pages[pageIdx][fieldKey].push(newItem);
+            renderPages();
+        }
+
+        function removeListItem(uniqueId, itemIdx) {
+            const pageIdx = parseInt(uniqueId.split('-')[0].substring(1));
+            const fieldKey = uniqueId.split('-')[1];
+            configData.pages[pageIdx][fieldKey].splice(itemIdx, 1);
+            renderPages();
+        }
+
+        let selectedPageType = null;
+
+        function openPagePicker() {
+            const selector = document.getElementById('page-type-selector');
+            selector.innerHTML = '';
+
+            Object.keys(PAGE_TYPES).forEach(type => {
+                const info = PAGE_TYPES[type];
+                const card = document.createElement('div');
+                card.className = 'type-card';
+                card.onclick = () => selectPageType(type, card);
+                card.innerHTML = `
+                    <span class="material-symbols-outlined">${info.icon}</span>
+                    <h4>${type.replace(/-/g, ' ')}</h4>
+                `;
+                selector.appendChild(card);
+            });
+
+            document.getElementById('picker-modal').style.display = 'flex';
+        }
+
+        function selectPageType(type, element) {
+            selectedPageType = type;
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function closePicker() {
+            document.getElementById('picker-modal').style.display = 'none';
+            selectedPageType = null;
+        }
+
+        function confirmPageSelection() {
+            if (!selectedPageType) {
+                showNotification('Please select a section type first!');
+                return;
+            }
+            addPage(selectedPageType);
+            closePicker();
+        }
+
+        function addPage(pageType) {
+            if (!pageType || !PAGE_TYPES[pageType]) return;
+
+            const defaultFields = {
+                'memory-box': { topMessage: "You have a new message!", mainTitle: "Happy <span>Birthday!</span>", boxLabel: "Open Me", boxTarget: configData.recipientName, question: "What is my favorite color?", placeholder: "type here...", correctAnswer: "blue", buttonText: "Unlock Box", countdownEnabled: true, rattleSound: "" },
+                'inside-box': { greeting: "Dear " + configData.recipientName, letterTitle: "A <span>Special</span> Letter", letterBody: "Write your heart out here...", letterSign: "With love, Me", footerText: "P.S. I love you", musicTrack: "" },
+                'lifetime-receipt': { birthDate: "2000-01-01", receiptNumber: "MMRY-" + Math.floor(Math.random() * 10000), title: "Official Memory Log", barcodeText: "LOVED-INFINITELY", footerText: "Non-refundable memories.", buttonText: "Continue Journey" },
+                'polaroid-stack': { title: "Our <span>Memories</span>", subtitle: "A collection of beautiful moments", photos: [], buttonText: "View More" },
+                'birthday-newspaper': { title: "The Daily Love", edition: "Special Edition", date: "Today", price: "Priceless", mainHeadline: configData.recipientName + " Celebrates!", mainPhoto: "", articles: [], buttonText: "Read More" },
+                'traveler-map': { title: "Places <span>We've</span> Been", subtitle: "Mapping our favorite adventures", mapImage: "real-map", mapCenter: [0, 0], mapZoom: 12, pins: [], buttonText: "Next Stop" },
+                'analog-voice-note': { title: "A <span>Message</span> for You", subtitle: "Click play to hear from me", sideText: "Side A", audioUrl: "", buttonText: "Continue" },
+                'time-capsule-stitch': { title: "The <span>Time</span> Capsule", subtitle: "Seal your memories for the future", placeholder: "Write a message to your future self...", inisial: "S", buttonText: "Seal Capsule", outroText: "This will be opened in 10 years." },
+                'scratch-card': { title: "Scratch <span>for a</span> Surprise", subtitle: "Reveal what's hidden underneath!", mainPhoto: "", overlayColor: "#94a3b8", brushSize: 40, finishMessage: "Surprise!", buttonText: "Take a Screenshot" }
+            };
+
+            const newPage = { type: pageType, ...defaultFields[pageType] };
+            configData.pages.push(newPage);
+            renderPages();
+            saveToLocal();
+            showNotification('New ' + pageType.replace(/-/g, ' ') + ' added!');
+
+            // Auto scroll to the new page
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.card');
+                const lastCard = cards[cards.length - 1];
+                if (lastCard) lastCard.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('birthday_engine_config', JSON.stringify(configData));
+
+            // Sync the Iframe if open
+            syncPreview();
+
+            // Pulse sync indicator
+            const sync = document.getElementById('sync-indicator');
+            if (sync) {
+                sync.style.opacity = '1';
+                if (window.syncTimer) clearTimeout(window.syncTimer);
+                window.syncTimer = setTimeout(() => {
+                    sync.style.opacity = '0';
+                }, 2000);
+            }
+        }
+
+        let isPreviewOpen = false;
+        function togglePreview() {
+            const panel = document.getElementById('preview-panel');
+            isPreviewOpen = !isPreviewOpen;
+
+            if (isPreviewOpen) {
+                document.body.classList.add('preview-active');
+                panel.classList.remove('translate-x-[420px]');
+                panel.classList.add('is-open');
+                if (window.innerWidth < 768) {
+                    document.body.style.overflow = 'hidden';
+                }
+                // Immediate sync when opening
+                setTimeout(syncPreview, 600);
+            } else {
+                document.body.classList.remove('preview-active');
+                panel.classList.add('translate-x-[420px]');
+                panel.classList.remove('is-open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function syncPreview() {
+            const iframe = document.getElementById('preview-iframe');
+            if (iframe && iframe.contentWindow) {
+                console.log("📤 Admin: Syncing to Preview...", configData);
+                iframe.contentWindow.postMessage({
+                    type: 'REINIT_CONFIG',
+                    config: JSON.parse(JSON.stringify(configData))
+                }, '*');
+            }
+        }
+
+        function generateCode() {
+            const code = `const CONFIG = ${JSON.stringify(configData, null, 4)};`;
+            document.getElementById('code-output').textContent = code;
+            document.getElementById('code-modal').style.display = 'flex';
+
+            // Helpful tip for large images
+            if (configData.theme.paperImage.length > 100000) {
+                showNotification('Pro Tip: Your background image is quite large. Copying might take a second!');
+            }
+        }
+
+        function closeModal() { document.getElementById('code-modal').style.display = 'none'; }
+
+        function copyToClipboard() {
+            const text = document.getElementById('code-output').textContent;
+            navigator.clipboard.writeText(text).then(() => showNotification('Config copied!'));
+        }
+
+        function downloadJS() {
+            const text = document.getElementById('code-output').textContent;
+            const blob = new Blob([text], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'data.js'; a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showNotification(text) {
+            const el = document.getElementById('notification');
+            document.getElementById('notification-text').textContent = text;
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+            setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; }, 3000);
+        }
+
+        async function handleFileUpload(input, uniqueId, key) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const isAudio = file.type.startsWith('audio');
+            if (isAudio) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    updateFieldValue(key, e.target.result, uniqueId);
+                    renderPages();
+                    showNotification('Audio uploaded!');
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            try {
+                showNotification('Compressing image...');
+                const compressedDataUrl = await compressImage(file);
+                updateFieldValue(key, compressedDataUrl, uniqueId);
+                renderPages();
+                showNotification('Image compressed and uploaded!');
+            } catch (err) {
+                console.error('Compression failed:', err);
+                showNotification('Upload failed. Using original...');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    updateFieldValue(key, e.target.result, uniqueId);
+                    renderPages();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function handleListFileUpload(input, uniqueId, itemIdx, key) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const isAudio = file.type.startsWith('audio');
+            if (isAudio) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    updateListItem(uniqueId, itemIdx, key, e.target.result);
+                    renderPages();
+                    showNotification('Audio uploaded!');
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            try {
+                showNotification('Compressing image...');
+                const compressedDataUrl = await compressImage(file);
+                updateListItem(uniqueId, itemIdx, key, compressedDataUrl);
+                renderPages();
+                showNotification('Image compressed and uploaded!');
+            } catch (err) {
+                console.error('Compression failed:', err);
+                showNotification('Upload failed. Using original...');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    updateListItem(uniqueId, itemIdx, key, e.target.result);
+                    renderPages();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- IMAGE COMPRESSION WORKER (OFF-MAIN-THREAD) ---
+        const compressionWorkerCode = `
+            self.onmessage = async (e) => {
+                const { file, maxWidth, maxHeight, quality } = e.data;
+                
+                try {
+                    const bitmap = await createImageBitmap(file);
+                    let width = bitmap.width;
+                    let height = bitmap.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    const canvas = new OffscreenCanvas(width, height);
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(bitmap, 0, 0, width, height);
+
+                    const type = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                    const blob = await canvas.convertToBlob({
+                        type: type,
+                        quality: quality
+                    });
+
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        self.postMessage({ base64: reader.result, success: true });
+                    };
+                } catch (err) {
+                    self.postMessage({ error: err.message, success: false });
+                }
+            };
+        `;
+
+        const workerBlob = new Blob([compressionWorkerCode], { type: 'application/javascript' });
+        const workerUrl = URL.createObjectURL(workerBlob);
+        const compressionWorker = new Worker(workerUrl);
+
+        function compressImage(file, { maxWidth = 1200, maxHeight = 1200, quality = 0.7 } = {}) {
+            return new Promise((resolve, reject) => {
+                const onMessage = (e) => {
+                    compressionWorker.removeEventListener('message', onMessage);
+                    if (e.data.success) {
+                        resolve(e.data.base64);
+                    } else {
+                        reject(e.data.error);
+                    }
+                };
+                compressionWorker.addEventListener('message', onMessage);
+                compressionWorker.postMessage({ file, maxWidth, maxHeight, quality });
+            });
+        }
+
+        async function handleBulkUpload(input, uniqueId, fieldKey) {
+            const files = Array.from(input.files);
+            if (files.length === 0) return;
+
+            const pageIdx = parseInt(uniqueId.substring(1));
+            showNotification(`Processing ${files.length} images...`);
+
+            for (const file of files) {
+                try {
+                    const compressedDataUrl = await compressImage(file);
+                    const newItem = { url: compressedDataUrl, date: "", caption: "", backNote: "" };
+                    configData.pages[pageIdx][fieldKey].push(newItem);
+                } catch (err) {
+                    console.error('Bulk compression failed:', err);
+                }
+            }
+
+            renderPages();
+            saveToLocal();
+            showNotification(`Added ${files.length} photos!`);
+        }
+
+        // Drag & Drop State
+        let draggedPageIndex = null;
+
+        function handleDragStart(e, index) {
+            draggedPageIndex = index;
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e, index) {
+            e.preventDefault();
+            if (draggedPageIndex === index) return;
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e, index) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, index) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            if (draggedPageIndex === null || draggedPageIndex === index) return;
+
+            // Reorder pages array
+            const pages = [...configData.pages];
+            const draggedPage = pages.splice(draggedPageIndex, 1)[0];
+            pages.splice(index, 0, draggedPage);
+
+            configData.pages = pages;
+            renderPages();
+            showNotification('Reordered sections!');
+        }
+
+        function handleDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            draggedPageIndex = null;
+        }
+
+        // Icon Picker State
+        let currentIconPickerTarget = null;
+        const ICON_LIST = [
+            'favorite', 'cake', 'celebration', 'history', 'photo_camera', 'location_on', 'movie', 'restaurant', 'home',
+            'flight', 'hiking', 'beach_access', 'pets', 'music_note', 'auto_stories', 'brush', 'local_florist',
+            'star', 'diamond', 'sunny', 'bedtime', 'cloud', 'water_drop', 'eco', 'volunteer_activism',
+            'wine_bar', 'local_cafe', 'fastfood', 'map', 'explore', 'directions_car', 'directions_bike',
+            'rocket_launch', 'sailing', 'anchor', 'kayaking', 'sports_keyboard', 'videogame_asset',
+            'terminal', 'code', 'book', 'event', 'alarm', 'timer', 'lock', 'key', 'shopping_bag', 'gift'
+        ];
+
+        function openIconPicker(uniqueId, itemIdx, fieldKey) {
+            currentIconPickerTarget = { uniqueId, itemIdx, fieldKey };
+            const container = document.getElementById('icon-grid-container');
+            renderIconGrid(ICON_LIST);
+            document.getElementById('icon-picker-modal').style.display = 'flex';
+        }
+
+        function renderIconGrid(icons) {
+            const container = document.getElementById('icon-grid-container');
+            container.innerHTML = icons.map(icon => `
+                <div class="icon-item" onclick="selectIcon('${icon}')">
+                    <span class="material-symbols-outlined">${icon}</span>
+                    <label>${icon.replace(/_/g, ' ')}</label>
+                </div>
+            `).join('');
+        }
+
+        function filterIcons(query) {
+            const filtered = ICON_LIST.filter(icon => icon.includes(query.toLowerCase().replace(/ /g, '_')));
+            renderIconGrid(filtered);
+        }
+
+        function selectIcon(iconName) {
+            if (!currentIconPickerTarget) return;
+            const { uniqueId, itemIdx, fieldKey } = currentIconPickerTarget;
+            updateListItem(uniqueId, itemIdx, fieldKey, iconName);
+            renderPages();
+            closeIconPicker();
+        }
+
+        function closeIconPicker() {
+            document.getElementById('icon-picker-modal').style.display = 'none';
+            document.getElementById('icon-search').value = '';
+            currentIconPickerTarget = null;
+        }
+
+        function wrapSelectedText(uniqueId, tag) {
+            const input = document.getElementById(`input-${uniqueId}`);
+            if (!input) return;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            if (start === end) { alert('Select text first!'); return; }
+            const text = input.value;
+            input.value = text.substring(0, start) + `<${tag}>${text.substring(start, end)}</${tag}>` + text.substring(end);
+            input.dispatchEvent(new Event('change'));
+            showNotification(`Applied ${tag === 'b' ? 'bold' : 'accent'}!`);
+        }
+
+        document.addEventListener('DOMContentLoaded', initProject);
+
+        // Listen for "Ready" from Iframe
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'PREVIEW_READY') {
+                console.log("📥 Admin: Preview reported READY. Syncing...");
+                syncPreview();
+            }
+        });
+    </script>
+</body>
+
+</html>

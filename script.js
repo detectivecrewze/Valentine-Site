@@ -3,20 +3,87 @@ const bgMusic = new Audio(); // Global Audio Object
 let currentSongIndex = 0;
 let mapInstance = null;
 let revealedMemories = []; // Persistent state for gallery
-const printerSfx = new Audio('assets/sfx1.mp3'); // User's custom printer SFX
-printerSfx.loop = true;
-const scratchSfx = new Audio('assets/sfx1.mp3'); // Fallback to printer sfx if no scratch sfx, or user can update
+const printerSfx = new Audio(); // Will be initialized with Blob
+const scratchSfx = new Audio(); // Will be initialized with Blob
 scratchSfx.volume = 0.4;
+
+// Debug Helper: Send logs to parent admin
+function logToParent(message) {
+    if (window.self !== window.top) {
+        window.parent.postMessage({ type: 'LOG', message: message }, '*');
+    }
+}
+
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    logToParent(`Error: ${msg} at ${lineNo}:${columnNo}`);
+    return false;
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     updateSEO(); // Update SEO/OG tags
     applyTheme(); // Apply theme first
     initParticles(); // Initialize background atmosphere
+
+    // Initialize SFX with Blob Shield
+    fetchMediaBlob('assets/sfx1.dat').then(blobUrl => {
+        printerSfx.src = blobUrl;
+        printerSfx.loop = true;
+        scratchSfx.src = blobUrl;
+    });
+
     loadDynamicContent();
     initLogin();
     initCountdown(); // Start the countdown
     initMusicPlayer();
     initLetterPage();
+
+    // Live Preview Engine: Listen for updates
+    window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'UPDATE_CONFIG') {
+            try {
+                const newConfig = event.data.config;
+                console.log("[Preview] Syncing changes...", newConfig);
+
+                // Shallow merge for first-level keys
+                for (let key in newConfig) {
+                    if (typeof newConfig[key] === 'object' && newConfig[key] !== null && !Array.isArray(newConfig[key])) {
+                        CONFIG[key] = { ...CONFIG[key], ...newConfig[key] };
+                    } else {
+                        CONFIG[key] = newConfig[key];
+                    }
+                }
+
+                // CRITICAL FIX: Clear music loading cache when music data changes
+                if (newConfig.music) {
+                    musicLoadingPromise = null;
+                    loadingTargetIndex = -1;
+                }
+
+                // Re-initialize relevant components
+                if (typeof applyTheme === 'function') applyTheme();
+                if (typeof updateSEO === 'function') updateSEO();
+                if (typeof loadDynamicContent === 'function') loadDynamicContent();
+
+                // Refresh current page if needed
+                const activePage = document.querySelector('.page:not(.hidden)');
+                if (activePage) {
+                    const pageId = activePage.id;
+                    if (pageId === 'page-3' && typeof loadSong === 'function') loadSong(currentSongIndex);
+                    if (pageId === 'page-5' && typeof loadQuiz === 'function') loadQuiz();
+                    if (pageId === 'page-6' && typeof loadGallery === 'function') loadGallery();
+                    if (pageId === 'page-7' && typeof initMap === 'function') initMap();
+                    if (pageId === 'page-8' && typeof resetLetterPage === 'function') resetLetterPage();
+                }
+            } catch (err) {
+                console.error("[Preview] Update failed:", err);
+            }
+        }
+    });
+
+    // Notify parent that we are ready
+    if (window.self !== window.top) {
+        window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+    }
 });
 
 // Update SEO/OG Settings
@@ -190,10 +257,12 @@ function MapsTo(fromId, toId) {
                 }, 300);
             }
         } else if (toId === 'page-3') {
-            loadSong(currentSongIndex);
-            setTimeout(() => {
-                playMusic();
-            }, 800);
+            // Ensure song is loaded then play
+            loadSong(currentSongIndex).then(() => {
+                setTimeout(() => {
+                    playMusic();
+                }, 500);
+            });
         } else if (toId === 'page-5') {
             if (typeof loadQuiz === 'function') loadQuiz();
         } else if (toId === 'page-6') {
@@ -231,9 +300,17 @@ function loadDynamicContent() {
     if (p1Instruction) p1Instruction.textContent = CONFIG.login.instruction;
     if (loginInput) loginInput.placeholder = CONFIG.login.placeholder;
 
-    // Initial Load for Music Player (Preload)
     if (CONFIG.music && CONFIG.music.length > 0) {
-        loadSong(0);
+        const musicTitle = document.getElementById('music-section-title');
+        if (musicTitle && CONFIG.musicSectionTitle !== undefined) {
+            musicTitle.textContent = CONFIG.musicSectionTitle;
+            if (CONFIG.musicSectionTitle.trim() === "") {
+                musicTitle.classList.add('hidden');
+            } else {
+                musicTitle.classList.remove('hidden');
+            }
+        }
+        // loadSong(0); // Disabled to prevent IDM interference on load
     }
 
     // Page 2: Wrapped
@@ -302,6 +379,15 @@ function loadDynamicContent() {
         if (p3Footer) p3Footer.textContent = CONFIG.greeting.footerText;
     }
 
+    // Page 7: Map
+    if (CONFIG.map) {
+        const mapTitle = document.getElementById('map-title');
+        const mapDesc = document.getElementById('map-description');
+
+        if (mapTitle && CONFIG.map.title) mapTitle.textContent = CONFIG.map.title;
+        if (mapDesc && CONFIG.map.description) mapDesc.textContent = CONFIG.map.description;
+    }
+
     // Page 8: Letter
     if (CONFIG.letter) {
         const recipientEl = document.getElementById('letter-recipient');
@@ -348,60 +434,102 @@ function loadDynamicContent() {
 // --- IDM SHIELD: Fetch Media as Blob ---
 async function fetchMediaBlob(url) {
     try {
-        const response = await fetch(url);
+        // Add a query param to deceive IDM sniffing
+        const shieldedUrl = url + (url.includes('?') ? '&' : '?') + 'shield=' + Date.now();
+        const response = await fetch(shieldedUrl);
         const blob = await response.blob();
-        return URL.createObjectURL(blob);
+
+        // Force MIME type to audio/mp3 if it's one of our renamed .dat files
+        // This ensures the browser treats the .dat file as valid audio
+        const type = url.endsWith('.dat') ? 'audio/mpeg' : blob.type;
+        const audioBlob = new Blob([blob], { type: type });
+
+        return URL.createObjectURL(audioBlob);
     } catch (e) {
         console.error("Failed to fetch media blob:", e);
         return url; // Fallback to original URL
     }
 }
 
-async function loadSong(index) {
+let musicLoadingPromise = null;
+let loadingTargetIndex = -1;
+
+async function loadSong(index, forceReload = false) {
     if (!CONFIG.music || CONFIG.music.length === 0) return;
 
     // Safety Wrap for playlist boundaries
     if (index < 0) index = CONFIG.music.length - 1;
     if (index >= CONFIG.music.length) index = 0;
-    currentSongIndex = index;
 
-    const song = CONFIG.music[currentSongIndex];
-
-    const songTitle = document.getElementById('song-title');
-    const artistName = document.getElementById('artist-name');
-    const musicCover = document.getElementById('music-cover');
-    const lyrics = document.getElementById('song-lyrics');
-
-    // Update labels and cover
-    if (songTitle) songTitle.textContent = song.songTitle;
-    if (artistName) artistName.textContent = song.artist;
-
-    if (musicCover) {
-        musicCover.src = song.coverSrc;
-        musicCover.onerror = () => {
-            musicCover.src = "https://images.unsplash.com/photo-1518193583867-0ef427db9aa2?q=80&w=400&h=400&auto=format&fit=crop";
-        };
+    // If already loading this specific song AND not forcing reload, return that promise
+    if (musicLoadingPromise && loadingTargetIndex === index && !forceReload) {
+        return musicLoadingPromise;
     }
 
-    if (lyrics) {
-        lyrics.textContent = song.lyrics || "";
-        lyrics.style.opacity = 0;
-        setTimeout(() => lyrics.style.opacity = 0.8, 100);
-    }
+    loadingTargetIndex = index;
+    musicLoadingPromise = (async () => {
+        try {
+            currentSongIndex = index;
+            const song = CONFIG.music[currentSongIndex];
 
-    // Load audio source as blob to hide from IDM
-    const newSrc = song.audioSrc;
-    if (bgMusic.dataset.originalSrc !== newSrc) {
-        if (bgMusic.src && bgMusic.src.startsWith('blob:')) {
-            URL.revokeObjectURL(bgMusic.src);
+            const songTitle = document.getElementById('song-title');
+            const artistName = document.getElementById('artist-name');
+            const musicCover = document.getElementById('music-cover');
+            const lyrics = document.getElementById('song-lyrics');
+
+            // Update labels and cover immediately (sync)
+            if (songTitle) songTitle.textContent = song.songTitle;
+            if (artistName) artistName.textContent = song.artist;
+
+            if (musicCover) {
+                musicCover.src = song.coverSrc;
+                musicCover.onerror = () => {
+                    musicCover.src = "https://images.unsplash.com/photo-1518193583867-0ef427db9aa2?q=80&w=400&h=400&auto=format&fit=crop";
+                };
+            }
+
+            if (lyrics) {
+                lyrics.textContent = song.lyrics || "";
+                lyrics.style.opacity = 0;
+                setTimeout(() => lyrics.style.opacity = 0.8, 100);
+            }
+
+            // Load audio source as blob - Async part
+            const newSrc = song.audioSrc;
+            // Ensure we load if src is missing OR if it's a new source
+            if (!bgMusic.src || bgMusic.dataset.originalSrc !== newSrc) {
+                // If there's an existing blob URL for a DIFFERENT source, revoke it
+                if (bgMusic.src && bgMusic.src.startsWith('blob:') && bgMusic.dataset.originalSrc !== newSrc) {
+                    URL.revokeObjectURL(bgMusic.src);
+                }
+
+                const blobUrl = await fetchMediaBlob(newSrc);
+                bgMusic.dataset.originalSrc = newSrc;
+                bgMusic.src = blobUrl;
+                bgMusic.load(); // Force browser to buffer the new source
+
+                // Wait for enough data to be ready
+                await new Promise((resolve) => {
+                    const onCanPlay = () => {
+                        bgMusic.removeEventListener('canplay', onCanPlay);
+                        resolve();
+                    };
+                    bgMusic.addEventListener('canplay', onCanPlay);
+                    // Fallback timeout in case event doesn't fire
+                    setTimeout(resolve, 2000);
+                });
+
+                updatePlayIcon();
+            }
+        } catch (err) {
+            console.error("loadSong failed:", err);
+        } finally {
+            // Keep musicLoadingPromise for a bit to avoid immediate re-triggers
+            // but clear it if index changes
         }
+    })();
 
-        const blobUrl = await fetchMediaBlob(newSrc);
-        bgMusic.dataset.originalSrc = newSrc;
-        bgMusic.src = blobUrl;
-
-        updatePlayIcon();
-    }
+    return musicLoadingPromise;
 }
 
 function initMusicPlayer() {
@@ -451,8 +579,23 @@ function initMusicPlayer() {
         changeSong(1);
     });
 
+    // Global Music Toggle (Backup for IDM/Autoplay blocks)
+    const globalToggle = document.getElementById('global-music-toggle');
+    if (globalToggle) {
+        globalToggle.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                playMusic();
+            } else {
+                pauseMusic();
+            }
+        });
+    }
+
     // SYNC UI with Audio State - The most reliable way for all platforms
-    bgMusic.addEventListener('play', updatePlayIcon);
+    bgMusic.addEventListener('play', () => {
+        updatePlayIcon();
+        if (globalToggle) globalToggle.classList.remove('hidden'); // Show when playing
+    });
     bgMusic.addEventListener('pause', updatePlayIcon);
     bgMusic.addEventListener('playing', updatePlayIcon);
     bgMusic.addEventListener('waiting', updatePlayIcon);
@@ -815,6 +958,8 @@ function initScratchCard(index) {
 }
 
 // --- Map Logic (Atlas of Us) ---
+let mapMarkers = [];
+
 function initMap() {
     console.log("Initializing Map...");
     if (!window.L) {
@@ -825,29 +970,47 @@ function initMap() {
     const mapElement = document.getElementById('map');
     if (!mapElement) return;
 
-    // If map already exists, just invalidate size and return
-    if (mapInstance) {
-        setTimeout(() => {
-            mapInstance.invalidateSize();
-        }, 100);
-        return;
+    // Default view center
+    let defaultCenter = [0, 0];
+    if (CONFIG.map && CONFIG.map.locations && CONFIG.map.locations.length > 0) {
+        const first = CONFIG.map.locations[0];
+        if (first.coordinates && Array.isArray(first.coordinates) && first.coordinates.length >= 2) {
+            defaultCenter = first.coordinates;
+        }
     }
 
-    // Default view: Center on the first location if available
-    const defaultCenter = (CONFIG.map && CONFIG.map.locations && CONFIG.map.locations.length > 0)
-        ? CONFIG.map.locations[0].coordinates
-        : [0, 0];
+    // Initialize Map Instance if not exists
+    if (!mapInstance) {
+        mapInstance = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView(defaultCenter, 13);
 
-    mapInstance = L.map('map', {
-        zoomControl: false,
-        attributionControl: false
-    }).setView(defaultCenter, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            className: 'map-tiles'
+        }).addTo(mapInstance);
 
-    // Add Tile Layer with Class Name for Filter
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        className: 'map-tiles'
-    }).addTo(mapInstance);
+        // Zoom out when clicking the background
+        mapInstance.on('click', (e) => {
+            if (e.originalEvent.target.id === 'map' || e.originalEvent.target.classList.contains('leaflet-container')) {
+                mapInstance.setView(defaultCenter, 13, {
+                    animate: true,
+                    duration: 1.0
+                });
+                mapInstance.closePopup();
+            }
+        });
+    } else {
+        // Just refresh size if container visibility changed
+        setTimeout(() => {
+            mapInstance.invalidateSize();
+        }, 300);
+    }
+
+    // Clear and redraw markers if config changed
+    mapMarkers.forEach(m => mapInstance.removeLayer(m));
+    mapMarkers = [];
 
     // Custom Heart Marker Icon
     const heartIcon = L.divIcon({
@@ -860,13 +1023,14 @@ function initMap() {
     // Add markers from CONFIG
     if (CONFIG.map && CONFIG.map.locations) {
         CONFIG.map.locations.forEach(loc => {
+            if (!loc.coordinates || !Array.isArray(loc.coordinates) || loc.coordinates.length < 2) return;
+
             // Create popup content with optional image
             let popupContent = `
                 <div class="font-sans p-2">
                     <h3 class="font-display text-deep-red font-bold text-lg mb-1">${loc.title}</h3>
                     <p class="text-xs text-rose-400 font-semibold mb-2 uppercase tracking-wider">${loc.date}</p>`;
 
-            // Add image if provided
             if (loc.imageSrc && loc.imageSrc.trim() !== '') {
                 popupContent += `
                     <div class="mb-3 rounded-lg overflow-hidden shadow-md">
@@ -886,38 +1050,23 @@ function initMap() {
                     maxWidth: 250
                 });
 
+            mapMarkers.push(marker);
+
             // Auto-zoom and open popup when marker is clicked
             marker.on('click', function () {
-                // Store original view before zooming
-                const originalCenter = mapInstance.getCenter();
-                const originalZoom = mapInstance.getZoom();
-
-                // Zoom in to the marker location
-                mapInstance.setView(loc.coordinates, 16, {
+                mapInstance.setView(loc.coordinates, 18, {
                     animate: true,
-                    duration: 1.0 // 1 second - smooth but not slow
+                    duration: 1.0
                 });
-
-                // Zoom out when popup is closed
-                marker.on('popupclose', function () {
-                    mapInstance.setView(originalCenter, originalZoom, {
-                        animate: true,
-                        duration: 1.0 // 1 second - smooth but not slow
-                    });
-                }, { once: true }); // Only trigger once per popup open
             });
         });
     }
-
     // Add Zoom control to bottom left
-    L.control.zoom({
-        position: 'bottomleft'
-    }).addTo(mapInstance);
-
-    // Ensure map renders correctly after initial load
-    setTimeout(() => {
-        mapInstance.invalidateSize();
-    }, 500);
+    if (!document.querySelector('.leaflet-control-zoom') && mapInstance) {
+        L.control.zoom({
+            position: 'bottomleft'
+        }).addTo(mapInstance);
+    }
 }
 
 // Toggle Map Card Logic for Mobile
@@ -950,10 +1099,16 @@ function toggleMapCard() {
 function updatePlayIcon() {
     const playIcon = document.getElementById('play-icon');
     const visualizer = document.getElementById('music-visualizer');
-    if (!playIcon) return;
+    const globalToggle = document.getElementById('global-music-toggle');
 
     // UI should show "Pause" if the user has triggered play, even if buffering
     const isPlaying = !bgMusic.paused && !bgMusic.ended;
+
+    if (globalToggle) {
+        globalToggle.textContent = isPlaying ? '🎵' : '🔇';
+    }
+
+    if (!playIcon) return;
 
     if (isPlaying) {
         playIcon.textContent = 'pause';
@@ -970,23 +1125,41 @@ function updatePlayIcon() {
     }
 }
 
-function changeSong(direction) {
-    loadSong(currentSongIndex + direction);
-
-    // Slight delay to allow the .src change to settle before .play() 
-    // This often helps with mobile browsers state transitions
-    setTimeout(() => {
-        playMusic();
-    }, 50);
+async function changeSong(direction) {
+    // Show visual loading state if needed
+    await loadSong(currentSongIndex + direction);
+    playMusic();
 }
 
+let isMusicLoading = false;
+
 function playMusic() {
+    if (isMusicLoading) return; // Prevent re-entrant calls
     // Hide IDM panels
     const idmPanels = document.querySelectorAll('[id^="idm_"], [class^="idm_"]');
     idmPanels.forEach(p => p.style.display = 'none');
 
     // Ensure it's not muted
     bgMusic.muted = false;
+
+    // If no source yet, wait or load first song
+    if (!bgMusic.src && CONFIG.music && CONFIG.music.length > 0) {
+        console.log("[Music] Source missing, fetching...");
+        isMusicLoading = true;
+        loadSong(currentSongIndex).then(() => {
+            isMusicLoading = false;
+            // Only recurse IF we successfully got a source
+            if (bgMusic.src) {
+                playMusic();
+            } else {
+                console.warn("[Music] Failed to set source after loadSong.");
+            }
+        }).catch((err) => {
+            console.error("[Music] loadSong failed:", err);
+            isMusicLoading = false;
+        });
+        return;
+    }
 
     const playPromise = bgMusic.play();
 
@@ -998,7 +1171,7 @@ function playMusic() {
             })
             .catch(e => {
                 console.log("Auto-play blocked or failed:", e);
-                // Ensure UI resets to 'play' icon if it fails
+                // If blocked, we might need a user gesture, which we have in Login
                 updatePlayIcon();
             });
     } else {
@@ -1027,7 +1200,12 @@ function initLogin() {
                 createHeartExplosion(btn);
             }
 
+            // Show global toggle (initially hidden in HTML)
+            const globalToggle = document.getElementById('global-music-toggle');
+            if (globalToggle) globalToggle.classList.remove('hidden');
+
             // Start music on first interaction (login) to bypass autoplay restrictions
+            // and avoid IDM trigger until user actually interacts
             playMusic();
 
             // Delay transition to allow explosion to be seen
@@ -1446,9 +1624,12 @@ function lockTheHeart() {
     if (!shackle || shackle.classList.contains('shackle-locked')) return;
 
     // 1. Play Lock Sound
-    const lockSfx = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
-    lockSfx.volume = 0.6;
-    lockSfx.play().catch(e => console.log("Sound blocked"));
+    const lockSfx = new Audio();
+    fetchMediaBlob('https://www.soundjay.com/buttons/sounds/button-10.mp3').then(url => {
+        lockSfx.src = url;
+        lockSfx.volume = 0.6;
+        lockSfx.play().catch(e => console.log("Sound blocked"));
+    });
 
     // 1b. Stop Background Music
     if (bgMusic) {

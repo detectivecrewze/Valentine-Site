@@ -5,11 +5,11 @@ body {
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px 0 rgba(126, 12, 35, 0.05);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.1);
 }
 
 .dreamy-gradient {
@@ -159,7 +159,7 @@ body {
     }
 }
 
-/* Page 5: Memory Gallery */
+/* Page 6: Memory Gallery */
 .polaroid-frame {
     transition: transform 0.3s ease;
     width: 100%;
