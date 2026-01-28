@@ -358,8 +358,8 @@ function updatePageIndicator(pageId) {
     const currentNum = getCurrentPageNumber(pageId);
     const totalNum = getTotalEnabledPages();
 
-    // Hide indicator on first page or if disabled in config
-    if (currentNum === 1 || !showIndicator) {
+    // Hide indicator on first page, page-10 (infinity scroll), or if disabled in config
+    if (currentNum === 1 || !showIndicator || pageId === 'page-10') {
         if (pageIndicator) {
             pageIndicator.classList.remove('opacity-100');
             pageIndicator.classList.add('opacity-0');
