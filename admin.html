@@ -525,6 +525,85 @@
                 touch-action: manipulation;
             }
         }
+
+        /* --- PAGE MANAGER STYLES --- */
+        .page-manager-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+
+        .page-manager-item:active {
+            cursor: grabbing;
+        }
+
+        .page-manager-item.dragging {
+            opacity: 0.5;
+            background: #fff1f2;
+            border-color: #fecdd3;
+        }
+
+        .page-manager-item.drag-over {
+            border-top: 2px solid #f43f5e;
+            margin-top: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #f43f5e;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        input:disabled+.slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -592,6 +671,31 @@
         <!-- RIGHT: FORM CONTENT -->
         <main class="main-content">
             <form id="configForm" onsubmit="return false;">
+
+                <!-- CUSTOMER IDENTITY -->
+                <div class="page-card bg-slate-900 text-white border-2 border-slate-800 mb-8">
+                    <div class="section-header !border-slate-800">
+                        <span
+                            class="material-symbols-outlined section-icon !bg-slate-800 !text-slate-400">person_search</span>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-bold">Customer Identity</h2>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">Order
+                                Management & Internal Tracking</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-2">Customer Name</label>
+                            <input type="text" id="cust_name"
+                                class="form-input bg-slate-800 border-slate-700 text-white focus:border-indigo-500"
+                                placeholder="e.g. John Doe">
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-4 italic flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[12px]">info</span>
+                        This data is internal for your tracking and will be included as a comment in data.js.
+                    </p>
+                </div>
 
                 <!-- 0. THEME SETTINGS -->
                 <div class="page-card bg-gradient-to-br from-indigo-50/50 to-rose-50/50 border-2 border-indigo-100">
@@ -796,6 +900,37 @@
                                         class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600">
                                     </div>
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.5 PAGE MANAGER SECTION -->
+                <div class="page-card border-2 border-rose-200 bg-rose-50/30">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined section-icon !bg-rose-100 !text-rose-600">reorder</span>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-bold text-gray-800">Page Management</h2>
+                            <p class="text-xs text-rose-500 font-bold uppercase tracking-widest mt-0.5">Reorder & Toggle
+                                Visibility</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm">
+                        <div id="page-manager-list" class="space-y-3">
+                            <!-- Items injected by renderPageManager() -->
+                        </div>
+
+                        <div class="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-100 flex gap-3">
+                            <span class="material-symbols-outlined text-amber-500 mt-0.5">info</span>
+                            <div class="text-xs text-amber-800 leading-relaxed">
+                                <p class="font-bold mb-1">💡 Tips:</p>
+                                <ul class="list-disc ml-4 space-y-1">
+                                    <li><strong>Drag & Drop</strong> the cards to change the sequence of your story.
+                                    </li>
+                                    <li>Toggle the switch to hide specific pages from your Valentine.</li>
+                                    <li><strong>Login Page</strong> is required and cannot be disabled.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -1486,8 +1621,8 @@
                     }, fieldId);
                 });
 
-                // MAPPING ENGINE: Dynamic indexing based on column position
-                let actualPageId = `page-${index + 3}`;
+                // MAPPING ENGINE: Use stored pageId or fallback to dynamic indexing
+                let actualPageId = page.pageId || `page-${index + 3}`;
                 let displayNum = index + 3;
 
                 pageEl.innerHTML = `
@@ -1846,7 +1981,20 @@
         };
 
         window.confirmPageAdd = (type) => {
-            const newItem = { type: type };
+            const typeToId = {
+                'music-section': 'page-3',
+                'wrapped-section': 'page-4',
+                'quiz-section': 'page-5',
+                'gallery-section': 'page-6',
+                'map-section': 'page-7',
+                'letter-section': 'page-8',
+                'lock-section': 'page-9'
+            };
+
+            const newItem = {
+                type: type,
+                pageId: typeToId[type] || `page-${configData.pages.length + 3}`
+            };
             // Init default arrays
             if (type === 'music-section') newItem.music = [];
             if (type === 'quiz-section') newItem.questions = [];
@@ -2032,7 +2180,12 @@
                 },
                 map: mapData,
                 letter: letterData,
-                lock: lockData
+                lock: lockData,
+                metadata: {
+                    customerName: val('cust_name'),
+                    generatedAt: new Date().toISOString()
+                },
+                pageConfig: CONFIG.pageConfig
             };
         }
 
@@ -2051,6 +2204,7 @@
                         // Fallback to defaults
                         // 1. Music (PAGE 3)
                         configData.pages.push({
+                            pageId: 'page-3',
                             type: 'music-section',
                             songTitle: 'Our Playlist',
                             music: [
@@ -2061,6 +2215,7 @@
                         });
                         // 2. Wrapped (PAGE 4)
                         configData.pages.push({
+                            pageId: 'page-4',
                             type: 'wrapped-section',
                             vibeLabel: "Our Vibe", vibe: "Bonnie & Clyde",
                             HoursTogetherLabel: "Minutes Together", HoursTogether: "525,600",
@@ -2070,6 +2225,7 @@
                         });
                         // 3. Quiz
                         configData.pages.push({
+                            pageId: 'page-5',
                             type: 'quiz-section',
                             title: 'Personalized Trivia',
                             questions: [
@@ -2079,6 +2235,7 @@
                         });
                         // 4. Gallery
                         configData.pages.push({
+                            pageId: 'page-6',
                             type: 'gallery-section',
                             title: 'Scratch Gallery',
                             subtitle: 'Scratch to reveal a piece of my heart',
@@ -2089,6 +2246,7 @@
                         });
                         // 5. Map
                         configData.pages.push({
+                            pageId: 'page-7',
                             type: 'map-section',
                             title: 'The Atlas of Us',
                             description: 'A cartography of the moments that defined our story. Every pin is a heartbeat, every line a path we walked together.',
@@ -2098,6 +2256,7 @@
                         });
                         // 6. Letter
                         configData.pages.push({
+                            pageId: 'page-8',
                             type: 'letter-section',
                             recipient: 'Dearest Love',
                             message: 'I find myself sitting here...',
@@ -2105,6 +2264,7 @@
                         });
                         // 7. Lock
                         configData.pages.push({
+                            pageId: 'page-9',
                             type: 'lock-section',
                             initials: 'A + B',
                             instruction: 'Click to lock our love forever...',
@@ -2113,7 +2273,9 @@
                     }
                 }
             }
+            ensurePageConfig();
             renderPages();
+            renderPageManager();
             syncToPreview();
         });
 
@@ -2188,6 +2350,9 @@
                 setVal('theme_font_sans', config.theme.fontSans);
                 setVal('theme_particles', config.theme.particles);
             }
+            if (config.pageConfig) {
+                CONFIG.pageConfig = config.pageConfig;
+            }
             if (config.login) {
                 setVal('password', config.login.password);
                 setVal('collectionText', config.login.collectionText);
@@ -2213,6 +2378,11 @@
                 setVal('greet_footer', config.greeting.footerText);
             }
 
+            // Restore metadata
+            if (config.metadata) {
+                setVal('cust_name', config.metadata.customerName || "");
+            }
+
             // Restore from CONFIG structure for pages if available
             if (!pages && config.wrapped) {
                 // Backup mapping for cases where pages array is missing (pure data.js load)
@@ -2220,6 +2390,7 @@
 
                 // Reconstruct Music (Page 3)
                 configData.pages.push({
+                    pageId: 'page-3',
                     type: 'music-section',
                     songTitle: config.musicSectionTitle || 'Our Playlist',
                     music: config.music || []
@@ -2227,12 +2398,14 @@
 
                 // Reconstruct Wrapped (Page 4)
                 configData.pages.push({
+                    pageId: 'page-4',
                     type: 'wrapped-section',
                     ...config.wrapped
                 });
 
                 // Reconstruct Quiz
                 configData.pages.push({
+                    pageId: 'page-5',
                     type: 'quiz-section',
                     title: config.quiz?.title || 'Personalized Trivia',
                     questions: config.quiz?.questions || []
@@ -2240,6 +2413,7 @@
 
                 // Reconstruct Gallery
                 configData.pages.push({
+                    pageId: 'page-6',
                     type: 'gallery-section',
                     title: config.gallery?.title || 'Gallery',
                     subtitle: config.gallery?.subtitle || '',
@@ -2248,6 +2422,7 @@
 
                 // Reconstruct Map
                 configData.pages.push({
+                    pageId: 'page-7',
                     type: 'map-section',
                     title: config.map?.title || 'The Atlas of Us',
                     description: config.map?.description || '',
@@ -2264,6 +2439,7 @@
 
                 // Reconstruct Letter
                 configData.pages.push({
+                    pageId: 'page-8',
                     type: 'letter-section',
                     recipient: config.letter?.recipientName || '',
                     message: config.letter?.message || '',
@@ -2272,6 +2448,7 @@
 
                 // Reconstruct Lock
                 configData.pages.push({
+                    pageId: 'page-9',
                     type: 'lock-section',
                     initials: config.lock?.initials || '',
                     instruction: config.lock?.instruction || '',
@@ -2281,6 +2458,7 @@
             }
 
             renderPages();
+            renderPageManager();
             syncToPreview();
         }
 
@@ -2358,12 +2536,14 @@
 
         function generateCode() {
             const config = getConfig();
-            // Remove pages from the final output but keep it for admin re-use if they want
-            // However, script.js doesn't need it, so we'll omit it to simplify for the user
+            const customer = config.metadata?.customerName || "Unknown Customer";
+
+            const header = `/**\n * Valentine Surprise Configuration\n * Customer: ${customer}\n */\n\n`;
+
             const finalConfig = { ...config };
             delete finalConfig.pages;
 
-            const codeOutput = "var CONFIG = " + JSON.stringify(finalConfig, null, 4) + ";";
+            const codeOutput = header + "var CONFIG = " + JSON.stringify(finalConfig, null, 4) + ";";
             document.getElementById('outputCode').value = codeOutput;
             document.getElementById('resultModal').classList.remove('hidden');
         }
@@ -2389,7 +2569,10 @@
             }
 
             const config = getConfig();
-            const configCode = "var CONFIG = " + JSON.stringify(config, null, 4) + ";";
+            const customer = config.metadata?.customerName || "Unknown Customer";
+
+            const header = `/**\n * Valentine Surprise Configuration\n * Customer: ${customer}\n */\n\n`;
+            const configCode = header + "var CONFIG = " + JSON.stringify(config, null, 4) + ";";
 
             const btn = document.querySelector('[onclick="submitToAdmin()"]');
             const originalContent = btn.innerHTML;
@@ -2427,6 +2610,161 @@
                 btn.disabled = false;
                 btn.innerHTML = originalContent;
                 alert("Gagal mengirim file: " + err.message);
+            }
+        }
+
+        // --- PAGE MANAGER FUNCTIONS ---
+        /**
+         * Get all pages sorted by order, filtered by enabled status
+         */
+        function getPages(onlyEnabled = true) {
+            if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) {
+                return [];
+            }
+
+            const pages = Object.values(CONFIG.pageConfig.pages);
+            let filtered = pages;
+
+            if (onlyEnabled) {
+                filtered = pages.filter(p => p.enabled);
+            }
+
+            return filtered.sort((a, b) => a.order - b.order);
+        }
+
+        function renderPageManager() {
+            const list = document.getElementById('page-manager-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            // 1. Always show Login Page first (Fixed)
+            const loginItem = document.createElement('div');
+            loginItem.className = 'page-manager-item opacity-75 cursor-not-allowed';
+            loginItem.innerHTML = `
+                <span class="material-symbols-outlined text-slate-400">lock</span>
+                <div class="flex-1">
+                    <h3 class="font-bold text-slate-700 text-sm">Entry & Countdown</h3>
+                    <p class="text-[10px] text-slate-400">Fixed Position (Page 1)</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                </label>
+            `;
+            list.appendChild(loginItem);
+
+            // 2. Show Dynamic Pages (order > 1)
+            const allPages = typeof getPages === 'function' ? getPages(false) : [];
+            const dynamicPages = allPages.filter(p => p.id !== 'page-1');
+
+            dynamicPages.forEach((page, index) => {
+                const item = document.createElement('div');
+                item.className = 'page-manager-item drag-handle';
+                item.draggable = true;
+                item.dataset.id = page.id;
+
+                // Add event listeners for drag and drop
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('dragleave', handleDragLeave);
+                item.addEventListener('drop', handleDrop);
+
+                item.innerHTML = `
+                    <span class="material-symbols-outlined text-slate-400 cursor-grab">drag_indicator</span>
+                    <span class="material-symbols-outlined text-rose-500">${page.icon || 'star'}</span>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-700 text-sm">${page.name}</h3>
+                        <p class="text-[10px] text-gray-400 leading-none">${page.type.toUpperCase()}</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${page.enabled !== false ? 'checked' : ''} 
+                               onchange="togglePage('${page.id}', this.checked)"
+                               ${page.required ? 'disabled' : ''}>
+                        <span class="slider"></span>
+                    </label>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function togglePage(pageId, isEnabled) {
+            if (CONFIG.pageConfig && CONFIG.pageConfig.pages && CONFIG.pageConfig.pages[pageId]) {
+                CONFIG.pageConfig.pages[pageId].enabled = isEnabled;
+                syncToPreview();
+            }
+        }
+
+        // --- Drag & Drop Handlers ---
+        let dragSrcId = null;
+
+        function handleDragStart(e) {
+            dragSrcId = this.dataset.id;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            const items = document.querySelectorAll('.page-manager-item');
+            items.forEach(item => item.classList.remove('drag-over'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            const targetId = this.dataset.id;
+
+            if (dragSrcId !== null && dragSrcId !== targetId) {
+                reorderPages(dragSrcId, targetId);
+            }
+            return false;
+        }
+
+        function reorderPages(fromId, toId) {
+            const allPages = getPages(false);
+            const fromIndex = allPages.findIndex(p => p.id === fromId);
+            const toIndex = allPages.findIndex(p => p.id === toId);
+
+            if (fromIndex === -1 || toIndex === -1) return;
+
+            const item = allPages.splice(fromIndex, 1)[0];
+            allPages.splice(toIndex, 0, item);
+
+            // Update order property
+            allPages.forEach((p, i) => {
+                p.order = i + 1;
+            });
+
+            renderPageManager();
+            syncToPreview();
+        }
+
+        // Initialize Page Config if missing
+        function ensurePageConfig() {
+            if (!CONFIG.pageConfig) {
+                CONFIG.pageConfig = {
+                    pages: {
+                        'page-1': { id: 'page-1', name: 'Login', type: 'login', enabled: true, required: true, icon: 'lock', order: 1 },
+                        'page-2': { id: 'page-2', name: 'Greeting Card', type: 'greeting', enabled: true, required: false, icon: 'favorite', order: 2 },
+                        'page-3': { id: 'page-3', name: 'Our Playlist', type: 'music', enabled: true, required: false, icon: 'music_note', order: 3 },
+                        'page-4': { id: 'page-4', name: 'Our Vibe (Wrapped)', type: 'wrapped', enabled: true, required: false, icon: 'auto_awesome', order: 4 },
+                        'page-5': { id: 'page-5', name: 'Love Quiz', type: 'quiz', enabled: true, required: false, icon: 'quiz', order: 5 },
+                        'page-6': { id: 'page-6', name: 'Photo Gallery', type: 'gallery', enabled: true, required: false, icon: 'photo_library', order: 6 },
+                        'page-7': { id: 'page-7', name: 'Memory Map', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
+                        'page-8': { id: 'page-8', name: 'Love Letter', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
+                        'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 }
+                    }
+                };
             }
         }
     </script>

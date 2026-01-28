@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initMusicPlayer();
     initLetterPage();
 
+    syncPageVisibility(); // Sync visibility based on config
+
     // Live Preview Engine: Listen for updates
     window.addEventListener('message', (event) => {
         if (event.data && event.data.type === 'UPDATE_CONFIG') {
@@ -65,6 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof updateSEO === 'function') updateSEO();
                 if (typeof loadDynamicContent === 'function') loadDynamicContent();
                 if (typeof initCountdown === 'function') initCountdown();
+
+                syncPageVisibility(); // Update visibility after config change
 
                 // Refresh current page if needed
                 const activePage = document.querySelector('.page:not(.hidden)');
@@ -203,6 +207,31 @@ function loadGoogleFont(fontFamily) {
 
 // Helper Function: MapsTo
 function MapsTo(fromId, toId) {
+    // Check if target page is enabled
+    if (!isPageEnabled(toId)) {
+        console.warn(`⚠️ Page ${toId} is disabled, finding alternative...`);
+
+        const currentConf = getPageConfig(fromId);
+        const targetConf = getPageConfig(toId);
+
+        const currentOrder = currentConf ? currentConf.order : 0;
+        const targetOrder = targetConf ? targetConf.order : 0;
+
+        // Determine direction based on raw configuration order
+        if (targetOrder > currentOrder) {
+            toId = getNextPage(fromId);
+        } else {
+            toId = getPreviousPage(fromId);
+        }
+
+        if (!toId) {
+            console.warn('❌ No enabled page available');
+            return;
+        }
+
+        console.log(`✅ Navigating to ${toId} instead`);
+    }
+
     const fromPage = document.getElementById(fromId);
     const toPage = document.getElementById(toId);
 
@@ -262,19 +291,16 @@ function MapsTo(fromId, toId) {
                     if (printerDevice) printerDevice.classList.add('printer-vibrating');
                     if (printerLed) printerLed.classList.add('led-printing');
 
-                    // Play custom SFX when printing starts
                     printerSfx.currentTime = 0;
-                    printerSfx.volume = 1.0; // Ensure volume is up
+                    printerSfx.volume = 0.6;
                     const playPromise = printerSfx.play();
 
                     if (playPromise !== undefined) {
                         playPromise.catch(error => {
                             console.error("Auto-play was prevented:", error);
-                            // Fallback: maybe show a visual indicator or try muted?
                         });
                     }
 
-                    // Stop after 6s (matches updated timing)
                     setTimeout(() => {
                         printerSfx.pause();
                         if (printerDevice) printerDevice.classList.remove('printer-vibrating');
@@ -283,7 +309,6 @@ function MapsTo(fromId, toId) {
                 }, 300);
             }
         } else if (toId === 'page-3') {
-            // Ensure song is loaded then play
             loadSong(currentSongIndex).then(() => {
                 setTimeout(() => {
                     playMusic();
@@ -294,27 +319,17 @@ function MapsTo(fromId, toId) {
         } else if (toId === 'page-6') {
             if (typeof loadGallery === 'function') loadGallery();
         } else if (toId === 'page-7') {
-            /* 
-            // Auto-reveal disabled
-            if (CONFIG.gallery && CONFIG.gallery.memories) {
-                CONFIG.gallery.memories.forEach((_, idx) => {
-                    revealedMemories[idx] = true;
-                });
-            }
-            */
             if (typeof initMap === 'function') initMap();
         } else if (toId === 'page-8') {
             if (typeof resetLetterPage === 'function') resetLetterPage();
         } else if (toId === 'page-9') {
-            initInvitationPage();
+            if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
-            initFinalePage();
+            if (typeof initFinalePage === 'function') initFinalePage();
         }
     }
 }
-
 // --- Navigation UI & Swipe Support ---
-const TOTAL_PAGES = 9;
 
 function updateNavigationUI(pageId) {
     const pageIndicator = document.getElementById('global-page-indicator');
@@ -325,11 +340,12 @@ function updateNavigationUI(pageId) {
     // Respect configuration
     const showIndicator = CONFIG.navigation ? CONFIG.navigation.showPageIndicator !== false : true;
 
-    const pageNum = parseInt(pageId.split('-')[1]);
-    if (isNaN(pageNum)) return;
+    // Get current page number among enabled pages
+    const currentNum = getCurrentPageNumber(pageId);
+    const totalNum = getTotalEnabledPages();
 
-    // Hide indicator on Login (Page 1) or if disabled in config
-    if (pageNum === 1 || !showIndicator) {
+    // Hide indicator on first page or if disabled in config
+    if (currentNum === 1 || !showIndicator) {
         if (pageIndicator) {
             pageIndicator.classList.remove('opacity-100');
             pageIndicator.classList.add('opacity-0');
@@ -342,7 +358,7 @@ function updateNavigationUI(pageId) {
     }
 
     if (pageText) {
-        pageText.textContent = `${pageNum}/${TOTAL_PAGES}`;
+        pageText.textContent = `${currentNum}/${totalNum}`;
     }
 }
 
@@ -367,19 +383,19 @@ function handleSwipe() {
     const threshold = 100;
     const activePage = document.querySelector('.page:not(.hidden)');
 
-    // Don't swipe on login or quiz (can mess up options)
+    // Don't swipe on login or quiz
     if (!activePage || activePage.id === 'page-1' || activePage.id === 'page-5') return;
 
-    const buttons = Array.from(activePage.querySelectorAll('button[onclick*="MapsTo"]'));
+    const currentId = activePage.id;
 
     if (swipeDistance < -threshold) {
         // Swipe Left -> Next
-        const next = buttons.find(b => b.innerText.toLowerCase().includes('next') || b.innerText.toLowerCase().includes('confirm') || b.innerText.toLowerCase().includes('skip'));
-        if (next) next.click();
+        const nextId = getNextPage(currentId);
+        if (nextId) MapsTo(currentId, nextId);
     } else if (swipeDistance > threshold) {
         // Swipe Right -> Back
-        const back = buttons.find(b => b.innerText.toLowerCase().includes('back') || b.innerText.toLowerCase().includes('prev'));
-        if (back) back.click();
+        const prevId = getPreviousPage(currentId);
+        if (prevId) MapsTo(currentId, prevId);
     }
 }
 
@@ -706,7 +722,9 @@ let currentQuestionIndex = 0;
 function loadQuiz() {
     if (!CONFIG.quiz || !CONFIG.quiz.questions) return;
 
-    if (currentQuestionIndex >= CONFIG.quiz.questions.length) {
+    const totalQuestions = CONFIG.quiz.questions.length;
+
+    if (currentQuestionIndex >= totalQuestions) {
         // Quiz Finished - Show navigation button
         const p4NextBtn = document.getElementById('p4-next-container');
         if (p4NextBtn) p4NextBtn.classList.remove('hidden');
@@ -718,13 +736,22 @@ function loadQuiz() {
 
     const questionEl = document.getElementById('quiz-question');
     const optionsEl = document.getElementById('quiz-options');
-    const progressText = document.getElementById('quiz-progress-text');
-    const dotsContainer = document.getElementById('quiz-dots');
     const feedbackEl = document.getElementById('quiz-feedback');
-    const nextBtn = document.getElementById('quiz-next-btn');
+
+    // Update Progress UI
+    const currentQEl = document.getElementById('current-q');
+    const totalQEl = document.getElementById('total-q');
+    const progressPercentEl = document.getElementById('progress-percent');
+    const progressBarEl = document.getElementById('quiz-progress-bar');
+
+    if (currentQEl) currentQEl.textContent = currentQuestionIndex + 1;
+    if (totalQEl) totalQEl.textContent = totalQuestions;
+
+    const percent = Math.round(((currentQuestionIndex) / totalQuestions) * 100);
+    if (progressPercentEl) progressPercentEl.textContent = `${percent}%`;
+    if (progressBarEl) progressBarEl.style.width = `${percent}%`;
 
     if (questionEl) questionEl.textContent = questionData.question;
-    if (progressText) progressText.textContent = `QUESTION ${currentQuestionIndex + 1}/${CONFIG.quiz.questions.length}`;
 
     // Reset UI: Strictly hide feedback and remove animation classes
     if (optionsEl) optionsEl.innerHTML = '';
@@ -744,23 +771,6 @@ function loadQuiz() {
         `;
         optionsEl.appendChild(btn);
     });
-
-    // Update Dots
-    if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        CONFIG.quiz.questions.forEach((_, idx) => {
-            const dot = document.createElement('div');
-            // Active dot is wider
-            if (idx === currentQuestionIndex) {
-                dot.className = "w-8 h-1.5 rounded-full bg-rose-900/40 transition-all duration-300";
-            } else if (idx < currentQuestionIndex) {
-                dot.className = "w-2 h-1.5 rounded-full bg-rose-900/20 transition-all duration-300"; // Completed
-            } else {
-                dot.className = "w-2 h-1.5 rounded-full bg-rose-900/10 transition-all duration-300"; // Future
-            }
-            dotsContainer.appendChild(dot);
-        });
-    }
 }
 
 function checkAnswer(selectedIndex, btnElement, data) {
@@ -768,18 +778,23 @@ function checkAnswer(selectedIndex, btnElement, data) {
     const feedbackMsg = document.getElementById('quiz-feedback-message');
     const optionsEl = document.getElementById('quiz-options');
 
+    // Visual feedback for selection
+    btnElement.classList.add('selected');
+
     // Disable all buttons to prevent double clicking
     const allBtns = optionsEl.querySelectorAll('button');
     allBtns.forEach(b => {
         b.disabled = true;
-        b.classList.add('cursor-not-allowed', 'opacity-60');
+        if (b !== btnElement) {
+            b.classList.add('cursor-not-allowed', 'opacity-60');
+        }
     });
 
     if (selectedIndex === data.correctIndex) {
         // Correct Answer
         createSparkles(btnElement);
 
-        btnElement.classList.remove('bg-white/70', 'border-transparent');
+        btnElement.classList.remove('bg-white/70', 'border-transparent', 'selected');
         btnElement.classList.add('bg-rose-100', 'border-rose-400', 'scale-105');
 
         // Show Feedback
@@ -819,6 +834,7 @@ function checkAnswer(selectedIndex, btnElement, data) {
         }
 
         btnElement.classList.add('withered');
+        btnElement.classList.remove('selected');
 
         // Re-enable all buttons for retry after a short delay
         setTimeout(() => {
@@ -1356,7 +1372,7 @@ function initLogin() {
 
             // Delay transition to allow explosion to be seen
             setTimeout(() => {
-                MapsTo('page-1', 'page-2');
+                goNextPage();
             }, 800);
         } else {
             if (errorMsg) {
@@ -1874,5 +1890,141 @@ function checkLetterCompletion() {
                 <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
             </button>
         `;
+    }
+}
+
+/**
+ * Sync page visibility in DOM based on enabled status
+ */
+function syncPageVisibility() {
+    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) return;
+
+    const allPageIds = Object.keys(CONFIG.pageConfig.pages);
+
+    allPageIds.forEach(pageId => {
+        const pageElement = document.getElementById(pageId);
+        if (!pageElement) return;
+
+        const config = getPageConfig(pageId);
+
+        // Don't mess with the currently active page
+        const isActive = !pageElement.classList.contains('hidden');
+        if (isActive) return;
+
+        // If page is disabled, ensure it stays hidden
+        if (config && !config.enabled) {
+            pageElement.classList.add('hidden');
+            pageElement.style.display = 'none';
+        } else if (config && config.enabled) {
+            // If page is enabled, allow it to be shown
+            pageElement.style.display = '';
+        }
+    });
+
+    console.log(`📄 Page visibility synced. ${getTotalEnabledPages()} pages enabled.`);
+}
+
+/**
+ * Get all pages sorted by order, filtered by enabled status
+ */
+function getPages(onlyEnabled = true) {
+    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) {
+        return [];
+    }
+
+    const pages = Object.values(CONFIG.pageConfig.pages);
+    let filtered = pages;
+
+    if (onlyEnabled) {
+        filtered = pages.filter(p => p.enabled);
+    }
+
+    return filtered.sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Get the next enabled page after current page
+ */
+function getNextPage(currentPageId) {
+    const enabledPages = getPages(true);
+    const currentIndex = enabledPages.findIndex(p => p.id === currentPageId);
+
+    if (currentIndex === -1 || currentIndex >= enabledPages.length - 1) {
+        return null;
+    }
+
+    return enabledPages[currentIndex + 1].id;
+}
+
+/**
+ * Get the previous enabled page before current page
+ */
+function getPreviousPage(currentPageId) {
+    const enabledPages = getPages(true);
+    const currentIndex = enabledPages.findIndex(p => p.id === currentPageId);
+
+    if (currentIndex <= 0) {
+        return null;
+    }
+
+    return enabledPages[currentIndex - 1].id;
+}
+
+/**
+ * Get total count of enabled pages
+ */
+function getTotalEnabledPages() {
+    return getPages(true).length;
+}
+
+/**
+ * Get current page number (1-indexed) among enabled pages
+ */
+function getCurrentPageNumber(pageId) {
+    const enabledPages = getPages(true);
+    const index = enabledPages.findIndex(p => p.id === pageId);
+    return index === -1 ? 0 : index + 1;
+}
+
+/**
+ * Check if a page is enabled
+ */
+function isPageEnabled(pageId) {
+    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) return true;
+    const page = CONFIG.pageConfig.pages[pageId];
+    return page ? page.enabled : true;
+}
+
+/**
+ * Get page configuration by ID
+ */
+function getPageConfig(pageId) {
+    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) return null;
+    return CONFIG.pageConfig.pages[pageId] || null;
+}
+
+/**
+ * Handle dynamic forward navigation
+ */
+function goNextPage() {
+    const activePage = document.querySelector('.page:not(.hidden)');
+    if (!activePage) return;
+
+    const nextId = getNextPage(activePage.id);
+    if (nextId) {
+        MapsTo(activePage.id, nextId);
+    }
+}
+
+/**
+ * Handle dynamic backward navigation
+ */
+function goPrevPage() {
+    const activePage = document.querySelector('.page:not(.hidden)');
+    if (!activePage) return;
+
+    const prevId = getPreviousPage(activePage.id);
+    if (prevId) {
+        MapsTo(activePage.id, prevId);
     }
 }

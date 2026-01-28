@@ -26,6 +26,13 @@ body {
     transform: translateY(-1px);
 }
 
+.option-button.selected {
+    background: rgba(126, 12, 35, 0.1) !important;
+    border-color: #7e0c23 !important;
+    box-shadow: 0 0 0 3px rgba(126, 12, 35, 0.1) !important;
+    transform: scale(1.02);
+}
+
 .aesthetic-image-shadow {
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
 }

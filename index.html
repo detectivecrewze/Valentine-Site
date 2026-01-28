@@ -284,7 +284,7 @@
         <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-2xl mx-auto">
                 <div class="flex justify-start">
-                    <button onclick="MapsTo('page-2', 'page-1')" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Back</span>
                     </button>
@@ -295,7 +295,7 @@
                     </button>
                 </div>
                 <div class="flex justify-end">
-                    <button onclick="MapsTo('page-2', 'page-3')" class="nav-btn-standard">
+                    <button onclick="goNextPage()" class="nav-btn-standard">
                         <span>Next</span>
                         <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                     </button>
@@ -421,7 +421,7 @@
         <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-2xl mx-auto">
                 <div class="flex justify-start">
-                    <button onclick="MapsTo('page-3', 'page-2')" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Previous</span>
                     </button>
@@ -432,7 +432,7 @@
                     </button>
                 </div>
                 <div class="flex justify-end">
-                    <button onclick="MapsTo('page-3', 'page-4')" class="nav-btn-standard">
+                    <button onclick="goNextPage()" class="nav-btn-standard">
                         <span>Next</span>
                         <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                     </button>
@@ -559,7 +559,7 @@
                 <div class="nav-bottom-grid max-w-2xl mx-auto">
                     <!-- Back Button Container -->
                     <div class="flex justify-start">
-                        <button onclick="MapsTo('page-4', 'page-3')" class="nav-btn-standard">
+                        <button onclick="goPrevPage()" class="nav-btn-standard">
                             <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                             <span>Previous</span>
                         </button>
@@ -573,8 +573,12 @@
                     </div>
 
                     <!-- Next Button -->
-                    <div class="flex justify-end">
-                        <button onclick="MapsTo('page-4', 'page-5')" class="nav-btn-standard">
+                    <div class="flex flex-col items-end gap-2">
+                        <button onclick="shareWrapped()"
+                            class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/20 hover:bg-white/40 transition-all pointer-events-auto">
+                            <span class="material-symbols-outlined text-xl">share</span>
+                        </button>
+                        <button onclick="goNextPage()" class="nav-btn-standard">
                             <span>Next</span>
                             <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                         </button>
@@ -596,15 +600,15 @@
 
             <div class="max-w-2xl w-full">
                 <div class="glass-card rounded-[2rem] p-6 md:p-12 shadow-2xl relative">
-                    <div class="flex flex-col items-center mb-6 md:mb-10">
-                        <div
-                            class="w-10 h-10 md:w-12 md:h-12 bg-white/60 rounded-full flex items-center justify-center mb-3 md:mb-4 shadow-sm border border-white/40">
-                            <span
-                                class="material-symbols-outlined text-rose-500 fill-1 text-xl md:text-2xl">favorite</span>
+                    <div class="quiz-progress mb-8">
+                        <div class="flex justify-between text-xs text-rose-900/60 font-sans font-bold mb-2">
+                            <span>Question <span id="current-q">1</span>/<span id="total-q">5</span></span>
+                            <span id="progress-percent">20%</span>
                         </div>
-                        <span id="quiz-progress-text"
-                            class="text-rose-900/60 font-sans tracking-[0.2em] text-[8px] md:text-[10px] uppercase font-semibold">Question
-                            1/5</span>
+                        <div class="w-full h-2 bg-rose-100 rounded-full overflow-hidden border border-rose-200/30">
+                            <div id="quiz-progress-bar" class="h-full bg-rose-500 transition-all duration-700 ease-out"
+                                style="width: 20%"></div>
+                        </div>
                     </div>
                     <div class="text-center mb-8 md:mb-12">
                         <h1 id="quiz-question"
@@ -635,9 +639,6 @@
 
                 <!-- Progress Dots -->
                 <div class="mt-12 text-center">
-                    <div id="quiz-dots" class="flex justify-center gap-2">
-                        <!-- Dots injected via JS -->
-                    </div>
                     <p class="mt-4 text-rose-900/40 font-display italic text-2xl">Testing your heart...</p>
                 </div>
 
@@ -648,7 +649,7 @@
         <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-2xl mx-auto">
                 <div class="flex justify-start">
-                    <button onclick="MapsTo('page-5', 'page-4')" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Back</span>
                     </button>
@@ -660,7 +661,7 @@
                 </div>
                 <div class="flex justify-end">
                     <div id="p4-next-container" class="hidden">
-                        <button onclick="MapsTo('page-5', 'page-6')" class="nav-btn-standard">
+                        <button onclick="goNextPage()" class="nav-btn-standard">
                             <span>Next</span>
                             <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                         </button>
@@ -709,7 +710,7 @@
         <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-6xl mx-auto">
                 <div class="flex justify-start">
-                    <button onclick="MapsTo('page-6', 'page-5')" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Back</span>
                     </button>
@@ -720,7 +721,7 @@
                     </button>
                 </div>
                 <div class="flex justify-end">
-                    <button onclick="MapsTo('page-6', 'page-7')" class="nav-btn-standard">
+                    <button onclick="goNextPage()" class="nav-btn-standard">
                         <span>Next</span>
                         <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                     </button>
@@ -780,7 +781,7 @@
             <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
                 <div class="nav-bottom-grid max-w-6xl mx-auto">
                     <div class="flex justify-start">
-                        <button onclick="MapsTo('page-7', 'page-6')" class="nav-btn-standard">
+                        <button onclick="goPrevPage()" class="nav-btn-standard">
                             <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                             <span>Back</span>
                         </button>
@@ -791,7 +792,7 @@
                         </button>
                     </div>
                     <div class="flex justify-end">
-                        <button onclick="MapsTo('page-7', 'page-8')" class="nav-btn-standard">
+                        <button onclick="goNextPage()" class="nav-btn-standard">
                             <span>Next</span>
                             <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
                         </button>
@@ -874,7 +875,7 @@
             <div class="nav-bottom-grid max-w-6xl mx-auto">
                 <!-- Back Button Container -->
                 <div class="flex justify-start">
-                    <button onclick="MapsTo('page-8', 'page-7')" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Back</span>
                     </button>
@@ -1003,7 +1004,7 @@
             class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8 transition-all duration-1000">
             <div class="nav-bottom-grid max-w-6xl mx-auto">
                 <div class="flex justify-start">
-                    <button onclick="MapsTo('page-9', 'page-8')" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Back</span>
                     </button>
@@ -1070,6 +1071,8 @@
                     // Handle Manual Navigation from Admin
                     if (event.data && event.data.type === 'NAVIGATE_TO_PAGE') {
                         const targetId = event.data.pageId;
+                        if (!targetId) return; // Ignore if no pageId is provided
+
                         const activePage = document.querySelector('.page:not(.hidden)');
                         const currentId = activePage ? activePage.id : null;
 

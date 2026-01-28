@@ -1,3 +1,8 @@
+/**
+ * Valentine Surprise Configuration
+ * Customer: Unknown Customer
+ */
+
 var CONFIG = {
     "theme": {
         "backgroundImage": "",
@@ -9,11 +14,6 @@ var CONFIG = {
     "navigation": {
         "showPageIndicator": true,
         "enableSwipe": true
-    },
-    "seo": {
-        "title": "Valentine Login - Key to My Heart",
-        "description": "A collection of our best moments.",
-        "image": "https://lh3.googleusercontent.com/..."
     },
     "login": {
         "password": "123",
@@ -48,7 +48,7 @@ var CONFIG = {
         "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769527905554-qxbs7k.jpg"
     },
     "greeting": {
-        "title": "Happy Valentine’s Day Lisa",
+        "title": "Happy Valentine's Day Lisa",
         "message": "I made this little archive to celebrate us. A collection of moments, secrets, and reasons why I love you.",
         "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769526981905-za99yh.jpg",
         "footerText": "For you, Always"
@@ -215,12 +215,101 @@ var CONFIG = {
     },
     "letter": {
         "recipientName": "Dearest Lisa",
-        "message": "I was sitting here thinking about us, and I realized that \"thank you\" doesn't quite cover it. Thank you for being the person who makes the mundane parts of life feel like an adventure. Whether we’re out exploring or just sitting on the couch doing absolutely nothing, everything is better simply because you’re there.\n\nI love the way you scrunch your nose when you laugh and how you always know exactly what to say when I’m having a long day. You are my safe harbor and my favorite person to dream with. I’m so lucky to have you by my side.",
+        "message": "I was sitting here thinking about us, and I realized that \"thank you\" doesn't quite cover it. Thank you for being the person who makes the mundane parts of life feel like an adventure. Whether we're out exploring or just sitting on the couch doing absolutely nothing, everything is better simply because you're there.\n\nI love the way you scrunch your nose when you laugh and how you always know exactly what to say when I'm having a long day. You are my safe harbor and my favorite person to dream with. I'm so lucky to have you by my side.",
         "signature": "Aldo, Your Biggest Fans"
     },
     "lock": {
         "initials": "A + B",
         "instruction": "Click to lock our love forever...",
         "finalMessage": "Safely locked in my heart. Always."
+    },
+    "metadata": {
+        "customerName": "",
+        "generatedAt": "2026-01-28T12:42:51.096Z"
+    },
+    "pageConfig": {
+        "pages": {
+            "page-1": {
+                "id": "page-1",
+                "name": "Login",
+                "type": "login",
+                "enabled": true,
+                "required": true,
+                "icon": "lock",
+                "order": 1
+            },
+            "page-2": {
+                "id": "page-2",
+                "name": "Greeting Card",
+                "type": "greeting",
+                "enabled": true,
+                "required": false,
+                "icon": "favorite",
+                "order": 2
+            },
+            "page-3": {
+                "id": "page-3",
+                "name": "Music Player",
+                "type": "music",
+                "enabled": true,
+                "required": false,
+                "icon": "music_note",
+                "order": 3
+            },
+            "page-4": {
+                "id": "page-4",
+                "name": "Our Wrapped",
+                "type": "wrapped",
+                "enabled": true,
+                "required": false,
+                "icon": "auto_awesome",
+                "order": 4
+            },
+            "page-5": {
+                "id": "page-5",
+                "name": "Love Quiz",
+                "type": "quiz",
+                "enabled": true,
+                "required": false,
+                "icon": "quiz",
+                "order": 5
+            },
+            "page-6": {
+                "id": "page-6",
+                "name": "Photo Gallery",
+                "type": "gallery",
+                "enabled": true,
+                "required": false,
+                "icon": "photo_library",
+                "order": 6
+            },
+            "page-7": {
+                "id": "page-7",
+                "name": "Memory Map",
+                "type": "map",
+                "enabled": true,
+                "required": false,
+                "icon": "map",
+                "order": 7
+            },
+            "page-8": {
+                "id": "page-8",
+                "name": "Love Letter",
+                "type": "letter",
+                "enabled": true,
+                "required": false,
+                "icon": "mail",
+                "order": 8
+            },
+            "page-9": {
+                "id": "page-9",
+                "name": "Love Lock",
+                "type": "lock",
+                "enabled": true,
+                "required": false,
+                "icon": "lock_person",
+                "order": 9
+            }
+        }
     }
 };
