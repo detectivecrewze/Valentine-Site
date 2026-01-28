@@ -719,54 +719,6 @@
                     </div>
                 </div>
 
-                <!-- 0.1 SEO & SOCIAL PREVIEW -->
-                <div class="page-card border-2 border-emerald-100 bg-emerald-50/20">
-                    <div class="section-header">
-                        <span
-                            class="material-symbols-outlined section-icon !bg-emerald-100 !text-emerald-600">public</span>
-                        <div class="flex-1">
-                            <h2 class="text-xl font-bold text-gray-800">SEO & Social Preview</h2>
-                            <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-0.5">WhatsApp
-                                / IG
-                                / Share Preview</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-600 mb-2">Site Title (Meta Title)</label>
-                            <input type="text" id="seo_title" class="form-input"
-                                value="Valentine Login - Key to My Heart"
-                                placeholder="e.g. A Special Surprise for [Name]">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-600 mb-2">Site Description (Meta
-                                Desc)</label>
-                            <input type="text" id="seo_desc" class="form-input"
-                                value="A collection of our best moments."
-                                placeholder="e.g. Open this only if you love me!">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-bold text-gray-600 mb-2">Social Share Image (OG
-                                Image)</label>
-                            <div class="flex gap-2 items-center">
-                                <img id="prev_seo_image" src="" class="img-preview-mini hidden">
-                                <input type="text" id="seo_image" class="form-input"
-                                    placeholder="URL to your sharing thumbnail"
-                                    value="https://lh3.googleusercontent.com/..."
-                                    oninput="updatePreview('prev_seo_image', this.value)">
-                                <label
-                                    class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 transition-colors shadow-sm self-stretch">
-                                    <span class="material-symbols-outlined text-gray-500">upload_file</span>
-                                    <input type="file" class="hidden" accept="image/*"
-                                        onchange="handleMediaUpload(this, 'seo_image')">
-                                </label>
-                            </div>
-                            <p class="text-[10px] text-gray-400 mt-2 italic">Recommendation: Use a 1200x630px image for
-                                best
-                                results on IG/WA.</p>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- 1. LOGIN & COUNTDOWN -->
                 <div class="page-card transition-all duration-300">
@@ -995,7 +947,7 @@
             }
 
             // Navigate iframe
-            if (iframe && iframe.contentWindow) {
+            if (pageId && iframe && iframe.contentWindow) {
                 iframe.contentWindow.postMessage({
                     type: 'NAVIGATE_TO_PAGE',
                     pageId: pageId
@@ -2049,11 +2001,6 @@
                     showPageIndicator: document.getElementById('show_indicator') ? document.getElementById('show_indicator').checked : true,
                     enableSwipe: document.getElementById('enable_swipe') ? document.getElementById('enable_swipe').checked : true
                 },
-                seo: {
-                    title: val('seo_title'),
-                    description: val('seo_desc'),
-                    image: val('seo_image')
-                },
                 login: {
                     password: val('password'),
                     errorMessage: "Incorrect password, try again!",
@@ -2240,11 +2187,6 @@
                 setVal('theme_font_display', config.theme.fontDisplay);
                 setVal('theme_font_sans', config.theme.fontSans);
                 setVal('theme_particles', config.theme.particles);
-            }
-            if (config.seo) {
-                setVal('seo_title', config.seo.title);
-                setVal('seo_desc', config.seo.description);
-                setVal('seo_image', config.seo.image);
             }
             if (config.login) {
                 setVal('password', config.login.password);
