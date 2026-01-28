@@ -312,7 +312,63 @@ var CONFIG = {
                 "required": false,
                 "icon": "lock_person",
                 "order": 9
+            },
+            "page-10": {
+                "id": "page-10",
+                "name": "Infinity Scroll",
+                "type": "infinity",
+                "enabled": false,
+                "required": false,
+                "icon": "all_inclusive",
+                "order": 10
             }
         }
+    },
+    "infinityScroll": {
+        "enabled": true,
+        "reasons": {
+            "generic": [
+                "...your smile lights up even the darkest days",
+                "...you make the ordinary feel extraordinary",
+                "...your laughter is my favorite sound in the world",
+                "...the way you listen when I have something on my mind",
+                "...how you always know how to make me feel better",
+                "...your kindness towards everyone you meet",
+                "...the way you support my dreams no matter what",
+                "...how you remember the little things I mention",
+                "...your strength in difficult situations"
+            ],
+            "personal": [
+                "...of that time we got lost and ended up finding the perfect sunset spot",
+                "...you stayed up with me all night when I was stressed",
+                "...of our first rainy hike together",
+                "...the way you looked at me during our first dinner date",
+                "...how you always bring me snacks when I'm working late"
+            ],
+            "poetic": [
+                "...you are my favorite chapter in the story of my life",
+                "...loving you feels like coming home",
+                "...you are the stars in my night sky",
+                "...my heart found its forever in you",
+                "...you are the melody in the chaos of life"
+            ]
+        },
+        "photos": [
+            {
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769527954325-d1axgg.jpg",
+                "caption": "A moment frozen in time"
+            },
+            {
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769527982525-ar1ujj.jpg",
+                "caption": "Our favorite sunset"
+            },
+            {
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769528064654-pznj4wh.jpg",
+                "caption": "Laughter shared"
+            }
+        ],
+        "milestoneThreshold": 100,
+        "photoInterval": 10,
+        "batchSize": 10
     }
 };

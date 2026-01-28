@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Infinity Scroll of Forever</title>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;600&family=Dancing+Script:wght@700&family=Pacifico&family=Montserrat:wght@400;700&family=Great+Vibes&family=Cinzel:wght@700&family=Poppins:wght@300;400;600&family=Cormorant+Garamond:ital,wght@1,600&family=Lobster&family=Sacramento&family=Mrs+Saint+Delafield&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7e0c23",
+                        "rosegold": "#B76E79",
+                        "rose-900": "#4c0519",
+                        "rose-800": "#9f1239",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211114",
+                    },
+                    fontFamily: {
+                        "display": ["Cinzel", "serif"],
+                        "sans": ["Cormorant Garamond", "serif"],
+                        "dancing": ["Dancing Script", "cursive"],
+                        "cursive": ["Mrs Saint Delafield", "cursive"],
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* Base Styling */
+        body {
+            background: linear-gradient(135deg, #fadceb 0%, #fef3e2 50%, #e0e7ff 100%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Film Grain Overlay */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKGknlB-KxaIGCLnTlbc4Nl4TkEFPgcawululOaTjrPN1TjAXh5-VF4xHrr9ynM5yX31NDpYR9RHV2UmbTm20_2PelSIGaLyd6umPnVXMyK5b2UtcHLG3b7jdMErP-Ln0xg5L0HyGn5OoJ1P4RzpWNxI46kDviC-kSSVyGCXAzO7mApHsoqMZkysiUBK5Dw6oeM04dK5WKl4LGHCmneeyiRbiz0D6NcA8NpUWZPs19QE-FuTH8tKsNYadHZHpxk8bnqYdtBBXl9b34");
+        }
+
+        /* Floating Dust Particles */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateY(-20px) translateX(10px) rotate(180deg);
+                opacity: 0.6;
+            }
+        }
+
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #fecdd3 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        /* Magical Fade-in Animation for Reasons */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reason-item {
+            animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        /* Photo Memory Reveal Animation */
+        @keyframes photoReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.85) rotate(-2deg);
+                filter: blur(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                filter: blur(0);
+            }
+        }
+
+        .photo-memory {
+            animation: photoReveal 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        /* Polaroid Frame Effect */
+        .polaroid-frame {
+            background: white;
+            padding: 20px 20px 60px 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .polaroid-caption {
+            font-family: 'Dancing Script', cursive;
+            color: #1e293b;
+            font-size: 1.25rem;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        /* Milestone Floating Text */
+        @keyframes floatMilestone {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.02);
+                opacity: 1;
+            }
+        }
+
+        .milestone-text {
+            animation: floatMilestone 4s infinite ease-in-out;
+            text-shadow: 0 4px 20px rgba(126, 12, 35, 0.3);
+        }
+
+        /* Shimmer Effect for Special Elements */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .shimmer-text {
+            background: linear-gradient(90deg,
+                    #7e0c23 0%,
+                    #B76E79 50%,
+                    #7e0c23 100%);
+            background-size: 1000px 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s infinite linear;
+        }
+
+        /* Scroll Indicator */
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(10px);
+            }
+        }
+
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+
+        /* Washi Tape Decoration */
+        .washi-tape {
+            background: rgba(244, 212, 218, 0.5);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(1px);
+        }
+    </style>
+</head>
+
+<body class="font-sans overflow-x-hidden">
+    <div class="grain-overlay"></div>
+
+    <!-- Floating Particles Background (Generated via JS) -->
+    <div id="particle-container"></div>
+
+    <!-- Main Infinity Scroll Container -->
+    <main id="infinity-scroll-container" class="relative min-h-screen w-full">
+
+        <!-- Hero Header (Fixed Position) -->
+        <header
+            class="sticky top-0 left-0 w-full z-40 bg-gradient-to-b from-rose-50/70 to-transparent backdrop-blur-[2px] py-4">
+            <div class="max-w-2xl mx-auto px-6 text-center">
+                <!-- Brand Mark -->
+                <div class="flex items-center justify-center gap-2 text-primary/40 mb-4">
+                    <span class="material-symbols-outlined scale-75"
+                        style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                        diamond
+                    </span>
+                    <span class="text-[10px] font-sans uppercase tracking-[0.3em] font-bold">
+                        FOR YOU, ALWAYS
+                    </span>
+                </div>
+
+                <!-- Main Title -->
+                <h1 class="font-display text-4xl md:text-5xl text-primary mb-3 tracking-tight">
+                    I love you because...
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="font-sans italic text-rose-900/60 text-lg">
+                    An endless collection of reasons
+                </p>
+
+                <!-- Scroll Indicator (Fades out after user scrolls) -->
+                <div id="scroll-hint" class="scroll-indicator mt-6 text-rose-400/60 transition-opacity duration-500">
+                    <span class="material-symbols-outlined text-3xl">
+                        expand_more
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Area (Infinite Scroll) -->
+        <section id="reasons-container" class="max-w-2xl mx-auto px-6 pb-32 space-y-12">
+            <!-- Content will be dynamically generated here -->
+        </section>
+
+
+
+        <!-- Progress Counter (Bottom Right) -->
+        <div
+            class="fixed bottom-8 right-8 z-40 bg-white/70 backdrop-blur-md px-4 py-2 rounded-full border border-rose-200/40 shadow-lg">
+            <span id="reason-counter" class="font-sans text-sm font-bold text-primary">
+                1
+            </span>
+            <span class="font-sans text-xs text-rose-900/60 ml-1">
+                reasons
+            </span>
+        </div>
+    </main>
+
+    <!-- JavaScript: Infinite Scroll Logic with Virtual DOM Recycling -->
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+
+        /**
+         * DATA SOURCE:
+         * Reads from window.parent.CONFIG (set in data.js) if available.
+         * Falls back to hardcoded defaults for standalone testing.
+         */
+
+        const parentConfig = (window.parent && window.parent.CONFIG) ? window.parent.CONFIG : {};
+        const infinityConfig = parentConfig.infinityScroll || {};
+
+        const REASONS_LIBRARY = infinityConfig.reasons || {
+            // Generic romantic reasons
+            generic: [
+                "...your smile lights up even the darkest days",
+                "...you make the ordinary feel extraordinary",
+                "...your laughter is my favorite sound in the world",
+                "...you understand me without me saying a word",
+                "...you make me want to be a better person",
+                "...your kindness touches everyone around you",
+                "...you believe in me when I doubt myself",
+                "...your eyes hold entire galaxies",
+                "...you make home feel like wherever you are",
+                "...your hugs heal everything",
+                "...your voice is my favorite melody",
+                "...you make every day an adventure",
+                "...your presence alone calms my anxiety",
+                "...you see the best in me always",
+                "...your patience knows no bounds",
+                "...your heart is pure gold",
+                "...you support my wildest dreams",
+            ],
+
+            // Personal memories
+            personal: [
+                "...of that time we got lost and ended up finding the perfect sunset spot",
+                "...you stayed up with me all night when I was stressed",
+                "...you remember how I take my coffee",
+                "...of our first awkward hug that somehow felt perfect",
+                "...you sang off-key in the car and didn't care",
+                "...of the way you hold my hand in crowded places",
+                "...of our inside jokes that nobody else understands",
+                "...of our first dance in the kitchen",
+                "...you let me steal your hoodies",
+                "...of our late-night deep conversations",
+            ],
+
+            // Poetic/philosophical reasons
+            poetic: [
+                "...you are my favorite chapter in the story of my life",
+                "...loving you feels like coming home",
+                "...you are the answer to questions I didn't know I had",
+                "...you painted colors in my monochrome world",
+                "...with you, forever doesn't seem long enough",
+                "...you are my favorite form of chaos",
+                "...you make me believe in magic",
+                "...you make infinity feel tangible",
+                "...you are the poem I never knew how to write",
+            ]
+        };
+
+        const galleryMemories = (parentConfig.gallery && parentConfig.gallery.memories)
+            ? parentConfig.gallery.memories.filter(m => m.type === 'image' && m.src).map(m => ({ src: m.src, caption: m.caption }))
+            : [];
+
+        const mapMemories = (parentConfig.map && parentConfig.map.locations)
+            ? parentConfig.map.locations.filter(l => l.imageSrc).map(l => ({ src: l.imageSrc, caption: l.title || l.memory }))
+            : [];
+
+        const infinityPhotos = infinityConfig.photos || [];
+        const PHOTO_MEMORIES = [...galleryMemories, ...mapMemories, ...infinityPhotos];
+
+        // Fallback if no photos at all
+        if (PHOTO_MEMORIES.length === 0) {
+            PHOTO_MEMORIES.push({
+                src: "https://valentine-upload.aldoramadhan16.workers.dev/1769527905554-qxbs7k.jpg",
+                caption: "Remember this perfect day?"
+            });
+        }
+
+        const PHOTO_INTERVAL = infinityConfig.photoInterval || 10;
+        const BATCH_SIZE = infinityConfig.batchSize || 10;
+
+        // ========================================
+        // CORE VARIABLES
+        // ========================================
+
+        let reasonCount = 0;
+        let photoIndex = 0;
+        let isGenerating = false;
+
+        // Virtual DOM Recycling
+        const VIEWPORT_BUFFER = 1500; // pixels above/below viewport to keep
+        const MAX_DOM_ELEMENTS = 30; // Maximum elements in DOM at once
+
+        // Tracking
+        let generatedElements = [];
+        let lastScrollY = 0;
+
+        // ========================================
+        // RANDOMIZER LOGIC
+        // ========================================
+
+        /**
+         * Fisher-Yates Shuffle Algorithm
+         * Ensures each reason appears once before repeating
+         */
+        class ReasonRandomizer {
+            constructor() {
+                this.pools = {
+                    generic: [...REASONS_LIBRARY.generic],
+                    personal: [...REASONS_LIBRARY.personal],
+                    poetic: [...REASONS_LIBRARY.poetic]
+                };
+                this.shuffleAll();
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            shuffleAll() {
+                Object.keys(this.pools).forEach(key => {
+                    this.shuffleArray(this.pools[key]);
+                });
+            }
+
+            getReason() {
+                // Weighted selection: 50% generic, 30% personal, 20% poetic
+                const rand = Math.random();
+                let pool;
+
+                if (rand < 0.5) {
+                    pool = 'generic';
+                } else if (rand < 0.8) {
+                    pool = 'personal';
+                } else {
+                    pool = 'poetic';
+                }
+
+                // Get from pool
+                if (this.pools[pool].length === 0) {
+                    // Reshuffle when depleted
+                    this.pools[pool] = [...REASONS_LIBRARY[pool]];
+                    this.shuffleArray(this.pools[pool]);
+                }
+
+                return this.pools[pool].pop();
+            }
+        }
+
+        const randomizer = new ReasonRandomizer();
+
+        // ========================================
+        // DOM CREATION FUNCTIONS
+        // ========================================
+
+        function createReasonElement(text, index) {
+            const container = document.createElement('div');
+            container.className = 'reason-item';
+            container.style.animationDelay = `${index * 0.1}s`;
+            container.dataset.type = 'reason';
+            container.dataset.scrollPos = window.scrollY + window.innerHeight;
+
+            container.innerHTML = `
+                <div class="bg-white/80 backdrop-blur-[2px] rounded-2xl p-8 border border-rose-200/40 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <span class="material-symbols-outlined text-3xl text-rose-400 flex-shrink-0" style="font-variation-settings: 'FILL' 1, 'wght' 400;">
+                            favorite
+                        </span>
+                        <p class="font-sans text-xl md:text-2xl text-rose-900/90 leading-relaxed">
+                            ${text}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            return container;
+        }
+
+        function createPhotoElement(photo, index) {
+            const container = document.createElement('div');
+            container.className = 'photo-memory';
+            container.style.animationDelay = `${index * 0.15}s`;
+            container.dataset.type = 'photo';
+            container.dataset.scrollPos = window.scrollY + window.innerHeight;
+
+            const rotation = Math.random() > 0.5 ? 'rotate-1' : '-rotate-1';
+
+            container.innerHTML = `
+                <div class="flex justify-center my-16">
+                    <div class="polaroid-frame ${rotation} max-w-sm transition-transform duration-300 hover:scale-105 hover:rotate-0">
+                        <!-- Washi Tape Decoration -->
+                        <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-6 -rotate-12 opacity-70 rounded-sm"></div>
+                        
+                        <!-- Photo -->
+                        <img src="${photo.src}" 
+                             alt="Memory" 
+                             class="w-full h-64 object-cover rounded-sm"
+                             loading="lazy" />
+                        
+                        <!-- Caption -->
+                        <div class="polaroid-caption mt-4">
+                            ${photo.caption}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return container;
+        }
+
+        // ========================================
+        // INFINITE SCROLL ENGINE
+        // ========================================
+
+        function generateContent(count = BATCH_SIZE) {
+            if (isGenerating) return;
+            isGenerating = true;
+
+            const container = document.getElementById('reasons-container');
+            const fragment = document.createDocumentFragment();
+
+            for (let i = 0; i < count; i++) {
+                reasonCount++;
+
+                // Use dynamic interval from config
+                if (reasonCount % PHOTO_INTERVAL === 0) {
+                    const photo = PHOTO_MEMORIES[photoIndex % PHOTO_MEMORIES.length];
+                    if (photo) {
+                        const photoEl = createPhotoElement(photo, i);
+                        fragment.appendChild(photoEl);
+                        generatedElements.push(photoEl);
+                        photoIndex++;
+                    } else {
+                        // Fallback to reason if photo missing
+                        const reason = randomizer.getReason();
+                        const reasonEl = createReasonElement(reason, i);
+                        fragment.appendChild(reasonEl);
+                        generatedElements.push(reasonEl);
+                    }
+                } else {
+                    const reason = randomizer.getReason();
+                    const reasonEl = createReasonElement(reason, i);
+                    fragment.appendChild(reasonEl);
+                    generatedElements.push(reasonEl);
+                }
+            }
+
+            container.appendChild(fragment);
+            updateCounter();
+
+
+
+            // Clean up old elements (Virtual DOM Recycling)
+            requestAnimationFrame(() => {
+                cleanupElements();
+                isGenerating = false;
+            });
+        }
+
+        // ========================================
+        // DOM RECYCLING (Performance Optimization)
+        // ========================================
+
+        function cleanupElements() {
+            if (generatedElements.length <= MAX_DOM_ELEMENTS) return;
+
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const viewportHeight = window.innerHeight;
+            const topThreshold = scrollTop - VIEWPORT_BUFFER;
+
+            // Remove elements that are far above the viewport
+            generatedElements = generatedElements.filter(element => {
+                if (!element.parentNode) return false;
+
+                const rect = element.getBoundingClientRect();
+                const elementTop = rect.top + scrollTop;
+
+                if (elementTop < topThreshold) {
+                    element.remove();
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        // ========================================
+        // SCROLL DETECTION
+        // ========================================
+
+        let scrollTimeout;
+
+        function handleScroll() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            // Hide scroll hint after first scroll
+            if (scrollY > 100) {
+                const hint = document.getElementById('scroll-hint');
+                if (hint) hint.style.opacity = '0';
+            }
+
+            // Trigger new content generation when near bottom
+            if (scrollY + windowHeight >= documentHeight - 800) {
+                generateContent(BATCH_SIZE);
+            }
+
+            // Throttled cleanup check
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                cleanupElements();
+            }, 200);
+
+            lastScrollY = scrollY;
+        }
+
+
+
+        // ========================================
+        // COUNTER UPDATE
+        // ========================================
+
+        function updateCounter() {
+            const counter = document.getElementById('reason-counter');
+            if (!counter) return;
+            counter.textContent = reasonCount;
+
+            // Add pulse animation
+            counter.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                counter.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // ========================================
+        // FLOATING PARTICLES BACKGROUND
+        // ========================================
+
+        function initParticles() {
+            const container = document.getElementById('particle-container');
+            if (!container) return;
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 8}s`;
+                particle.style.animationDuration = `${8 + Math.random() * 4}s`;
+                container.appendChild(particle);
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🌸 Infinity Scroll Initialized');
+
+            // Generate initial content (1.5x batch size for initial fill)
+            generateContent(Math.floor(BATCH_SIZE * 1.5));
+
+            // Initialize particles
+            initParticles();
+
+            // Attach scroll listener with passive flag for better performance
+            window.addEventListener('scroll', handleScroll, { passive: true });
+
+            // Performance monitoring (optional)
+            if (window.performance && window.performance.memory) {
+                setInterval(() => {
+                    const memory = window.performance.memory;
+                    console.log(`📊 Memory: ${(memory.usedJSHeapSize / 1048576).toFixed(2)} MB / ${(memory.jsHeapSizeLimit / 1048576).toFixed(2)} MB`);
+                    console.log(`📝 Elements in DOM: ${generatedElements.length}`);
+                }, 10000);
+            }
+        });
+    </script>
+</body>
+
+</html>

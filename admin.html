@@ -1603,6 +1603,17 @@
                     { key: 'finalMessage', label: 'Final Message', type: 'textarea' }
                 ]
             },
+            'infinity-section': {
+                icon: 'all_inclusive',
+                fields: [
+                    { key: 'headerTitle', label: 'Header Title', type: 'text' },
+                    { key: 'headerSubtitle', label: 'Header Subtitle', type: 'text' },
+                    { key: 'reasons_generic', label: 'Generic Reasons (Lines)', type: 'list-simple' },
+                    { key: 'reasons_personal', label: 'Personal Memories (Lines)', type: 'list-simple' },
+                    { key: 'reasons_poetic', label: 'Poetic Reasons (Lines)', type: 'list-simple' },
+                    { key: 'photos', label: 'Photo Memories', type: 'list', itemType: 'infinity-photo' }
+                ]
+            },
         };
 
         function renderPages() {
@@ -1894,9 +1905,28 @@
                                 <input type="file" class="hidden" accept="image/*"
                                     onchange="handleMediaUpload(this, 'map-img-${uniqueId}-${idx}')">
                             </label>
-                         </div>
-                    </div>
+                     </div>
                  `;
+            } else if (itemType === 'infinity-photo') {
+                return `
+                    <div class="space-y-3">
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3">
+                            <label class="block text-xs font-bold text-rose-900 mb-2">📷 Memory Photo</label>
+                            <div class="flex gap-2 items-center">
+                                <img src="${item.src || ''}" class="img-preview-mini w-16 h-16 object-cover rounded-lg shadow-sm ${!item.src ? 'hidden' : ''}" onerror="this.classList.add('hidden')">
+                                <input type="text" id="inf-photo-${uniqueId}-${idx}" placeholder="URL or assets/path.jpg" value="${item.src || ''}" 
+                                    oninput="updateDynamicItem('${uniqueId}', ${idx}, 'src', this.value); const m=this.parentElement.querySelector('img'); if(m){m.src=this.value; m.classList.toggle('hidden', !this.value);}" 
+                                    class="form-input text-xs flex-1 font-mono bg-white">
+                                <label class="cursor-pointer bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
+                                    <span class="material-symbols-outlined text-base">image</span>
+                                    <span class="text-xs font-medium hidden sm:inline">Upload</span>
+                                    <input type="file" class="hidden" accept="image/*" onchange="handleMediaUpload(this, 'inf-photo-${uniqueId}-${idx}')">
+                                </label>
+                            </div>
+                        </div>
+                        <input type="text" placeholder="Short caption..." value="${item.caption || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'caption', this.value)" class="form-input text-sm">
+                    </div>
+                `;
             }
             return '';
         }
@@ -1948,6 +1978,7 @@
             else if (itemType === 'question') newItem = { question: '', options: ['', '', '', ''], correctIndex: 0, correctMessage: 'Correct!', wrongMessage: 'Wrong!' };
             else if (itemType === 'memory') newItem = { type: 'image', src: '', caption: '', tape: 'washi-tape', rotation: 'rotate-1' };
             else if (itemType === 'location') newItem = { lat: '', lng: '', title: '', memory: '', date: '', imageSrc: '', icon: 'favorite' };
+            else if (itemType === 'infinity-photo') newItem = { src: '', caption: '' };
 
             if (!configData.pages[pageIndex][fieldKey]) configData.pages[pageIndex][fieldKey] = [];
             configData.pages[pageIndex][fieldKey].push(newItem);
@@ -1993,7 +2024,8 @@
                 'gallery-section': 'page-6',
                 'map-section': 'page-7',
                 'letter-section': 'page-8',
-                'lock-section': 'page-9'
+                'lock-section': 'page-9',
+                'infinity-section': 'page-10'
             };
 
             const newItem = {
@@ -2004,6 +2036,12 @@
             if (type === 'music-section') newItem.music = [];
             if (type === 'quiz-section') newItem.questions = [];
             if (type === 'gallery-section') newItem.memories = [];
+            if (type === 'infinity-section') {
+                newItem.reasons_generic = [];
+                newItem.reasons_personal = [];
+                newItem.reasons_poetic = [];
+                newItem.photos = [];
+            }
 
             configData.pages.push(newItem);
             renderPages();
@@ -2088,12 +2126,12 @@
                 })) : []
             };
 
-            // Letter
             const letterPage = findPage('letter-section');
             const letterData = {
                 recipientName: letterPage ? letterPage.recipient : (val('let_rec') || ""),
                 message: letterPage ? letterPage.message : (val('let_msg') || ""),
-                signature: letterPage ? letterPage.signature : (val('let_sig') || "")
+                signature: letterPage ? letterPage.signature : (val('let_sig') || ""),
+                finaleChoice: letterPage ? letterPage.finaleChoice : 'choice'
             };
 
             // Lock
@@ -2117,6 +2155,20 @@
                 vibeLabel: wrappedPage ? (wrappedPage.vibeLabel || "Our Vibe") : "Our Vibe",
                 vibe: wrappedPage ? (wrappedPage.vibe || "") : "",
                 imageSrc: wrappedPage ? (wrappedPage.imageSrc || "") : ""
+            };
+
+            // Infinity Scroll
+            const infinityPage = findPage('infinity-section');
+            const infinityData = {
+                enabled: true,
+                headerTitle: infinityPage ? (infinityPage.headerTitle || "I love you because...") : "I love you because...",
+                headerSubtitle: infinityPage ? (infinityPage.headerSubtitle || "An endless collection of reasons") : "An endless collection of reasons",
+                reasons: {
+                    generic: infinityPage ? (infinityPage.reasons_generic || []) : [],
+                    personal: infinityPage ? (infinityPage.reasons_personal || []) : [],
+                    poetic: infinityPage ? (infinityPage.reasons_poetic || []) : []
+                },
+                photos: infinityPage ? (infinityPage.photos || []) : []
             };
 
 
@@ -2193,6 +2245,7 @@
                 map: mapData,
                 letter: letterData,
                 lock: lockData,
+                infinityScroll: infinityData,
                 metadata: {
                     customerName: val('cust_name'),
                     generatedAt: new Date().toISOString()
@@ -2282,6 +2335,24 @@
                             instruction: 'Click to lock our love forever...',
                             finalMessage: 'Safely locked in my heart. Always.'
                         });
+                        // 8. Infinity Scroll
+                        configData.pages.push({
+                            pageId: 'page-10',
+                            type: 'infinity-section',
+                            headerTitle: 'I love you because...',
+                            headerSubtitle: 'An endless collection of reasons',
+                            reasons_generic: [
+                                "...your smile lights up the room",
+                                "...you make me a better person"
+                            ],
+                            reasons_personal: [
+                                "...of how we met that one rainy day"
+                            ],
+                            reasons_poetic: [
+                                "...you are the melody to my song"
+                            ],
+                            photos: []
+                        });
                     }
                 }
             }
@@ -2345,6 +2416,26 @@
                 localStorage.setItem(LS_KEY, JSON.stringify(data));
                 updateStatus('Saved locally', 'blue');
             }, 500);
+        }
+
+        /**
+         * Repair and migrate data structure if needed
+         */
+        function repairData(rawData) {
+            if (!rawData) return null;
+
+            // If it's an old format (no .config or .pages wrapper)
+            if (!rawData.config && !rawData.pages) {
+                return {
+                    config: rawData,
+                    pages: null // Will be reconstructed in loadFromConfig
+                };
+            }
+
+            // Ensure pages array exists
+            if (!rawData.pages) rawData.pages = [];
+
+            return rawData;
         }
 
         function loadFromConfig(configDataObj) {
@@ -2457,7 +2548,8 @@
                     type: 'letter-section',
                     recipient: config.letter?.recipientName || '',
                     message: config.letter?.message || '',
-                    signature: config.letter?.signature || ''
+                    signature: config.letter?.signature || '',
+                    finaleChoice: config.letter?.finaleChoice || 'choice'
                 });
 
                 // Reconstruct Lock
@@ -2468,6 +2560,20 @@
                     instruction: config.lock?.instruction || '',
                     finalMessage: config.lock?.finalMessage || ''
                 });
+
+                // Reconstruct Infinity Scroll
+                if (config.infinityScroll) {
+                    configData.pages.push({
+                        pageId: 'page-10',
+                        type: 'infinity-section',
+                        headerTitle: config.infinityScroll.headerTitle || '',
+                        headerSubtitle: config.infinityScroll.headerSubtitle || '',
+                        reasons_generic: config.infinityScroll.reasons?.generic || [],
+                        reasons_personal: config.infinityScroll.reasons?.personal || [],
+                        reasons_poetic: config.infinityScroll.reasons?.poetic || [],
+                        photos: config.infinityScroll.photos || []
+                    });
+                }
 
             }
 
@@ -2684,11 +2790,16 @@
                 item.addEventListener('dragleave', handleDragLeave);
                 item.addEventListener('drop', handleDrop);
 
+                const isFinale = (page.id === 'page-9' || page.id === 'page-10');
+
                 item.innerHTML = `
                     <span class="material-symbols-outlined text-slate-400 cursor-grab">drag_indicator</span>
                     <span class="material-symbols-outlined text-rose-500">${page.icon || 'star'}</span>
                     <div class="flex-1">
-                        <h3 class="font-bold text-gray-700 text-sm">${page.name}</h3>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-gray-700 text-sm">${page.name}</h3>
+                            ${isFinale ? '<span class="text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200 uppercase">Finale Choice</span>' : ''}
+                        </div>
                         <p class="text-[10px] text-gray-400 leading-none">${page.type.toUpperCase()}</p>
                     </div>
                     <label class="toggle-switch">
@@ -2700,11 +2811,38 @@
                 `;
                 list.appendChild(item);
             });
+
+            // 3. Add Help Note for Finale
+            const helpNote = document.createElement('div');
+            helpNote.className = 'mt-4 p-3 bg-indigo-50 border border-indigo-100 rounded-lg flex gap-3';
+            helpNote.innerHTML = `
+                <span class="material-symbols-outlined text-indigo-500 text-sm">lightbulb</span>
+                <p class="text-[11px] text-indigo-700 leading-tight">
+                    <strong>Finale Guide:</strong> Page 9 (Lock) and Page 10 (Infinity) are exclusive endings. You can only enable <b>one</b> of them at a time.
+                </p>
+            `;
+            list.appendChild(helpNote);
         }
 
         function togglePage(pageId, isEnabled) {
             if (CONFIG.pageConfig && CONFIG.pageConfig.pages && CONFIG.pageConfig.pages[pageId]) {
                 CONFIG.pageConfig.pages[pageId].enabled = isEnabled;
+
+                // --- CUSTOM LOGIC: Mutually Exclusive Finale ---
+                // Jika Page 9 (Lock) di-enable, Page 10 (Infinity) harus disable
+                if (pageId === 'page-9' && isEnabled) {
+                    if (CONFIG.pageConfig.pages['page-10']) {
+                        CONFIG.pageConfig.pages['page-10'].enabled = false;
+                    }
+                }
+                // Jika Page 10 (Infinity) di-enable, Page 9 (Lock) harus disable
+                else if (pageId === 'page-10' && isEnabled) {
+                    if (CONFIG.pageConfig.pages['page-9']) {
+                        CONFIG.pageConfig.pages['page-9'].enabled = false;
+                    }
+                }
+
+                renderPageManager(); // Refresh UI list to show updated toggles
                 syncToPreview();
             }
         }
@@ -2776,7 +2914,8 @@
                         'page-6': { id: 'page-6', name: 'Photo Gallery', type: 'gallery', enabled: true, required: false, icon: 'photo_library', order: 6 },
                         'page-7': { id: 'page-7', name: 'Memory Map', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
                         'page-8': { id: 'page-8', name: 'Love Letter', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
-                        'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 }
+                        'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 },
+                        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: false, required: false, icon: 'all_inclusive', order: 10 }
                     }
                 };
             }

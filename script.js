@@ -345,7 +345,7 @@ function MapsTo(fromId, toId) {
 }
 // --- Navigation UI & Swipe Support ---
 
-function updateNavigationUI(pageId) {
+function updatePageIndicator(pageId) {
     const pageIndicator = document.getElementById('global-page-indicator');
     const pageText = document.getElementById('page-indicator-text');
 
@@ -1595,7 +1595,7 @@ async function startLetterTyping() {
     // Finished! Show the Finale button
     const finaleNextBtn = document.getElementById('finale-next-btn');
     if (finaleNextBtn) {
-        finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
+        finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none');
         finaleNextBtn.classList.add('opacity-100', 'pointer-events-auto');
     }
 }
@@ -2010,16 +2010,21 @@ function startCinematicOutro() {
         // Slide in cinematic bars
         document.body.classList.add('cinematic-active');
 
-        // Final Fade to black and Restart
+        // Final Fade to black and Navigate
         setTimeout(() => {
             const finalFade = document.getElementById('final-cinematic-fade');
             if (finalFade) {
                 finalFade.classList.add('fade-to-black');
             }
 
-            // Final Restart to Page 1
+            // Navigate to Infinity Scroll only if enabled, else reset
             setTimeout(() => {
-                location.reload();
+                const infConfig = getPageConfig('page-10');
+                if (infConfig && infConfig.enabled) {
+                    MapsTo('page-9', 'page-10');
+                } else {
+                    location.reload();
+                }
             }, 3500);
         }, 15000); // FIXED: 15 seconds (was 7) - gives users time to take screenshot
     }, 3500); // Wait 3.5 seconds after lock before starting cinematic bars
@@ -2038,7 +2043,7 @@ function checkLetterCompletion() {
     if (nextBtnContainer) {
         nextBtnContainer.classList.remove('invisible');
         nextBtnContainer.innerHTML = `
-            <button onclick="MapsTo('page-8', 'page-9')" class="nav-btn-standard">
+            <button onclick="goNextPage()" class="nav-btn-standard">
                 <span>Finale</span>
                 <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
             </button>
