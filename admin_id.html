@@ -616,7 +616,7 @@
         <div class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-display italic font-bold text-gray-900 leading-none flex items-center gap-3">
-                    Valentine Surprise Maker
+                    Pembuat Kejutan Valentine
                     <span id="syncStatus"
                         class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-[10px] font-sans font-bold text-slate-400 uppercase tracking-tighter transition-all">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Terputus
@@ -674,129 +674,146 @@
 
                 <!-- CUSTOMER IDENTITY -->
                 <div class="page-card bg-slate-900 text-white border-2 border-slate-800 mb-8">
-                    <div class="page-card !bg-white">
-                        <div class="section-header">
-                            <span
-                                class="material-symbols-outlined section-icon !bg-slate-100 !text-slate-600">person</span>
-                            <div class="flex-1">
-                                <h2 class="text-2xl font-bold text-gray-800">Identitas Pelanggan</h2>
-                                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">Manajemen
-                                    Pesanan & Pelacakan Internal</p>
-                            </div>
+                    <div class="section-header !border-slate-800">
+                        <span
+                            class="material-symbols-outlined section-icon !bg-slate-800 !text-slate-400">person_search</span>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-bold">Identitas Pelanggan</h2>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">Manajemen
+                                Pesanan & Pelacakan Internal</p>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-bold text-gray-600 mb-2">Nama Pelanggan</label>
-                                <input type="text" id="cust_name" class="form-input" placeholder="Masukkan nama..."
-                                    value="Dearest Love">
-                                <p class="text-[10px] text-gray-400 mt-2 italic">Data ini bersifat internal untuk
-                                    pelacakan Anda. Tidak akan muncul di situs akhir.</p>
-                            </div>
+                    </div>
+                    <div class="mt-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-2">Nama Pelanggan</label>
+                            <input type="text" id="cust_name"
+                                class="form-input bg-slate-800 border-slate-700 text-white focus:border-indigo-500"
+                                placeholder="misal: John Doe">
                         </div>
                     </div>
                     <p class="text-[10px] text-slate-500 mt-4 italic flex items-center gap-1">
                         <span class="material-symbols-outlined text-[12px]">info</span>
-                        This data is internal for your tracking and will be included as a comment in data.js.
+                        Data ini bersifat internal untuk pelacakan Anda dan akan disertakan sebagai komentar di data.js.
                     </p>
                 </div>
 
                 <!-- 0. THEME SETTINGS -->
-                <div class="page-card transition-all duration-300">
-                    <div class="section-header flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="material-symbols-outlined section-icon !bg-rose-100 !text-rose-600">palette</span>
-                            <div>
-                                <h2 class="text-xl font-bold">Estetika Tema</h2>
-                                <p class="text-[10px] text-rose-400 font-bold uppercase tracking-widest">Preset &
-                                    Penataan Kustom</p>
-                            </div>
+                <div class="page-card bg-gradient-to-br from-indigo-50/50 to-rose-50/50 border-2 border-indigo-100">
+                    <div class="section-header">
+                        <span
+                            class="material-symbols-outlined section-icon !bg-indigo-100 !text-indigo-600">palette</span>
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-bold text-gray-800">Estetika Tema</h2>
+                            <p class="text-xs text-indigo-500 font-bold uppercase tracking-widest mt-0.5">Preset &
+                                Penataan Kustom</p>
                         </div>
                     </div>
 
-                    <div class="mb-8">
-                        <label class="block text-sm font-bold text-gray-600 mb-3">Preset Cepat</label>
-                        <div class="flex flex-wrap gap-2">
-                            <button type="button" onclick="applyThemePreset('vintage')" class="btn-preset">📜
-                                Vintage</button>
-                            <button type="button" onclick="applyThemePreset('midnight')" class="btn-preset">🌌
-                                Midnight</button>
-                            <button type="button" onclick="applyThemePreset('cute')" class="btn-preset">🎀 Cute</button>
-                            <button type="button" onclick="applyThemePreset('modern')" class="btn-preset">✨
-                                Modern</button>
-                            <button type="button" onclick="applyThemePreset('sakura')" class="btn-preset">🌸
-                                Sakura</button>
-                            <button type="button" onclick="applyThemePreset('forest')" class="btn-preset">🌲
-                                Forest</button>
-                            <button type="button" onclick="applyThemePreset('ocean')" class="btn-preset">🌊
-                                Ocean</button>
-                            <button type="button" onclick="applyThemePreset('sunset')" class="btn-preset">🌅
-                                Sunset</button>
-                            <button type="button" onclick="applyThemePreset('royal')" class="btn-preset">🏰
-                                Royal</button>
-                            <button type="button" onclick="applyThemePreset('coffee')" class="btn-preset">☕
-                                Coffee</button>
+                    <!-- Quick Presets -->
+                    <div class="mb-8 p-4 bg-white/50 rounded-2xl border border-indigo-100">
+                        <label class="block text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Preset
+                            Cepat (Siap Pakai)</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button type="button" onclick="applyThemePreset('vintage')"
+                                class="px-4 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-900 font-bold hover:bg-amber-100 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">history_edu</span> Vintage
+                            </button>
+                            <button type="button" onclick="applyThemePreset('midnight')"
+                                class="px-4 py-3 rounded-xl border-2 border-slate-700 bg-slate-900 text-slate-100 font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">dark_mode</span> Midnight
+                            </button>
+                            <button type="button" onclick="applyThemePreset('cute')"
+                                class="px-4 py-3 rounded-xl border-2 border-rose-200 bg-rose-50 text-rose-700 font-bold hover:bg-rose-100 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">favorite</span> Cute
+                            </button>
+                            <button type="button" onclick="applyThemePreset('modern')"
+                                class="px-4 py-3 rounded-xl border-2 border-blue-100 bg-white text-blue-900 font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">auto_awesome</span> Modern
+                            </button>
+                            <button type="button" onclick="applyThemePreset('sakura')"
+                                class="px-4 py-3 rounded-xl border-2 border-pink-100 bg-pink-50 text-pink-700 font-bold hover:bg-pink-100 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">local_florist</span> Sakura
+                            </button>
+                            <button type="button" onclick="applyThemePreset('forest')"
+                                class="px-4 py-3 rounded-xl border-2 border-emerald-800 bg-emerald-900 text-emerald-50 font-bold hover:bg-emerald-800 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">park</span> Forest
+                            </button>
+                            <button type="button" onclick="applyThemePreset('ocean')"
+                                class="px-4 py-3 rounded-xl border-2 border-sky-200 bg-sky-50 text-sky-800 font-bold hover:bg-sky-100 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">waves</span> Ocean
+                            </button>
+                            <button type="button" onclick="applyThemePreset('sunset')"
+                                class="px-4 py-3 rounded-xl border-2 border-orange-200 bg-orange-50 text-orange-900 font-bold hover:bg-orange-100 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">wb_twilight</span> Sunset
+                            </button>
+                            <button type="button" onclick="applyThemePreset('royal')"
+                                class="px-4 py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-900 font-bold hover:bg-indigo-100 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">universal_currency_alt</span> Royal
+                            </button>
+                            <button type="button" onclick="applyThemePreset('coffee')"
+                                class="px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-100 text-stone-900 font-bold hover:bg-stone-200 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">coffee</span> Coffee
+                            </button>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100">
-                        <div class="md:col-span-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
                             <label class="block text-sm font-bold text-gray-600 mb-2">Gambar Latar Belakang
                                 Kustom</label>
                             <div class="flex gap-2 items-center">
                                 <img id="prev_theme_bg" src="" class="img-preview-mini hidden">
-                                <input type="text" id="theme_bg" class="form-input flex-1"
-                                    placeholder="Tempel URL Gambar di sini atau Unggah"
+                                <input type="text" id="theme_bg" class="form-input"
+                                    placeholder="assets/bg.png atau Kosongkan untuk kertas kerajinan default" value=""
                                     oninput="updatePreview('prev_theme_bg', this.value)">
                                 <label
-                                    class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 shadow-sm transition-colors self-stretch">
-                                    <span class="material-symbols-outlined text-gray-400">add_photo_alternate</span>
+                                    class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 transition-colors shadow-sm self-stretch">
+                                    <span class="material-symbols-outlined text-gray-500">upload_file</span>
                                     <input type="file" class="hidden" accept="image/*"
                                         onchange="handleMediaUpload(this, 'theme_bg')">
                                 </label>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-sm font-bold text-gray-600 mb-2">Warna Latar Belakang
                                 Cadangan</label>
                             <div class="flex gap-2">
-                                <input type="color" id="theme_color_picker"
-                                    class="h-10 w-12 rounded-lg border border-gray-200 cursor-pointer" value="#F5E6D3"
-                                    oninput="document.getElementById('theme_color').value = this.value">
-                                <input type="text" id="theme_color"
-                                    class="form-input flex-1 font-mono text-sm uppercase" value="#F5E6D3">
+                                <input type="color" id="theme_color_picker" class="w-12 h-11 rounded-lg border-gray-200"
+                                    value="#F5E6D3" oninput="document.getElementById('theme_color').value = this.value">
+                                <input type="text" id="theme_color" class="form-input" value="#F5E6D3">
                             </div>
                         </div>
-
                         <div>
-                            <label class="block text-sm font-bold text-gray-600 mb-2">Font Utama (Judul)</label>
+                            <label class="block text-sm font-bold text-gray-600 mb-2">Font Utama (Judul Utama)</label>
                             <select id="theme_font_display" class="form-input">
-                                <option value="Dancing Script, cursive">Dancing Script (Romantis)</option>
-                                <option value="Playfair Display, serif">Playfair Display (Klasik)</option>
-                                <option value="Pacifico, cursive">Pacifico (Lucu)</option>
-                                <option value="Montserrat, sans-serif">Montserrat (Moderen)</option>
-                                <option value="Lora, serif">Lora (Elegan)</option>
+                                <option value="Playfair Display, serif">Playfair Display (Vintage)</option>
+                                <option value="Great Vibes, cursive">Great Vibes (Romantis & Mengalir)</option>
+                                <option value="Dancing Script, cursive">Dancing Script (Skrip Elegan)</option>
+                                <option value="Sacramento, cursive">Sacramento (Tipis & Minimalis)</option>
+                                <option value="Cinzel, serif">Cinzel (Mewah / Klasik)</option>
+                                <option value="Lobster, cursive">Lobster (Retro / Menyenangkan)</option>
+                                <option value="Pacifico, cursive">Pacifico (Ceria)</option>
+                                <option value="Montserrat, sans-serif">Montserrat (Modern Tebal)</option>
+                                <option value="Inter, sans-serif">Inter (Bersih)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-600 mb-2">Font Sekunder (Teks)</label>
+                            <label class="block text-sm font-bold text-gray-600 mb-2">Font Sekunder (Teks Isi)</label>
                             <select id="theme_font_sans" class="form-input">
-                                <option value="Poppins, sans-serif">Poppins (Halus & Moderen)</option>
+                                <option value="Poppins, sans-serif">Poppins (Halus & Modern)</option>
                                 <option value="Inter, sans-serif">Inter (Standar)</option>
-                                <option value="Cormorant Garamond, serif">Cormorant Garamond (Klasik)</option>
+                                <option value="Cormorant Garamond, serif">Cormorant Garamond (Italik Halus)</option>
                                 <option value="Roboto, sans-serif">Roboto (Bersih)</option>
-                                <option value="Courier New, monospace">Courier New (Mesin Tik)</option>
+                                <option value="Courier New, monospace">Courier New (Gaya Lama)</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-bold text-gray-600 mb-2">Efek Partikel Atmosfer</label>
                             <select id="theme_particles" class="form-input">
                                 <option value="none">Tidak ada (Bersih)</option>
-                                <option value="hearts">Hati & Kelopak Bunga (Romantis / Lucu)</option>
+                                <option value="hearts">Hati & Kelopak (Romantis / Lucu)</option>
                                 <option value="stars">Bintang Berkelap-kelip (Tengah Malam / Ajaib)</option>
                                 <option value="dust">Debu Vintage (Nostalgia / Kertas)</option>
-                                <option value="bubbles">Gelembung Melayang (Moderen / Mimpi)</option>
+                                <option value="bubbles">Gelembung Melayang (Modern / Impian)</option>
                             </select>
                             <p class="text-[10px] text-gray-400 mt-2 italic">Catatan: Tetap buat halus. Partikel ini
                                 melayang lembut di latar belakang.</p>
@@ -811,7 +828,7 @@
                     <div class="section-header flex justify-between items-center mt-4">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined section-icon">lock_person</span>
-                            <h2 class="text-xl font-bold">Masuk & Hitung Mundur</h2>
+                            <h2 class="text-xl font-bold">Akses & Hitung Mundur</h2>
                         </div>
                         <button onclick="syncPreviewToPage('page-1')" class="btn-hint" title="Sync Preview">
                             <span class="material-symbols-outlined">visibility</span>
@@ -827,11 +844,11 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Subjudul
                                 Koleksi</label>
-                            <input type="text" id="collectionText" class="form-input" value="For you, Always">
+                            <input type="text" id="collectionText" class="form-input" value="Untukmu, Selalu">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Judul Utama</label>
-                            <input type="text" id="p1_title" class="form-input" value="Key to My Heart">
+                            <input type="text" id="p1_title" class="form-input" value="Kunci Menuju Hatiku">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Petunjuk
@@ -841,11 +858,11 @@
                         <div
                             class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-rose-50 rounded-2xl border border-rose-100">
                             <div>
-                                <label class="block text-sm font-bold text-rose-800 mb-1">Tanggal Target (Ekspektasi H-1
-                                    Valentine)</label>
+                                <label class="block text-sm font-bold text-rose-800 mb-1">Tanggal Target (Hitung Mundur
+                                    ke...)</label>
                                 <input type="datetime-local" id="count_date" class="form-input border-rose-200"
                                     value="2026-02-14T22:00">
-                                <p class="text-[10px] text-rose-400 mt-1">Otomatis diubah ke format ISO.</p>
+                                <p class="text-[10px] text-rose-400 mt-1">Secara otomatis dikonversi ke format ISO.</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-rose-800 mb-1">Pesan Selesai</label>
@@ -861,8 +878,8 @@
                                 <div>
                                     <label class="block text-sm font-bold text-indigo-900">Tampilkan Indikator
                                         Halaman</label>
-                                    <p class="text-[10px] text-indigo-400 font-medium">Tampilkan "3/9" di bagian tengah
-                                        atas</p>
+                                    <p class="text-[10px] text-indigo-400 font-medium">Tampilkan "3/9" di bagian atas
+                                        tengah</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="show_indicator" class="sr-only peer" checked>
@@ -873,8 +890,8 @@
                             </div>
                             <div class="flex items-center justify-between p-2">
                                 <div>
-                                    <label class="block text-sm font-bold text-indigo-900">Aktifkan Geser
-                                        Seluler</label>
+                                    <label class="block text-sm font-bold text-indigo-900">Aktifkan Geser (Swipe)
+                                        Mobile</label>
                                     <p class="text-[10px] text-indigo-400 font-medium">Izinkan menggeser kiri/kanan
                                         untuk navigasi</p>
                                 </div>
@@ -895,8 +912,8 @@
                         <span class="material-symbols-outlined section-icon !bg-rose-100 !text-rose-600">reorder</span>
                         <div class="flex-1">
                             <h2 class="text-2xl font-bold text-gray-800">Manajemen Halaman</h2>
-                            <p class="text-xs text-rose-500 font-bold uppercase tracking-widest mt-0.5">Urutkan Ulang &
-                                Alihkan Visibilitas</p>
+                            <p class="text-xs text-rose-500 font-bold uppercase tracking-widest mt-0.5">Atur Ulang
+                                Urutan & Visibilitas</p>
                         </div>
                     </div>
 
@@ -910,10 +927,11 @@
                             <div class="text-xs text-amber-800 leading-relaxed">
                                 <p class="font-bold mb-1">💡 Tips:</p>
                                 <ul class="list-disc ml-4 space-y-1">
-                                    <li><strong>Tarik & Lepas</strong> kartu untuk mengubah urutan cerita Anda.
+                                    <li><strong>Tarik & Lepas (Drag & Drop)</strong> kartu untuk mengubah urutan cerita
+                                        Anda.
                                     </li>
-                                    <li>Alihkan sakelar untuk menyembunyikan halaman tertentu dari Valentine Anda.</li>
-                                    <li><strong>Halaman Login</strong> wajib ada dan tidak dapat dinonaktifkan.</li>
+                                    <li>Gunakan sakelar untuk menyembunyikan halaman tertentu dari pasangan Anda.</li>
+                                    <li><strong>Halaman Login</strong> diperlukan dan tidak dapat dinonaktifkan.</li>
                                 </ul>
                             </div>
                         </div>
@@ -942,10 +960,10 @@
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-bold text-gray-600 mb-1">Pesan Pribadi</label>
                                 <textarea id="greet_msg" class="form-input"
-                                    rows="3">Saya membuat arsip kecil ini untuk merayakan kita. Koleksi momen, rahasia, dan alasan mengapa saya mencintaimu.</textarea>
+                                    rows="3">Aku membuat arsip kecil ini untuk merayakan kita. Kumpulan momen, rahasia, dan alasan mengapa aku mencintaimu.</textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-600 mb-1">Foto Sampul Majalah</label>
+                                <label class="block text-sm font-bold text-gray-600 mb-1">Gambar Sampul Majalah</label>
                                 <div class="flex gap-2 items-center">
                                     <img id="prev_greet_img" src="" class="img-preview-mini hidden">
                                     <input type="text" id="greet_img" class="form-input" placeholder="URL Foto Majalah"
@@ -964,7 +982,7 @@
                                     placeholder="misal: Dengan Cinta, Selalu milikmu">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-bold text-gray-600 mb-1">Tagline Brand Footer</label>
+                                <label class="block text-sm font-bold text-gray-600 mb-1">Tagline Footer Brand</label>
                                 <input type="text" id="greet_footer" class="form-input" value="Untukmu, Selalu">
                             </div>
                         </div>
@@ -977,7 +995,7 @@
                 <!-- DYNAMIC ADD BUTTON -->
                 <div class="flex justify-center my-8">
                     <button onclick="openPagePicker()"
-                        class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center gap-3">
+                        class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
                         <span class="material-symbols-outlined">add_circle</span> Tambah Bagian Baru
                     </button>
                 </div>
@@ -1005,7 +1023,7 @@
                         <span class="material-symbols-outlined text-green-400">check_circle</span>
                         Konfigurasi Berhasil Dibuat!
                     </h2>
-                    <p class="text-gray-400 text-sm mt-1">Salin kode di bawah ini dan ganti seluruh isi file <code
+                    <p class="text-gray-400 text-sm mt-1">Salin kode di bawah ini dan ganti semua isi file <code
                             class="bg-gray-800 px-2 py-0.5 rounded text-rose-400 italic">data.js</code> Anda.</p>
                 </div>
             </div>
@@ -1028,8 +1046,7 @@
     <!-- Floating Toggle Button -->
     <div class="fixed bottom-6 right-6 z-50">
         <button onclick="togglePreview()"
-            class="bg-gray-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-90 transition-transform flex items-center justify-center border border-gray-700"
-            title="Buka Pratinjau">
+            class="bg-gray-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-90 transition-transform flex items-center justify-center border border-gray-700">
             <span class="material-symbols-outlined text-rose-400">smartphone</span>
         </button>
     </div>
@@ -1204,7 +1221,7 @@
             // Visual feedback on the button
             const btn = event.currentTarget;
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="material-symbols-outlined text-sm">done</span> Applied!';
+            btn.innerHTML = '<span class="material-symbols-outlined text-sm">done</span> Diterapkan!';
             setTimeout(() => { btn.innerHTML = originalText; }, 1500);
 
             syncToPreview();
@@ -1303,8 +1320,8 @@
                         <div class="flex items-center gap-3 mb-4">
                             <span class="material-symbols-outlined text-blue-500 text-3xl animate-spin">cloud_upload</span>
                             <div>
-                                <h3 class="text-lg font-bold text-gray-800">Uploading File...</h3>
-                                <p class="text-xs text-gray-500">Please wait</p>
+                                <h3 class="text-lg font-bold text-gray-800">Mengunggah File...</h3>
+                                <p class="text-xs text-gray-500">Mohon tunggu</p>
                             </div>
                         </div>
                         <p id="upload-filename" class="text-sm text-gray-600 mb-4 truncate"></p>
@@ -1365,14 +1382,14 @@
 
                 uploadBtn.innerHTML = '<span class="material-symbols-outlined text-green-500">check_circle</span>';
                 uploadBtn.classList.remove('opacity-50', 'pointer-events-none');
-                showToast('✅ Upload successful!', 'success');
+                showToast('✅ Unggah berhasil!', 'success');
                 setTimeout(() => uploadBtn.innerHTML = originalHtml, 2000);
                 syncToPreview();
             } catch (err) {
                 console.error('Upload failed:', err);
                 uploadBtn.innerHTML = originalHtml;
                 uploadBtn.classList.remove('opacity-50', 'pointer-events-none');
-                showToast(err.message || '❌ Upload failed', 'error');
+                showToast(err.message || '❌ Unggah gagal', 'error');
             }
         }
 
@@ -1538,7 +1555,7 @@
                 icon: 'psychology',
                 fields: [
                     { key: 'title', label: 'Judul Kuis', type: 'text' },
-                    { key: 'resultMessage', label: 'Pesan Kuis Selesai', type: 'text' },
+                    { key: 'resultMessage', label: 'Pesan Selesai Kuis', type: 'text' },
                     { key: 'questions', label: 'Pertanyaan', type: 'list', itemType: 'question' }
                 ]
             },
@@ -1559,7 +1576,7 @@
                     { key: 'HoursTogether', label: 'Jumlah Waktu', type: 'text' },
                     { key: 'imageSrc', label: 'Gambar Utama', type: 'image' },
                     { key: 'topPlacesLabel', label: 'Judul Tempat', type: 'text' },
-                    { key: 'topPlaces', label: 'Daftar Tempat Teratas', type: 'list-simple' },
+                    { key: 'topPlaces', label: 'Daftar Tempat Favorit', type: 'list-simple' },
                     { key: 'coreMemoriesLabel', label: 'Judul Kenangan', type: 'text' },
                     { key: 'coreMemories', label: 'Daftar Kenangan Inti', type: 'list-simple' }
                 ]
@@ -1576,16 +1593,27 @@
                 icon: 'mail',
                 fields: [
                     { key: 'recipient', label: 'Nama Penerima', type: 'text' },
-                    { key: 'message', label: 'Isi Surat', type: 'textarea' },
+                    { key: 'message', label: 'Surat Anda', type: 'textarea' },
                     { key: 'signature', label: 'Tanda Tangan', type: 'text' }
                 ]
             },
             'lock-section': {
                 icon: 'lock_open',
                 fields: [
-                    { key: 'initials', label: 'Inisial Gembok (misal A + B)', type: 'text' },
+                    { key: 'initials', label: 'Inisial Gembok (misal: A + B)', type: 'text' },
                     { key: 'instruction', label: 'Teks Instruksi', type: 'text' },
                     { key: 'finalMessage', label: 'Pesan Akhir', type: 'textarea' }
+                ]
+            },
+            'infinity-section': {
+                icon: 'all_inclusive',
+                fields: [
+                    { key: 'headerTitle', label: 'Judul Header', type: 'text' },
+                    { key: 'headerSubtitle', label: 'Subjudul Header', type: 'text' },
+                    { key: 'reasons_generic', label: 'Alasan Umum (Baris)', type: 'list-simple' },
+                    { key: 'reasons_personal', label: 'Kenangan Pribadi (Baris)', type: 'list-simple' },
+                    { key: 'reasons_poetic', label: 'Alasan Puitis (Baris)', type: 'list-simple' },
+                    { key: 'photos', label: 'Kenangan Foto', type: 'list', itemType: 'infinity-photo' }
                 ]
             },
         };
@@ -1598,15 +1626,6 @@
             configData.pages.forEach((page, index) => {
                 const uniqueId = `p${index}`;
                 const typeInfo = PAGE_TYPES[page.type];
-                const indonesianNames = {
-                    'music-section': 'Daftar Putar',
-                    'quiz-section': 'Kuis Cinta',
-                    'gallery-section': 'Galeri Foto',
-                    'wrapped-section': 'Vibe (Wrapped)',
-                    'map-section': 'Peta Kenangan',
-                    'letter-section': 'Surat Cinta',
-                    'lock-section': 'Kunci Akhir'
-                };
 
                 const pageEl = document.createElement('div');
                 pageEl.className = 'page-card relative group border-l-4 border-indigo-500 transition-all duration-300 mb-6';
@@ -1629,7 +1648,7 @@
                     <div class="section-header flex justify-between items-center mt-4">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined section-icon !bg-indigo-100 !text-indigo-600">${typeInfo.icon}</span>
-                            <h2 class="text-xl font-bold capitalize">${indonesianNames[page.type] || page.type.replace('-', ' ')}</h2>
+                            <h2 class="text-xl font-bold capitalize">${page.type.replace('-', ' ')}</h2>
                         </div>
                         <div class="flex items-center gap-2">
                              <button onclick="syncPreviewToPage('${actualPageId}')" class="btn-hint" title="Sync Preview">
@@ -1747,15 +1766,15 @@
                     <div class="grid grid-cols-1 gap-3">
                         <div class="grid grid-cols-2 gap-2">
                             <input type="text" placeholder="Judul Lagu" value="${item.songTitle || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'songTitle', this.value)" class="form-input text-sm">
-                            <input type="text" placeholder="Penyanyi" value="${item.artist || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'artist', this.value)" class="form-input text-sm">
+                            <input type="text" placeholder="Artis" value="${item.artist || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'artist', this.value)" class="form-input text-sm">
                         </div>
                         <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
-                            <label class="block text-xs font-bold text-blue-900 mb-2">🎵 Audio File (MP3)</label>
+                            <label class="block text-xs font-bold text-blue-900 mb-2">🎵 File Audio (MP3)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="audio-${uniqueId}-${idx}" placeholder="URL or assets/path.mp3" value="${item.audioSrc || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'audioSrc', this.value)" class="form-input text-xs flex-1 font-mono bg-white">
+                                <input type="text" id="audio-${uniqueId}-${idx}" placeholder="URL atau assets/path.mp3" value="${item.audioSrc || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'audioSrc', this.value)" class="form-input text-xs flex-1 font-mono bg-white">
                                 <label class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
                                     <span class="material-symbols-outlined text-base">upload</span>
-                                    <span class="text-xs font-medium hidden sm:inline">Upload</span>
+                                    <span class="text-xs font-medium hidden sm:inline">Unggah</span>
                                     <input type="file" class="hidden" accept="audio/mpeg,audio/mp3,audio/wav" onchange="handleMediaUpload(this, 'audio-${uniqueId}-${idx}')">
                                 </label>
                             </div>
@@ -1765,12 +1784,12 @@
                             <label class="block text-xs font-bold text-purple-900 mb-2">🖼️ Gambar Sampul</label>
                             <div class="flex gap-2 items-center">
                                 <img src="${item.coverSrc || ''}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${!item.coverSrc ? 'hidden' : ''}" onerror="this.classList.add('hidden')">
-                                <input type="text" id="cover-${uniqueId}-${idx}" placeholder="URL or assets/path.jpg" value="${item.coverSrc || ''}" 
+                                <input type="text" id="cover-${uniqueId}-${idx}" placeholder="URL atau assets/path.jpg" value="${item.coverSrc || ''}" 
                                     oninput="updateDynamicItem('${uniqueId}', ${idx}, 'coverSrc', this.value); const img=this.parentElement.querySelector('img'); img.src=this.value; img.classList.toggle('hidden', !this.value);" 
                                     class="form-input text-xs flex-1 font-mono bg-white">
                                 <label class="cursor-pointer bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
                                     <span class="material-symbols-outlined text-base">image</span>
-                                    <span class="text-xs font-medium hidden sm:inline">Upload</span>
+                                    <span class="text-xs font-medium hidden sm:inline">Unggah</span>
                                     <input type="file" class="hidden" accept="image/*" onchange="handleMediaUpload(this, 'cover-${uniqueId}-${idx}')">
                                 </label>
                             </div>
@@ -1790,7 +1809,7 @@
                              ${[0, 1, 2, 3].map(i => `
                                 <div class="flex items-center gap-2 group">
                                     <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400 group-focus-within:bg-rose-100 group-focus-within:text-rose-500 transition-colors">${i + 1}</div>
-                                    <input type="text" placeholder="Pilihan Jawaban ${i + 1}" value="${item.options && item.options[i] ? item.options[i] : ''}"
+                                    <input type="text" placeholder="Opsi Jawaban ${i + 1}" value="${item.options && item.options[i] ? item.options[i] : ''}"
                                         oninput="updateDynamicOption('${uniqueId}', ${idx}, ${i}, this.value)"
                                         class="form-input text-xs flex-1">
                                 </div>
@@ -1801,15 +1820,15 @@
                             <div class="flex-1">
                                 <label class="block text-[9px] font-bold text-emerald-600 uppercase mb-1 px-1">Pilih Jawaban Benar</label>
                                 <select onchange="updateDynamicItem('${uniqueId}', ${idx}, 'correctIndex', parseInt(this.value))" class="form-input !py-1.5 text-xs w-full bg-emerald-50 border-emerald-100">
-                                    ${[0, 1, 2, 3].map(i => `<option value="${i}" ${item.correctIndex === i ? 'selected' : ''}>Pilihan ${i + 1} Benar</option>`).join('')}
+                                    ${[0, 1, 2, 3].map(i => `<option value="${i}" ${item.correctIndex === i ? 'selected' : ''}>Opsi ${i + 1} Benar</option>`).join('')}
                                 </select>
                             </div>
                             <div class="flex-1">
-                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1 px-1">Feedback Benar</label>
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1 px-1">Masukan Benar</label>
                                 <input type="text" placeholder="Pesan Benar" value="${item.correctMessage || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'correctMessage', this.value)" class="form-input !py-1.5 text-[10px]">
                             </div>
                             <div class="flex-1">
-                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1 px-1">Feedback Salah</label>
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1 px-1">Masukan Salah</label>
                                 <input type="text" placeholder="Pesan Salah" value="${item.wrongMessage || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'wrongMessage', this.value)" class="form-input !py-1.5 text-[10px]">
                             </div>
                         </div>
@@ -1819,31 +1838,31 @@
                 return `
                     <div class="space-y-3">
                         <select onchange="updateDynamicItem('${uniqueId}', ${idx}, 'type', this.value); renderPages();" class="form-input text-sm font-medium">
-                            <option value="image" ${item.type === 'image' ? 'selected' : ''}>📷 Image</option>
+                            <option value="image" ${item.type === 'image' ? 'selected' : ''}>📷 Gambar</option>
                             <option value="video" ${item.type === 'video' ? 'selected' : ''}>🎬 Video</option>
                         </select>
                         <div class="bg-green-50 border border-green-200 rounded-xl p-3">
-                            <label class="block text-xs font-bold text-green-900 mb-2">${item.type === 'video' ? '🎬 Video File (MP4)' : '📷 Image File'}</label>
+                            <label class="block text-xs font-bold text-green-900 mb-2">${item.type === 'video' ? '🎬 File Video (MP4)' : '📷 File Gambar'}</label>
                             <div class="flex gap-2 items-center">
                                 ${item.type === 'video'
                         ? `<video src="${item.src || ''}" muted playsinline class="img-preview-mini w-16 h-16 object-cover rounded-lg shadow-sm ${!item.src ? 'hidden' : ''}"></video>`
                         : `<img src="${item.src || ''}" class="img-preview-mini w-16 h-16 object-cover rounded-lg shadow-sm ${!item.src ? 'hidden' : ''}" onerror="this.classList.add('hidden')">`
                     }
-                                <input type="text" id="media-${uniqueId}-${idx}" placeholder="URL or assets/path.jpg" value="${item.src || ''}" 
+                                <input type="text" id="media-${uniqueId}-${idx}" placeholder="URL atau assets/path.jpg" value="${item.src || ''}" 
                                     oninput="updateDynamicItem('${uniqueId}', ${idx}, 'src', this.value); const m=this.parentElement.querySelector('.img-preview-mini'); m.src=this.value; m.classList.toggle('hidden', !this.value);" 
                                     class="form-input text-xs flex-1 font-mono bg-white">
                                 <label class="cursor-pointer bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
                                     <span class="material-symbols-outlined text-base">${item.type === 'video' ? 'videocam' : 'image'}</span>
-                                    <span class="text-xs font-medium hidden sm:inline">Upload</span>
+                                    <span class="text-xs font-medium hidden sm:inline">Unggah</span>
                                     <input type="file" class="hidden" accept="${item.type === 'video' ? 'video/mp4,video/webm' : 'image/*'}" onchange="handleMediaUpload(this, 'media-${uniqueId}-${idx}')">
                                 </label>
                             </div>
                         </div>
-                        <input type="text" placeholder="Keterangan untuk memori ini..." value="${item.caption || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'caption', this.value)" class="form-input text-sm">
+                        <input type="text" placeholder="Keterangan untuk kenangan ini..." value="${item.caption || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'caption', this.value)" class="form-input text-sm">
                         <div class="grid grid-cols-2 gap-2">
                             <select onchange="updateDynamicItem('${uniqueId}', ${idx}, 'tape', this.value)" class="form-input text-xs">
-                                <option value="washi-tape" ${item.tape === 'washi-tape' ? 'selected' : ''}>🎀 Pink Tape</option>
-                                <option value="washi-tape-gold" ${item.tape === 'washi-tape-gold' ? 'selected' : ''}>✨ Gold Tape</option>
+                                <option value="washi-tape" ${item.tape === 'washi-tape' ? 'selected' : ''}>🎀 Selotip Pink</option>
+                                <option value="washi-tape-gold" ${item.tape === 'washi-tape-gold' ? 'selected' : ''}>✨ Selotip Emas</option>
                             </select>
                             <select onchange="updateDynamicItem('${uniqueId}', ${idx}, 'rotation', this.value)" class="form-input text-xs">
                                 <option value="rotate-1" ${item.rotation === 'rotate-1' ? 'selected' : ''}>Miring Kiri</option>
@@ -1862,7 +1881,7 @@
                                 <option value="favorite" ${item.icon === 'favorite' || !item.icon ? 'selected' : ''}>❤️ Hati</option>
                                 <option value="star" ${item.icon === 'star' ? 'selected' : ''}>⭐ Bintang</option>
                                 <option value="location_on" ${item.icon === 'location_on' ? 'selected' : ''}>📍 Lokasi</option>
-                                <option value="restaurant" ${item.icon === 'restaurant' ? 'selected' : ''}>🍴 Makan</option>
+                                <option value="restaurant" ${item.icon === 'restaurant' ? 'selected' : ''}>🍴 Makanan</option>
                                 <option value="park" ${item.icon === 'park' ? 'selected' : ''}>🌳 Taman</option>
                                 <option value="theater_comedy" ${item.icon === 'theater_comedy' ? 'selected' : ''}>🎬 Bioskop</option>
                                 <option value="photo_camera" ${item.icon === 'photo_camera' ? 'selected' : ''}>📸 Foto</option>
@@ -1880,7 +1899,7 @@
                          <input type="text" placeholder="Deskripsi Kenangan" value="${item.memory || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'memory', this.value)" class="form-input text-sm col-span-2">
                          <div class="flex gap-2 col-span-2 items-center">
                              <img src="${item.imageSrc || ''}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${!item.imageSrc ? 'hidden' : ''}" onerror="this.classList.add('hidden')">
-                                <input type="text" id="map-img-${uniqueId}-${idx}" placeholder="URL or assets/path.jpg" value="${item.imageSrc || ''}" 
+                                <input type="text" id="map-img-${uniqueId}-${idx}" placeholder="URL atau assets/path.jpg" value="${item.imageSrc || ''}" 
                                     oninput="updateDynamicItem('${uniqueId}', ${idx}, 'imageSrc', this.value); const img=this.parentElement.querySelector('img'); if(img){img.src=this.value; img.classList.toggle('hidden', !this.value);}" 
                                     class="form-input text-xs flex-1 font-mono bg-white">
                             <label class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 shadow-sm transition-colors self-stretch">
@@ -1888,9 +1907,28 @@
                                 <input type="file" class="hidden" accept="image/*"
                                     onchange="handleMediaUpload(this, 'map-img-${uniqueId}-${idx}')">
                             </label>
-                         </div>
-                    </div>
+                      </div>
                  `;
+            } else if (itemType === 'infinity-photo') {
+                return `
+                    <div class="space-y-3">
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3">
+                            <label class="block text-xs font-bold text-rose-900 mb-2">📷 Foto Kenangan</label>
+                            <div class="flex gap-2 items-center">
+                                <img src="${item.src || ''}" class="img-preview-mini w-16 h-16 object-cover rounded-lg shadow-sm ${!item.src ? 'hidden' : ''}" onerror="this.classList.add('hidden')">
+                                <input type="text" id="inf-photo-${uniqueId}-${idx}" placeholder="URL atau assets/path.jpg" value="${item.src || ''}" 
+                                    oninput="updateDynamicItem('${uniqueId}', ${idx}, 'src', this.value); const m=this.parentElement.querySelector('img'); if(m){m.src=this.value; m.classList.toggle('hidden', !this.value);}" 
+                                    class="form-input text-xs flex-1 font-mono bg-white">
+                                <label class="cursor-pointer bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
+                                    <span class="material-symbols-outlined text-base">image</span>
+                                    <span class="text-xs font-medium hidden sm:inline">Unggah</span>
+                                    <input type="file" class="hidden" accept="image/*" onchange="handleMediaUpload(this, 'inf-photo-${uniqueId}-${idx}')">
+                                </label>
+                            </div>
+                        </div>
+                        <input type="text" placeholder="Keterangan singkat..." value="${item.caption || ''}" oninput="updateDynamicItem('${uniqueId}', ${idx}, 'caption', this.value)" class="form-input text-sm">
+                    </div>
+                `;
             }
             return '';
         }
@@ -1939,9 +1977,10 @@
             const pageIndex = parseInt(pIdx.substring(1));
             let newItem = {};
             if (itemType === 'song') newItem = { songTitle: '', artist: '', audioSrc: '', coverSrc: '', lyrics: '' };
-            else if (itemType === 'question') newItem = { question: '', options: ['', '', '', ''], correctIndex: 0, correctMessage: 'Bener banget! ❤️', wrongMessage: 'Yah, salah...' };
+            else if (itemType === 'question') newItem = { question: '', options: ['', '', '', ''], correctIndex: 0, correctMessage: 'Benar!', wrongMessage: 'Salah!' };
             else if (itemType === 'memory') newItem = { type: 'image', src: '', caption: '', tape: 'washi-tape', rotation: 'rotate-1' };
             else if (itemType === 'location') newItem = { lat: '', lng: '', title: '', memory: '', date: '', imageSrc: '', icon: 'favorite' };
+            else if (itemType === 'infinity-photo') newItem = { src: '', caption: '' };
 
             if (!configData.pages[pageIndex][fieldKey]) configData.pages[pageIndex][fieldKey] = [];
             configData.pages[pageIndex][fieldKey].push(newItem);
@@ -1971,23 +2010,22 @@
 
         window.renderPickerGrid = () => {
             const grid = document.getElementById('page-type-selector');
-            grid.innerHTML = Object.keys(PAGE_TYPES).map(key => {
-                const indonesianNames = {
-                    'music-section': 'Daftar Putar',
-                    'quiz-section': 'Kuis Cinta',
-                    'gallery-section': 'Galeri Foto',
-                    'wrapped-section': 'Vibe (Wrapped)',
-                    'map-section': 'Peta Kenangan',
-                    'letter-section': 'Surat Cinta',
-                    'lock-section': 'Kunci Akhir'
-                };
-                return `
+            const typeLabels = {
+                'music-section': 'Daftar Putar',
+                'quiz-section': 'Kuis Kustom',
+                'gallery-section': 'Galeri Foto',
+                'wrapped-section': 'Kilas Balik',
+                'map-section': 'Peta Memori',
+                'letter-section': 'Surat Cinta',
+                'lock-section': 'Gembok Akhir',
+                'infinity-section': 'Scroll Tak Terbatas'
+            };
+            grid.innerHTML = Object.keys(PAGE_TYPES).map(key => `
                 <div onclick="confirmPageAdd('${key}')" class="p-4 border border-slate-200 rounded-xl hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer text-center transition-all group">
                     <span class="material-symbols-outlined text-3xl text-slate-400 group-hover:text-indigo-600 mb-2">${PAGE_TYPES[key].icon}</span>
-                    <h4 class="text-xs font-bold uppercase text-slate-600 group-hover:text-indigo-700">${indonesianNames[key] || key.replace('-', ' ')}</h4>
+                    <h4 class="text-xs font-bold uppercase text-slate-600 group-hover:text-indigo-700">${typeLabels[key] || key.replace('-', ' ')}</h4>
                 </div>
-                `;
-            }).join('');
+             `).join('');
         };
 
         window.confirmPageAdd = (type) => {
@@ -1998,7 +2036,8 @@
                 'gallery-section': 'page-6',
                 'map-section': 'page-7',
                 'letter-section': 'page-8',
-                'lock-section': 'page-9'
+                'lock-section': 'page-9',
+                'infinity-section': 'page-10'
             };
 
             const newItem = {
@@ -2009,6 +2048,12 @@
             if (type === 'music-section') newItem.music = [];
             if (type === 'quiz-section') newItem.questions = [];
             if (type === 'gallery-section') newItem.memories = [];
+            if (type === 'infinity-section') {
+                newItem.reasons_generic = [];
+                newItem.reasons_personal = [];
+                newItem.reasons_poetic = [];
+                newItem.photos = [];
+            }
 
             configData.pages.push(newItem);
             renderPages();
@@ -2071,8 +2116,8 @@
             // Quiz
             const quizPage = findPage('quiz-section');
             const quizData = quizPage && quizPage.questions ? quizPage.questions : [];
-            const quizTitle = quizPage ? (quizPage.title || "Kuis Trivia Personal") : "Kuis Trivia Personal";
-            const quizResultMessage = quizPage ? (quizPage.resultMessage || "Kamu kenal aku banget, sayang! ❤️") : "Kamu kenal aku banget, sayang! ❤️";
+            const quizTitle = quizPage ? (quizPage.title || "Trivia Pribadi") : "Trivia Pribadi";
+            const quizResultMessage = quizPage ? (quizPage.resultMessage || "Kamu sangat mengenalku, sayang! ❤️") : "Kamu sangat mengenalku, sayang! ❤️";
 
             // Gallery
             const galleryPage = findPage('gallery-section');
@@ -2082,7 +2127,7 @@
             const mapPage = findPage('map-section');
             const mapData = {
                 title: mapPage ? (mapPage.title || "") : (val('map_title') || "Peta Kenangan Kita"),
-                description: mapPage ? (mapPage.description || "") : (val('map_desc') || "Pemetaan perjalanan yang kita lalui bersama."),
+                description: mapPage ? (mapPage.description || "") : (val('map_desc') || "Pemetaan perjalanan yang telah kita lalui bersama."),
                 locations: mapPage && mapPage.locations ? mapPage.locations.map(l => ({
                     coordinates: [parseFloat(l.lat) || 0, parseFloat(l.lng) || 0],
                     title: l.title || "",
@@ -2093,12 +2138,12 @@
                 })) : []
             };
 
-            // Letter
             const letterPage = findPage('letter-section');
             const letterData = {
                 recipientName: letterPage ? letterPage.recipient : (val('let_rec') || ""),
                 message: letterPage ? letterPage.message : (val('let_msg') || ""),
-                signature: letterPage ? letterPage.signature : (val('let_sig') || "")
+                signature: letterPage ? letterPage.signature : (val('let_sig') || ""),
+                finaleChoice: letterPage ? letterPage.finaleChoice : 'choice'
             };
 
             // Lock
@@ -2124,6 +2169,20 @@
                 imageSrc: wrappedPage ? (wrappedPage.imageSrc || "") : ""
             };
 
+            // Infinity Scroll
+            const infinityPage = findPage('infinity-section');
+            const infinityData = {
+                enabled: true,
+                headerTitle: infinityPage ? (infinityPage.headerTitle || "Aku mencintaimu karena...") : "Aku mencintaimu karena...",
+                headerSubtitle: infinityPage ? (infinityPage.headerSubtitle || "Kumpulan alasan yang tak ada habisnya") : "Kumpulan alasan yang tak ada habisnya",
+                reasons: {
+                    generic: infinityPage ? (infinityPage.reasons_generic || []) : [],
+                    personal: infinityPage ? (infinityPage.reasons_personal || []) : [],
+                    poetic: infinityPage ? (infinityPage.reasons_poetic || []) : []
+                },
+                photos: infinityPage ? (infinityPage.photos || []) : []
+            };
+
 
             // ISO Format Date Converter
             let rawTargetDate = val('count_date');
@@ -2145,8 +2204,8 @@
             const inviteData = {
                 title: invitePage ? invitePage.title : "Maukah kamu jadi Valentine-ku?",
                 subtitle: invitePage ? invitePage.subtitle : "Aku punya pertanyaan spesial...",
-                yesText: invitePage ? invitePage.yesText : "Mau!",
-                noText: invitePage ? invitePage.noText : "Tdk"
+                yesText: invitePage ? invitePage.yesText : "Ya!",
+                noText: invitePage ? invitePage.noText : "Tidak"
             };
 
             return {
@@ -2167,7 +2226,7 @@
                     collectionText: val('collectionText'),
                     title: val('p1_title'),
                     instruction: val('p1_instr'),
-                    placeholder: "*kata rahasia Anda...*"
+                    placeholder: "*kata rahasiamu...*"
                 },
                 countdown: {
                     targetDate: targetDate,
@@ -2198,6 +2257,7 @@
                 map: mapData,
                 letter: letterData,
                 lock: lockData,
+                infinityScroll: infinityData,
                 metadata: {
                     customerName: val('cust_name'),
                     generatedAt: new Date().toISOString()
@@ -2235,49 +2295,49 @@
                             pageId: 'page-4',
                             type: 'wrapped-section',
                             vibeLabel: "Vibe Kita", vibe: "Bonnie & Clyde",
-                            HoursTogetherLabel: "Menit Bersama", HoursTogether: "525.600",
+                            HoursTogetherLabel: "Menit Bersama", HoursTogether: "525,600",
                             imageSrc: "assets/images/photo2.jpg",
-                            topPlaces: ["Dermaga Matahari Terbenam", "Toko Roti Sudut", "Kebun Raya"],
-                            coreMemories: ["Mendaki Saat Hujan", "Perjalanan Darat Pertama", "Gagal Memasak"]
+                            topPlaces: ["The Sunset Pier", "Corner Bakery", "Botanical Garden"],
+                            coreMemories: ["The Rainy Hike", "First Road Trip", "Cooking Fail"]
                         });
                         // 3. Quiz
                         configData.pages.push({
                             pageId: 'page-5',
                             type: 'quiz-section',
-                            title: 'Kuis Trivia Personal',
+                            title: 'Trivia Pribadi',
                             questions: [
-                                { question: "Di mana kencan pertama kita?", options: ["Starbucks KIP", "Cinema XXI", "Parks & Rec", "Makan Malam di McD"], correctIndex: 0, correctMessage: "Kamu ingat! ❤️", wrongMessage: "Salah!" },
-                                { question: "Apa warna favoritku saat kamu memakainya?", options: ["Rose Pink", "Soft Blue", "Sage Green", "Classic Black"], correctIndex: 2, correctMessage: "Ya!", wrongMessage: "Kurang tepat..." }
+                                { question: "Di mana kencan pertama kita?", options: ["Starbucks KIP", "Cinema XXI", "Parks & Rec", "Dinner at McD"], correctIndex: 0, correctMessage: "Kamu ingat! ❤️", wrongMessage: "Bukan!" },
+                                { question: "Warna apa yang paling kusukai saat kamu pakai?", options: ["Rose Pink", "Soft Blue", "Sage Green", "Classic Black"], correctIndex: 2, correctMessage: "Ya!", wrongMessage: "Coba lagi..." }
                             ]
                         });
                         // 4. Gallery
                         configData.pages.push({
                             pageId: 'page-6',
                             type: 'gallery-section',
-                            title: 'Galeri Polaroid',
-                            subtitle: 'Gores untuk membuka potongan hatiku',
+                            title: 'Galeri Garuk',
+                            subtitle: 'Garuk untuk mengungkapkan kepingan hatiku',
                             memories: [
                                 { type: 'image', src: 'assets/images/photo2.jpg', caption: 'Kopi pertama kita', tape: 'washi-tape-gold', rotation: 'rotate-2' },
-                                { type: 'image', src: 'assets/images/photo3.jpg', caption: 'Saat matahari terbenam', tape: 'washi-tape', rotation: 'rotate-1' }
+                                { type: 'image', src: 'assets/images/photo3.jpg', caption: 'Waktu emas', tape: 'washi-tape', rotation: 'rotate-1' }
                             ]
                         });
                         // 5. Map
                         configData.pages.push({
                             pageId: 'page-7',
                             type: 'map-section',
-                            title: 'Peta Kenangan Kita',
-                            description: 'Pemetaan momen yang mendefinisikan cerita kita. Setiap titik adalah detak jantung, setiap garis adalah jalan yang kita lalui bersama.',
+                            title: 'Atlas Kita',
+                            description: 'Pemetaan momen-momen yang mendefinisikan cerita kita. Setiap titik adalah detak jantung, setiap baris adalah jalan yang kita tapaki bersama.',
                             locations: [
-                                { lat: -6.24625885, lng: 106.9913550, title: "Di mana kita pertama bertemu", memory: "Udaranya terasa manis...", date: "2020-01-20" }
+                                { lat: -6.24625885, lng: 106.9913550, title: "Di mana kita pertama kali bertemu", memory: "Udara terasa manis...", date: "2020-01-20" }
                             ]
                         });
                         // 6. Letter
                         configData.pages.push({
                             pageId: 'page-8',
                             type: 'letter-section',
-                            recipient: 'Dearest Love',
-                            message: 'I find myself sitting here...',
-                            signature: 'Your Favorite Person'
+                            recipient: 'Untuk Cintaku',
+                            message: 'Aku duduk di sini memikirkanmu...',
+                            signature: 'Orang Favoritmu'
                         });
                         // 7. Lock
                         configData.pages.push({
@@ -2285,7 +2345,25 @@
                             type: 'lock-section',
                             initials: 'A + B',
                             instruction: 'Klik untuk mengunci cinta kita selamanya...',
-                            finalMessage: 'Terkunci aman di hatiku. Selalu.'
+                            finalMessage: 'Terkunci aman di hatiku. Selamanya.'
+                        });
+                        // 8. Infinity Scroll
+                        configData.pages.push({
+                            pageId: 'page-10',
+                            type: 'infinity-section',
+                            headerTitle: 'Aku mencintaimu karena...',
+                            headerSubtitle: 'Kumpulan alasan yang tak ada habisnya',
+                            reasons_generic: [
+                                "...senyummu mencerahkan hariku",
+                                "...kamu menjadikanku orang yang lebih baik"
+                            ],
+                            reasons_personal: [
+                                "...saat kita bertemu di hari hujan itu"
+                            ],
+                            reasons_poetic: [
+                                "...kamu adalah melodi dalam laguku"
+                            ],
+                            photos: []
                         });
                     }
                 }
@@ -2335,8 +2413,8 @@
                 pages: configData.pages
             };
             localStorage.setItem(LS_KEY, JSON.stringify(data));
-            updateStatus('Disimpan Manual', 'green');
-            showToast('✅ Progres berhasil disimpan!', 'success');
+            updateStatus('Manual Saved', 'green');
+            showToast('✅ Progress saved to browser!', 'success');
         }
 
         function saveToLocalStorage() {
@@ -2348,8 +2426,28 @@
                     pages: configData.pages // Save the dynamic pages structure
                 };
                 localStorage.setItem(LS_KEY, JSON.stringify(data));
-                updateStatus('Tersimpan di Browser', 'blue');
+                updateStatus('Saved locally', 'blue');
             }, 500);
+        }
+
+        /**
+         * Repair and migrate data structure if needed
+         */
+        function repairData(rawData) {
+            if (!rawData) return null;
+
+            // If it's an old format (no .config or .pages wrapper)
+            if (!rawData.config && !rawData.pages) {
+                return {
+                    config: rawData,
+                    pages: null // Will be reconstructed in loadFromConfig
+                };
+            }
+
+            // Ensure pages array exists
+            if (!rawData.pages) rawData.pages = [];
+
+            return rawData;
         }
 
         function loadFromConfig(configDataObj) {
@@ -2425,8 +2523,8 @@
                 configData.pages.push({
                     pageId: 'page-5',
                     type: 'quiz-section',
-                    title: config.quiz?.title || 'Kuis Trivia Personal',
-                    resultMessage: config.quiz?.resultMessage || 'Kamu kenal aku banget, sayang! ❤️',
+                    title: config.quiz?.title || 'Personalized Trivia',
+                    resultMessage: config.quiz?.resultMessage || 'You know me so well, love! ❤️',
                     questions: config.quiz?.questions || []
                 });
 
@@ -2462,7 +2560,8 @@
                     type: 'letter-section',
                     recipient: config.letter?.recipientName || '',
                     message: config.letter?.message || '',
-                    signature: config.letter?.signature || ''
+                    signature: config.letter?.signature || '',
+                    finaleChoice: config.letter?.finaleChoice || 'choice'
                 });
 
                 // Reconstruct Lock
@@ -2472,6 +2571,25 @@
                     initials: config.lock?.initials || '',
                     instruction: config.lock?.instruction || '',
                     finalMessage: config.lock?.finalMessage || ''
+                });
+
+                // Reconstruct Infinity Scroll
+                configData.pages.push({
+                    pageId: 'page-10',
+                    type: 'infinity-section',
+                    headerTitle: (config.infinityScroll && config.infinityScroll.headerTitle) || 'Aku mencintaimu karena...',
+                    headerSubtitle: (config.infinityScroll && config.infinityScroll.headerSubtitle) || 'Kumpulan alasan yang tak ada habisnya',
+                    reasons_generic: (config.infinityScroll && config.infinityScroll.reasons && config.infinityScroll.reasons.generic) || [
+                        "...senyummu mencerahkan hariku",
+                        "...kamu menjadikanku orang yang lebih baik"
+                    ],
+                    reasons_personal: (config.infinityScroll && config.infinityScroll.reasons && config.infinityScroll.reasons.personal) || [
+                        "...saat kita bertemu di hari hujan itu"
+                    ],
+                    reasons_poetic: (config.infinityScroll && config.infinityScroll.reasons && config.infinityScroll.reasons.poetic) || [
+                        "...kamu adalah melodi dalam laguku"
+                    ],
+                    photos: (config.infinityScroll && config.infinityScroll.photos) || []
                 });
 
             }
@@ -2529,7 +2647,7 @@
                             type: 'UPDATE_CONFIG',
                             config: config
                         }, '*');
-                        updateStatus('Tersinkron', 'green');
+                        updateStatus('Synced', 'green');
                     }
                 } catch (e) {
                     console.error("Gagal sinkronisasi:", e);
@@ -2540,7 +2658,7 @@
         // Listen for messages from preview
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'PREVIEW_READY') {
-                updateStatus('Terhubung', 'emerald');
+                updateStatus('Connected', 'emerald');
                 console.log("[Admin] Preview ready handshake received.");
                 syncToPreview();
             }
@@ -2573,7 +2691,7 @@
             document.execCommand("copy");
             const btn = document.querySelector('[onclick="copyCode()"]');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="material-symbols-outlined">done_all</span> Tersalin!';
+            btn.innerHTML = '<span class="material-symbols-outlined">done_all</span> Copied!';
             btn.classList.replace('bg-emerald-500', 'bg-emerald-600');
             setTimeout(() => {
                 btn.innerHTML = originalText;
@@ -2662,8 +2780,8 @@
             loginItem.innerHTML = `
                 <span class="material-symbols-outlined text-slate-400">lock</span>
                 <div class="flex-1">
-                    <h3 class="font-bold text-slate-700 text-sm">Masuk & Hitung Mundur</h3>
-                    <p class="text-[10px] text-slate-400">Posisi Tetap (Halaman 1)</p>
+                    <h3 class="font-bold text-slate-700 text-sm">Entry & Countdown</h3>
+                    <p class="text-[10px] text-slate-400">Fixed Position (Page 1)</p>
                 </div>
                 <label class="toggle-switch">
                     <input type="checkbox" checked disabled>
@@ -2689,11 +2807,16 @@
                 item.addEventListener('dragleave', handleDragLeave);
                 item.addEventListener('drop', handleDrop);
 
+                const isFinale = (page.id === 'page-9' || page.id === 'page-10');
+
                 item.innerHTML = `
                     <span class="material-symbols-outlined text-slate-400 cursor-grab">drag_indicator</span>
                     <span class="material-symbols-outlined text-rose-500">${page.icon || 'star'}</span>
                     <div class="flex-1">
-                        <h3 class="font-bold text-gray-700 text-sm">${page.name}</h3>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-gray-700 text-sm">${page.name}</h3>
+                            ${isFinale ? '<span class="text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200 uppercase">Finale Choice</span>' : ''}
+                        </div>
                         <p class="text-[10px] text-gray-400 leading-none">${page.type.toUpperCase()}</p>
                     </div>
                     <label class="toggle-switch">
@@ -2705,11 +2828,38 @@
                 `;
                 list.appendChild(item);
             });
+
+            // 3. Add Help Note for Finale
+            const helpNote = document.createElement('div');
+            helpNote.className = 'mt-4 p-3 bg-indigo-50 border border-indigo-100 rounded-lg flex gap-3';
+            helpNote.innerHTML = `
+                <span class="material-symbols-outlined text-indigo-500 text-sm">lightbulb</span>
+                <p class="text-[11px] text-indigo-700 leading-tight">
+                    <strong>Panduan Akhir:</strong> Halaman 9 (Gembok) dan Halaman 10 (Infinity) adalah akhiran yang eksklusif. Anda hanya dapat mengaktifkan <b>satu</b> di antaranya dalam satu waktu.
+                </p>
+            `;
+            list.appendChild(helpNote);
         }
 
         function togglePage(pageId, isEnabled) {
             if (CONFIG.pageConfig && CONFIG.pageConfig.pages && CONFIG.pageConfig.pages[pageId]) {
                 CONFIG.pageConfig.pages[pageId].enabled = isEnabled;
+
+                // --- CUSTOM LOGIC: Mutually Exclusive Finale ---
+                // Jika Page 9 (Lock) di-enable, Page 10 (Infinity) harus disable
+                if (pageId === 'page-9' && isEnabled) {
+                    if (CONFIG.pageConfig.pages['page-10']) {
+                        CONFIG.pageConfig.pages['page-10'].enabled = false;
+                    }
+                }
+                // Jika Page 10 (Infinity) di-enable, Page 9 (Lock) harus disable
+                else if (pageId === 'page-10' && isEnabled) {
+                    if (CONFIG.pageConfig.pages['page-9']) {
+                        CONFIG.pageConfig.pages['page-9'].enabled = false;
+                    }
+                }
+
+                renderPageManager(); // Refresh UI list to show updated toggles
                 syncToPreview();
             }
         }
@@ -2773,15 +2923,16 @@
             if (!CONFIG.pageConfig) {
                 CONFIG.pageConfig = {
                     pages: {
-                        'page-1': { id: 'page-1', name: 'Masuk', type: 'login', enabled: true, required: true, icon: 'lock', order: 1 },
+                        'page-1': { id: 'page-1', name: 'Login', type: 'login', enabled: true, required: true, icon: 'lock', order: 1 },
                         'page-2': { id: 'page-2', name: 'Kartu Ucapan', type: 'greeting', enabled: true, required: false, icon: 'favorite', order: 2 },
-                        'page-3': { id: 'page-3', name: 'Daftar Putar', type: 'music', enabled: true, required: false, icon: 'music_note', order: 3 },
+                        'page-3': { id: 'page-3', name: 'Daftar Putar Kita', type: 'music', enabled: true, required: false, icon: 'music_note', order: 3 },
                         'page-4': { id: 'page-4', name: 'Vibe Kita (Wrapped)', type: 'wrapped', enabled: true, required: false, icon: 'auto_awesome', order: 4 },
                         'page-5': { id: 'page-5', name: 'Kuis Cinta', type: 'quiz', enabled: true, required: false, icon: 'quiz', order: 5 },
                         'page-6': { id: 'page-6', name: 'Galeri Foto', type: 'gallery', enabled: true, required: false, icon: 'photo_library', order: 6 },
                         'page-7': { id: 'page-7', name: 'Peta Kenangan', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
                         'page-8': { id: 'page-8', name: 'Surat Cinta', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
-                        'page-9': { id: 'page-9', name: 'Kunci Terakhir', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 }
+                        'page-9': { id: 'page-9', name: 'Gembok Akhir', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 },
+                        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: true, required: false, icon: 'all_inclusive', order: 10 }
                     }
                 };
             }
@@ -2812,7 +2963,7 @@
                 <div class="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
                     <span class="material-symbols-outlined">magic_button</span>
                 </div>
-                <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">Selamat Datang, Lovebirds!</h2>
+                <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">Selamat Datang!</h2>
                 <p class="text-gray-500 mb-8 leading-relaxed text-sm">Ikuti langkah-langkah sederhana ini untuk menyusun
                     kejutan Valentine digital Anda.</p>
                 <div class="space-y-6 mb-10 text-sm">
@@ -2821,14 +2972,14 @@
                             class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center font-bold flex-shrink-0">
                             1</div>
                         <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Personalisasi:</strong>
-                            Isi nama, tanggal spesial, dan surat cinta Anda pada formulir di bawah.</p>
+                            Isi nama Anda, tanggal spesial, dan surat cinta pada formulir di bawah ini.</p>
                     </div>
                     <div class="flex gap-4">
                         <div
                             class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold flex-shrink-0">
                             2</div>
                         <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Unggah Media:</strong>
-                            Gunakan tombol unggah untuk menambahkan foto dan video Anda. Kami akan meng-host-nya untuk
+                            Gunakan tombol unggah untuk menambahkan foto dan video Anda. Kami akan menyimpannya untuk
                             Anda!</p>
                     </div>
                     <div class="flex gap-4">
@@ -2837,26 +2988,26 @@
                             3</div>
                         <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Pratinjau
                                 Langsung:</strong>
-                            Lihat tampilan di layar HP di sebelah kiri untuk melihat perubahan Anda secara real-time.
-                        </p>
+                            Periksa bingkai ponsel di sebelah kiri (atau klik PRATINJAU) untuk melihat perubahan Anda
+                            secara real-time.</p>
                     </div>
                     <div class="flex gap-4">
                         <div
                             class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold flex-shrink-0">
                             4</div>
-                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Kirim:</strong> Jika Anda
-                            sudah puas, klik <span
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900">Kirim:</strong> Jika
+                            Anda sudah puas, klik <span
                                 class="bg-rose-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">SELESAI &
-                                KIRIM</span> untuk mengirim data Anda kepada kami untuk pengaturan akhir.</p>
+                                KIRIM</span> untuk mengirimkan data Anda kepada kami untuk pengaturan akhir.</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-3">
                     <button onclick="closeWelcomeModal()"
                         class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200 active:scale-95">
-                        Siap, ayo mulai!
+                        Siap, mari kita mulai!
                     </button>
                     <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">Progres
-                        disimpan secara otomatis di browser</p>
+                        disimpan secara otomatis di setiap browser</p>
                 </div>
             </div>
         </div>

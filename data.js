@@ -106,7 +106,7 @@ var CONFIG = {
             "lyrics": "I thought that I was dreaming, when you said you loved me.."
         }
     ],
-    "musicSectionTitle": "",
+    "musicSectionTitle": "Our Playlist",
     "gallery": {
         "title": "Scratch Gallery",
         "subtitle": "Scratch to reveal a piece of my heart",
@@ -219,16 +219,59 @@ var CONFIG = {
     "letter": {
         "recipientName": "Dearest Lisa",
         "message": "I was sitting here thinking about us, and I realized that \"thank you\" doesn't quite cover it. Thank you for being the person who makes the mundane parts of life feel like an adventure. Whether we're out exploring or just sitting on the couch doing absolutely nothing, everything is better simply because you're there.\n\nI love the way you scrunch your nose when you laugh and how you always know exactly what to say when I'm having a long day. You are my safe harbor and my favorite person to dream with. I'm so lucky to have you by my side.",
-        "signature": "Aldo, Your Biggest Fans"
+        "signature": "Aldo, Your Biggest Fans",
+        "finaleChoice": "choice"
     },
     "lock": {
         "initials": "A + B",
         "instruction": "Click to lock our love forever...",
         "finalMessage": "Safely locked in my heart. Always."
     },
+    "infinityScroll": {
+        "enabled": true,
+        "headerTitle": "I love you because...",
+        "headerSubtitle": "An endless collection of reasons",
+        "reasons": {
+            "generic": [
+                "...your smile lights up even the darkest days",
+                "...you make the ordinary feel extraordinary",
+                "...your laughter is my favorite sound in the world",
+                "...the way you listen when I have something on my mind",
+                "...how you always know how to make me feel better",
+                "...your kindness towards everyone you meet",
+                "...the way you support my dreams no matter what",
+                "...how you remember the little things I mention",
+                "...your strength in difficult situations"
+            ],
+            "personal": [
+                "...of that time we got lost and ended up finding the perfect sunset spot",
+                "...you stayed up with me all night when I was stressed",
+                "...of our first rainy hike together",
+                "...the way you looked at me during our first dinner date",
+                "...how you always bring me snacks when I'm working late"
+            ],
+            "poetic": [
+                "...you are my favorite chapter in the story of my life",
+                "...loving you feels like coming home",
+                "...you are the stars in my night sky",
+                "...my heart found its forever in you",
+                "...you are the melody in the chaos of life"
+            ]
+        },
+        "photos": [
+            {
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769527954325-d1axgg.jpg",
+                "caption": "A moment frozen in time"
+            },
+            {
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769527982525-ar1ujj.jpg",
+                "caption": "Our favorite sunset"
+            }
+        ]
+    },
     "metadata": {
         "customerName": "",
-        "generatedAt": "2026-01-28T15:38:42.796Z"
+        "generatedAt": "2026-01-28T20:21:44.092Z"
     },
     "pageConfig": {
         "pages": {
@@ -308,7 +351,7 @@ var CONFIG = {
                 "id": "page-9",
                 "name": "Love Lock",
                 "type": "lock",
-                "enabled": true,
+                "enabled": false,
                 "required": false,
                 "icon": "lock_person",
                 "order": 9
@@ -317,58 +360,11 @@ var CONFIG = {
                 "id": "page-10",
                 "name": "Infinity Scroll",
                 "type": "infinity",
-                "enabled": false,
+                "enabled": true,
                 "required": false,
                 "icon": "all_inclusive",
                 "order": 10
             }
         }
-    },
-    "infinityScroll": {
-        "enabled": true,
-        "reasons": {
-            "generic": [
-                "...your smile lights up even the darkest days",
-                "...you make the ordinary feel extraordinary",
-                "...your laughter is my favorite sound in the world",
-                "...the way you listen when I have something on my mind",
-                "...how you always know how to make me feel better",
-                "...your kindness towards everyone you meet",
-                "...the way you support my dreams no matter what",
-                "...how you remember the little things I mention",
-                "...your strength in difficult situations"
-            ],
-            "personal": [
-                "...of that time we got lost and ended up finding the perfect sunset spot",
-                "...you stayed up with me all night when I was stressed",
-                "...of our first rainy hike together",
-                "...the way you looked at me during our first dinner date",
-                "...how you always bring me snacks when I'm working late"
-            ],
-            "poetic": [
-                "...you are my favorite chapter in the story of my life",
-                "...loving you feels like coming home",
-                "...you are the stars in my night sky",
-                "...my heart found its forever in you",
-                "...you are the melody in the chaos of life"
-            ]
-        },
-        "photos": [
-            {
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769527954325-d1axgg.jpg",
-                "caption": "A moment frozen in time"
-            },
-            {
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769527982525-ar1ujj.jpg",
-                "caption": "Our favorite sunset"
-            },
-            {
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769528064654-pznj4wh.jpg",
-                "caption": "Laughter shared"
-            }
-        ],
-        "milestoneThreshold": 100,
-        "photoInterval": 10,
-        "batchSize": 10
     }
 };

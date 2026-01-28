@@ -2562,18 +2562,23 @@
                 });
 
                 // Reconstruct Infinity Scroll
-                if (config.infinityScroll) {
-                    configData.pages.push({
-                        pageId: 'page-10',
-                        type: 'infinity-section',
-                        headerTitle: config.infinityScroll.headerTitle || '',
-                        headerSubtitle: config.infinityScroll.headerSubtitle || '',
-                        reasons_generic: config.infinityScroll.reasons?.generic || [],
-                        reasons_personal: config.infinityScroll.reasons?.personal || [],
-                        reasons_poetic: config.infinityScroll.reasons?.poetic || [],
-                        photos: config.infinityScroll.photos || []
-                    });
-                }
+                configData.pages.push({
+                    pageId: 'page-10',
+                    type: 'infinity-section',
+                    headerTitle: (config.infinityScroll && config.infinityScroll.headerTitle) || 'I love you because...',
+                    headerSubtitle: (config.infinityScroll && config.infinityScroll.headerSubtitle) || 'An endless collection of reasons',
+                    reasons_generic: (config.infinityScroll && config.infinityScroll.reasons && config.infinityScroll.reasons.generic) || [
+                        "...your smile lights up the room",
+                        "...you make me a better person"
+                    ],
+                    reasons_personal: (config.infinityScroll && config.infinityScroll.reasons && config.infinityScroll.reasons.personal) || [
+                        "...of how we met that one rainy day"
+                    ],
+                    reasons_poetic: (config.infinityScroll && config.infinityScroll.reasons && config.infinityScroll.reasons.poetic) || [
+                        "...you are the melody to my song"
+                    ],
+                    photos: (config.infinityScroll && config.infinityScroll.photos) || []
+                });
 
             }
 
@@ -2915,7 +2920,7 @@
                         'page-7': { id: 'page-7', name: 'Memory Map', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
                         'page-8': { id: 'page-8', name: 'Love Letter', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
                         'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 },
-                        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: false, required: false, icon: 'all_inclusive', order: 10 }
+                        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: true, required: false, icon: 'all_inclusive', order: 10 }
                     }
                 };
             }
