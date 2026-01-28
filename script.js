@@ -251,7 +251,7 @@ function MapsTo(fromId, toId) {
 
     if (fromPage && toPage) {
         // Update Navigation UI
-        updateNavigationUI(toId);
+        updatePageIndicator(toId);
 
         // Start 3D Flip Animation
         fromPage.classList.add('page-flip-exit');
@@ -284,7 +284,7 @@ function MapsTo(fromId, toId) {
         if (toPage) {
             toPage.classList.remove('hidden');
             toPage.classList.add('animate-fade-in-up');
-            updateNavigationUI(toId);
+            updatePageIndicator(toId);
         }
     }
 
