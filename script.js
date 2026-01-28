@@ -1555,7 +1555,15 @@ function handleLetterInteraction() {
 }
 
 async function startLetterTyping() {
-    if (letterTyped) return;
+    if (letterTyped) {
+        // Already Typed: Ensure content is visible and button is active
+        const finaleNextBtn = document.getElementById('finale-next-btn');
+        if (finaleNextBtn) {
+            finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
+            finaleNextBtn.classList.add('opacity-100', 'pointer-events-auto');
+        }
+        return;
+    }
     letterTyped = true;
     const bodyEl = document.getElementById('letter-body');
     if (!bodyEl || !CONFIG.letter.message) return;
@@ -1585,8 +1593,10 @@ async function startLetterTyping() {
     }
 
     // Finished! Show the Finale button
-    if (typeof checkLetterCompletion === 'function') {
-        checkLetterCompletion();
+    const finaleNextBtn = document.getElementById('finale-next-btn');
+    if (finaleNextBtn) {
+        finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
+        finaleNextBtn.classList.add('opacity-100', 'pointer-events-auto');
     }
 }
 
@@ -1630,6 +1640,7 @@ function resetLetterPage() {
             hint.classList.add('pulse-hint-anim');
         }
     }
+
 }
 
 // Page 9: Invitation Logic
