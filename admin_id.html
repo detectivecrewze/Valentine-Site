@@ -945,11 +945,10 @@
                                     rows="3">Saya membuat arsip kecil ini untuk merayakan kita. Koleksi momen, rahasia, dan alasan mengapa saya mencintaimu.</textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-600 mb-1">Gambar Utama</label>
+                                <label class="block text-sm font-bold text-gray-600 mb-1">Foto Sampul Majalah</label>
                                 <div class="flex gap-2 items-center">
                                     <img id="prev_greet_img" src="" class="img-preview-mini hidden">
-                                    <input type="text" id="greet_img" class="form-input"
-                                        value="https://lh3.googleusercontent.com/..."
+                                    <input type="text" id="greet_img" class="form-input" placeholder="URL Foto Majalah"
                                         oninput="updatePreview('prev_greet_img', this.value)">
                                     <label
                                         class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 flex items-center hover:bg-gray-50 shadow-sm transition-colors self-stretch">
@@ -960,7 +959,12 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-600 mb-1">Tagline Footer</label>
+                                <label class="block text-sm font-bold text-gray-600 mb-1">Tanda Tangan (Penutup)</label>
+                                <input type="text" id="greet_signature" class="form-input" value="Dengan Cinta"
+                                    placeholder="misal: Dengan Cinta, Selalu milikmu">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-gray-600 mb-1">Tagline Brand Footer</label>
                                 <input type="text" id="greet_footer" class="form-input" value="Untukmu, Selalu">
                             </div>
                         </div>
@@ -2175,6 +2179,7 @@
                     title: val('greet_title'),
                     message: val('greet_msg'),
                     imageSrc: val('greet_img'),
+                    signature: val('greet_signature'),
                     footerText: val('greet_footer')
                 },
                 quiz: {
@@ -2387,6 +2392,7 @@
                 setVal('greet_title', config.greeting.title);
                 setVal('greet_msg', config.greeting.message);
                 setVal('greet_img', config.greeting.imageSrc);
+                setVal('greet_signature', config.greeting.signature);
                 setVal('greet_footer', config.greeting.footerText);
             }
 

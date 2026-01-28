@@ -436,7 +436,7 @@ function loadDynamicContent() {
                 musicTitle.classList.remove('hidden');
             }
         }
-        // loadSong(0); // Disabled to prevent IDM interference on load
+        // Lyrics will be handled by loadSong() to ensure typewriter effect works correctly
     }
 
     // Page 2: Wrapped
@@ -490,6 +490,7 @@ function loadDynamicContent() {
         if (coreMemoriesList && CONFIG.wrapped.coreMemories) {
             coreMemoriesList.innerHTML = CONFIG.wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
         }
+
     }
 
     // Page 3: Greeting Card
@@ -497,11 +498,13 @@ function loadDynamicContent() {
         const p3Title = document.getElementById('p3-title');
         const p3Message = document.getElementById('p3-message');
         const p3Image = document.getElementById('p3-image');
+        const p3Signature = document.getElementById('p3-signature');
         const p3Footer = document.getElementById('p3-footer');
 
         if (p3Title) p3Title.textContent = CONFIG.greeting.title;
         if (p3Message) p3Message.textContent = CONFIG.greeting.message;
         if (p3Image) p3Image.src = CONFIG.greeting.imageSrc;
+        if (p3Signature) p3Signature.textContent = CONFIG.greeting.signature || "With Love";
         if (p3Footer) p3Footer.textContent = CONFIG.greeting.footerText;
     }
 
@@ -615,9 +618,24 @@ async function loadSong(index, forceReload = false) {
             }
 
             if (lyrics) {
-                lyrics.textContent = song.lyrics || "";
-                lyrics.style.opacity = 0;
-                setTimeout(() => lyrics.style.opacity = 0.8, 100);
+                // Cancel previous typing if any
+                if (window.lyricsTypingTimeout) clearTimeout(window.lyricsTypingTimeout);
+
+                lyrics.textContent = "";
+                lyrics.classList.remove('animate-fade-in-up');
+                void lyrics.offsetWidth; // Trigger reflow
+                lyrics.classList.add('animate-fade-in-up');
+
+                const fullText = song.lyrics || "";
+                let i = 0;
+                function type() {
+                    if (i < fullText.length) {
+                        lyrics.textContent += fullText.charAt(i);
+                        i++;
+                        window.lyricsTypingTimeout = setTimeout(type, 40);
+                    }
+                }
+                type();
             }
 
             // Load audio source as blob - Async part
@@ -630,6 +648,14 @@ async function loadSong(index, forceReload = false) {
                 }
 
                 const blobUrl = await fetchMediaBlob(newSrc);
+
+                // RACE CONDITION FIX:
+                // Check if the user has changed the song while we were fetching the blob
+                if (currentSongIndex !== index) {
+                    console.log(`[Music] Ignoring stale blob load for index ${index}. Current is ${currentSongIndex}`);
+                    return; // Exit, do not set src
+                }
+
                 bgMusic.dataset.originalSrc = newSrc;
                 bgMusic.src = blobUrl;
                 bgMusic.load(); // Force browser to buffer the new source
@@ -645,7 +671,9 @@ async function loadSong(index, forceReload = false) {
                     setTimeout(resolve, 2000);
                 });
 
-                updatePlayIcon();
+                if (currentSongIndex === index) {
+                    updatePlayIcon();
+                }
             }
         } catch (err) {
             console.error("loadSong failed:", err);
@@ -1448,10 +1476,11 @@ function pauseMusic() {
     updatePlayIcon();
 }
 
-// Page 1: Login Logic (unchanged but re-included for completeness)
+// Page 1: Login Logic
 function initLogin() {
     const loginInput = document.getElementById('login-input');
     const loginBtn = document.getElementById('login-btn');
+    const lockIcon = document.getElementById('login-lock-icon');
     const errorMsg = document.getElementById('error-message');
 
     function validateLogin() {
@@ -1467,11 +1496,8 @@ function initLogin() {
             const globalToggle = document.getElementById('global-music-toggle');
             if (globalToggle) globalToggle.classList.remove('hidden');
 
-            // Start music on first interaction (login) to bypass autoplay restrictions
-            // and avoid IDM trigger until user actually interacts
             playMusic();
 
-            // Delay transition to allow explosion to be seen
             setTimeout(() => {
                 goNextPage();
             }, 800);
@@ -1489,6 +1515,21 @@ function initLogin() {
     if (loginInput) {
         loginInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') validateLogin();
+        });
+
+        // Heartbeat interaction
+        loginInput.addEventListener('input', () => {
+            if (loginInput.value.length > 0) {
+                if (lockIcon) {
+                    lockIcon.textContent = 'favorite';
+                    lockIcon.classList.add('animate-heartbeat', 'fill-1');
+                }
+            } else {
+                if (lockIcon) {
+                    lockIcon.textContent = 'lock_open';
+                    lockIcon.classList.remove('animate-heartbeat', 'fill-1');
+                }
+            }
         });
     }
 }
@@ -2107,6 +2148,16 @@ function getPageConfig(pageId) {
 /**
  * Handle dynamic forward navigation
  */
+/**
+ * Capture Music Card (Page 3)
+ */
+function captureMusicCard() {
+    const container = document.querySelector('#page-3-container .min-h-screen > .flex-col');
+    if (typeof captureElement === 'function' && container) {
+        captureElement(container, 'My-Playlist-Card.png');
+    }
+}
+
 function goNextPage() {
     const activePage = document.querySelector('.page:not(.hidden)');
     if (!activePage) return;

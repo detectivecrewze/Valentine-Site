@@ -190,8 +190,9 @@
                             <input id="login-input"
                                 class="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b-2 border-primary/30 focus:border-primary focus:ring-0 text-center text-primary dark:text-white placeholder:text-primary/40 placeholder:italic p-4 text-lg font-light transition-all duration-300"
                                 placeholder="*your secret word...*" type="password" />
-                            <div class="absolute right-0 bottom-4 text-primary/30">
-                                <span class="material-symbols-outlined text-sm">lock_open</span>
+                            <div class="absolute right-0 bottom-4 text-primary/40">
+                                <span id="login-lock-icon"
+                                    class="material-symbols-outlined text-base transition-all duration-300">lock_open</span>
                             </div>
                         </div>
                     </div>
@@ -203,7 +204,7 @@
                         </div>
                         <!-- ADDED ID: login-btn -->
                         <button id="login-btn"
-                            class="relative size-16 bg-primary text-white rounded-full flex items-center justify-center glow-btn transition-transform active:scale-95">
+                            class="relative size-16 bg-primary text-white rounded-full flex items-center justify-center glow-btn transition-transform active:scale-95 shimmer-btn">
                             <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">
                                 favorite
                             </span>
@@ -236,45 +237,69 @@
         <!-- Scrollable Content Wrapper -->
         <div id="page-2-container" class="w-full h-full overflow-y-auto">
             <div class="min-h-screen w-full flex items-center justify-center px-6 py-12">
-                <div class="layout-container flex flex-col items-center w-full max-w-[500px] relative z-10">
-                    <div class="glass-card w-full rounded-2xl p-8 md:p-12 flex flex-col items-center text-center">
-                        <div class="mb-8 text-rosegold/80">
-                            <span class="material-symbols-outlined !text-5xl"
-                                style="font-variation-settings: 'FILL' 0, 'wght' 200;">
-                                flutter_dash
-                            </span>
-                        </div>
-                        <div class="mb-6">
-                            <h1 id="p3-title"
-                                class="font-display italic text-rose-900 dark:text-pink-100 text-[40px] md:text-[48px] leading-tight">
-                                Happy Valentine’s Day
-                            </h1>
-                        </div>
-                        <div class="mb-10">
-                            <p id="p3-message"
-                                class="text-primary/70 dark:text-pink-200/80 font-sans font-light text-base leading-relaxed tracking-wide">
-                                I made this little archive to celebrate us. A collection of moments, secrets, and
-                                reasons
-                                why I
-                                love you.
-                            </p>
-                        </div>
-                        <div class="mb-8">
-                            <div class="relative group">
+                <div
+                    class="layout-container flex flex-col items-center w-full max-w-5xl relative z-10 transition-all duration-700">
+                    <div
+                        class="glass-card w-full rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-stretch gap-12 text-left relative overflow-hidden">
+                        <!-- Left Side: Large Image -->
+                        <div class="w-full md:w-5/12 flex justify-center">
+                            <div class="relative group w-full min-h-[400px]">
                                 <div
-                                    class="w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-white/80 overflow-hidden aesthetic-image-shadow transition-transform duration-700 hover:scale-105">
-                                    <img id="p3-image" alt="Pink roses aesthetic" class="w-full h-full object-cover"
+                                    class="magazine-image-container h-full rounded-[2rem] overflow-hidden border-[12px] border-white shadow-2xl transition-all duration-700 group-hover:rotate-1">
+                                    <img id="p3-image" alt="Magazine Greeting"
+                                        class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
                                         src="" referrerpolicy="no-referrer" />
+                                </div>
+                                <!-- Subtle decorative corner element -->
+                                <div
+                                    class="absolute -top-2 -left-2 w-12 h-12 border-t-2 border-l-2 border-rose-300 opacity-50">
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 text-primary/40 dark:text-white/20">
-                            <span class="material-symbols-outlined scale-75"
-                                style="font-variation-settings: 'FILL' 1, 'wght' 700;">
-                                diamond
-                            </span>
-                            <div id="p3-footer" class="text-[10px] font-sans uppercase tracking-[0.3em]">
-                                FOR YOU, ALWAYS
+
+                        <!-- Right Side: Elegant Text -->
+                        <div class="w-full md:w-7/12 flex flex-col justify-between py-4">
+                            <div>
+                                <div class="mb-6 flex items-center gap-3">
+                                    <span class="magazine-divider !w-8 !m-0 bg-rose-400"></span>
+                                    <span
+                                        class="text-[10px] font-bold uppercase tracking-[0.4em] text-rose-400/80">Memoir
+                                        Edition</span>
+                                </div>
+
+                                <h1 id="p3-title"
+                                    class="font-display italic text-rose-900 dark:text-pink-100 text-[46px] md:text-[64px] leading-[1] mb-10">
+                                    Happy Valentine’s Day
+                                </h1>
+
+                                <div class="magazine-divider !opacity-10 mb-8"></div>
+
+                                <p id="p3-message"
+                                    class="magazine-dropcap text-primary/80 dark:text-pink-100/90 font-sans font-light text-xl md:text-2xl leading-relaxed tracking-tight mb-8 italic">
+                                    I made this little archive to celebrate us. A collection of moments, secrets, and
+                                    reasons why I love you.
+                                </p>
+                            </div>
+
+                            <div class="space-y-6 pt-8 mt-auto border-t border-rose-100/20">
+                                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                    <div class="flex items-center gap-4 text-rose-900/40 dark:text-white/20">
+                                        <span class="material-symbols-outlined scale-75"
+                                            style="font-variation-settings: 'FILL' 1, 'wght' 700;">
+                                            diamond
+                                        </span>
+                                        <div id="p3-footer"
+                                            class="text-[11px] font-sans uppercase tracking-[0.5em] font-bold">
+                                            EST. 2024 — ALWAYS
+                                        </div>
+                                    </div>
+
+                                    <!-- Elegant Script Signature (Simulated) -->
+                                    <div id="p3-signature"
+                                        class="font-cursive text-4xl text-rose-500/60 pr-4 select-none transform -rotate-3">
+                                        With Love
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -327,12 +352,21 @@
                     <div id="music-card"
                         class="relative bg-white p-5 pb-6 shadow-2xl rotate-1 polaroid-shadow transition-transform hover:rotate-0 duration-700 w-full max-w-[320px] rounded-lg border border-gray-100">
 
+                        <!-- Washi Tape Decoration -->
+                        <div class="absolute -top-4 -left-6 w-24 h-8 washi-tape -rotate-12 z-30 opacity-80"></div>
+
+
                         <!-- Cover Image Container -->
-                        <div
-                            class="relative aspect-square w-full overflow-hidden bg-rose-50 rounded-md shadow-inner mb-5 group">
-                            <img id="music-cover" alt="Album Art"
-                                class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                src="" referrerpolicy="no-referrer" />
+                        <div class="relative aspect-square w-full bg-rose-50 rounded-md shadow-inner mb-5 group">
+                            <!-- Photo Corners -->
+                            <div class="photo-corner corner-tl opacity-80"></div>
+                            <div class="photo-corner corner-tr opacity-80"></div>
+
+                            <div class="w-full h-full overflow-hidden rounded-sm">
+                                <img id="music-cover" alt="Album Art"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                    src="" referrerpolicy="no-referrer" />
+                            </div>
 
                             <!-- Vinyl Record Shine Effect -->
                             <div
@@ -534,7 +568,7 @@
                             </div>
                         </div>
                         <div class="relative z-10 mt-auto border-t border-rose-200 pt-6 pb-2">
-                            <div class="flex justify-between items-end">
+                            <div class="flex justify-between items-end mb-6">
                                 <div class="flex flex-col">
                                     <span id="minutes-together-label"
                                         class="text-[10px] uppercase tracking-widest font-bold text-rose-400">Minutes
@@ -549,7 +583,15 @@
                                     <span id="vibe-text"
                                         class="font-display italic text-lg text-deep-red font-bold mt-1"></span>
                                 </div>
+                            </div>
 
+                            <!-- Barcode Decoration -->
+                            <div class="relative z-10 border-t-2 border-dashed border-rose-300/50 pt-4 text-center">
+                                <div class="h-12 w-3/4 mx-auto opacity-70 mb-2 barcode-strip"></div>
+                                <div
+                                    class="flex justify-center items-center text-[10px] text-rose-900/40 font-sans uppercase font-bold tracking-widest px-4">
+                                    <span>Scanned with Love</span>
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -575,9 +617,10 @@
                     </div>
 
                     <!-- Next Button -->
-                    <div class="flex flex-col items-end gap-2">
+                    <!-- Next Button -->
+                    <div class="relative flex justify-end items-center">
                         <button onclick="shareWrapped()"
-                            class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/20 hover:bg-white/40 transition-all pointer-events-auto">
+                            class="absolute bottom-full mb-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-rose-800 border border-white/40 hover:bg-white/60 transition-all pointer-events-auto shadow-sm">
                             <span class="material-symbols-outlined text-xl">share</span>
                         </button>
                         <button onclick="goNextPage()" class="nav-btn-standard">

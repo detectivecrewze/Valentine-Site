@@ -48,12 +48,14 @@ var CONFIG = {
         "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769527905554-qxbs7k.jpg"
     },
     "greeting": {
-        "title": "Happy Valentine's Day Lisa",
+        "title": "Happy Valentine's Day Liz",
         "message": "I made this little archive to celebrate us. A collection of moments, secrets, and reasons why I love you.",
-        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769526981905-za99yh.jpg",
+        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769614657446-gugy1.jpg",
+        "signature": "With love, Your Biggest Fans",
         "footerText": "For you, Always"
     },
     "quiz": {
+        "title": "Personalized Trivia",
         "questions": [
             {
                 "question": "Where was our very first date?",
@@ -79,7 +81,8 @@ var CONFIG = {
                 "correctMessage": "Yes!",
                 "wrongMessage": "Listen closely..."
             }
-        ]
+        ],
+        "resultMessage": "You know me so well, love! ❤️"
     },
     "invitation": {
         "title": "Will you be my Valentine?",
@@ -225,7 +228,7 @@ var CONFIG = {
     },
     "metadata": {
         "customerName": "",
-        "generatedAt": "2026-01-28T12:48:21.784Z"
+        "generatedAt": "2026-01-28T15:38:42.796Z"
     },
     "pageConfig": {
         "pages": {
