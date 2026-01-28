@@ -271,7 +271,7 @@ var CONFIG = {
     },
     "metadata": {
         "customerName": "",
-        "generatedAt": "2026-01-28T20:21:44.092Z"
+        "generatedAt": "2026-01-28T21:03:48.648Z"
     },
     "pageConfig": {
         "pages": {
