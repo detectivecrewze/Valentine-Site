@@ -32,6 +32,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+    <!-- Leaflet MarkerCluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
     <!-- Tailwind Config -->
     <script>
         tailwind.config = {
@@ -68,9 +73,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
-    <script defer src="data.js"></script>
-    <script defer src="screenshot.js"></script>
-    <script defer src="script.js"></script>
 </head>
 
 <body class="font-display overflow-hidden h-screen w-screen selection:bg-rosegold/30" oncontextmenu="return false">
@@ -600,37 +602,57 @@
 
             <div class="max-w-2xl w-full">
                 <div class="glass-card rounded-[2rem] p-6 md:p-12 shadow-2xl relative">
-                    <div class="quiz-progress mb-8">
-                        <div class="flex justify-between text-xs text-rose-900/60 font-sans font-bold mb-2">
-                            <span>Question <span id="current-q">1</span>/<span id="total-q">5</span></span>
-                            <span id="progress-percent">20%</span>
+                    <!-- Gameplay Container -->
+                    <div id="quiz-gameplay">
+                        <div class="quiz-progress mb-8">
+                            <div class="flex justify-between text-xs text-rose-900/60 font-sans font-bold mb-2">
+                                <span>Question <span id="current-q">1</span>/<span id="total-q">5</span></span>
+                                <span id="progress-percent">20%</span>
+                            </div>
+                            <div class="w-full h-2 bg-rose-100 rounded-full overflow-hidden border border-rose-200/30">
+                                <div id="quiz-progress-bar"
+                                    class="h-full bg-rose-500 transition-all duration-700 ease-out" style="width: 20%">
+                                </div>
+                            </div>
                         </div>
-                        <div class="w-full h-2 bg-rose-100 rounded-full overflow-hidden border border-rose-200/30">
-                            <div id="quiz-progress-bar" class="h-full bg-rose-500 transition-all duration-700 ease-out"
-                                style="width: 20%"></div>
+                        <div class="text-center mb-8 md:mb-12">
+                            <h1 id="quiz-question"
+                                class="font-display font-bold text-rose-900 text-2xl md:text-5xl leading-tight">
+                                Where was our very first date?
+                            </h1>
                         </div>
-                    </div>
-                    <div class="text-center mb-8 md:mb-12">
-                        <h1 id="quiz-question"
-                            class="font-display font-bold text-rose-900 text-2xl md:text-5xl leading-tight">
-                            Where was our very first date?
-                        </h1>
+
+                        <!-- Options Container -->
+                        <div id="quiz-options" class="space-y-4 mb-10">
+                            <!-- Options will be injected here via JS -->
+                        </div>
+
+                        <!-- Feedback Logic -->
+                        <div id="quiz-feedback" class="hidden text-center space-y-4">
+                            <p id="quiz-feedback-message" class="font-display italic text-4xl text-rose-600">You
+                                remembered! ❤️</p>
+                        </div>
                     </div>
 
-                    <!-- Options Container -->
-                    <div id="quiz-options" class="space-y-4 mb-10">
-                        <!-- Options will be injected here via JS -->
-                    </div>
-
-                    <!-- Feedback / Next Logic -->
-                    <div id="quiz-feedback" class="hidden text-center space-y-4">
-                        <p id="quiz-feedback-message" class="font-display italic text-4xl text-rose-600">You remembered!
-                            ❤️</p>
-                        <button id="quiz-next-btn" onclick="nextQuestion()"
-                            class="mt-6 inline-flex items-center gap-2 bg-rose-900 text-white px-8 py-3 rounded-full hover:bg-rose-800 transition-all font-sans tracking-wide">
-                            Next Question
-                            <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
-                        </button>
+                    <!-- Result Screen -->
+                    <div id="quiz-result" class="hidden py-8 md:py-12">
+                        <div class="text-center space-y-8">
+                            <div class="text-7xl md:text-8xl animate-bounce-slow">💕</div>
+                            <div class="space-y-2">
+                                <h2 id="quiz-result-title"
+                                    class="font-display text-3xl md:text-5xl text-rose-900 font-bold">
+                                    You scored <span id="final-score">5/5</span>!
+                                </h2>
+                                <p id="quiz-result-message" class="text-rose-900/70 font-sans text-lg italic">
+                                    You know me so well, love! ❤️
+                                </p>
+                            </div>
+                            <button onclick="goNextPage()"
+                                class="mt-8 inline-flex items-center gap-3 bg-rose-900 text-white px-10 py-4 rounded-full hover:bg-rose-800 transition-all font-sans tracking-wide text-lg shadow-lg hover:shadow-xl active:scale-95">
+                                <span>Continue Journey</span>
+                                <span class="material-symbols-outlined text-xl">favorite</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="absolute -top-4 -right-4 w-20 h-20 bg-rosegold/10 rounded-full blur-2xl"></div>
@@ -660,12 +682,7 @@
                     </button>
                 </div>
                 <div class="flex justify-end">
-                    <div id="p4-next-container" class="hidden">
-                        <button onclick="goNextPage()" class="nav-btn-standard">
-                            <span>Next</span>
-                            <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                        </button>
-                    </div>
+                    <!-- Next button removed as it's now inside the result card -->
                 </div>
             </div>
         </div>
@@ -1032,63 +1049,6 @@
 
     <!-- Scripts -->
     <script src="data.js"></script>
+    <script src="screenshot.js"></script>
     <script src="script.js"></script>
-
-    <script>
-            (function () {
-                window.addEventListener('message', (event) => {
-                    // Kita gunakan 'UPDATE_CONFIG' agar sama dengan admin.html
-                    if (event.data && event.data.type === 'UPDATE_CONFIG') {
-                        console.log("📥 Preview: Menerima Update Data...");
-                        const newConfig = event.data.config;
-
-                        // Timpa data lama dengan data baru dari admin
-                        window.CONFIG = newConfig;
-
-                        // Jalankan fungsi update visual di script.js
-                        if (typeof loadDynamicContent === 'function') {
-                            loadDynamicContent();
-                        }
-
-                        // Refresh current page if needed for live testing
-                        const activePage = document.querySelector('.page:not(.hidden)');
-                        if (activePage) {
-                            const pageId = activePage.id;
-                            console.log("🔄 Refreshing page-specific logic for:", pageId);
-                            if (pageId === 'page-3' && typeof loadSong === 'function') loadSong(currentSongIndex);
-                            if (pageId === 'page-5' && typeof loadQuiz === 'function') loadQuiz();
-                            if (pageId === 'page-6' && typeof loadGallery === 'function') loadGallery();
-                            if (pageId === 'page-7' && typeof initMap === 'function') initMap();
-                            if (pageId === 'page-8' && typeof resetLetterPage === 'function') resetLetterPage();
-                        }
-
-                        // Jika Anda menggunakan tema, jalankan lagi
-                        if (typeof applyTheme === 'function') {
-                            applyTheme();
-                        }
-                    }
-
-                    // Handle Manual Navigation from Admin
-                    if (event.data && event.data.type === 'NAVIGATE_TO_PAGE') {
-                        const targetId = event.data.pageId;
-                        if (!targetId) return; // Ignore if no pageId is provided
-
-                        const activePage = document.querySelector('.page:not(.hidden)');
-                        const currentId = activePage ? activePage.id : null;
-
-                        // Only move if we are not already on that page
-                        if (currentId !== targetId && typeof MapsTo === 'function') {
-                            console.log(`🚀 Manual Sync: Navigating to ${targetId}`);
-                            MapsTo(currentId, targetId);
-                        }
-                    }
-                });
-
-                // Beri tahu admin bahwa preview sudah siap
-                window.addEventListener('DOMContentLoaded', () => {
-                    if (window.parent && window.parent !== window) {
-                        window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
-                    }
-                });
-            })();
-    </script>
+</body>

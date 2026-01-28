@@ -84,6 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("[Preview] Update failed:", err);
             }
         }
+
+        // Handle Manual Navigation from Admin
+        if (event.data && event.data.type === 'NAVIGATE_TO_PAGE') {
+            const targetId = event.data.pageId;
+            if (!targetId) return;
+
+            const activePage = document.querySelector('.page:not(.hidden)');
+            const currentId = activePage ? activePage.id : null;
+
+            if (currentId !== targetId && typeof MapsTo === 'function') {
+                console.log(`🚀 Manual Sync: Navigating to ${targetId}`);
+                MapsTo(currentId, targetId);
+            }
+        }
     });
 
     // Notify parent that we are ready
@@ -718,18 +732,44 @@ function initMusicPlayer() {
 
 // --- Quiz Logic ---
 let currentQuestionIndex = 0;
+let quizScore = 0;
 
 function loadQuiz() {
     if (!CONFIG.quiz || !CONFIG.quiz.questions) return;
 
     const totalQuestions = CONFIG.quiz.questions.length;
 
+    const questionGameplay = document.getElementById('quiz-gameplay');
+    const quizResult = document.getElementById('quiz-result');
+    const finalScoreEl = document.getElementById('final-score');
+
     if (currentQuestionIndex >= totalQuestions) {
-        // Quiz Finished - Show navigation button
-        const p4NextBtn = document.getElementById('p4-next-container');
-        if (p4NextBtn) p4NextBtn.classList.remove('hidden');
+        // Quiz Finished - Show result summary
+        if (questionGameplay) questionGameplay.classList.add('hidden');
+        if (quizResult) {
+            quizResult.classList.remove('hidden');
+            quizResult.classList.add('animate-fade-in-up');
+        }
+
+        // Dynamic Result Text
+        const resTitleEl = document.getElementById('quiz-result-title');
+        const resMsgEl = document.getElementById('quiz-result-message');
+
+        let title = "You scored {score}/{total}!";
+        let message = CONFIG.quiz?.resultMessage || "You know me so well, love! ❤️";
+
+        title = title.replace('{score}', quizScore).replace('{total}', totalQuestions);
+        message = message.replace('{score}', quizScore).replace('{total}', totalQuestions);
+
+        if (resTitleEl) resTitleEl.innerHTML = title;
+        if (resMsgEl) resMsgEl.textContent = message;
+
         return;
     }
+
+    // Ensure gameplay is visible if re-loading
+    if (questionGameplay) questionGameplay.classList.remove('hidden');
+    if (quizResult) quizResult.classList.add('hidden');
 
     const questionData = CONFIG.quiz.questions[currentQuestionIndex];
     if (!questionData) return;
@@ -792,6 +832,7 @@ function checkAnswer(selectedIndex, btnElement, data) {
 
     if (selectedIndex === data.correctIndex) {
         // Correct Answer
+        quizScore++;
         createSparkles(btnElement);
 
         btnElement.classList.remove('bg-white/70', 'border-transparent', 'selected');
@@ -813,21 +854,15 @@ function checkAnswer(selectedIndex, btnElement, data) {
                 nextBtn.classList.add('hidden');
             }
 
-            // On the last question, show the main page navigation button
-            if (currentQuestionIndex === CONFIG.quiz.questions.length - 1) {
-                const p4NextBtn = document.getElementById('p4-next-container');
-                if (p4NextBtn) p4NextBtn.classList.remove('hidden');
-            } else {
-                // Auto-advance to next question after 1.5 seconds (not on last question)
-                setTimeout(() => {
-                    currentQuestionIndex++;
-                    loadQuiz();
-                }, 1500);
-            }
+            // Auto-advance to next question or result screen after 1.5 seconds
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuiz();
+            }, 1500);
         }
     } else {
         // Wrong Answer
-        const quizContainer = document.querySelector('#page-4 main');
+        const quizContainer = document.querySelector('#page-5-container');
         if (quizContainer) {
             quizContainer.classList.add('screen-shake');
             setTimeout(() => quizContainer.classList.remove('screen-shake'), 400);
@@ -898,7 +933,8 @@ function loadGallery() {
 
             card.innerHTML = `
                 <div class="${mem.tape} absolute -top-3 ${mem.rotation.includes('-') ? '-left-4' : '-right-3'} w-14 h-6 z-10"></div>
-                <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100">
+                <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100 ${revealedMemories[index] ? 'shadow-inner' : ''}" 
+                     onclick="if(revealedMemories[${index}]) openLightbox(${index})">
                     ${mediaHTML}
                     ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
                 </div>
@@ -1039,8 +1075,12 @@ function initScratchCard(index) {
             if (caption) caption.classList.remove('opacity-0');
             if (caption) caption.classList.add('opacity-100');
 
-            // Play video if it's a video element
+            // Add capability
             const container = canvas.parentElement;
+            container.classList.add('shadow-inner');
+            container.onclick = () => openLightbox(index);
+
+            // Play video if it's a video element
             const video = container.querySelector('video');
             if (video) {
                 video.play().catch(err => console.log('Video autoplay prevented:', err));
@@ -1071,9 +1111,48 @@ function initScratchCard(index) {
     canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); }, { passive: false });
 }
 
+function openLightbox(index) {
+    const mem = CONFIG.gallery.memories[index];
+    if (!mem) return;
+
+    const lightbox = document.createElement('div');
+    lightbox.className = 'fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center animate-fade-in p-4';
+
+    let mediaHTML = "";
+    if (mem.type === "video") {
+        mediaHTML = `<video src="${mem.src}" class="w-full h-full object-cover" controls autoplay playsinline></video>`;
+    } else {
+        mediaHTML = `<img src="${mem.src}" class="w-full h-full object-cover shadow-inner" referrerpolicy="no-referrer" onclick="event.stopPropagation()">`;
+    }
+
+    lightbox.innerHTML = `
+        <div class="relative max-w-[340px] md:max-w-sm w-full bg-white p-4 md:p-5 shadow-2xl animate-scale-up border-b-[35px] md:border-b-[50px] border-white flex flex-col gap-4 mx-4">
+             <!-- Tape Decoration -->
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-8 washi-tape shadow-sm backdrop-blur-sm z-10 rotate-1"></div>
+            
+            <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100">
+                ${mediaHTML}
+            </div>
+            
+            <div class="text-center pt-2">
+                <p class="polaroid-caption text-xl md:text-3xl" style="opacity: 1 !important; transform: rotate(-1deg) !important; transition: none !important;">${mem.caption}</p>
+            </div>
+
+            <button onclick="this.closest('.fixed').remove()" 
+                    class="absolute -top-12 right-0 text-white/70 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-4xl">close</span>
+            </button>
+        </div>
+    `;
+
+    lightbox.onclick = () => lightbox.remove();
+    document.body.appendChild(lightbox);
+}
+
 // --- Map Logic (Atlas of Us) ---
 let mapMarkers = [];
 let mapPolyline = null;
+let markerCluster = null;
 
 async function initMap() {
     console.log("Initializing Map with Journey Animation...");
@@ -1135,10 +1214,31 @@ async function initMap() {
     // Clear old elements
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
     mapMarkers = [];
+    if (markerCluster) {
+        mapInstance.removeLayer(markerCluster);
+        markerCluster = null;
+    }
     if (mapPolyline) {
         mapInstance.removeLayer(mapPolyline);
         mapPolyline = null;
     }
+
+    // Initialize MarkerCluster Group
+    markerCluster = L.markerClusterGroup({
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: function (cluster) {
+            return L.divIcon({
+                html: `<div class="flex items-center justify-center bg-rose-500 text-white rounded-full w-10 h-10 border-2 border-white shadow-lg font-bold">
+                        ${cluster.getChildCount()}
+                       </div>`,
+                className: 'custom-cluster-icon',
+                iconSize: [40, 40]
+            });
+        }
+    });
+    mapInstance.addLayer(markerCluster);
 
     // Prepare journey data
     if (CONFIG.map && CONFIG.map.locations && CONFIG.map.locations.length > 0) {
@@ -1182,11 +1282,12 @@ async function initMap() {
             await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 800));
 
             const marker = L.marker(loc.coordinates, { icon: markerIcon })
-                .addTo(mapInstance)
                 .bindPopup(popupContent, {
                     className: 'rose-popup',
                     maxWidth: 250
                 });
+
+            markerCluster.addLayer(marker);
 
             mapMarkers.push(marker);
 
@@ -1194,10 +1295,10 @@ async function initMap() {
             if (routeCoords.length > 1) {
                 if (mapPolyline) mapInstance.removeLayer(mapPolyline);
                 mapPolyline = L.polyline(routeCoords, {
-                    color: '#7e0c23',
-                    weight: 3,
+                    color: '#f43f5e',
+                    weight: 2,
                     opacity: 0.6,
-                    dashArray: '10, 10',
+                    dashArray: '5, 10',
                     lineJoin: 'round'
                 }).addTo(mapInstance);
             }

@@ -103,7 +103,7 @@ var CONFIG = {
             "lyrics": "I thought that I was dreaming, when you said you loved me.."
         }
     ],
-    "musicSectionTitle": "Our Playlist",
+    "musicSectionTitle": "",
     "gallery": {
         "title": "Scratch Gallery",
         "subtitle": "Scratch to reveal a piece of my heart",
@@ -225,7 +225,7 @@ var CONFIG = {
     },
     "metadata": {
         "customerName": "",
-        "generatedAt": "2026-01-28T12:42:51.096Z"
+        "generatedAt": "2026-01-28T12:48:21.784Z"
     },
     "pageConfig": {
         "pages": {
