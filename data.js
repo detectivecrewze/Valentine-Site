@@ -7,8 +7,8 @@ var CONFIG = {
     "theme": {
         "backgroundImage": "",
         "backgroundColor": "#F5E6D3",
-        "fontDisplay": "Cinzel, serif",
-        "fontSans": "Cormorant Garamond, serif",
+        "fontDisplay": "Playfair Display, serif",
+        "fontSans": "Inter, sans-serif",
         "particles": "dust"
     },
     "navigation": {
@@ -29,7 +29,7 @@ var CONFIG = {
         "finishLabel": "Happy Valentine's Day!"
     },
     "wrapped": {
-        "topPlacesLabel": "Top Places",
+        "topPlacesLabel": "top places",
         "topPlaces": [
             "The Sunset Pier",
             "Corner Bakery",
@@ -161,8 +161,8 @@ var CONFIG = {
         "locations": [
             {
                 "coordinates": [
-                    -6.24625885,
-                    106.991355
+                    -6.277192184095499,
+                    106.71978618339487
                 ],
                 "title": "Where we first met",
                 "memory": "The air was sweet, and i'm kinda nervous when i met you. but you makes me feels safe.",
@@ -172,8 +172,8 @@ var CONFIG = {
             },
             {
                 "coordinates": [
-                    -6.321717030520357,
-                    106.97351999503138
+                    -6.824328406486781,
+                    107.4383525545641
                 ],
                 "title": "Where you Confess your Loves to me.",
                 "memory": "I'm so greateful that i met you..",
@@ -183,8 +183,8 @@ var CONFIG = {
             },
             {
                 "coordinates": [
-                    -6.224108,
-                    106.840748
+                    -6.899693193768791,
+                    107.62152302860767
                 ],
                 "title": "Our First Dinner Date",
                 "memory": "The spaghetti was great, but your smile was better. I knew then that this was special.",
@@ -194,8 +194,8 @@ var CONFIG = {
             },
             {
                 "coordinates": [
-                    -6.175392,
-                    106.827153
+                    -6.85687776613299,
+                    107.32125234592111
                 ],
                 "title": "City Stroll",
                 "memory": "Walking around the city center under the night lights. You held my hand so tight.",
@@ -205,8 +205,8 @@ var CONFIG = {
             },
             {
                 "coordinates": [
-                    -6.258421,
-                    106.852102
+                    -6.750873638327074,
+                    106.93715183391939
                 ],
                 "title": "Arcade Champion",
                 "memory": "That time you beat me at every single game. I let you win, of course! (Maybe not...)",
@@ -238,24 +238,25 @@ var CONFIG = {
                 "...your laughter is my favorite sound in the world",
                 "...the way you listen when I have something on my mind",
                 "...how you always know how to make me feel better",
-                "...your kindness towards everyone you meet",
-                "...the way you support my dreams no matter what",
-                "...how you remember the little things I mention",
-                "...your strength in difficult situations"
+                "...You make the ordinary feel extraordinary",
+                "...You are my safe space",
+                "...Your voice is my favorite sound",
+                "...Your kindness inspires me",
+                "...You are my best friend"
             ],
             "personal": [
                 "...of that time we got lost and ended up finding the perfect sunset spot",
                 "...you stayed up with me all night when I was stressed",
                 "...of our first rainy hike together",
-                "...the way you looked at me during our first dinner date",
-                "...how you always bring me snacks when I'm working late"
+                "...That time we got lost and found the best view"
             ],
             "poetic": [
                 "...you are my favorite chapter in the story of my life",
                 "...loving you feels like coming home",
                 "...you are the stars in my night sky",
                 "...my heart found its forever in you",
-                "...you are the melody in the chaos of life"
+                "...you are the melody in the chaos of life",
+                "...With you, forever isn't long enough"
             ]
         },
         "photos": [
@@ -271,7 +272,7 @@ var CONFIG = {
     },
     "metadata": {
         "customerName": "",
-        "generatedAt": "2026-01-28T21:03:48.648Z"
+        "generatedAt": "2026-01-29T08:16:54.430Z"
     },
     "pageConfig": {
         "pages": {

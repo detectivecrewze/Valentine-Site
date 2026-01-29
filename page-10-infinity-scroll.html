@@ -287,8 +287,7 @@
         const parentConfig = (window.parent && window.parent.CONFIG) ? window.parent.CONFIG : {};
         const infinityConfig = parentConfig.infinityScroll || {};
 
-        const REASONS_LIBRARY = infinityConfig.reasons || {
-            // Generic romantic reasons
+        const ROMANTIC_DEFAULTS = {
             generic: [
                 "...your smile lights up even the darkest days",
                 "...you make the ordinary feel extraordinary",
@@ -308,8 +307,6 @@
                 "...your heart is pure gold",
                 "...you support my wildest dreams",
             ],
-
-            // Personal memories
             personal: [
                 "...of that time we got lost and ended up finding the perfect sunset spot",
                 "...you stayed up with me all night when I was stressed",
@@ -322,8 +319,6 @@
                 "...you let me steal your hoodies",
                 "...of our late-night deep conversations",
             ],
-
-            // Poetic/philosophical reasons
             poetic: [
                 "...you are my favorite chapter in the story of my life",
                 "...loving you feels like coming home",
@@ -335,6 +330,12 @@
                 "...you make infinity feel tangible",
                 "...you are the poem I never knew how to write",
             ]
+        };
+
+        const REASONS_LIBRARY = {
+            generic: (infinityConfig.reasons && infinityConfig.reasons.generic && infinityConfig.reasons.generic.length > 0) ? infinityConfig.reasons.generic : ROMANTIC_DEFAULTS.generic,
+            personal: (infinityConfig.reasons && infinityConfig.reasons.personal && infinityConfig.reasons.personal.length > 0) ? infinityConfig.reasons.personal : ROMANTIC_DEFAULTS.personal,
+            poetic: (infinityConfig.reasons && infinityConfig.reasons.poetic && infinityConfig.reasons.poetic.length > 0) ? infinityConfig.reasons.poetic : ROMANTIC_DEFAULTS.poetic,
         };
 
         const galleryMemories = (parentConfig.gallery && parentConfig.gallery.memories)

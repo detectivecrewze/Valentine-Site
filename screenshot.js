@@ -35,6 +35,9 @@ function captureElement(selector, filename, returnCanvas = false) {
         // Capture dimensions
         const captureHeight = isMap ? window.innerHeight : element.scrollHeight;
 
+        // Determine delay based on content type
+        const captureDelay = isMap ? 1500 : 300;
+
         setTimeout(() => {
             html2canvas(element, {
                 backgroundColor: '#fff1f2',
@@ -54,6 +57,13 @@ function captureElement(selector, filename, returnCanvas = false) {
                         el.classList.remove('truncate');
                     });
 
+                    // Ensure the Story Card is fully visible if it's currently printing
+                    const clonedStoryCard = clonedDoc.querySelector('.story-card');
+                    if (clonedStoryCard) {
+                        clonedStoryCard.style.transform = 'translateY(0)';
+                        clonedStoryCard.style.transition = 'none';
+                    }
+
                     const clonedElement = clonedDoc.querySelector(selector);
                     if (clonedElement) {
                         // For maps, keep the fixed height to avoid blank tiles
@@ -66,7 +76,7 @@ function captureElement(selector, filename, returnCanvas = false) {
                     }
 
                     // Sembunyi elemen yang tidak perlu
-                    const skip = clonedDoc.querySelectorAll('.grain-overlay, #particle-container, #global-music-toggle');
+                    const skip = clonedDoc.querySelectorAll('.grain-overlay, #particle-container, #global-music-toggle, .nav-btn-standard');
                     skip.forEach(el => el.style.display = 'none');
                 }
             }).then(canvas => {
@@ -86,39 +96,78 @@ function captureElement(selector, filename, returnCanvas = false) {
                 console.error('Screenshot Error:', err);
                 navButtons.forEach(btn => btn.style.visibility = 'visible');
                 if (loadingDiv.parentNode) document.body.removeChild(loadingDiv);
-                alert('Gagal mengambil gambar halaman penuh.');
+                alert('Gagal mengambil gambar.');
                 reject(err);
             });
-        }, 1200); // Increased delay for map tiles to settle
+        }, captureDelay);
     });
 }
 
 // Share function
+// Enhanced Share function for mobile
 async function shareWrapped() {
     try {
-        const canvas = await captureElement('#page-4 main', 'full-wrapped.png', true);
-        const dataUrl = canvas.toDataURL('image/png');
+        const shareTitle = "Our Love Wrapped 2024";
+        const shareText = "Check out our beautiful memories! ❤️";
+
+        // Step 1: Capture the card
+        const canvas = await captureElement('#page-4 main', 'wrapped.png', true);
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+        // Step 2: Prepare the file
         const blob = await (await fetch(dataUrl)).blob();
         const file = new File([blob], 'wrapped.png', { type: 'image/png' });
 
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                title: 'Our Love Wrapped 2024',
-                text: 'Check out our memories together! ❤️',
-                files: [file]
-            });
-            console.log('Shared successfully');
+        // Step 3: Use Web Share API
+        if (navigator.share) {
+            const shareData = {
+                title: shareTitle,
+                text: shareText
+            };
+
+            // Attempt to include the file if supported
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                shareData.files = [file];
+            } else {
+                console.log("File sharing not supported on this browser context.");
+            }
+
+            try {
+                await navigator.share(shareData);
+                console.log('Share successful!');
+            } catch (shareError) {
+                // If it was cancelled by the user, don't show an error
+                if (shareError.name === 'AbortError') {
+                    console.log('Sharing cancelled by user.');
+                    return;
+                }
+
+                // If activation expired or other error, fallback to download
+                console.warn('Navigator.share failed, failing back to download:', shareError);
+                downloadBlob(blob, 'wrapped.png');
+            }
         } else {
-            // Fallback to download
-            const link = document.createElement('a');
-            link.download = 'wrapped.png';
-            link.href = URL.createObjectURL(blob);
-            link.click();
-            console.log('Share not supported, downloading instead');
+            console.log('Web Share API not supported in this browser, downloading...');
+            downloadBlob(blob, 'wrapped.png');
         }
     } catch (err) {
-        console.error('Share failed:', err);
+        console.error('Full share flow failed:', err);
+        alert('Could not open sharing. The image has been saved to your device instead.');
     }
+}
+
+// Utility to handle downloads
+function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
 // Wrapper functions

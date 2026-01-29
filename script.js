@@ -79,6 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (pageId === 'page-6' && typeof loadGallery === 'function') loadGallery();
                     if (pageId === 'page-7' && typeof initMap === 'function') initMap();
                     if (pageId === 'page-8' && typeof resetLetterPage === 'function') resetLetterPage();
+                    if (pageId === 'page-10') {
+                        const iframe = document.getElementById('infinity-frame');
+                        if (iframe) iframe.contentWindow.location.reload();
+                    }
                 }
             } catch (err) {
                 console.error("[Preview] Update failed:", err);
@@ -338,8 +342,6 @@ function MapsTo(fromId, toId) {
             if (typeof resetLetterPage === 'function') resetLetterPage();
         } else if (toId === 'page-9') {
             if (typeof initInvitationPage === 'function') initInvitationPage();
-        } else if (toId === 'page-10') {
-            if (typeof initFinalePage === 'function') initFinalePage();
         }
     }
 }
@@ -1095,10 +1097,11 @@ function initScratchCard(index) {
         }
 
         const percentage = (alphaPixels / (imageData.data.length / 4)) * 100;
-        if (percentage > 35) { // Lowered threshold for better feel
+        if (percentage > 35 && !revealedMemories[index]) { // Added check to prevent duplicate trigger
             revealedMemories[index] = true; // Persist revealed state
             canvas.style.transition = 'opacity 1.5s ease-out';
             canvas.style.opacity = '0';
+            canvas.style.pointerEvents = 'none'; // Ensure it doesn't block future clicks while fading
             setTimeout(() => canvas.remove(), 1500);
             if (caption) caption.classList.remove('opacity-0');
             if (caption) caption.classList.add('opacity-100');
@@ -1107,6 +1110,9 @@ function initScratchCard(index) {
             const container = canvas.parentElement;
             container.classList.add('shadow-inner');
             container.onclick = () => openLightbox(index);
+
+            // Auto-zoom (Lightbox) immediately on finish
+            openLightbox(index);
 
             // Play video if it's a video element
             const video = container.querySelector('video');
@@ -1132,8 +1138,22 @@ function initScratchCard(index) {
         e.preventDefault();
     }, { passive: false });
 
-    window.addEventListener('mouseup', () => { isDrawing = false; lastX = undefined; lastY = undefined; });
-    window.addEventListener('touchend', () => { isDrawing = false; lastX = undefined; lastY = undefined; });
+    window.addEventListener('mouseup', () => {
+        if (isDrawing) {
+            isDrawing = false;
+            lastX = undefined;
+            lastY = undefined;
+            checkReveal();
+        }
+    });
+    window.addEventListener('touchend', () => {
+        if (isDrawing) {
+            isDrawing = false;
+            lastX = undefined;
+            lastY = undefined;
+            checkReveal();
+        }
+    });
 
     canvas.addEventListener('mousemove', scratch);
     canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); }, { passive: false });
@@ -1307,7 +1327,7 @@ async function initMap() {
             `;
 
             // Add marker with a slight delay
-            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 800));
+            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 2000));
 
             const marker = L.marker(loc.coordinates, { icon: markerIcon })
                 .bindPopup(popupContent, {
@@ -1332,13 +1352,13 @@ async function initMap() {
             }
 
             // Optional: Pan to marker as it appears
-            mapInstance.panTo(loc.coordinates, { animate: true, duration: 1 });
+            mapInstance.panTo(loc.coordinates, { animate: true, duration: 2.5 });
 
             // Interaction
             marker.on('click', function () {
                 mapInstance.setView(loc.coordinates, 18, {
                     animate: true,
-                    duration: 1.0
+                    duration: 2.0
                 });
             });
         }
@@ -1347,8 +1367,8 @@ async function initMap() {
         if (mapMarkers.length > 0) {
             setTimeout(() => {
                 const group = new L.featureGroup(mapMarkers);
-                mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true });
-            }, 1500);
+                mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true, duration: 2.0 });
+            }, 2500);
         }
     }
 

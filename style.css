@@ -1269,20 +1269,3 @@ body {
     border: none;
     overflow: hidden;
 }
-
-/* Smooth transition when entering Page 10 */
-#page-10 {
-    animation: infinityFadeIn 1.2s ease-out forwards;
-}
-
-@keyframes infinityFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
