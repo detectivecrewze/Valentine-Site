@@ -1269,3 +1269,57 @@ body {
     border: none;
     overflow: hidden;
 }
+
+/* Map Loading Overlay Styles */
+#map-loading-overlay {
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+}
+
+#map-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Slow Spin Animation for Orbiting Hearts */
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+}
+
+/* Float Animation for Decorative Icons */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Ensure map is behind loading overlay initially */
+#map {
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+}
+
+#map.loaded {
+    opacity: 1;
+}

@@ -1201,15 +1201,46 @@ function openLightbox(index) {
 let mapMarkers = [];
 let mapPolyline = null;
 let markerCluster = null;
+let mapInitController = null;
 
 async function initMap() {
     console.log("Initializing Map with Journey Animation...");
+
+    // Cancel any previous initialization
+    if (mapInitController) {
+        mapInitController.cancelled = true;
+        console.log("Previous map initialization cancelled");
+    }
+
+    // Create new controller for this initialization
+    mapInitController = { cancelled: false };
+    const controller = mapInitController;
+
+    // Show loading overlay
+    const loadingOverlay = document.getElementById('map-loading-overlay');
+    const loadingText = document.getElementById('map-loading-text');
+    const mapElement = document.getElementById('map');
+
+    if (loadingOverlay) {
+        loadingOverlay.classList.remove('hidden');
+    }
+    if (mapElement) {
+        mapElement.classList.remove('loaded');
+    }
+
+    // ==========================================
+    // FASE 1: LOADING SCREEN (Map Setup)
+    // ==========================================
+
+    if (loadingText) loadingText.textContent = 'Connecting to world map...';
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     if (!window.L) {
         console.error("Leaflet (L) not loaded!");
+        if (loadingText) loadingText.textContent = 'Map library failed to load';
         return;
     }
 
-    const mapElement = document.getElementById('map');
     if (!mapElement) return;
 
     // Default view center
@@ -1223,15 +1254,44 @@ async function initMap() {
 
     // Initialize Map Instance if not exists
     if (!mapInstance) {
+        if (loadingText) loadingText.textContent = 'Setting up map canvas...';
+        await new Promise(resolve => setTimeout(resolve, 700));
+
         mapInstance = L.map('map', {
             zoomControl: false,
             attributionControl: false
         }).setView(defaultCenter, 13);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // Wait for tiles to load
+        let tilesLoaded = false;
+        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             className: 'map-tiles'
-        }).addTo(mapInstance);
+        });
+
+        tileLayer.on('load', () => {
+            tilesLoaded = true;
+            console.log('Map tiles loaded successfully');
+        });
+
+        tileLayer.addTo(mapInstance);
+
+        // Wait for tiles or timeout
+        if (loadingText) loadingText.textContent = 'Loading map tiles...';
+        await new Promise(resolve => {
+            const checkTiles = setInterval(() => {
+                if (tilesLoaded) {
+                    clearInterval(checkTiles);
+                    resolve();
+                }
+            }, 100);
+
+            // Timeout after 3 seconds
+            setTimeout(() => {
+                clearInterval(checkTiles);
+                resolve();
+            }, 3000);
+        });
 
         // Zoom out when clicking the background
         mapInstance.on('click', (e) => {
@@ -1246,7 +1306,6 @@ async function initMap() {
             }
         });
 
-        // Optional: Zoom out when popup is closed via the 'X' button
         mapInstance.on('popupclose', () => {
             if (mapMarkers.length > 0) {
                 const group = new L.featureGroup(mapMarkers);
@@ -1258,6 +1317,14 @@ async function initMap() {
             mapInstance.invalidateSize();
         }, 300);
     }
+
+    // Show map with fade
+    if (mapElement) {
+        mapElement.classList.add('loaded');
+    }
+
+    if (loadingText) loadingText.textContent = 'Preparing your memories...';
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Clear old elements
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
@@ -1288,12 +1355,39 @@ async function initMap() {
     });
     mapInstance.addLayer(markerCluster);
 
+    if (loadingText) loadingText.textContent = 'Everything is ready...';
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // ==========================================
+    // FASE 2: HIDE LOADING SCREEN
+    // ==========================================
+
+    // LOADING SELESAI - HIDE DULU SEBELUM PIN ANIMATION
+    if (loadingOverlay) {
+        loadingOverlay.classList.add('hidden');
+    }
+
+    // Tunggu loading screen benar-benar hilang (fade out duration)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // ==========================================
+    // FASE 3: PIN ANIMATION DIMULAI
+    // ==========================================
+
+    console.log("Starting pin animation...");
+
     // Prepare journey data
     if (CONFIG.map && CONFIG.map.locations && CONFIG.map.locations.length > 0) {
         const routeCoords = [];
 
         // Show markers one by one with animation
         for (let i = 0; i < CONFIG.map.locations.length; i++) {
+            // CHECK FOR CANCELLATION
+            if (controller.cancelled) {
+                console.log("Map initialization cancelled during marker addition");
+                return;
+            }
+
             const loc = CONFIG.map.locations[i];
             if (!loc.coordinates || !Array.isArray(loc.coordinates) || loc.coordinates.length < 2) continue;
 
@@ -1326,8 +1420,14 @@ async function initMap() {
                 </div>
             `;
 
-            // Add marker with a slight delay
-            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 2000));
+            // DELAY: Pin pertama langsung muncul, pin berikutnya tunggu 2.5 detik
+            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 2500));
+
+            // CHECK AGAIN AFTER DELAY
+            if (controller.cancelled) {
+                console.log("Map initialization cancelled after delay");
+                return;
+            }
 
             const marker = L.marker(loc.coordinates, { icon: markerIcon })
                 .bindPopup(popupContent, {
@@ -1336,7 +1436,6 @@ async function initMap() {
                 });
 
             markerCluster.addLayer(marker);
-
             mapMarkers.push(marker);
 
             // Draw/Update Polyline
@@ -1351,8 +1450,8 @@ async function initMap() {
                 }).addTo(mapInstance);
             }
 
-            // Optional: Pan to marker as it appears
-            mapInstance.panTo(loc.coordinates, { animate: true, duration: 2.5 });
+            // Pan to marker as it appears
+            mapInstance.panTo(loc.coordinates, { animate: true, duration: 2.0 });
 
             // Interaction
             marker.on('click', function () {
@@ -1363,12 +1462,14 @@ async function initMap() {
             });
         }
 
+        // Final check before zoom out
+        if (controller.cancelled) return;
+
         // Zoom out to show all markers after the journey
         if (mapMarkers.length > 0) {
-            setTimeout(() => {
-                const group = new L.featureGroup(mapMarkers);
-                mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true, duration: 2.0 });
-            }, 2500);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const group = new L.featureGroup(mapMarkers);
+            mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true, duration: 2.5 });
         }
     }
 

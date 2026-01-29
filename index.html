@@ -792,6 +792,54 @@
     <!-- Page 7: The Atlas of Us (Interactive Map) (Formerly Page 6) -->
     <section id="page-7" class="page hidden fixed inset-0 w-full h-full overflow-hidden">
         <main id="page-7-container" class="h-full w-full relative overflow-hidden">
+            <!-- Map Loading Overlay -->
+            <div id="map-loading-overlay"
+                class="absolute inset-0 z-[2000] flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
+                <!-- Animated Map Icon -->
+                <div class="relative mb-6">
+                    <span class="material-symbols-outlined text-6xl text-primary animate-pulse"
+                        style="font-variation-settings: 'FILL' 1, 'wght' 400;">
+                        map
+                    </span>
+                    <!-- Orbiting Hearts -->
+                    <div class="absolute inset-0 animate-spin-slow">
+                        <span
+                            class="material-symbols-outlined text-rose-400 text-xl absolute -top-2 left-1/2 -translate-x-1/2"
+                            style="font-variation-settings: 'FILL' 1;">
+                            favorite
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Loading Text -->
+                <div class="text-center space-y-3">
+                    <h3 class="font-display text-2xl text-primary font-bold">
+                        Mapping Our Journey
+                    </h3>
+                    <p class="font-sans text-sm text-rose-900/60 tracking-wider uppercase">
+                        <span id="map-loading-text">Loading memories...</span>
+                    </p>
+
+                    <!-- Progress Dots -->
+                    <div class="flex gap-2 justify-center mt-4">
+                        <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
+                        <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 150ms;">
+                        </div>
+                        <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 300ms;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decorative Elements -->
+                <div class="absolute top-10 right-10 opacity-20">
+                    <span class="material-symbols-outlined text-rose-300 text-5xl animate-float">location_on</span>
+                </div>
+                <div class="absolute bottom-10 left-10 opacity-20">
+                    <span class="material-symbols-outlined text-rose-300 text-5xl animate-float"
+                        style="animation-delay: 1s;">place</span>
+                </div>
+            </div>
+
             <div id="map" class="h-full w-full"></div>
 
             <!-- Map Overlay Info -->
