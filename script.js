@@ -1202,6 +1202,7 @@ let mapMarkers = [];
 let mapPolyline = null;
 let markerCluster = null;
 let mapInitController = null;
+let mapJourneyCompleted = false; // Flag to track if the journey has been shown once
 
 async function initMap() {
     console.log("Initializing Map with Journey Animation...");
@@ -1221,19 +1222,27 @@ async function initMap() {
     const loadingText = document.getElementById('map-loading-text');
     const mapElement = document.getElementById('map');
 
-    if (loadingOverlay) {
-        loadingOverlay.classList.remove('hidden');
-    }
-    if (mapElement) {
-        mapElement.classList.remove('loaded');
+    // If journey already completed, skip loading overlay and animations
+    if (mapJourneyCompleted) {
+        if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        if (mapElement) mapElement.classList.add('loaded');
+    } else {
+        if (loadingOverlay) {
+            loadingOverlay.classList.remove('hidden');
+        }
+        if (mapElement) {
+            mapElement.classList.remove('loaded');
+        }
     }
 
     // ==========================================
     // FASE 1: LOADING SCREEN (Map Setup)
     // ==========================================
 
-    if (loadingText) loadingText.textContent = 'Connecting to world map...';
-    await new Promise(resolve => setTimeout(resolve, 800));
+    if (!mapJourneyCompleted) {
+        if (loadingText) loadingText.textContent = 'Connecting to world map...';
+        await new Promise(resolve => setTimeout(resolve, 800));
+    }
 
     if (!window.L) {
         console.error("Leaflet (L) not loaded!");
@@ -1254,8 +1263,8 @@ async function initMap() {
 
     // Initialize Map Instance if not exists
     if (!mapInstance) {
-        if (loadingText) loadingText.textContent = 'Setting up map canvas...';
-        await new Promise(resolve => setTimeout(resolve, 700));
+        if (!mapJourneyCompleted && loadingText) loadingText.textContent = 'Setting up map canvas...';
+        if (!mapJourneyCompleted) await new Promise(resolve => setTimeout(resolve, 700));
 
         mapInstance = L.map('map', {
             zoomControl: false,
@@ -1272,26 +1281,28 @@ async function initMap() {
         tileLayer.on('load', () => {
             tilesLoaded = true;
             console.log('Map tiles loaded successfully');
+            if (mapJourneyCompleted && mapElement) mapElement.classList.add('loaded');
         });
 
         tileLayer.addTo(mapInstance);
 
         // Wait for tiles or timeout
-        if (loadingText) loadingText.textContent = 'Loading map tiles...';
-        await new Promise(resolve => {
-            const checkTiles = setInterval(() => {
-                if (tilesLoaded) {
+        if (!mapJourneyCompleted) {
+            if (loadingText) loadingText.textContent = 'Loading map tiles...';
+            await new Promise(resolve => {
+                const checkTiles = setInterval(() => {
+                    if (tilesLoaded) {
+                        clearInterval(checkTiles);
+                        resolve();
+                    }
+                }, 100);
+
+                setTimeout(() => {
                     clearInterval(checkTiles);
                     resolve();
-                }
-            }, 100);
-
-            // Timeout after 3 seconds
-            setTimeout(() => {
-                clearInterval(checkTiles);
-                resolve();
-            }, 3000);
-        });
+                }, 3000);
+            });
+        }
 
         // Zoom out when clicking the background
         mapInstance.on('click', (e) => {
@@ -1323,8 +1334,10 @@ async function initMap() {
         mapElement.classList.add('loaded');
     }
 
-    if (loadingText) loadingText.textContent = 'Preparing your memories...';
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!mapJourneyCompleted) {
+        if (loadingText) loadingText.textContent = 'Preparing your memories...';
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
     // Clear old elements
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
@@ -1355,20 +1368,20 @@ async function initMap() {
     });
     mapInstance.addLayer(markerCluster);
 
-    if (loadingText) loadingText.textContent = 'Everything is ready...';
-    await new Promise(resolve => setTimeout(resolve, 800));
+    if (!mapJourneyCompleted) {
+        if (loadingText) loadingText.textContent = 'Everything is ready...';
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-    // ==========================================
-    // FASE 2: HIDE LOADING SCREEN
-    // ==========================================
+        // ==========================================
+        // FASE 2: HIDE LOADING SCREEN
+        // ==========================================
 
-    // LOADING SELESAI - HIDE DULU SEBELUM PIN ANIMATION
-    if (loadingOverlay) {
-        loadingOverlay.classList.add('hidden');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
-
-    // Tunggu loading screen benar-benar hilang (fade out duration)
-    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // ==========================================
     // FASE 3: PIN ANIMATION DIMULAI
@@ -1420,8 +1433,10 @@ async function initMap() {
                 </div>
             `;
 
-            // DELAY: Pin pertama langsung muncul, pin berikutnya tunggu 2.5 detik
-            await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 2500));
+            // DELAY: Skip delay if already completed once
+            if (!mapJourneyCompleted) {
+                await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 2500));
+            }
 
             // CHECK AGAIN AFTER DELAY
             if (controller.cancelled) {
@@ -1450,8 +1465,10 @@ async function initMap() {
                 }).addTo(mapInstance);
             }
 
-            // Pan to marker as it appears
-            mapInstance.panTo(loc.coordinates, { animate: true, duration: 2.0 });
+            // Pan to marker as it appears (only if not skipping)
+            if (!mapJourneyCompleted) {
+                mapInstance.panTo(loc.coordinates, { animate: true, duration: 2.0 });
+            }
 
             // Interaction
             marker.on('click', function () {
@@ -1467,10 +1484,13 @@ async function initMap() {
 
         // Zoom out to show all markers after the journey
         if (mapMarkers.length > 0) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            if (!mapJourneyCompleted) await new Promise(resolve => setTimeout(resolve, 2000));
             const group = new L.featureGroup(mapMarkers);
-            mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true, duration: 2.5 });
+            mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: !mapJourneyCompleted, duration: 2.5 });
         }
+
+        // Mark journey as completed after first time
+        mapJourneyCompleted = true;
     }
 
     // Add Zoom control to bottom left if missing
