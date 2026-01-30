@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Admin Wizard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@700&family=Pacifico&family=Montserrat:wght@400;700&family=Great+Vibes&family=Cinzel:wght@700&family=Poppins:wght@300;400;600&family=Cormorant+Garamond:ital,wght@1,600&family=Lobster&family=Sacramento&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Leaflet Maps CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="../data.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: { 50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#881337' },
+                        cream: '#F5E6D3'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Main Wizard Container -->
+    <div class="wizard-container">
+        <!-- Header with Progress -->
+        <header class="wizard-header">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="brand-logo">
+                            <span class="material-symbols-outlined">favorite</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <h1 class="text-xl font-display font-bold text-gray-900" data-i18n="brand_name">Valentine
+                                Admin</h1>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-widest font-bold"
+                                data-i18n="wizard_subtitle">Step-by-Step Setup Wizard</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+
+
+                        <button onclick="app.showPreview()" class="preview-btn">
+                            <span class="material-symbols-outlined">visibility</span>
+                            <span data-i18n="btn_preview">Preview</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-xs font-semibold text-gray-600" id="progressText">Step 1 of 10</span>
+                    <span class="text-xs text-gray-500" id="stepTitle">Setup</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="wizard-main">
+            <!-- Left: Form Content -->
+            <div class="wizard-content">
+                <div id="stepContent" class="step-content">
+                    <!-- Dynamic step content injected here -->
+                </div>
+            </div>
+
+            <!-- Right: Live Preview (Sticky) -->
+            <div class="wizard-preview">
+                <div class="preview-frame">
+                    <div class="preview-header">
+                        <div class="preview-notch"></div>
+                    </div>
+                    <iframe id="previewIframe" src="../index.html?preview=side" class="preview-iframe"
+                        sandbox="allow-scripts allow-same-origin allow-autoplay" allow="autoplay"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <footer class="wizard-footer">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <button id="btnBack" onclick="app.prevStep()" class="nav-btn nav-btn-secondary" disabled>
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        <span data-i18n="btn_back">Back</span>
+                    </button>
+
+                    <div class="flex items-center gap-6">
+                        <div id="saveStatus"
+                            class="flex items-center gap-2 text-gray-400 opacity-0 transition-all duration-500">
+                            <span class="material-symbols-outlined text-sm">save_as</span>
+                            <span id="saveStatusText" class="text-[10px] font-bold uppercase tracking-widest"></span>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="app.saveProgress()" class="nav-btn nav-btn-secondary">
+                                <span class="material-symbols-outlined">save</span>
+                                <span data-i18n="btn_save">Save Progress</span>
+                            </button>
+                            <button id="btnNext" onclick="app.nextStep()" class="nav-btn">
+                                <span data-i18n="btn_next">Next</span>
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </button>
+                            <button id="btnFinish" onclick="app.finishWizard()" class="nav-btn nav-btn-primary hidden">
+                                <span class="material-symbols-outlined">celebration</span>
+                                <span data-i18n="btn_finish">Finish & Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+        </footer>
+    </div>
+
+    <!-- Preview Modal (Mobile) -->
+    <div id="previewModal" class="preview-modal hidden">
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <h3 class="text-lg font-bold text-gray-900">Live Preview</h3>
+                <button onclick="app.closePreview()" class="preview-close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <iframe id="previewModalIframe" src="" class="preview-modal-iframe"
+                sandbox="allow-scripts allow-same-origin allow-autoplay" allow="autoplay"></iframe>
+        </div>
+    </div>
+
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="welcome-modal hidden">
+        <div class="welcome-content">
+            <div class="welcome-bg-decoration"></div>
+            <div class="welcome-bg-decoration-2"></div>
+            <div class="relative">
+                <div class="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-rose-600 text-3xl">magic_button</span>
+                </div>
+                <h2 class="text-3xl font-display font-bold text-gray-900 mb-2" data-i18n="welcome_title">Welcome,
+                    Lovebirds!</h2>
+                <p class="text-gray-500 mb-8 leading-relaxed text-sm" data-i18n="welcome_subtitle">Follow the
+                    step-by-step wizard to create your
+                    personalized Valentine's experience.</p>
+                <div class="space-y-6 mb-10 text-sm">
+                    <div class="flex gap-4">
+                        <div class="step-number bg-rose-50 text-rose-600">1</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900"
+                                data-i18n="welcome_step1_title">Setup:</strong> <span
+                                data-i18n="welcome_step1_desc">Choose
+                                your theme and personalize names.</span></p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="step-number bg-indigo-50 text-indigo-600">2</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900"
+                                data-i18n="welcome_step2_title">Page Manager:</strong>
+                            <span data-i18n="welcome_step2_desc">Toggle which pages to include in your story.</span>
+                        </p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="step-number bg-emerald-50 text-emerald-600">3</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900"
+                                data-i18n="welcome_step3_title">Customize:</strong> <span
+                                data-i18n="welcome_step3_desc">Fill
+                                in content for each enabled page.</span></p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="step-number bg-amber-50 text-amber-600">4</div>
+                        <p class="text-gray-600 leading-relaxed"><strong class="text-gray-900"
+                                data-i18n="welcome_step4_title">Preview &
+                                Submit:</strong> <span data-i18n="welcome_step4_desc">Review your work and submit when
+                                ready!</span></p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button onclick="app.closeWelcome()" class="welcome-btn" data-i18n="welcome_btn">
+                        Got it, let's start!
+                    </button>
+                    <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold"
+                        data-i18n="welcome_footer">
+                        Progress is saved automatically
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Picker Modal -->
+    <div id="mapPickerModal"
+        class="fixed inset-0 z-[400] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-blue-600">location_on</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900" data-i18n="page_map_title">Pick Location</h3>
+                        <p class="text-xs text-gray-500" data-i18n="pageman_desc">Search or click on the map to choose a
+                            spot</p>
+                    </div>
+                </div>
+                <button onclick="mapPicker.close()"
+                    class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Search Area -->
+            <div class="p-4 bg-gray-50 border-b border-gray-100 shrink-0">
+                <div class="relative max-w-lg mx-auto">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                    <input type="text" id="mapSearchInput"
+                        class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                        placeholder="Search location..." data-i18n-placeholder="map_search_placeholder"
+                        autocomplete="off">
+                    <button onclick="mapPicker.search()"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm"
+                        data-i18n="map_btn_search">
+                        Search
+                    </button>
+                    <!-- Search Results Dropdown -->
+                    <div id="mapSearchResults"
+                        class="absolute z-[100] left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl hidden overflow-hidden max-h-64 overflow-y-auto">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map View -->
+            <div class="flex-1 relative bg-gray-200 min-h-[400px]">
+                <div id="leafletPickerContainer" class="absolute inset-0 z-10"></div>
+                <!-- Selection Overlay -->
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-4">
+                    <div
+                        class="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/40 flex items-center justify-between gap-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1"
+                                data-i18n="map_selected_loc">Selected
+                                Location</p>
+                            <p id="selectedLocationText" class="text-sm font-bold text-gray-900 truncate italic"
+                                data-i18n="map_click_to_pick">Click
+                                on map to pick...</p>
+                        </div>
+                        <button onclick="mapPicker.confirm()" id="confirmLocationBtn" disabled
+                            class="whitespace-nowrap bg-rose-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-rose-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-i18n="map_btn_confirm">
+                            Confirm Location
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/renderers.js"></script>
+    <script src="js/map-picker.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Initialize app on load
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+
+</html>

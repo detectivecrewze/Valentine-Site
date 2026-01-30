@@ -1,0 +1,1077 @@
+/* Base Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    color: #334155;
+    margin: 0;
+    padding: 0;
+    /* Fix for mobile viewport height with address bar */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}
+
+html {
+    height: -webkit-fill-available;
+}
+
+/* Wizard Container Layout */
+.wizard-container {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================================
+   FIX 1: Header - NOT STICKY, scrolls away
+   ======================================== */
+.wizard-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e2e8f0;
+    position: relative;
+    /* Changed from sticky to relative */
+    top: auto;
+    /* Remove top positioning */
+    z-index: 50;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.preview-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: #f1f5f9;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #475569;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* Touch target optimization */
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.preview-btn:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+/* Active state for touch feedback */
+.preview-btn:active {
+    transform: scale(0.95);
+    background: #cbd5e1;
+}
+
+@media (min-width: 1024px) {
+    .preview-btn {
+        display: none;
+    }
+}
+
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    height: 0.5rem;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f43f5e, #e11d48);
+    border-radius: 9999px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+}
+
+/* Main Content Area */
+.wizard-main {
+    flex: 1;
+    display: flex;
+    gap: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2rem 1.5rem;
+}
+
+@media (max-width: 1023px) {
+    .wizard-main {
+        flex-direction: column;
+    }
+}
+
+/* Left Content */
+.wizard-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.step-content {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   FIX 2: Preview - Optimized sizing & sticky
+   ======================================== */
+.wizard-preview {
+    width: 400px;
+    position: sticky;
+    top: 20px;
+    /* Starts near top when header scrolls away */
+    height: fit-content;
+    max-height: calc(100vh - 40px);
+    /* Prevent overflow */
+    align-self: flex-start;
+    /* Stick to top of container */
+}
+
+@media (max-width: 1023px) {
+    .wizard-preview {
+        display: none;
+    }
+}
+
+.preview-frame {
+    background: #1f2937;
+    border-radius: 2.5rem;
+    padding: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-height: 85vh;
+    /* Premium sizing - fits screen nicely */
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-header {
+    background: #111827;
+    height: 2rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex-shrink: 0;
+    /* Don't shrink header */
+}
+
+.preview-notch {
+    width: 120px;
+    height: 1.5rem;
+    background: #1f2937;
+    border-radius: 0 0 1rem 1rem;
+}
+
+.preview-iframe {
+    width: 100%;
+    height: calc(85vh - 5rem);
+    /* Dynamic height based on viewport */
+    min-height: 600px;
+    /* Minimum usable height */
+    max-height: 750px;
+    /* Maximum for premium look */
+    border: none;
+    background: white;
+    border-radius: 0 0 1.5rem 1.5rem;
+    display: block;
+    flex: 1;
+    /* Take remaining space */
+}
+
+/* ========================================
+   FIX 3: Footer Navigation - Fixed on Desktop, Static on Mobile
+   ======================================== */
+.wizard-footer {
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 40;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Only sticky on larger screens */
+@media (min-width: 768px) {
+    .wizard-footer {
+        position: sticky;
+        bottom: 0;
+    }
+
+    /* Fix for iOS Safari address bar on tablets */
+    @supports (-webkit-touch-callout: none) {
+        .wizard-footer {
+            position: -webkit-sticky;
+            position: sticky;
+            bottom: 0;
+        }
+    }
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* Touch target optimization */
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch feedback */
+.nav-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nav-btn-secondary {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.nav-btn-secondary:hover:not(:disabled) {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.nav-btn-secondary:active:not(:disabled) {
+    background: #cbd5e1;
+}
+
+.nav-btn-outline {
+    background: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.nav-btn-outline:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.nav-btn-outline:active {
+    background: #f1f5f9;
+}
+
+.nav-btn-primary {
+    background: #e11d48;
+    color: white;
+}
+
+.nav-btn-primary:hover:not(:disabled) {
+    background: #be123c;
+}
+
+.nav-btn-primary:active:not(:disabled) {
+    background: #9f1239;
+}
+
+.nav-btn-finish {
+    background: #059669;
+    color: white;
+}
+
+.nav-btn-finish:hover {
+    background: #047857;
+}
+
+.nav-btn-finish:active {
+    background: #065f46;
+}
+
+/* Form Elements */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.section-icon {
+    background: #fff1f2;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    color: #e11d48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    /* Touch target optimization */
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.form-input:focus {
+    border-color: #f43f5e;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(254, 205, 211, 0.5);
+}
+
+textarea.form-input {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Dynamic Items */
+.dynamic-item {
+    position: relative;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.dynamic-item:hover {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.remove-btn {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    background: #be123c;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    transition: transform 0.2s ease;
+    border: none;
+    /* Touch target optimization */
+    min-width: 44px;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.remove-btn:hover {
+    transform: scale(1.1);
+    background: #9f1239;
+}
+
+.remove-btn:active {
+    transform: scale(1.05);
+    background: #881337;
+}
+
+.btn-add {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px dashed #e2e8f0;
+    border-radius: 0.75rem;
+    color: #9ca3af;
+    font-weight: 700;
+    background: transparent;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    /* Touch target optimization */
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-add:hover {
+    border-color: #fda4af;
+    color: #f43f5e;
+    background-color: #fff1f2;
+}
+
+.btn-add:active {
+    background-color: #ffe4e6;
+    transform: scale(0.98);
+}
+
+/* ========================================
+   FIX 4: Page Manager - Enhanced Touch Support
+   ======================================== */
+.page-manager-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: move;
+    transition: all 0.2s ease;
+    /* Touch optimization */
+    min-height: 68px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-manager-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.page-manager-item:active {
+    background: #e2e8f0;
+}
+
+.page-manager-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+.page-manager-item.drag-over {
+    border-color: #f43f5e;
+    background: #fff1f2;
+    border-width: 2px;
+}
+
+/* Visual drag handle for mobile */
+.page-manager-item::before {
+    content: '⋮⋮';
+    font-size: 1.25rem;
+    color: #cbd5e1;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-right: -0.5rem;
+}
+
+.page-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: #fff1f2;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e11d48;
+    flex-shrink: 0;
+}
+
+.page-info {
+    flex: 1;
+}
+
+.page-name {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.875rem;
+}
+
+.page-type {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.page-required {
+    font-size: 0.625rem;
+    color: #dc2626;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    /* Touch target optimization */
+    min-width: 48px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+    height: 1.75rem;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 9999px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.25rem;
+    width: 1.25rem;
+    left: 0.25rem;
+    bottom: 0.25rem;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: #e11d48;
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(1.25rem);
+}
+
+.toggle-switch input:disabled+.toggle-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Active state for touch */
+.toggle-slider:active:before {
+    width: 1.5rem;
+}
+
+/* Theme Preview Cards */
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.theme-card {
+    position: relative;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    /* Touch target optimization */
+    min-height: 120px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.theme-card:hover {
+    border-color: #f43f5e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.theme-card:active {
+    transform: translateY(0);
+}
+
+.theme-card.selected {
+    border-color: #e11d48;
+    background: #fff1f2;
+}
+
+.theme-preview {
+    height: 80px;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.theme-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    color: #334155;
+}
+
+/* ========================================
+   FIX 5: Preview Modal - Fullscreen on Mobile, Centered on Desktop
+   ======================================== */
+.preview-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.preview-modal-content {
+    background: white;
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0;
+    position: relative;
+}
+
+/* Desktop: Centered modal with padding */
+@media (min-width: 768px) {
+    .preview-modal {
+        padding: 1rem;
+    }
+
+    .preview-modal-content {
+        border-radius: 1.5rem;
+        width: auto;
+        height: auto;
+        max-width: 500px;
+        max-height: calc(90vh - 2rem);
+    }
+}
+
+.preview-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    background: white;
+    border-radius: 0;
+}
+
+@media (min-width: 768px) {
+    .preview-modal-header {
+        border-radius: 1.5rem 1.5rem 0 0;
+    }
+}
+
+.preview-close {
+    background: #f1f5f9;
+    border: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #64748b;
+    /* Touch target optimization */
+    min-width: 44px;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.preview-close:hover {
+    background: #e2e8f0;
+}
+
+.preview-close:active {
+    background: #cbd5e1;
+    transform: scale(0.95);
+}
+
+.preview-modal-iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   FIX 6: Welcome Modal - Perfect Centering & Scroll
+   ======================================== */
+.welcome-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.welcome-content {
+    background: white;
+    border-radius: 2.5rem;
+    width: 100%;
+    max-width: 600px;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+    /* Dynamic viewport height */
+    padding: 2.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: auto;
+}
+
+.welcome-bg-decoration {
+    position: absolute;
+    top: -5rem;
+    right: -5rem;
+    width: 16rem;
+    height: 16rem;
+    background: #fff1f2;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.welcome-bg-decoration-2 {
+    position: absolute;
+    bottom: -5rem;
+    left: -5rem;
+    width: 16rem;
+    height: 16rem;
+    background: #e0e7ff;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.step-number {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.welcome-btn {
+    width: 100%;
+    background: #111827;
+    color: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    /* Touch target optimization */
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-btn:hover {
+    background: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-btn:active {
+    transform: scale(0.98) translateY(0);
+}
+
+/* Upload Button Styles */
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* Touch target optimization */
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.upload-btn:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.upload-btn:active {
+    background: #cbd5e1;
+    transform: scale(0.98);
+}
+
+.upload-btn input[type="file"] {
+    display: none;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.text-danger {
+    color: #dc2626;
+}
+
+.text-success {
+    color: #059669;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .step-content {
+        padding: 1.5rem;
+    }
+
+    .wizard-main {
+        padding: 1rem;
+    }
+
+    .theme-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+
+/* Enhanced Preview Sizing for Different Screen Heights */
+@media (min-height: 900px) {
+    .preview-frame {
+        max-height: 80vh;
+        /* More space on tall screens */
+    }
+
+    .preview-iframe {
+        height: calc(80vh - 5rem);
+        max-height: 800px;
+    }
+}
+
+@media (max-height: 700px) {
+    .preview-frame {
+        max-height: 90vh;
+        /* Use more space on short screens */
+    }
+
+    .preview-iframe {
+        height: calc(90vh - 5rem);
+        min-height: 500px;
+    }
+}
+
+/* ========================================
+   FIX 7: Mobile Responsive Fixes (Final Polish)
+   ======================================== */
+@media (max-width: 640px) {
+    .wizard-header .max-w-7xl {
+        padding: 1rem;
+    }
+
+    .brand-logo {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .wizard-header h1 {
+        font-size: 1rem;
+    }
+
+    .step-content {
+        padding: 1.25rem;
+        border-radius: 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Stack footer buttons on very small screens */
+    .wizard-footer .max-w-7xl>div {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .wizard-footer .flex {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.875rem;
+    }
+
+    .theme-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .welcome-content {
+        padding: 2rem 1.5rem;
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+        border-radius: 1.5rem;
+    }
+
+    /* Fixed mobile save status position */
+    #saveStatus {
+        order: -1;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Better touch spacing for page manager */
+    .page-manager-item {
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Optimize form inputs for mobile */
+    .form-input {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+    }
+
+    /* Better button spacing */
+    .btn-add {
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Extra small devices optimization */
+@media (max-width: 380px) {
+    .preview-btn span:not(.material-symbols-outlined) {
+        display: none;
+    }
+
+    .nav-btn span:not(.material-symbols-outlined) {
+        font-size: 0.8125rem;
+    }
+
+    .page-manager-item {
+        gap: 0.75rem;
+        padding: 0.875rem;
+    }
+
+    .welcome-content {
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 896px) and (max-height: 414px) and (orientation: landscape) {
+    .welcome-modal {
+        align-items: flex-start;
+        padding-top: 1rem;
+    }
+
+    .welcome-content {
+        max-height: calc(100vh - 2rem);
+        margin: 0;
+    }
+}
+
+/* Improve touch scrolling performance */
+.wizard-main,
+.preview-modal,
+.welcome-modal,
+.preview-modal-iframe,
+.welcome-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Disable text selection on draggable elements */
+.page-manager-item * {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Brand logo touch optimization */
+.brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+}
