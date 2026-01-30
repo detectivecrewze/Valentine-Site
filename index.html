@@ -1030,61 +1030,58 @@
             </div>
             <main id="page-8-container"
                 class="min-h-screen w-full flex items-start justify-center py-12 pb-48 px-6 relative">
-                <!-- Background Decorations -->
-                <div class="absolute top-20 left-20 opacity-20 animate-pulse">
-                    <span class="material-symbols-outlined text-rose-300 text-6xl">favorite</span>
-                </div>
-                <div class="absolute bottom-20 right-1/4 opacity-10">
-                    <span class="material-symbols-outlined text-rose-300 text-[180px]">auto_awesome</span>
-                </div>
+                <!-- Cinematic 3D Envelope Wrapper -->
+                <div class="envelope-wrapper is-sealed relative w-full max-w-lg mx-auto z-10" id="envelope-main"
+                    onclick="handleLetterInteraction()">
 
-                <!-- Letter Paper -->
-                <article class="letter-paper is-sealed relative w-full max-w-2xl m-8 px-6 py-8 md:px-12 md:py-12 z-10"
-                    id="fate-letter" onclick="handleLetterInteraction()">
+                    <!-- Back Panel of Envelope -->
+                    <div class="envelope-back"></div>
 
-                    <!-- Envelope Flaps (Visible when .is-sealed) -->
-                    <div class="envelope-flap top"></div>
-                    <div class="envelope-flap bottom"></div>
-                    <div class="envelope-flap left"></div>
-                    <div class="envelope-flap right"></div>
+                    <!-- The Actual Letter (Hidden inside/behind initially) -->
+                    <article class="letter-paper relative w-full px-6 py-8 md:px-12 md:py-12" id="fate-letter">
+                        <!-- Click to Read Hint -->
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-rose-900 font-display italic text-2xl whitespace-nowrap pulse-hint-anim pointer-events-none"
+                            id="open-hint">
+                            Tap to open...
+                        </div>
 
-                    <!-- Click to Read Hint -->
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-rose-900 font-display italic text-2xl whitespace-nowrap pulse-hint-anim pointer-events-none"
-                        id="open-hint">
-                        You have a letter...
-                    </div>
+                        <!-- Content -->
+                        <div class="letter-content space-y-6">
+                            <header>
+                                <h1 id="letter-recipient"
+                                    class="font-display italic text-2xl md:text-3xl text-rose-900 opacity-90">
+                                    Dearest [Name],
+                                </h1>
+                            </header>
+                            <div id="letter-body"
+                                class="font-serif-body text-base md:text-lg text-stone-800 leading-relaxed space-y-4">
+                                <!-- Content injected via JS -->
+                            </div>
+                            <footer class="pt-6">
+                                <p id="letter-closing"
+                                    class="font-serif-body italic text-stone-600 mb-1 text-sm md:text-base"></p>
+                                <p id="letter-signature"
+                                    class="font-cursive text-5xl md:text-7xl text-rose-600 leading-none -rotate-2 origin-left mt-2">
+                                    [Your Name]
+                                </p>
+                            </footer>
+                        </div>
+                    </article>
 
-                    <!-- Wax Seal -->
-                    <div class="wax-seal-container absolute z-20 transition-all duration-[1.5s]">
-                        <div class="wax-seal w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white text-3xl md:text-4xl select-none"
+                    <!-- Front Panel of Envelope -->
+                    <div class="envelope-front"></div>
+
+                    <!-- Top Flap -->
+                    <div class="envelope-top-flap"></div>
+
+                    <!-- Wax Seal (V2 Premium) -->
+                    <div class="wax-seal-v2">
+                        <div class="seal-inner">
+                            <span class="material-symbols-outlined text-white text-3xl select-none"
                                 style="font-variation-settings: 'FILL' 1">favorite</span>
                         </div>
                     </div>
-
-                    <!-- Content -->
-                    <div class="letter-content space-y-6 transition-opacity duration-[1.5s]">
-                        <header>
-                            <h1 id="letter-recipient"
-                                class="font-display italic text-2xl md:text-3xl text-rose-900 opacity-90">
-                                Dearest [Name],
-                            </h1>
-                        </header>
-                        <div id="letter-body"
-                            class="font-serif-body text-base md:text-lg text-stone-800 leading-relaxed space-y-4">
-                            <!-- Content injected via JS -->
-                        </div>
-                        <footer class="pt-6">
-                            <p id="letter-closing"
-                                class="font-serif-body italic text-stone-600 mb-1 text-sm md:text-base">
-                            </p>
-                            <p id="letter-signature"
-                                class="font-cursive text-5xl md:text-7xl text-rose-600 leading-none -rotate-2 origin-left mt-2">
-                                [Your Name]
-                            </p>
-                        </footer>
-                    </div>
-                </article>
+                </div>
 
 
 

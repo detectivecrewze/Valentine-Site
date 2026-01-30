@@ -2061,17 +2061,17 @@ function initLetterPage() {
 }
 
 function handleLetterInteraction() {
-    const letter = document.getElementById('fate-letter');
-    if (letter) {
-        if (letter.classList.contains('is-sealed')) {
-            // Unseal the envelope
-            letter.classList.remove('is-sealed');
+    const envelope = document.getElementById('envelope-main');
+    if (envelope) {
+        if (envelope.classList.contains('is-sealed')) {
+            // Unseal and open 3D envelope
+            envelope.classList.remove('is-sealed');
 
-            // Wait for envelope animation (flaps opening) before starting typewriter
+            // Wait for envelope flip and paper slide-up before typing
             if (!letterTyped) {
                 setTimeout(() => {
                     startLetterTyping();
-                }, 1000); // 1s delay for animation
+                }, 1500); // 1.5s delay for cinematic effect
             }
         }
     }
@@ -2145,8 +2145,7 @@ function typeTarget(element, text) {
 }
 
 function resetLetterPage() {
-    const letter = document.getElementById('fate-letter');
-    const hint = document.getElementById('open-hint');
+    const envelope = document.getElementById('envelope-main');
     const bodyEl = document.getElementById('letter-body');
     const closingEl = document.getElementById('letter-closing');
     const signatureEl = document.getElementById('letter-signature');
@@ -2156,15 +2155,9 @@ function resetLetterPage() {
     if (closingEl) closingEl.textContent = '';
     if (signatureEl) signatureEl.textContent = '';
 
-    if (letter) {
-        letter.classList.add('is-sealed');
-        if (hint) {
-            hint.style.display = '';
-            hint.innerHTML = 'You have a letter...'; // Premium hint
-            hint.classList.add('pulse-hint-anim');
-        }
+    if (envelope) {
+        envelope.classList.add('is-sealed');
     }
-
 }
 
 // Page 9: Invitation Logic

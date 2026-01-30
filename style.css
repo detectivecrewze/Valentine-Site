@@ -640,141 +640,147 @@ body {
     color: #9f1239;
 }
 
-/* Page 8: Heartfelt Letter & Envelope Concept */
-.letter-paper {
-    background-color: #fffdf5;
-    box-shadow:
-        0 10px 30px -5px rgba(0, 0, 0, 0.1),
-        inset 0 0 40px rgba(0, 0, 0, 0.02);
-    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: center center;
+/* Page 8: Cinematic 3D Envelope & Letter */
+.envelope-wrapper {
+    perspective: 1500px;
+    height: 350px;
+    /* Envelope height */
+    transition: all 1s ease;
 }
 
-.wax-seal {
-    background: radial-gradient(circle at 30% 30%, #be123c, #9f1239);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(0, 0, 0, 0.2);
-    border: 2px solid #881337;
-    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Sealed State (Envelope UI) */
-.letter-paper.is-sealed {
-    transform: scale(0.9) translateY(20px);
-    max-height: 380px;
-    max-width: 550px;
-    background: #fdf2f2 !important;
-    overflow: hidden;
+.envelope-wrapper.is-sealed {
     cursor: pointer;
-    border: 1px solid rgba(126, 12, 35, 0.1);
-    box-shadow: 0 30px 60px -10px rgba(126, 12, 35, 0.2) !important;
 }
 
-/* Hide content when sealed */
-.is-sealed .letter-content {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(20px);
-}
-
-/* Not Sealed (Opened Letter) */
-.letter-paper:not(.is-sealed) {
-    transform: scale(1) translateY(0);
-    max-height: none;
-    background-color: #fffdf5 !important;
-}
-
-.letter-content {
-    transition: all 1s ease 0.5s;
-}
-
-/* Wax Seal Positioning */
-.wax-seal-container {
-    top: 2rem;
-    right: 2rem;
-}
-
-.is-sealed .wax-seal-container {
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) scale(1.5);
-    z-index: 50;
-}
-
-/* Envelope Flaps (Pure CSS) */
-.envelope-flap {
+.envelope-front,
+.envelope-back,
+.envelope-top-flap {
     position: absolute;
-    background: #fecdd3;
-    /* Soft pink */
-    z-index: 40;
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    opacity: 0;
-}
-
-.is-sealed .envelope-flap {
-    opacity: 1;
-}
-
-/* Flap Shapes */
-.envelope-flap.top {
+    width: 100%;
+    height: 100%;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 60%;
-    background: #fca5a5;
-    /* Slightly darker pink for contrast */
+    background-color: #fdfaf5;
+    /* Cream Ivory */
+    border: 1px solid #e5e0d8;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.envelope-back {
+    z-index: 5;
+    background-color: #f7f3ed;
+}
+
+/* Front panel with "V" opening */
+.envelope-front {
+    z-index: 25;
+    background-color: #fdfaf5;
+    clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 50% 50%);
+}
+
+.envelope-top-flap {
+    z-index: 30;
+    height: 50%;
+    background-color: #fdfaf5;
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top;
-    z-index: 45;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.envelope-flap.bottom {
-    bottom: 0;
-    left: 0;
+/* Wax Seal V2 - Premium Realistic */
+.wax-seal-v2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 64px;
+    height: 64px;
+    transform: translate(-50%, -20%) scale(1);
+    z-index: 50;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.seal-inner {
     width: 100%;
-    height: 50%;
-    clip-path: polygon(0 100%, 100% 100%, 50% 0);
-}
-
-.envelope-flap.left {
-    top: 0;
-    left: 0;
-    width: 50%;
     height: 100%;
-    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    background: radial-gradient(circle at 30% 30%, #be123c 20%, #9f1239 80%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.3),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.4),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.2);
+    border: 3px solid #881337;
+    position: relative;
+    overflow: hidden;
 }
 
-.envelope-flap.right {
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100%;
-    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+.seal-inner::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
 }
 
-/* Opening Animations */
-.letter-paper:not(.is-sealed) .envelope-flap.top {
+/* Open State Animations */
+.envelope-wrapper:not(.is-sealed) .envelope-top-flap {
     transform: rotateX(180deg);
-    opacity: 0;
+    z-index: 5;
+    /* Flip behind */
 }
 
-.letter-paper:not(.is-sealed) .envelope-flap.bottom {
-    transform: rotateX(-180deg);
+.envelope-wrapper:not(.is-sealed) .wax-seal-v2 {
+    transform: translate(-50%, -220%) scale(0.8) rotate(15deg);
     opacity: 0;
+    pointer-events: none;
 }
 
-.letter-paper:not(.is-sealed) .envelope-flap.left {
-    transform: rotateY(-180deg);
+/* The Letter Paper inside the envelope */
+.letter-paper {
+    background-color: #fffdf5;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    transform: translateY(0) scale(0.95);
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
+    max-height: 300px;
+    overflow: hidden;
 }
 
-.letter-paper:not(.is-sealed) .envelope-flap.right {
-    transform: rotateY(180deg);
-    opacity: 0;
+.envelope-wrapper:not(.is-sealed) .letter-paper {
+    transform: translateY(-80px) scale(1);
+    opacity: 1;
+    z-index: 40;
+    max-height: 2000px;
+    /* Allow full height when out */
+    overflow: visible;
 }
 
-.letter-paper:not(.is-sealed) #open-hint {
+.envelope-wrapper:not(.is-sealed) {
+    margin-top: 100px;
+    /* Give space for paper sliding up */
+}
+
+/* Hint Style */
+#open-hint {
+    transition: opacity 0.5s ease;
+}
+
+.envelope-wrapper:not(.is-sealed) #open-hint {
     display: none;
+}
+
+/* Paper texture for letter */
+.letter-paper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');
+    opacity: 0.4;
+    pointer-events: none;
 }
 
 @keyframes pulse-hint {
