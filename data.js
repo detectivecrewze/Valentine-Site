@@ -1,7 +1,7 @@
 const CONFIG = {
     "theme": {
         "backgroundColor": "#ffe5ec",
-        "fontDisplay": "Great Vibes, cursive",
+        "fontDisplay": "Cinzel, serif",
         "fontSans": "Poppins, sans-serif",
         "particles": "hearts",
         "backgroundImage": ""
@@ -36,11 +36,13 @@ const CONFIG = {
         "HoursTogetherLabel": "Minutes Together",
         "HoursTogether": "525,600",
         "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769734795217-t4uwbr.jpg",
+        "topPlacesLabel": "Top Places We've Been",
         "topPlaces": [
             "The Sunset Pier ",
             "Corner Bakery",
             "Botanical Garden"
         ],
+        "coreMemoriesLabel": "Core Memories",
         "coreMemories": [
             "The Rainy Hike",
             "First Road Trip",
@@ -81,7 +83,7 @@ const CONFIG = {
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
     ],
-    "musicSectionTitle": "",
+    "musicSectionTitle": "Our Playlist",
     "gallery": {
         "title": "Our Memories",
         "subtitle": "Scratch to reveal",
@@ -160,8 +162,10 @@ const CONFIG = {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-01-30T16:07:21.594Z"
+        "generatedAt": "2026-01-30T20:24:42.868Z"
     },
+    "adminLang": "en",
+    "currentStep": 9,
     "pageConfig": {
         "pages": {
             "page-1": {
