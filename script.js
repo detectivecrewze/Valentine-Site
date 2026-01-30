@@ -2063,13 +2063,16 @@ function initLetterPage() {
 function handleLetterInteraction() {
     const letter = document.getElementById('fate-letter');
     if (letter) {
-        if (letter.classList.contains('is-crumpled')) {
-            letter.classList.remove('is-crumpled');
+        if (letter.classList.contains('is-sealed')) {
+            // Unseal the envelope
+            letter.classList.remove('is-sealed');
+
+            // Wait for envelope animation (flaps opening) before starting typewriter
             if (!letterTyped) {
-                startLetterTyping();
+                setTimeout(() => {
+                    startLetterTyping();
+                }, 1000); // 1s delay for animation
             }
-        } else {
-            letter.classList.add('is-crumpled');
         }
     }
 }
@@ -2154,9 +2157,10 @@ function resetLetterPage() {
     if (signatureEl) signatureEl.textContent = '';
 
     if (letter) {
-        letter.classList.add('is-crumpled');
+        letter.classList.add('is-sealed');
         if (hint) {
             hint.style.display = '';
+            hint.innerHTML = 'You have a letter...'; // Premium hint
             hint.classList.add('pulse-hint-anim');
         }
     }

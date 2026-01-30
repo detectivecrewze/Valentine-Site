@@ -1038,17 +1038,24 @@
                     <span class="material-symbols-outlined text-rose-300 text-[180px]">auto_awesome</span>
                 </div>
 
-                <!-- Letter Paper - m-8 added to give space for overlaps in screenshots -->
-                <article class="letter-paper is-crumpled relative w-full max-w-2xl m-8 px-6 py-8 md:px-12 md:py-12 z-10"
+                <!-- Letter Paper -->
+                <article class="letter-paper is-sealed relative w-full max-w-2xl m-8 px-6 py-8 md:px-12 md:py-12 z-10"
                     id="fate-letter" onclick="handleLetterInteraction()">
+
+                    <!-- Envelope Flaps (Visible when .is-sealed) -->
+                    <div class="envelope-flap top"></div>
+                    <div class="envelope-flap bottom"></div>
+                    <div class="envelope-flap left"></div>
+                    <div class="envelope-flap right"></div>
+
                     <!-- Click to Read Hint -->
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-rose-900 font-display italic text-2xl whitespace-nowrap pulse-hint-anim pointer-events-none"
                         id="open-hint">
-                        Click to read...
+                        You have a letter...
                     </div>
 
                     <!-- Wax Seal -->
-                    <div class="absolute -top-4 -right-4 md:top-8 md:right-8 z-20 transition-all duration-[1.5s]">
+                    <div class="wax-seal-container absolute z-20 transition-all duration-[1.5s]">
                         <div class="wax-seal w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center">
                             <span class="material-symbols-outlined text-white text-3xl md:text-4xl select-none"
                                 style="font-variation-settings: 'FILL' 1">favorite</span>
