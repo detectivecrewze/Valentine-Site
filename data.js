@@ -25,8 +25,8 @@ const CONFIG = {
     },
     "greeting": {
         "title": "Happy Valentine's Day",
-        "message": "I make tihs for you, since i really like you..",
-        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769774982083-5s8pwm.jpg",
+        "message": "I make this for you, since i've been thinking about you lately, and i want to do something nice for you.",
+        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769804948149-czoxq7.jpg",
         "signature": "With all my love",
         "footerText": "♥"
     },
@@ -73,7 +73,7 @@ const CONFIG = {
             "artist": "The Strokes",
             "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769735240679-4bfqv9.mp3",
             "coverSrc": "assets/cover1.jpg",
-            "lyrics": "Life is too short..."
+            "lyrics": "Life is too short, but i will live for you"
         },
         {
             "songTitle": "Ivy",
@@ -83,22 +83,50 @@ const CONFIG = {
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
     ],
-    "musicSectionTitle": "Our Playlist",
+    "musicSectionTitle": "",
     "gallery": {
         "title": "Our Memories",
         "subtitle": "Scratch to reveal",
         "memories": [
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769735546102-he5o65.jpg",
-                "caption": "Our first coffee",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805139619-pxnlnf.jpg",
+                "caption": "Our Kiss That Day.",
+                "tape": "washi-tape",
+                "rotation": "rotate-2"
+            },
+            {
+                "type": "image",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805183715-20618q.jpg",
+                "caption": "We're Dancing While Watching The Sunrise.",
                 "tape": "washi-tape-gold",
                 "rotation": "rotate-2"
             },
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769775028037-lwf5q.jpg",
-                "caption": "",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805230987-7ty5b.jpg",
+                "caption": "Our Trip To Berlin!",
+                "tape": "washi-tape",
+                "rotation": "rotate-2"
+            },
+            {
+                "type": "image",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805276131-cts88.jpg",
+                "caption": "We're Getting Ready For The Dates.",
+                "tape": "washi-tape",
+                "rotation": "rotate-2"
+            },
+            {
+                "type": "image",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805302423-nfl0um.jpg",
+                "caption": "Watching The Swains As They Past.",
+                "tape": "washi-tape",
+                "rotation": "rotate-2"
+            },
+            {
+                "type": "image",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805374361-oqdib.jpg",
+                "caption": "That Night When We Go Nowhere.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             }
@@ -113,10 +141,32 @@ const CONFIG = {
                     -6.24625885,
                     106.991355
                 ],
-                "title": "Where we first met",
+                "title": "Where we first met.",
                 "memory": "The air was sweet...",
                 "date": "2020-01-20",
                 "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769735563998-z1hev.jpg",
+                "icon": "favorite"
+            },
+            {
+                "coordinates": [
+                    "-6.300681",
+                    "106.636572"
+                ],
+                "title": "Where you kiss me for the first time.",
+                "memory": "The Moments Was Just Perfect.",
+                "date": "2020-02-25",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769805492176-k2bc5u.jpg",
+                "icon": "favorite"
+            },
+            {
+                "coordinates": [
+                    "-6.824732",
+                    "107.438125"
+                ],
+                "title": "Trip to Beach !!",
+                "memory": "Our First Trip Ever !!",
+                "date": "2021-05-21",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769805546306-4o1wr.jpg",
                 "icon": "favorite"
             }
         ]
@@ -138,7 +188,12 @@ const CONFIG = {
         "reasons": {
             "generic": [
                 "...your smile lights up the room",
-                "...you make me a better person"
+                "...you make me a better person",
+                "...Your smile lights up my world",
+                "...You make me laugh like no one else",
+                "...Your kindness inspires me",
+                "...You are my safe space",
+                "...The way you look at me"
             ],
             "personal": [
                 "...of how we met that one rainy day"
@@ -162,7 +217,7 @@ const CONFIG = {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-01-30T20:24:42.868Z"
+        "generatedAt": "2026-01-30T20:55:12.161Z"
     },
     "adminLang": "en",
     "currentStep": 9,

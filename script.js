@@ -54,8 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMediaBlob('assets/sfx1.dat').then(blobUrl => {
         printerSfx.src = blobUrl;
         printerSfx.loop = true;
+        console.log('[App] Printer SFX initialized');
+    });
+
+    // Initialize Scratch SFX
+    fetchMediaBlob('assets/scratching.mp3').then(blobUrl => {
         scratchSfx.src = blobUrl;
-        console.log('[App] SFX initialized');
+        scratchSfx.loop = true;
+        console.log('[App] Scratch SFX initialized');
     });
 
     loadDynamicContent();
@@ -408,6 +414,7 @@ function MapsTo(fromId, toId) {
             if (typeof initMap === 'function') initMap();
         } else if (toId === 'page-8') {
             if (typeof resetLetterPage === 'function') resetLetterPage();
+            if (typeof initLetterPage === 'function') initLetterPage();
         } else if (toId === 'page-9') {
             if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
@@ -2054,32 +2061,96 @@ function initLogin() {
     }
 }
 
+// ===== LETTER PAGE INITIALIZATION =====
 let letterTyped = false;
+let isDustAnimationActive = false;
 
 function initLetterPage() {
-    const letter = document.getElementById('fate-letter');
+    // Initialize floating dust particles
+    initFloatingDust();
+
+    // Initialize premium interactions
+    initLetterParallax();
+    initPremiumCursor();
+
+    console.log('[Letter Page] Premium version initialized');
 }
 
+// ===== FLOATING DUST PARTICLES =====
+function initFloatingDust() {
+    if (isDustAnimationActive) return;
+    isDustAnimationActive = true;
+
+    const dustContainer = document.querySelector('.dust-particles-container');
+    if (!dustContainer) return;
+
+    // Create 8 dust particles
+    for (let i = 0; i < 8; i++) {
+        const dust = document.createElement('div');
+        dust.className = 'dust-particle';
+        dust.style.cssText = `
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            filter: blur(1px);
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation: float-dust ${12 + Math.random() * 8}s linear infinite;
+            animation-delay: ${-Math.random() * 10}s;
+            opacity: ${0.3 + Math.random() * 0.5};
+        `;
+        dustContainer.appendChild(dust);
+    }
+}
+
+// ===== ENVELOPE INTERACTION =====
 function handleLetterInteraction() {
     const envelope = document.getElementById('envelope-main');
-    if (envelope) {
-        if (envelope.classList.contains('is-sealed')) {
-            // Unseal and open 3D envelope
-            envelope.classList.remove('is-sealed');
+    if (!envelope) return;
 
-            // Wait for envelope flip and paper slide-up before typing
-            if (!letterTyped) {
-                setTimeout(() => {
-                    startLetterTyping();
-                }, 1500); // 1.5s delay for cinematic effect
-            }
+    if (envelope.classList.contains('is-sealed')) {
+        // Play subtle seal break sound (if available)
+        playSound('seal-break');
+
+        // Unseal and open 3D envelope with premium animation
+        envelope.classList.remove('is-sealed');
+        envelope.style.pointerEvents = 'none'; // Prevent re-clicking
+
+        // Add smooth camera follow effect
+        setTimeout(() => {
+            smoothScrollToLetter();
+        }, 800);
+
+        // Start typing after cinematic delay
+        if (!letterTyped) {
+            setTimeout(() => {
+                startLetterTyping();
+            }, 1800); // Increased for dramatic effect
         }
     }
 }
 
+// ===== SMOOTH SCROLL TO LETTER =====
+function smoothScrollToLetter() {
+    const letterPaper = document.querySelector('.letter-paper-premium');
+    if (!letterPaper) return;
+
+    const rect = letterPaper.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const targetPosition = rect.top + scrollTop - (window.innerHeight / 2) + (rect.height / 2);
+
+    window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+    });
+}
+
+// ===== PREMIUM TYPEWRITER EFFECT =====
 async function startLetterTyping() {
     if (letterTyped) {
-        // Already Typed: Ensure content is visible and button is active
+        // Already typed: ensure button is visible
         const finaleNextBtn = document.getElementById('finale-next-btn');
         if (finaleNextBtn) {
             finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
@@ -2087,77 +2158,219 @@ async function startLetterTyping() {
         }
         return;
     }
+
     letterTyped = true;
     const bodyEl = document.getElementById('letter-body');
     if (!bodyEl || !CONFIG.letter.message) return;
+
+    // Play gentle typing ambient (if available)
+    playAmbientTyping(true);
 
     const fullText = CONFIG.letter.message;
     const paragraphs = fullText.split('\n\n');
 
     bodyEl.innerHTML = '';
 
+    // Type each paragraph with breathing pause
     for (const pText of paragraphs) {
-        if (!letterTyped) break; // Stop if reset
+        if (!letterTyped) break;
+
         const pEl = document.createElement('p');
         bodyEl.appendChild(pEl);
-        await typeTarget(pEl, pText);
+
+        await typeTargetPremium(pEl, pText);
+
+        // Breathe between paragraphs
+        await sleep(300);
     }
 
-    // Type Closing
+    // Type closing with elegant pause
+    await sleep(500);
     const closingEl = document.getElementById('letter-closing');
     if (closingEl && letterTyped) {
-        await typeTarget(closingEl, "With all my love,");
+        await typeTargetPremium(closingEl, "With all my love,");
     }
 
-    // Type Signature
+    // Type signature with flourish
+    await sleep(400);
     const signatureEl = document.getElementById('letter-signature');
     if (signatureEl && letterTyped && CONFIG.letter.signature) {
-        await typeTarget(signatureEl, CONFIG.letter.signature);
+        await typeTargetPremium(signatureEl, CONFIG.letter.signature, 60); // Slower for cursive
+
+        // Add ink bleed effect after signature
+        setTimeout(() => {
+            signatureEl.style.filter = 'blur(0.3px)';
+            setTimeout(() => {
+                signatureEl.style.filter = '';
+            }, 200);
+        }, 100);
+
+        // REVEAL HEART ORNAMENT
+        setTimeout(() => {
+            const heartOrn = document.getElementById('letter-heart-ornament');
+            if (heartOrn) {
+                heartOrn.classList.remove('opacity-0');
+                heartOrn.classList.add('opacity-100', 'animate-heartbeat');
+            }
+        }, 1000);
     }
 
-    // Finished! Show the Finale button
+    // Stop typing sound
+    playAmbientTyping(false);
+
+    // Reveal next button with elegant fade
+    await sleep(800);
     const finaleNextBtn = document.getElementById('finale-next-btn');
     if (finaleNextBtn) {
-        finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none');
+        finaleNextBtn.style.transition = 'all 1s cubic-bezier(0.23, 1, 0.32, 1)';
+        finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
         finaleNextBtn.classList.add('opacity-100', 'pointer-events-auto');
+
+        // Add subtle bounce
+        finaleNextBtn.style.animation = 'gentle-bounce 0.6s ease-out';
     }
+
+    console.log('[Letter] Typing complete');
 }
 
-function typeTarget(element, text) {
+// ===== ENHANCED TYPEWRITER WITH VARIABLE SPEED =====
+function typeTargetPremium(element, text, baseSpeed = 45) {
     return new Promise(resolve => {
         let i = 0;
-        const speed = 40; // Typing speed in ms
+
         function type() {
             if (!letterTyped) {
                 resolve();
                 return;
             }
+
             if (i < text.length) {
-                element.textContent += text.charAt(i);
+                const char = text.charAt(i);
+                element.textContent += char;
                 i++;
-                setTimeout(type, speed);
+
+                // Variable speed: slower after punctuation
+                let delay = baseSpeed;
+                if (char === '.' || char === '!' || char === '?') {
+                    delay = baseSpeed * 4; // Pause after sentences
+                } else if (char === ',' || char === ';') {
+                    delay = baseSpeed * 2; // Pause after clauses
+                } else if (char === ' ') {
+                    delay = baseSpeed * 0.8; // Slightly faster for spaces
+                }
+
+                // Add subtle letter reveal effect
+                element.style.opacity = '0.98';
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                }, delay / 2);
+
+                setTimeout(type, delay);
             } else {
                 resolve();
             }
         }
+
         type();
     });
 }
 
+// ===== RESET LETTER PAGE =====
 function resetLetterPage() {
     const envelope = document.getElementById('envelope-main');
     const bodyEl = document.getElementById('letter-body');
     const closingEl = document.getElementById('letter-closing');
     const signatureEl = document.getElementById('letter-signature');
 
-    letterTyped = false; // Reset typewriter state
-    if (bodyEl) bodyEl.innerHTML = ''; // Clear typed text
+    letterTyped = false;
+
+    if (bodyEl) bodyEl.innerHTML = '';
     if (closingEl) closingEl.textContent = '';
     if (signatureEl) signatureEl.textContent = '';
 
     if (envelope) {
         envelope.classList.add('is-sealed');
+        envelope.style.pointerEvents = '';
     }
+
+    // Hide next button
+    const finaleNextBtn = document.getElementById('finale-next-btn');
+    if (finaleNextBtn) {
+        finaleNextBtn.classList.add('opacity-0', 'pointer-events-none', 'invisible');
+        finaleNextBtn.classList.remove('opacity-100', 'pointer-events-auto');
+    }
+
+    playAmbientTyping(false);
+
+    console.log('[Letter] Page reset');
+}
+
+// ===== UTILITY FUNCTIONS =====
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ===== SOUND EFFECTS (Optional Enhancement) =====
+let ambientTypingInterval = null;
+
+function playSound(soundName) {
+    // Optional: Add subtle sound effects
+    // Example: seal-break, paper-unfold, etc.
+    // Implement with Howler.js or Web Audio API
+    console.log(`[Sound] ${soundName}`);
+}
+
+function playAmbientTyping(enabled) {
+    if (enabled && !ambientTypingInterval) {
+        // Optional: Very subtle typing rhythm sound
+        // clearInterval would be called when typing stops
+        console.log('[Sound] Ambient typing started');
+    } else if (!enabled && ambientTypingInterval) {
+        clearInterval(ambientTypingInterval);
+        ambientTypingInterval = null;
+        console.log('[Sound] Ambient typing stopped');
+    }
+}
+
+// ===== PARALLAX EFFECT (Optional Enhancement) =====
+function initLetterParallax() {
+    const letterPaper = document.querySelector('.letter-paper-premium');
+    if (!letterPaper) return;
+
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const rate = scrolled * 0.05;
+
+        // Subtle parallax on letter
+        letterPaper.style.transform = `translate(-50%, -50%) translateY(${-100 + rate}px) scale(1)`;
+    }, { passive: true });
+}
+
+// ===== CURSOR INTERACTION (Optional Enhancement) =====
+function initPremiumCursor() {
+    const envelope = document.getElementById('envelope-main');
+    if (!envelope) return;
+
+    envelope.addEventListener('mousemove', (e) => {
+        if (!envelope.classList.contains('is-sealed')) return;
+
+        const rect = envelope.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const angleX = (y - centerY) / 30;
+        const angleY = -(x - centerX) / 30;
+
+        envelope.style.transform = `translateY(-8px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+    });
+
+    envelope.addEventListener('mouseleave', () => {
+        if (!envelope.classList.contains('is-sealed')) return;
+        envelope.style.transform = '';
+    });
 }
 
 // Page 9: Invitation Logic
@@ -2681,15 +2894,6 @@ function getPageConfig(pageId) {
 /**
  * Handle dynamic forward navigation
  */
-/**
- * Capture Music Card (Page 3)
- */
-function captureMusicCard() {
-    const container = document.querySelector('#page-3-container .min-h-screen > .flex-col');
-    if (typeof captureElement === 'function' && container) {
-        captureElement(container, 'My-Playlist-Card.png');
-    }
-}
 
 function goNextPage() {
     if (isNavigating) return;

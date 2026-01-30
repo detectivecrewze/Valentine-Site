@@ -69,8 +69,9 @@
         }
     </script>
 
-    <!-- html2canvas for screenshots -->
+    <!-- Screenshot Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.4.39/dist/index.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -340,9 +341,7 @@
                     </button>
                 </div>
                 <div class="flex justify-center">
-                    <button onclick="captureGreetingCard()" class="nav-camera-btn">
-                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                    </button>
+                    <!-- Camera button removed -->
                 </div>
                 <div class="flex justify-end">
                     <button onclick="goNextPage()" class="nav-btn-standard">
@@ -505,7 +504,11 @@
                         <span class="material-symbols-outlined text-2xl">photo_camera</span>
                     </button>
                 </div>
-                <div class="flex justify-end">
+                <div class="relative flex justify-end items-center">
+                    <button onclick="shareMusic()"
+                        class="absolute bottom-full mb-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-rose-800 border border-white/40 hover:bg-white/60 transition-all pointer-events-auto shadow-sm">
+                        <span class="material-symbols-outlined text-xl">share</span>
+                    </button>
                     <button onclick="goNextPage()" class="nav-btn-standard">
                         <span>Next</span>
                         <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
@@ -787,9 +790,7 @@
                     </button>
                 </div>
                 <div class="flex justify-center">
-                    <button onclick="captureQuizCard()" class="nav-camera-btn">
-                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                    </button>
+                    <!-- Camera button removed -->
                 </div>
                 <div class="flex justify-end">
                     <!-- Next button removed as it's now inside the result card -->
@@ -1010,119 +1011,146 @@
 
         </main>
     </section>
-    <!-- Page 8: Heartfelt Letter -->
-    <section id="page-8" class="page hidden fixed inset-0 w-full h-full text-left">
-        <div class="grain-overlay"></div>
-        <div id="page-8-scroll-wrapper" class="h-full w-full overflow-y-auto relative">
-            <!-- Page Indicator -->
-            <div
-                class="page-indicator-container absolute top-6 left-1/2 -translate-x-1/2 z-[100] bg-white/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/40 shadow-sm transition-all duration-300 opacity-0 pointer-events-none">
-                <span
-                    class="page-indicator-text text-[10px] font-sans font-bold text-primary tracking-widest leading-none">8/--</span>
-            </div>
+    <section id="page-8" class="page hidden fixed inset-0 w-full h-full text-left overflow-hidden">
+        <!-- Premium Animated Background Layer -->
+        <div class="premium-bg-layer absolute inset-0 overflow-hidden pointer-events-none">
+            <!-- Soft bokeh particles -->
+            <div class="bokeh-container"></div>
 
-            <!-- Music Toggle -->
-            <div class="absolute top-4 right-4 z-50">
-                <button
-                    class="page-music-toggle bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all hidden">
-                    🎵
-                </button>
-            </div>
-            <main id="page-8-container"
-                class="min-h-screen w-full flex items-start justify-center py-12 pb-48 px-6 relative">
-                <!-- Cinematic 3D Envelope Wrapper -->
-                <div class="envelope-wrapper is-sealed relative w-full max-w-lg mx-auto z-10" id="envelope-main"
-                    onclick="handleLetterInteraction()">
+            <!-- Subtle light rays -->
+            <div class="light-ray light-ray-1"></div>
+            <div class="light-ray light-ray-2"></div>
+            <div class="light-ray light-ray-3"></div>
 
-                    <!-- Back Panel of Envelope -->
-                    <div class="envelope-back"></div>
+            <!-- Floating dust particles -->
+            <div class="dust-particles-container"></div>
 
-                    <!-- The Actual Letter (Hidden inside/behind initially) -->
-                    <article class="letter-paper relative w-full px-6 py-8 md:px-12 md:py-12" id="fate-letter">
-                        <!-- Click to Read Hint -->
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-rose-900 font-display italic text-2xl whitespace-nowrap pulse-hint-anim pointer-events-none"
-                            id="open-hint">
-                            Tap to open...
-                        </div>
-
-                        <!-- Content -->
-                        <div class="letter-content space-y-6">
-                            <header>
-                                <h1 id="letter-recipient"
-                                    class="font-display italic text-2xl md:text-3xl text-rose-900 opacity-90">
-                                    Dearest [Name],
-                                </h1>
-                            </header>
-                            <div id="letter-body"
-                                class="font-serif-body text-base md:text-lg text-stone-800 leading-relaxed space-y-4">
-                                <!-- Content injected via JS -->
-                            </div>
-                            <footer class="pt-6">
-                                <p id="letter-closing"
-                                    class="font-serif-body italic text-stone-600 mb-1 text-sm md:text-base"></p>
-                                <p id="letter-signature"
-                                    class="font-cursive text-5xl md:text-7xl text-rose-600 leading-none -rotate-2 origin-left mt-2">
-                                    [Your Name]
-                                </p>
-                            </footer>
-                        </div>
-                    </article>
-
-                    <!-- Front Panel of Envelope -->
-                    <div class="envelope-front"></div>
-
-                    <!-- Top Flap -->
-                    <div class="envelope-top-flap"></div>
-
-                    <!-- Wax Seal (V2 Premium) -->
-                    <div class="wax-seal-v2">
-                        <div class="seal-inner">
-                            <span class="material-symbols-outlined text-white text-3xl select-none"
-                                style="font-variation-settings: 'FILL' 1">favorite</span>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="fixed inset-0 pointer-events-none">
-                    <div class="absolute top-[15%] right-[10%] opacity-20">
-                        <span class="material-symbols-outlined text-rose-200 text-4xl">flare</span>
-                    </div>
-                    <div class="absolute bottom-[10%] left-[15%] opacity-25">
-                        <span class="material-symbols-outlined text-rose-300 text-5xl">water_drop</span>
-                    </div>
-                </div>
+            <!-- Elegant vignette -->
+            <div class="premium-vignette"></div>
         </div>
-        </main>
 
-        <!-- Navigation Buttons (Stay fixed at bottom) -->
+        <!-- Scrollable content wrapper -->
+        <div id="page-8-scroll-wrapper" class="h-full w-full overflow-y-auto relative">
+            <div id="page-8-container" class="relative z-10 w-full max-w-5xl mx-auto px-4 pt-2 pb-48">
+
+                <!-- Decorative Top Flourish -->
+                <div class="flourish-top">
+                    <svg viewBox="0 0 200 50" class="w-48 mx-auto opacity-40">
+                        <path d="M10,25 Q100,0 190,25" fill="none" stroke="#be123c" stroke-width="0.5" />
+                        <circle cx="100" cy="15" r="2" fill="#be123c" />
+                    </svg>
+                </div>
+
+                <!-- Cinematic 3D Envelope Scene -->
+                <div class="envelope-scene-wrapper perspective-deep">
+                    <div id="envelope-main" class="envelope-premium-wrapper is-sealed"
+                        onclick="handleLetterInteraction()">
+
+                        <!-- Back Panel -->
+                        <div class="envelope-premium-back">
+                            <div class="envelope-texture"></div>
+                            <div class="envelope-shadow-inner"></div>
+                        </div>
+
+                        <!-- Letter Paper (Revealed later) -->
+                        <div class="letter-paper-premium" id="fate-letter">
+                            <div class="paper-texture-overlay"></div>
+                            <div class="ink-bleed-effect"></div>
+
+                            <div class="letter-content-wrapper">
+                                <header class="letter-header">
+                                    <h2 id="letter-recipient" class="letter-recipient-name">Dearest,</h2>
+                                </header>
+
+                                <div id="letter-body" class="letter-body-text">
+                                    <!-- Content typed via JS -->
+                                </div>
+
+                                <footer class="letter-footer">
+                                    <p id="letter-closing" class="letter-closing-text"></p>
+                                    <p id="letter-signature" class="letter-signature-text"></p>
+                                </footer>
+
+                                <div class="letter-ornament-bottom mt-8">
+                                    <span id="letter-heart-ornament"
+                                        class="material-symbols-outlined text-rose-600 opacity-0 transition-opacity duration-1000 scale-125"
+                                        style="font-variation-settings: 'FILL' 1">favorite</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Front Panel (Side Flaps) -->
+                        <div class="envelope-premium-front">
+                            <div class="envelope-texture"></div>
+                            <div class="envelope-emboss"></div>
+                        </div>
+
+                        <!-- Top Flap -->
+                        <div class="envelope-premium-flap">
+                            <div class="envelope-texture"></div>
+                            <div class="flap-crease"></div>
+                        </div>
+
+                        <!-- Wax Seal -->
+                        <div class="wax-seal-premium">
+                            <div class="seal-glow-outer"></div>
+                            <div class="seal-main">
+                                <div class="seal-texture-layer"></div>
+                                <div class="seal-highlight"></div>
+                                <span class="material-symbols-outlined seal-icon">favorite</span>
+                            </div>
+                        </div>
+
+                        <!-- Interaction Hint -->
+                        <div class="envelope-hint">
+                            <span class="hint-text">Unseal your letter</span>
+                            <div class="hint-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decorative Bottom Flourish -->
+                <div class="flourish-bottom pb-12">
+                    <svg viewBox="0 0 200 50" class="w-32 mx-auto opacity-30 rotate-180">
+                        <path d="M10,25 Q100,0 190,25" fill="none" stroke="#be123c" stroke-width="0.5" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Navigation Controls (Standard Style) -->
         <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
             <div class="nav-bottom-grid max-w-6xl mx-auto">
-                <!-- Back Button Container -->
+                <!-- Previous Button -->
                 <div class="flex justify-start">
-                    <button onclick="goPrevPage()" class="nav-btn-standard">
+                    <button onclick="goPrevPage()" class="nav-btn-standard pointer-events-auto">
                         <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                         <span>Back</span>
                     </button>
                 </div>
 
-                <!-- Restart Button Removed per user request -->
+                <!-- Camera Button Removed -->
                 <div class="flex justify-center">
-                    <button onclick="captureLetter()" class="nav-camera-btn">
-                        <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                    </button>
                 </div>
 
-                <!-- Next Button (Initially Hidden for Effect) -->
-                <div id="finale-next-btn"
-                    class="flex justify-end opacity-0 pointer-events-none transition-opacity duration-1000">
-                    <button onclick="goNextPage()" class="nav-btn-standard">
-                        <span>Next</span>
-                        <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
-                    </button>
+                <!-- Next Button -->
+                <div class="flex justify-end">
+                    <div id="finale-next-btn"
+                        class="opacity-0 pointer-events-none invisible transition-all duration-1000">
+                        <button onclick="goNextPage()" class="nav-btn-standard pointer-events-auto">
+                            <span>Next</span>
+                            <span class="material-symbols-outlined text-lg">arrow_forward_ios</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Ambient Sound Indicator -->
+        <div class="ambient-indicator">
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
         </div>
     </section>
 
@@ -1280,6 +1308,6 @@
 
     <!-- Scripts -->
     <script src="data.js"></script>
-    <script src="screenshot.js"></script>
     <script src="script.js"></script>
+    <script src="screenshot.js"></script>
 </body>

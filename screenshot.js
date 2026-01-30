@@ -46,7 +46,22 @@ function captureElement(selector, filename, returnCanvas = false) {
                 logging: false,
                 height: captureHeight,
                 windowHeight: captureHeight,
+                width: window.innerWidth,
+                windowWidth: window.innerWidth,
                 onclone: (clonedDoc) => {
+                    // Force disable all transitions/animations for stability
+                    const style = clonedDoc.createElement('style');
+                    style.innerHTML = `* { transition: none !important; transition-duration: 0s !important; animation: none !important; animation-duration: 0s !important; }`;
+                    clonedDoc.head.appendChild(style);
+
+                    // Ensure Layout Container (Centered Cards) is stable
+                    const layoutContainer = clonedDoc.querySelector('.layout-container');
+                    if (layoutContainer) {
+                        layoutContainer.style.width = '100vw'; // Use viewport width
+                        layoutContainer.style.maxWidth = '1024px';
+                        layoutContainer.style.margin = '0 auto';
+                    }
+
                     // FIX: Mencegah teks judul terpotong
                     const titles = clonedDoc.querySelectorAll('#song-title, #artist-name, .font-display');
                     titles.forEach(el => {
@@ -64,6 +79,19 @@ function captureElement(selector, filename, returnCanvas = false) {
                         clonedStoryCard.style.transition = 'none';
                     }
 
+                    // FIX: Ensure Premium Letter (Page 8) is visible and opened
+                    const clonedEnvelope = clonedDoc.querySelector('.envelope-premium-wrapper');
+                    if (clonedEnvelope) {
+                        clonedEnvelope.classList.remove('is-sealed');
+                        clonedEnvelope.style.transform = 'none';
+                    }
+
+                    const clonedPaper = clonedDoc.querySelector('.letter-paper-premium');
+                    if (clonedPaper) {
+                        clonedPaper.style.opacity = '1';
+                        clonedPaper.style.transform = 'translate(-50%, -50%) translateY(-100px) scale(1)';
+                    }
+
                     const clonedElement = clonedDoc.querySelector(selector);
                     if (clonedElement) {
                         // For maps, keep the fixed height to avoid blank tiles
@@ -76,7 +104,7 @@ function captureElement(selector, filename, returnCanvas = false) {
                     }
 
                     // Sembunyi elemen yang tidak perlu
-                    const skip = clonedDoc.querySelectorAll('.grain-overlay, #particle-container, .page-music-toggle, .page-indicator-container, .nav-btn-standard');
+                    const skip = clonedDoc.querySelectorAll('.grain-overlay, #particle-container, .page-music-toggle, .page-indicator-container, .nav-btn-standard, .envelope-hint');
                     skip.forEach(el => el.style.display = 'none');
                 }
             }).then(canvas => {
@@ -152,6 +180,47 @@ async function shareWrapped() {
         }
     } catch (err) {
         console.error('Full share flow failed:', err);
+        alert('Could not open sharing. The image has been saved to your device instead.');
+    }
+}
+
+// Share Music Player function
+async function shareMusic() {
+    try {
+        const shareTitle = "Our Memory Playlist";
+        const shareText = "Check out our special playlist! ❤️🎵";
+
+        // Step 1: Capture the card
+        const canvas = await captureElement('#page-3-container', 'playlist.png', true);
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+        // Step 2: Prepare the file
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], 'playlist.png', { type: 'image/png' });
+
+        // Step 3: Use Web Share API
+        if (navigator.share) {
+            const shareData = {
+                title: shareTitle,
+                text: shareText
+            };
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                shareData.files = [file];
+            }
+
+            try {
+                await navigator.share(shareData);
+            } catch (shareError) {
+                if (shareError.name !== 'AbortError') {
+                    downloadBlob(blob, 'playlist.png');
+                }
+            }
+        } else {
+            downloadBlob(blob, 'playlist.png');
+        }
+    } catch (err) {
+        console.error('Music share failed:', err);
         alert('Could not open sharing. The image has been saved to your device instead.');
     }
 }
