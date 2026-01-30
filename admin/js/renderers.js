@@ -1038,25 +1038,7 @@ const renderers = {
                             </label>
                         </div>
                     </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-2">${memory.type === 'video' ? 'Video' : 'Image'} URL</label>
-                        <div class="flex gap-2 items-center">
-                            <img src="${memory.src || ''}" 
-                                id="gallery-mem-${idx}"
-                                class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${memory.src && memory.type === 'image' ? '' : 'hidden'}" 
-                                onerror="this.classList.add('hidden')">
-                            <input type="text" id="gallery-mem-input-${idx}" class="form-input text-xs font-mono flex-1" 
-                                value="${memory.src || ''}" 
-                                placeholder="assets/photo.jpg" 
-                                oninput="renderers.updateGalleryMemory(${idx}, 'src', this.value); renderers.updateGalleryPreview(${idx})">
-                            <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
-                                <span class="material-symbols-outlined text-gray-400 text-base">upload</span>
-                                <input type="file" class="hidden" accept="${memory.type === 'video' ? 'video/*' : 'image/*'}" 
-                                    onchange="utils.handleMediaUpload(this, 'gallery-mem-input-${idx}')">
-                            </label>
-                        </div>
-                    </div>
+
                     
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_caption')}</label>
