@@ -41,9 +41,13 @@
     </script>
 
     <style>
-        /* Base Styling */
+        /* Base Styling - Background will be set by JavaScript from CONFIG */
+        :root {
+            --page-bg: linear-gradient(135deg, #fadceb 0%, #fef3e2 50%, #e0e7ff 100%);
+        }
+
         body {
-            background: linear-gradient(135deg, #fadceb 0%, #fef3e2 50%, #e0e7ff 100%);
+            background: var(--page-bg);
             background-attachment: fixed;
             overflow-x: hidden;
         }
@@ -85,6 +89,53 @@
             pointer-events: none;
             z-index: 1;
             animation: float 8s infinite ease-in-out;
+        }
+
+        /* Ethereal Rose Petals */
+        .rose-petal {
+            position: fixed;
+            pointer-events: none;
+            will-change: transform;
+            transition: transform 0.1s linear;
+        }
+
+        .rose-petal svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .petal-layer-far {
+            z-index: 0;
+            opacity: 0.3;
+            filter: blur(1px);
+        }
+
+        .petal-layer-mid {
+            z-index: 2;
+            opacity: 0.5;
+            filter: blur(0.5px);
+        }
+
+        .petal-layer-near {
+            z-index: 45;
+            opacity: 0.25;
+            filter: blur(3px);
+        }
+
+        @keyframes petalDrift {
+
+            0%,
+            100% {
+                transform: translateX(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateX(15px) rotate(10deg);
+            }
+
+            75% {
+                transform: translateX(-15px) rotate(-10deg);
+            }
         }
 
         /* Magical Fade-in Animation for Reasons */
@@ -207,6 +258,138 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(1px);
         }
+
+        .reason-card-number {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: rgba(126, 12, 35, 0.12);
+            letter-spacing: 0.1em;
+            pointer-events: none;
+        }
+
+        /* Auto Scroll Button */
+        .auto-scroll-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.2);
+            /* Very transparent */
+            color: rgba(126, 12, 35, 0.4);
+            /* Subtle text */
+            border: 1px solid rgba(126, 12, 35, 0.05);
+            padding: 10px 20px;
+            border-radius: 99px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(126, 12, 35, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.1em;
+            backdrop-filter: blur(10px);
+        }
+
+        .auto-scroll-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(126, 12, 35, 0.1);
+            color: rgba(126, 12, 35, 0.8);
+            border-color: rgba(126, 12, 35, 0.2);
+            box-shadow: 0 8px 20px rgba(126, 12, 35, 0.1);
+        }
+
+        .auto-scroll-btn.active {
+            background: rgba(126, 12, 35, 0.6);
+            /* Semi-transparent active state */
+            color: white;
+            border-color: rgba(126, 12, 35, 0.2);
+            box-shadow: 0 5px 15px rgba(126, 12, 35, 0.2);
+        }
+
+        .auto-scroll-btn .material-symbols-outlined {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .auto-scroll-btn.active .material-symbols-outlined {
+            animation: pulse-slow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-slow {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Music Toggle Button */
+        .music-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 55;
+            background: rgba(255, 255, 255, 0.3);
+            /* More transparent */
+            color: rgba(126, 12, 35, 0.5);
+            /* Subtle icon color */
+            border: 1px solid rgba(126, 12, 35, 0.08);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(126, 12, 35, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            /* Stronger blur for glass effect */
+        }
+
+        .music-toggle-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.5);
+            color: rgba(126, 12, 35, 0.8);
+            box-shadow: 0 8px 20px rgba(126, 12, 35, 0.1);
+        }
+
+        .music-toggle-btn.playing {
+            background: rgba(126, 12, 35, 0.7);
+            /* Transparent theme color when playing */
+            color: white;
+            border-color: rgba(126, 12, 35, 0.2);
+            animation: musicPulse 2s infinite ease-in-out;
+        }
+
+        .music-toggle-btn .material-symbols-outlined {
+            font-size: 1.4rem;
+        }
+
+        @keyframes musicPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(126, 12, 35, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 0 12px rgba(126, 12, 35, 0);
+            }
+        }
     </style>
 </head>
 
@@ -215,6 +398,9 @@
 
     <!-- Floating Particles Background (Generated via JS) -->
     <div id="particle-container"></div>
+
+    <!-- Ethereal Rose Petals Container -->
+    <div id="petal-container"></div>
 
     <!-- Main Infinity Scroll Container -->
     <main id="infinity-scroll-container" class="relative min-h-screen w-full">
@@ -270,10 +456,23 @@
                 reasons
             </span>
         </div>
+
+        <!-- Auto Scroll Button (Bottom Left) -->
+        <button id="toggle-auto-scroll" class="auto-scroll-btn">
+            <span class="material-symbols-outlined">play_arrow</span>
+            <span class="btn-text uppercase">Cinematic Mode</span>
+        </button>
+
+        <!-- Music Toggle Button (Top Right) -->
+        <button id="toggle-infinity-music" class="music-toggle-btn" title="Toggle Music">
+            <span class="material-symbols-outlined">music_off</span>
+        </button>
     </main>
 
-    <!-- Load Data Directly to ensure freshness -->
-    <script src="data.js"></script>
+    <!-- Load Data Directly with Cache Busting to ensure freshness -->
+    <script>
+        document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');
+    </script>
 
     <!-- JavaScript: Infinite Scroll Logic with Virtual DOM Recycling -->
     <script>
@@ -289,6 +488,12 @@
 
         const parentConfig = (typeof CONFIG !== 'undefined') ? CONFIG : ((window.parent && window.parent.CONFIG) ? window.parent.CONFIG : {});
         const infinityConfig = parentConfig.infinityScroll || {};
+
+        // Music Configuration
+        const infinityMusic = infinityConfig.music || {};
+        const INFINITY_AUDIO_SRC = infinityMusic.audioSrc || '';
+        let infinityAudio = null;
+        let isInfinityMusicPlaying = false;
 
         const ROMANTIC_DEFAULTS = {
             generic: [
@@ -464,8 +669,11 @@
             container.dataset.type = 'reason';
             container.dataset.scrollPos = window.scrollY + window.innerHeight;
 
+            container.dataset.index = reasonCount;
+
             container.innerHTML = `
-                <div class="bg-white/80 backdrop-blur-[2px] rounded-2xl p-8 border border-rose-200/40 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div class="relative bg-white/80 backdrop-blur-[2px] rounded-2xl p-8 border border-rose-200/40 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    <span class="reason-card-number">REASON #${reasonCount}</span>
                     <div class="flex items-start gap-4">
                         <span class="material-symbols-outlined text-3xl text-rose-400 flex-shrink-0" style="font-variation-settings: 'FILL' 1, 'wght' 400;">
                             favorite
@@ -599,6 +807,9 @@
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
+            // Track visible reason for Color Journey
+            updateVisibleReasonTracking();
+
             // Hide scroll hint after first scroll
             if (scrollY > 100) {
                 const hint = document.getElementById('scroll-hint');
@@ -619,22 +830,100 @@
             lastScrollY = scrollY;
         }
 
+        let currentVisibleIndex = 0;
+        function updateVisibleReasonTracking() {
+            const reasons = document.querySelectorAll('.reason-item');
+            const viewportMiddle = window.scrollY + (window.innerHeight / 2);
+
+            let closestIndex = currentVisibleIndex;
+            let minDistance = Infinity;
+
+            reasons.forEach(reason => {
+                const rect = reason.getBoundingClientRect();
+                const reasonMiddle = rect.top + window.scrollY + (rect.height / 2);
+                const distance = Math.abs(viewportMiddle - reasonMiddle);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestIndex = parseInt(reason.dataset.index) || closestIndex;
+                }
+            });
+
+            if (closestIndex !== currentVisibleIndex) {
+                currentVisibleIndex = closestIndex;
+                updateColorJourney();
+                updateCounter(currentVisibleIndex);
+            }
+        }
+
 
 
         // ========================================
         // COUNTER UPDATE
         // ========================================
 
-        function updateCounter() {
+        function updateCounter(val) {
             const counter = document.getElementById('reason-counter');
             if (!counter) return;
-            counter.textContent = reasonCount;
+            counter.textContent = val || reasonCount;
 
             // Add pulse animation
             counter.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 counter.style.transform = 'scale(1)';
             }, 200);
+        }
+
+        // ========================================
+        // CINEMATIC AUTO SCROLL LOGIC
+        // ========================================
+
+        let isAutoScrolling = false;
+        let scrollRequest;
+        const SCROLL_SPEED = 1.2; // Slightly faster for better flow
+
+        function performAutoScroll() {
+            if (!isAutoScrolling) return;
+
+            window.scrollBy(0, SCROLL_SPEED);
+            scrollRequest = requestAnimationFrame(performAutoScroll);
+        }
+
+        function toggleAutoScroll() {
+            const btn = document.getElementById('toggle-auto-scroll');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            const text = btn.querySelector('.btn-text');
+
+            isAutoScrolling = !isAutoScrolling;
+
+            if (isAutoScrolling) {
+                btn.classList.add('active');
+                icon.textContent = 'pause';
+                text.textContent = 'Pause Mode';
+                performAutoScroll();
+            } else {
+                btn.classList.remove('active');
+                icon.textContent = 'play_arrow';
+                text.textContent = 'Cinematic Mode';
+                cancelAnimationFrame(scrollRequest);
+            }
+        }
+
+        // Initialize Auto Scroll
+        function initAutoScroll() {
+            const btn = document.getElementById('toggle-auto-scroll');
+            if (!btn) return;
+
+            btn.addEventListener('click', toggleAutoScroll);
+
+            // Stop auto-scroll on manual touch/wheel to give control back to user
+            window.addEventListener('wheel', () => {
+                if (isAutoScrolling) toggleAutoScroll();
+            }, { passive: true });
+
+            window.addEventListener('touchstart', () => {
+                if (isAutoScrolling) toggleAutoScroll();
+            }, { passive: true });
         }
 
         // ========================================
@@ -658,11 +947,67 @@
         }
 
         // ========================================
+        // ETHEREAL ROSE PETALS (Parallax)
+        // ========================================
+
+        const petalElements = [];
+
+        function createPetalSVG(color) {
+            return `<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 5 C35 15, 45 25, 25 45 C5 25, 15 15, 25 5" fill="${color}" />
+            </svg>`;
+        }
+
+        function initPetals() {
+            const container = document.getElementById('petal-container');
+            if (!container) return;
+
+            const petalConfigs = [
+                // Far layer (small, blurry, slow parallax)
+                { layer: 'far', size: 20, count: 5, speed: 0.02, colors: ['#fecdd3', '#fda4af'] },
+                // Mid layer (medium)
+                { layer: 'mid', size: 35, count: 4, speed: 0.05, colors: ['#fb7185', '#f43f5e'] },
+                // Near layer (large, very blurry, fast parallax)
+                { layer: 'near', size: 80, count: 3, speed: 0.12, colors: ['#fda4af', '#fecdd3'] },
+            ];
+
+            petalConfigs.forEach(config => {
+                for (let i = 0; i < config.count; i++) {
+                    const petal = document.createElement('div');
+                    petal.className = `rose-petal petal-layer-${config.layer}`;
+                    petal.style.width = `${config.size}px`;
+                    petal.style.height = `${config.size}px`;
+                    petal.style.left = `${Math.random() * 100}%`;
+                    petal.style.top = `${Math.random() * 100}%`;
+                    petal.style.animation = `petalDrift ${8 + Math.random() * 6}s ease-in-out infinite`;
+                    petal.style.animationDelay = `${Math.random() * 5}s`;
+
+                    const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+                    petal.innerHTML = createPetalSVG(color);
+
+                    container.appendChild(petal);
+                    petalElements.push({ el: petal, speed: config.speed, baseTop: parseFloat(petal.style.top) });
+                }
+            });
+        }
+
+        function updatePetalsParallax() {
+            const scrollY = window.scrollY;
+            petalElements.forEach(petal => {
+                const offset = scrollY * petal.speed;
+                petal.el.style.transform = `translateY(${offset}px)`;
+            });
+        }
+
+        // ========================================
         // INITIALIZATION
         // ========================================
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🌸 Infinity Scroll Initialized');
+
+            // Apply theme from CONFIG first
+            applyThemeFromConfig();
 
             // Generate initial content (1.5x batch size for initial fill)
             generateContent(Math.floor(BATCH_SIZE * 1.5));
@@ -670,13 +1015,426 @@
             // Initialize particles
             initParticles();
 
-            // Attach scroll listener with passive flag for better performance
-            window.addEventListener('scroll', handleScroll, { passive: true });
+            // Initialize Rose Petals
+            initPetals();
 
-            // Performance monitoring (optional)
+            // Initialize Auto Scroll
+            initAutoScroll();
+
+            // Attach scroll listener with passive flag for better performance
+            window.addEventListener('scroll', (e) => {
+                handleScroll();
+                updatePetalsParallax();
+                updateColorJourney(); // Emotional Color Journey
+            }, { passive: true });
+
+            // Initialize Music System
+            initInfinityMusic();
+
             // Performance monitoring (optional)
             // Memory logger removed for production performance
         });
+
+        // ========================================
+        // THEME APPLICATION SYSTEM
+        // ========================================
+
+        function applyThemeFromConfig() {
+            const theme = parentConfig.theme || {};
+            console.log('[Theme] CONFIG loaded:', JSON.stringify(theme));
+
+            // Apply background color
+            if (theme.backgroundColor) {
+                // Convert solid color to gradient
+                const baseColor = theme.backgroundColor;
+                const gradient = generateGradient(baseColor);
+
+                // Use CSS variable to override
+                document.documentElement.style.setProperty('--page-bg', gradient);
+                console.log(`[Theme] Applied background color: ${baseColor}`);
+                console.log(`[Theme] Generated gradient: ${gradient}`);
+            } else {
+                console.log('[Theme] No backgroundColor found in config');
+            }
+
+            // Apply background image if exists
+            if (theme.backgroundImage) {
+                document.body.style.backgroundImage = `url('${theme.backgroundImage}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                console.log(`[Theme] Applied background image: ${theme.backgroundImage}`);
+            }
+
+            // Apply fonts
+            if (theme.fontDisplay) {
+                document.documentElement.style.setProperty('--font-display', theme.fontDisplay);
+            }
+            if (theme.fontSans) {
+                document.documentElement.style.setProperty('--font-sans', theme.fontSans);
+            }
+        }
+
+        function generateGradient(hexColor) {
+            // Convert hex to RGB
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+
+            // Create lighter and slightly different tints for gradient
+            const lighterR = Math.min(255, r + 30);
+            const lighterG = Math.min(255, g + 30);
+            const lighterB = Math.min(255, b + 30);
+
+            const warmR = Math.min(255, r + 15);
+            const warmG = Math.min(255, g + 10);
+            const warmB = Math.max(0, b - 10);
+
+            const coolR = Math.max(0, r - 20);
+            const coolG = Math.max(0, g - 10);
+            const coolB = Math.min(255, b + 20);
+
+            return `linear-gradient(135deg, 
+                rgb(${lighterR}, ${lighterG}, ${lighterB}) 0%, 
+                rgb(${warmR}, ${warmG}, ${warmB}) 50%, 
+                rgb(${coolR}, ${coolG}, ${coolB}) 100%)`;
+        }
+
+        // ========================================
+        // EMOTIONAL COLOR JOURNEY SYSTEM
+        // ========================================
+
+        // Store the base theme color for blending
+        let baseThemeColor = null;
+        let lastJourneyPhase = 0;
+
+        function initColorJourney() {
+            const theme = parentConfig.theme || {};
+            if (theme.backgroundColor) {
+                baseThemeColor = hexToRgb(theme.backgroundColor);
+                console.log('[ColorJourney] Base theme color:', baseThemeColor);
+            }
+        }
+
+        function hexToRgb(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return { r, g, b };
+        }
+
+        function rgbToString(rgb) {
+            return `rgb(${Math.round(rgb.r)}, ${Math.round(rgb.g)}, ${Math.round(rgb.b)})`;
+        }
+
+        function blendColors(color1, color2, factor) {
+            return {
+                r: color1.r + (color2.r - color1.r) * factor,
+                g: color1.g + (color2.g - color1.g) * factor,
+                b: color1.b + (color2.b - color1.b) * factor
+            };
+        }
+
+        function updateColorJourney() {
+            if (!baseThemeColor) {
+                initColorJourney();
+                if (!baseThemeColor) return;
+            }
+
+            const count = currentVisibleIndex;
+
+            // Define atmospheric colors for each phase (Aesthetic Warmth Journey)
+            const atmospheres = {
+                morning: baseThemeColor,
+                champagne: { r: 255, g: 245, b: 230 }, // Soft Creamy Warmth
+                roseGold: { r: 245, g: 195, b: 185 },  // Romantic Peachy Glow
+                duskyRose: { r: 220, g: 150, b: 145 }, // Muted Sunset Pink
+                warmNight: { r: 80, g: 50, b: 55 }     // Deep Romantic Burgundy
+            };
+
+            let gradient;
+            let currentPhase;
+
+            if (count <= 25) {
+                // Phase 1: Morning (1-25) - Original theme
+                currentPhase = 1;
+                gradient = generateGradient(parentConfig.theme.backgroundColor);
+            } else if (count <= 50) {
+                // Phase 2: Champagne Heat (26-50)
+                currentPhase = 2;
+                const progress = (count - 25) / 25;
+                const blended = blendColors(baseThemeColor, atmospheres.champagne, progress * 0.4);
+                gradient = generateAtmosphericGradient(blended, 'warm');
+            } else if (count <= 75) {
+                // Phase 3: Rose Gold Glow (51-75)
+                currentPhase = 3;
+                const progress = (count - 50) / 25;
+                const base = blendColors(baseThemeColor, atmospheres.champagne, 0.4);
+                const blended = blendColors(base, atmospheres.roseGold, progress * 0.6);
+                gradient = generateAtmosphericGradient(blended, 'gold');
+            } else {
+                // Phase 4: Dusky Sunset (76+)
+                currentPhase = 4;
+                const progress = Math.min((count - 75) / 50, 1);
+                const base = blendColors(baseThemeColor, atmospheres.roseGold, 0.6);
+                const blended = blendColors(base, atmospheres.duskyRose, progress * 0.7);
+                gradient = generateAtmosphericGradient(blended, 'sunset');
+            }
+
+            // Only update if phase changed (for performance)
+            if (currentPhase !== lastJourneyPhase || count % 3 === 0) {
+                document.documentElement.style.setProperty('--page-bg', gradient);
+                lastJourneyPhase = currentPhase;
+
+                if (count % 10 === 0) {
+                    console.log(`[ColorJourney] Phase ${currentPhase}, Reason ${count}`);
+                }
+            }
+        }
+
+        function generateAtmosphericGradient(baseColor, mood) {
+            let color1, color2, color3;
+
+            if (mood === 'warm') {
+                color1 = { r: baseColor.r + 5, g: baseColor.g + 5, b: baseColor.b };
+                color2 = { r: baseColor.r, g: baseColor.g, b: baseColor.b - 5 };
+                color3 = { r: baseColor.r - 5, g: baseColor.g - 5, b: baseColor.b + 5 };
+            } else if (mood === 'gold') {
+                color1 = { r: baseColor.r + 15, g: baseColor.g + 10, b: baseColor.b };
+                color2 = { r: baseColor.r + 5, g: baseColor.g, b: baseColor.b - 10 };
+                color3 = { r: baseColor.r - 10, g: baseColor.g - 5, b: baseColor.b + 5 };
+            } else if (mood === 'sunset') {
+                color1 = { r: baseColor.r + 20, g: baseColor.g + 5, b: baseColor.b + 5 };
+                color2 = { r: baseColor.r + 10, g: baseColor.g - 10, b: baseColor.b - 5 };
+                color3 = { r: baseColor.r - 15, g: baseColor.g - 15, b: baseColor.b + 10 };
+            } else {
+                color1 = color2 = color3 = baseColor;
+            }
+
+            // Clamp values
+            [color1, color2, color3].forEach(c => {
+                c.r = Math.max(0, Math.min(255, c.r));
+                c.g = Math.max(0, Math.min(255, c.g));
+                c.b = Math.max(0, Math.min(255, c.b));
+            });
+
+            return `linear-gradient(135deg, ${rgbToString(color1)} 0%, ${rgbToString(color2)} 50%, ${rgbToString(color3)} 100%)`;
+        }
+
+        // ========================================
+        // INFINITY MUSIC SYSTEM
+        // ========================================
+
+        function initInfinityMusic() {
+            if (!INFINITY_AUDIO_SRC) {
+                console.log('[Music] No infinity music configured');
+                document.getElementById('toggle-infinity-music').style.display = 'none';
+                return;
+            }
+
+            // Create audio element (but don't play yet)
+            infinityAudio = new Audio(INFINITY_AUDIO_SRC);
+            infinityAudio.loop = true;
+            infinityAudio.volume = 0.5;
+
+            // Setup toggle button
+            const btn = document.getElementById('toggle-infinity-music');
+            btn.addEventListener('click', toggleInfinityMusic);
+
+            // Listen for parent message that page is now active
+            window.addEventListener('message', (e) => {
+                if (e.data && e.data.type === 'PAGE_VISIBLE') {
+                    console.log('[Music] Page became visible, attempting autoplay...');
+                    stopParentMusic();
+                    attemptAutoplay();
+                }
+            });
+
+            // Check if already visible (page opened directly or parent section is visible)
+            if (isPageActuallyVisible()) {
+                console.log('[Music] Page is visible on load, attempting autoplay...');
+                stopParentMusic();
+                attemptAutoplay();
+            }
+
+            console.log('[Music] Infinity music initialized (waiting for visibility)');
+        }
+
+        function isPageActuallyVisible() {
+            try {
+                const parentSection = window.parent.document.getElementById('page-10');
+                if (parentSection && !parentSection.classList.contains('hidden')) {
+                    return true;
+                }
+            } catch (e) {
+                // Cross-origin or opened directly - assume visible
+                return window.self === window.top;
+            }
+            return false;
+        }
+
+        function attemptAutoplay() {
+            if (!infinityAudio) return;
+
+            const btn = document.getElementById('toggle-infinity-music');
+            const icon = btn.querySelector('.material-symbols-outlined');
+
+            fadeInAudio(infinityAudio, 3000); // 3 seconds fade in
+
+            infinityAudio.play().then(() => {
+                // Autoplay succeeded!
+                btn.classList.add('playing');
+                icon.textContent = 'music_note';
+                isInfinityMusicPlaying = true;
+                console.log('[Music] Autoplay successful with fade-in!');
+            }).catch(e => {
+                // Autoplay blocked, user needs to click
+                console.log('[Music] Autoplay blocked, waiting for user interaction');
+                btn.classList.remove('playing');
+                icon.textContent = 'music_off';
+                isInfinityMusicPlaying = false;
+                infinityAudio.volume = 0.5; // Reset volume for manual play
+            });
+        }
+
+        function fadeInAudio(audio, duration) {
+            audio.volume = 0;
+            const targetVolume = 0.5;
+            const speed = 50;
+            const step = targetVolume / (duration / speed);
+
+            const fadeInterval = setInterval(() => {
+                if (audio.volume < targetVolume - step) {
+                    audio.volume += step;
+                } else {
+                    audio.volume = targetVolume;
+                    clearInterval(fadeInterval);
+                }
+            }, speed);
+        }
+
+        function fadeOutLocalAudio(audio, duration, callback) {
+            if (!audio || audio.paused) {
+                if (callback) callback();
+                return;
+            }
+
+            const startVolume = audio.volume;
+            const speed = 50;
+            const step = startVolume / (duration / speed);
+
+            const fadeInterval = setInterval(() => {
+                if (audio.volume > step) {
+                    audio.volume -= step;
+                } else {
+                    audio.volume = 0;
+                    audio.pause();
+                    audio.volume = startVolume;
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                }
+            }, speed);
+        }
+
+        function stopParentMusic() {
+            try {
+                // Try to access parent's bgMusic and stop it
+                if (window.parent && window.parent.bgMusic) {
+                    window.parent.bgMusic.pause();
+                    console.log('[Music] Parent music stopped');
+                }
+            } catch (e) {
+                console.log('[Music] Could not access parent music (cross-origin)');
+            }
+
+            // Also send message to parent to stop music
+            try {
+                window.parent.postMessage({ type: 'STOP_MUSIC' }, '*');
+            } catch (e) {
+                // Ignore if postMessage fails
+            }
+        }
+
+        function toggleInfinityMusic() {
+            if (!infinityAudio) return;
+
+            const btn = document.getElementById('toggle-infinity-music');
+            const icon = btn.querySelector('.material-symbols-outlined');
+
+            if (isInfinityMusicPlaying) {
+                fadeOutLocalAudio(infinityAudio, 1500, () => {
+                    btn.classList.remove('playing');
+                    icon.textContent = 'music_off';
+                    isInfinityMusicPlaying = false;
+                });
+            } else {
+                fadeInAudio(infinityAudio, 2000);
+                infinityAudio.play().then(() => {
+                    btn.classList.add('playing');
+                    icon.textContent = 'music_note';
+                    isInfinityMusicPlaying = true;
+                }).catch(e => {
+                    console.log('[Music] Autoplay blocked');
+                });
+            }
+        }
+
+        // ========================================
+        // EMOTIONAL COLOR JOURNEY SYSTEM
+        // (Remove this entire section to revert)
+        // ========================================
+
+        function updateAtmosphere() {
+            const atmosphereEl = document.getElementById('atmosphere-overlay');
+            const vignetteEl = document.getElementById('vignette-overlay');
+
+            if (!atmosphereEl || !vignetteEl) return;
+
+            // Phase thresholds based on reason count
+            const count = reasonCount;
+
+            // Debug log every 5 reasons
+            if (count % 5 === 0) {
+                console.log(`[Atmosphere] Reason count: ${count}`);
+            }
+
+            // Phase 1: Morning (Fresh, Bright) - Reasons 1-10
+            // Phase 2: Golden Hour (Warm, Romantic) - Reasons 10-25
+            // Phase 3: Twilight (Deep, Emotional) - Reasons 25-40
+            // Phase 4: Night (Intimate, Starlit) - Reasons 40+
+
+            let atmosphereColor, atmosphereOpacity, vignetteOpacity;
+
+            if (count <= 10) {
+                // Morning - No overlay, keep original theme
+                atmosphereOpacity = 0;
+                vignetteOpacity = 0;
+            } else if (count <= 25) {
+                // Golden Hour - Warm orange tint
+                const progress = (count - 10) / 15; // 0 to 1
+                atmosphereColor = `rgba(255, 160, 80, 0.35)`; // Solid warm orange
+                atmosphereOpacity = 0.4 + 0.4 * progress;
+                vignetteOpacity = 0.15 * progress;
+            } else if (count <= 40) {
+                // Twilight - Purple/blue tint
+                const progress = (count - 25) / 15; // 0 to 1
+                atmosphereColor = `rgba(100, 60, 150, 0.4)`; // Purple twilight
+                atmosphereOpacity = 0.8 + 0.15 * progress;
+                vignetteOpacity = 0.2 + 0.2 * progress;
+            } else {
+                // Night - Deep blue with stars feel
+                const extraProgress = Math.min((count - 40) / 20, 1); // Cap at 60
+                atmosphereColor = `rgba(20, 30, 70, 0.5)`; // Deep night blue
+                atmosphereOpacity = 0.95;
+                vignetteOpacity = 0.4 + 0.25 * extraProgress;
+            }
+
+            // Apply styles
+            if (atmosphereColor) {
+                atmosphereEl.style.background = atmosphereColor;
+            }
+            atmosphereEl.style.opacity = atmosphereOpacity;
+            vignetteEl.style.opacity = vignetteOpacity;
+        }
     </script>
 </body>
 

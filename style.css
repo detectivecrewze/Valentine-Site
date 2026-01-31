@@ -1120,7 +1120,7 @@ body {
 }
 
 .envelope-premium-wrapper:not(.is-sealed) .letter-paper-premium {
-    transform: translate(-50%, -50%) translateY(-100px) scale(1);
+    transform: translate(-50%, -50%) translateY(-30px) scale(1);
     opacity: 1;
     z-index: 40;
 }
@@ -2483,4 +2483,301 @@ body {
     #global-music-toggle {
         display: none !important;
     }
+}
+
+/* ============================================
+   PREMIUM DECORATIVE ELEMENTS - PAGE 8 LETTER
+   ============================================ */
+
+/* ----------------
+   VINTAGE POSTAGE STAMP - Top Right
+   ---------------- */
+.vintage-stamp {
+    position: absolute;
+    top: 8%;
+    right: 3%;
+    width: 70px;
+    z-index: 20;
+    transform: rotate(6deg);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.stamp-image-raw {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+
+/* ----------------
+   REALISTIC POLAROID PHOTO - Bottom Left/Center
+   ---------------- */
+.polaroid-photo {
+    position: absolute;
+    bottom: 5%;
+    right: 8%;
+    left: auto;
+    width: 130px;
+    /* Increased for better visibility */
+    z-index: 25;
+    transform: rotate(3deg);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.polaroid-photo:hover {
+    transform: rotate(1deg) translateY(-5px) scale(1.05);
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+}
+
+/* Washi tape at the top */
+.letter-paper-premium .washi-tape {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 60px;
+    height: 18px;
+    background: rgba(255, 182, 193, 0.6);
+    backdrop-filter: blur(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    z-index: 30;
+
+    /* Tape texture */
+    background-image:
+        repeating-linear-gradient(90deg,
+            transparent,
+            transparent 3px,
+            rgba(255, 255, 255, 0.1) 3px,
+            rgba(255, 255, 255, 0.1) 4px);
+}
+
+/* Realistic Washi Tape Style */
+
+
+.letter-paper-premium .washi-tape::before,
+.letter-paper-premium .washi-tape::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+/* Torn edge effect on left */
+.letter-paper-premium .washi-tape::before {
+    left: -4px;
+    top: 0;
+    border-width: 9px 4px 9px 0;
+    border-color: transparent rgba(255, 182, 193, 0.6) transparent transparent;
+}
+
+/* Torn edge effect on right */
+.letter-paper-premium .washi-tape::after {
+    right: -4px;
+    top: 0;
+    border-width: 9px 0 9px 4px;
+    border-color: transparent transparent transparent rgba(255, 182, 193, 0.6);
+}
+
+/* Polaroid frame */
+.polaroid-photo .polaroid-frame {
+    position: relative;
+    background: linear-gradient(135deg, #fefefe 0%, #f9f9f9 100%);
+    padding: 8px 8px 30px 8px;
+    /* Clean proportions */
+    border-radius: 1px;
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.12),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+    overflow: visible;
+}
+
+/* Photo image area */
+.polaroid-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #e8e8e8;
+    overflow: hidden;
+    border-radius: 1px;
+}
+
+/* Gradient placeholder (romantic sunset vibe) */
+.photo-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+            #ffd1dc 0%,
+            #ffb6c1 25%,
+            #ff9eb5 50%,
+            #ff85a2 75%,
+            #ff6b9d 100%);
+    opacity: 0.6;
+}
+
+/* If using actual photo */
+.actual-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Silhouette overlay */
+.silhouette-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.4;
+}
+
+.couple-silhouette {
+    width: 100%;
+    height: 100%;
+}
+
+/* White bottom border with caption */
+.polaroid-photo .polaroid-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, #fefefe 0%, #f8f8f8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    overflow: hidden;
+}
+
+/* Handwritten caption */
+.handwritten-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Paper texture overlay for realism */
+.polaroid-texture {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 2px;
+}
+
+/* Additional subtle shine effect on hover */
+.polaroid-photo:hover .polaroid-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 45%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.1) 55%,
+            transparent 100%);
+    pointer-events: none;
+    animation: polaroid-shine 2s ease-in-out;
+}
+
+@keyframes polaroid-shine {
+    0% {
+        transform: translateX(-100%) rotate(-45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(-45deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .vintage-stamp {
+        width: 50px;
+        top: 1%;
+        right: 1%;
+    }
+
+    .stamp-heart-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .stamp-value {
+        font-size: 7px;
+    }
+
+    .polaroid-photo {
+        width: 120px;
+        bottom: 6%;
+        right: 6%;
+    }
+
+    .handwritten-text {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vintage-stamp {
+        width: 40px;
+        top: 0.5%;
+        right: 0.5%;
+    }
+
+    .stamp-heart-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .stamp-value {
+        font-size: 6px;
+    }
+
+    .polaroid-photo {
+        width: 100px;
+        bottom: 5%;
+        right: 5%;
+    }
+
+    .letter-paper-premium .washi-tape {
+        width: 90px;
+        height: 15px;
+    }
+
+    .handwritten-text {
+        font-size: 11px;
+    }
+}
+
+/* Ensure decorations only appear when envelope is opened */
+.envelope-premium-wrapper:not(.is-sealed) .vintage-stamp,
+.envelope-premium-wrapper:not(.is-sealed) .polaroid-photo {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: opacity 1s ease 1s;
+    /* Fade in after flap opens */
 }

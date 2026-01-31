@@ -1374,12 +1374,77 @@ const renderers = {
                         placeholder="Your Favorite Person"
                         oninput="renderers.updateLetter('signature', this.value)">
                 </div>
+
+                <div class="pt-4 border-t border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-rose-500 text-lg">auto_awesome</span>
+                        Decorations & Branding
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${t('page_letter_label_polaroid_cap')}</label>
+                            <input type="text" class="form-input text-sm" 
+                                value="${pageData.polaroidCaption || 'Us, 2024 ♡'}" 
+                                placeholder="Us, 2024 ♡"
+                                oninput="renderers.updateLetter('polaroidCaption', this.value)">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${t('page_letter_label_polaroid')}</label>
+                            <div class="flex gap-4 items-center">
+                                <div class="relative group">
+                                    <img src="${pageData.polaroidSrc || ''}" 
+                                        id="letter-polaroid-preview"
+                                        class="w-24 h-32 object-cover bg-gray-100 rounded-lg shadow-sm ${pageData.polaroidSrc ? '' : 'hidden'}" 
+                                        onerror="this.classList.add('hidden'); document.getElementById('letter-polaroid-placeholder').classList.remove('hidden')">
+                                    <div id="letter-polaroid-placeholder" class="w-24 h-32 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center ${pageData.polaroidSrc ? 'hidden' : ''}">
+                                        <span class="material-symbols-outlined text-gray-300 text-3xl">image</span>
+                                        <span class="text-[10px] text-gray-400 mt-1 font-bold">No Photo</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 space-y-3">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="flex gap-2">
+                                            <input type="text" id="letter-polaroid-input" class="form-input text-xs font-mono flex-1" 
+                                                value="${pageData.polaroidSrc || ''}" 
+                                                placeholder="assets/us.jpg"
+                                                oninput="renderers.updateLetter('polaroidSrc', this.value); renderers.updateLetterPolaroidPreview(this.value)">
+                                            
+                                            <button type="button" onclick="this.nextElementSibling.click()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm">
+                                                <span class="material-symbols-outlined text-sm">cloud_upload</span>
+                                                Upload
+                                            </button>
+                                            <input type="file" class="hidden" accept="image/*" data-target="letter-polaroid-input" onchange="utils.handleMediaUpload(this, 'letter-polaroid-input')">
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 italic">Recommended: Square or 3:4 aspect ratio. Leave empty to use the romantic silhouette.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     },
 
     updateLetter(key, value) {
         state.updatePageData('page-8', { [key]: value });
+    },
+
+    updateLetterPolaroidPreview(value) {
+        const preview = document.getElementById('letter-polaroid-preview');
+        const placeholder = document.getElementById('letter-polaroid-placeholder');
+        if (preview && placeholder) {
+            if (value) {
+                preview.src = value;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+        }
     },
 
     // ========================================
@@ -1547,6 +1612,39 @@ const renderers = {
                         ${t('page_gallery_btn_add')}
                     </button>
                 </div>
+
+                <!-- Special Music Section -->
+                <div class="bg-gradient-to-r from-violet-50 to-fuchsia-50 rounded-xl p-4 border border-violet-200">
+                    <div class="flex gap-3 items-start mb-4">
+                        <span class="material-symbols-outlined text-violet-500 text-2xl">music_note</span>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-900">Special Background Music</label>
+                            <p class="text-xs text-gray-600 mt-1">This song will automatically play when visiting the Infinity Scroll page, replacing the main site music.</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex gap-2 items-center">
+                            <input type="text" id="infinity-music-src" class="form-input text-xs font-mono flex-1" 
+                                value="${pageData.music?.audioSrc || ''}" 
+                                placeholder="https://example.com/song.mp3"
+                                oninput="renderers.updateInfinityMusic('audioSrc', this.value)">
+                            <label class="cursor-pointer bg-violet-500 hover:bg-violet-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-base">audio_file</span>
+                                <input type="file" class="hidden" accept="audio/*" data-target="infinity-music-src">
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" class="form-input text-sm" 
+                                value="${pageData.music?.songTitle || ''}" 
+                                placeholder="Song Title"
+                                oninput="renderers.updateInfinityMusic('songTitle', this.value)">
+                            <input type="text" class="form-input text-sm" 
+                                value="${pageData.music?.artist || ''}" 
+                                placeholder="Artist Name"
+                                oninput="renderers.updateInfinityMusic('artist', this.value)">
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     },
@@ -1601,6 +1699,14 @@ const renderers = {
 
     updateInfinity(key, value) {
         state.updatePageData('page-10', { [key]: value });
+    },
+
+    updateInfinityMusic(key, value) {
+        const page = state.findPageById('page-10');
+        if (!page.music) page.music = {};
+        page.music[key] = value;
+        state.save();
+        state.syncToPreview();
     },
 
     addInfinityReason(listType) {

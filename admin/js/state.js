@@ -207,9 +207,12 @@ const state = {
             this.configData.pages.push({
                 pageId: 'page-8',
                 type: 'letter-section',
-                recipient: CONFIG.letter.recipientName || 'Dearest Love',
+                recipient: CONFIG.letter.recipient || CONFIG.letter.recipientName || 'Dearest Love',
                 message: CONFIG.letter.message || '',
                 signature: CONFIG.letter.signature || 'Your Favorite Person',
+                stampSrc: CONFIG.letter.stampSrc || 'assets/stamp.png',
+                polaroidSrc: CONFIG.letter.polaroidSrc || '',
+                polaroidCaption: CONFIG.letter.polaroidCaption || 'Us, 2024 ♡',
                 finaleChoice: CONFIG.letter.finaleChoice || 'choice'
             });
         } else {
@@ -327,7 +330,10 @@ const state = {
             type: 'letter-section',
             recipient: 'Dearest Love',
             message: 'I find myself sitting here, thinking about all the moments we\'ve shared...',
-            signature: 'Your Favorite Person'
+            signature: 'Your Favorite Person',
+            stampSrc: 'assets/stamp.png',
+            polaroidSrc: '',
+            polaroidCaption: 'Us, 2024 ♡'
         });
     },
 
@@ -469,9 +475,12 @@ const state = {
                 }))
             } : null,
             letter: letterPage ? {
-                recipientName: letterPage.recipient || '',
+                recipient: letterPage.recipient || '',
                 message: letterPage.message || '',
                 signature: letterPage.signature || '',
+                stampSrc: letterPage.stampSrc || 'assets/stamp.png',
+                polaroidSrc: letterPage.polaroidSrc || '',
+                polaroidCaption: letterPage.polaroidCaption || 'Us, 2024 ♡',
                 finaleChoice: letterPage.finaleChoice || 'choice'
             } : null,
             lock: lockPage ? {

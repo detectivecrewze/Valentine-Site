@@ -146,7 +146,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 MapsTo(currentPageId, targetId);
             }
         }
+
+        // Handle STOP_MUSIC from Infinity Scroll page
+        if (event.data && event.data.type === 'STOP_MUSIC') {
+            console.log('[Music] Received STOP_MUSIC from iframe, starting fade out...');
+            fadeOutAudio(bgMusic, 2000); // 2 seconds fade out
+        }
     });
+
+    // Helper: Smooth Audio Fade Out
+    function fadeOutAudio(audio, duration) {
+        if (!audio || audio.paused) return;
+
+        const startVolume = audio.volume;
+        const speed = 50; // Interval in ms
+        const step = startVolume / (duration / speed);
+
+        const fadeInterval = setInterval(() => {
+            if (audio.volume > step) {
+                audio.volume -= step;
+            } else {
+                audio.volume = 0;
+                audio.pause();
+                audio.volume = startVolume; // Reset volume for next play
+                clearInterval(fadeInterval);
+                console.log('[Music] Main music faded out and paused');
+            }
+        }, speed);
+    }
 
     // Notify parent that we're ready
     if (window.self !== window.top) {
@@ -422,6 +449,14 @@ function MapsTo(fromId, toId) {
             if (iframe) {
                 // Force reload to get fresh data
                 iframe.contentWindow.location.reload();
+
+                // After reload, notify iframe that it's now visible (for music autoplay)
+                iframe.onload = () => {
+                    setTimeout(() => {
+                        iframe.contentWindow.postMessage({ type: 'PAGE_VISIBLE' }, '*');
+                        console.log('[Navigation] Sent PAGE_VISIBLE to infinity scroll');
+                    }, 500);
+                };
             }
         }
     }
@@ -635,9 +670,7 @@ function loadDynamicContent() {
         const signatureEl = document.getElementById('letter-signature');
 
         if (recipientEl) {
-            const name = CONFIG.letter.recipientName;
-            const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
-            recipientEl.textContent = `${greeting},`;
+            // Logic handled by initLetterPage to ensure consistency
         }
         if (signatureEl) signatureEl.textContent = ''; // Clear for typewriter
 
@@ -2069,11 +2102,47 @@ function initLetterPage() {
     // Initialize floating dust particles
     initFloatingDust();
 
-    // Initialize premium interactions
+    // Initialize premium interactions (only if not already set or safe to re-call)
+    // Note: These functions have their own checks or are safe to re-run
     initLetterParallax();
     initPremiumCursor();
 
-    console.log('[Letter Page] Premium version initialized');
+    // Set Letter Content from CONFIG
+    const recipientEl = document.getElementById('letter-recipient');
+    if (recipientEl) {
+        const name = CONFIG.letter.recipient || 'Dearest Love';
+        const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
+        recipientEl.textContent = `${greeting},`;
+    }
+
+    // Set Stamp Image
+    const stampImg = document.getElementById('letter-stamp-img');
+    if (stampImg && CONFIG.letter.stampSrc) {
+        stampImg.src = CONFIG.letter.stampSrc;
+    }
+
+    // Set Polaroid Content
+    const polaroidImg = document.getElementById('letter-polaroid-img');
+    const polaroidCaption = document.getElementById('letter-polaroid-caption');
+    const polaroidGradient = document.getElementById('letter-polaroid-gradient');
+    const polaroidSilhouette = document.getElementById('letter-polaroid-silhouette');
+
+    if (polaroidCaption && CONFIG.letter.polaroidCaption) {
+        polaroidCaption.textContent = CONFIG.letter.polaroidCaption;
+    }
+
+    if (polaroidImg && CONFIG.letter.polaroidSrc) {
+        polaroidImg.src = CONFIG.letter.polaroidSrc;
+        polaroidImg.classList.remove('hidden');
+        if (polaroidGradient) polaroidGradient.classList.add('hidden');
+        if (polaroidSilhouette) polaroidSilhouette.classList.add('hidden');
+    } else if (polaroidImg) {
+        polaroidImg.classList.add('hidden');
+        if (polaroidGradient) polaroidGradient.classList.remove('hidden');
+        if (polaroidSilhouette) polaroidSilhouette.classList.remove('hidden');
+    }
+
+    console.log('[Letter Page] Premium version initialized with dynamic content');
 }
 
 // ===== FLOATING DUST PARTICLES =====
@@ -2302,7 +2371,10 @@ function resetLetterPage() {
 
     playAmbientTyping(false);
 
-    console.log('[Letter] Page reset');
+    // RE-INIT to update dynamic content (Live Preview)
+    initLetterPage();
+
+    console.log('[Letter] Page reset and re-initialized');
 }
 
 // ===== UTILITY FUNCTIONS =====
@@ -2333,7 +2405,9 @@ function playAmbientTyping(enabled) {
 }
 
 // ===== PARALLAX EFFECT (Optional Enhancement) =====
+let isParallaxInitialized = false;
 function initLetterParallax() {
+    if (isParallaxInitialized) return;
     const letterPaper = document.querySelector('.letter-paper-premium');
     if (!letterPaper) return;
 
@@ -2344,10 +2418,13 @@ function initLetterParallax() {
         // Subtle parallax on letter
         letterPaper.style.transform = `translate(-50%, -50%) translateY(${-100 + rate}px) scale(1)`;
     }, { passive: true });
+    isParallaxInitialized = true;
 }
 
 // ===== CURSOR INTERACTION (Optional Enhancement) =====
+let isCursorInitialized = false;
 function initPremiumCursor() {
+    if (isCursorInitialized) return;
     const envelope = document.getElementById('envelope-main');
     if (!envelope) return;
 
@@ -2371,6 +2448,7 @@ function initPremiumCursor() {
         if (!envelope.classList.contains('is-sealed')) return;
         envelope.style.transform = '';
     });
+    isCursorInitialized = true;
 }
 
 // Page 9: Invitation Logic

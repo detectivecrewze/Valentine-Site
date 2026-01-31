@@ -1077,6 +1077,43 @@
                                         style="font-variation-settings: 'FILL' 1">favorite</span>
                                 </div>
                             </div>
+
+                            <!-- Vintage Postage Stamp - Top Right -->
+                            <div class="vintage-stamp">
+                                <img src="assets/stamp.png" alt="Stamp" class="stamp-image-raw" id="letter-stamp-img">
+                            </div>
+
+                            <!-- Realistic Polaroid Photo - Bottom Left/Center -->
+                            <div class="polaroid-photo">
+                                <!-- Washi tape holding the photo -->
+                                <div class="washi-tape"></div>
+
+                                <!-- Photo frame -->
+                                <div class="polaroid-frame">
+                                    <!-- Photo image area -->
+                                    <div class="polaroid-image">
+                                        <div class="photo-gradient" id="letter-polaroid-gradient"></div>
+                                        <img src="" alt="Us" class="actual-photo hidden" id="letter-polaroid-img" />
+
+                                        <!-- Silhouette overlay for romantic effect -->
+                                        <div class="silhouette-overlay" id="letter-polaroid-silhouette">
+                                            <svg viewBox="0 0 200 200" class="couple-silhouette">
+                                                <ellipse cx="80" cy="100" rx="30" ry="35" fill="rgba(0,0,0,0.3)" />
+                                                <ellipse cx="120" cy="100" rx="30" ry="35" fill="rgba(0,0,0,0.3)" />
+                                                <path d="M50,90 Q80,70 100,85 Q120,70 150,90" fill="rgba(0,0,0,0.2)" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- White bottom border with handwritten caption -->
+                                    <div class="polaroid-caption">
+                                        <span class="handwritten-text" id="letter-polaroid-caption">Us, 2024 ♡</span>
+                                    </div>
+                                </div>
+
+                                <!-- Paper texture overlay -->
+                                <div class="polaroid-texture"></div>
+                            </div>
                         </div>
 
                         <!-- Front Panel (Side Flaps) -->
@@ -1100,22 +1137,23 @@
                                 <span class="material-symbols-outlined seal-icon">favorite</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Interaction Hint -->
-                        <div class="envelope-hint">
-                            <span class="hint-text">Unseal your letter</span>
-                            <div class="hint-line"></div>
-                        </div>
+                    <!-- Interaction Hint -->
+                    <div class="envelope-hint">
+                        <span class="hint-text">Unseal your letter</span>
+                        <div class="hint-line"></div>
                     </div>
                 </div>
-
-                <!-- Decorative Bottom Flourish -->
-                <div class="flourish-bottom pb-12">
-                    <svg viewBox="0 0 200 50" class="w-32 mx-auto opacity-30 rotate-180">
-                        <path d="M10,25 Q100,0 190,25" fill="none" stroke="#be123c" stroke-width="0.5" />
-                    </svg>
-                </div>
             </div>
+
+            <!-- Decorative Bottom Flourish -->
+            <div class="flourish-bottom pb-12">
+                <svg viewBox="0 0 200 50" class="w-32 mx-auto opacity-30 rotate-180">
+                    <path d="M10,25 Q100,0 190,25" fill="none" stroke="#be123c" stroke-width="0.5" />
+                </svg>
+            </div>
+        </div>
         </div>
 
         <!-- Fixed Navigation Controls (Standard Style) -->

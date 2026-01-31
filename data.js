@@ -172,9 +172,12 @@ const CONFIG = {
         ]
     },
     "letter": {
-        "recipientName": "Dearest Love",
+        "recipient": "Dearest Love",
         "message": "I find myself sitting here, thinking about all the moments we've shared...",
         "signature": "Your Favorite Person",
+        "stampSrc": "assets/stamp.png",
+        "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769894647359-3oq81.jpg",
+        "polaroidCaption": "Us, always, 2026",
         "finaleChoice": "choice"
     },
     "lock": {
@@ -211,15 +214,20 @@ const CONFIG = {
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769789221789-206zr.jpg",
                 "caption": ""
             }
-        ]
+        ],
+        "music": {
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769897932779-xfl03b.mp3",
+            "songTitle": "Infinity Theme",
+            "artist": ""
+        }
     },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-01-30T20:55:12.161Z"
+        "generatedAt": "2026-01-31T21:28:15.341Z"
     },
-    "adminLang": "en",
+    "adminLang": "id",
     "currentStep": 9,
     "pageConfig": {
         "pages": {

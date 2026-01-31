@@ -156,6 +156,8 @@ const translations = {
         page_letter_label_title: "Letter Page Title",
         page_letter_label_content: "Letter Content",
         page_letter_label_footer: "Footer Note",
+        page_letter_label_polaroid: "Polaroid Photo",
+        page_letter_label_polaroid_cap: "Polaroid Caption",
 
         page_lock_title: "The Final Lock",
         page_lock_desc: "A fun way to unlock the final surprise",
@@ -329,6 +331,8 @@ const translations = {
         page_letter_label_title: "Judul Halaman Surat",
         page_letter_label_content: "Isi Surat",
         page_letter_label_footer: "Catatan Kaki",
+        page_letter_label_polaroid: "Foto Polaroid",
+        page_letter_label_polaroid_cap: "Keterangan Foto (Caption)",
 
         page_lock_title: "Kunci Terakhir",
         page_lock_desc: "Cara seru untuk membuka kejutan terakhir",
