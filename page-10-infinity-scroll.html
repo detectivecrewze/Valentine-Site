@@ -336,47 +336,70 @@
             }
         }
 
-        /* Music Toggle Button */
+        /* Music Toggle Button - ENHANCED FOR MOBILE */
         .music-toggle-btn {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 55;
-            background: rgba(255, 255, 255, 0.3);
-            /* More transparent */
-            color: rgba(126, 12, 35, 0.5);
-            /* Subtle icon color */
-            border: 1px solid rgba(126, 12, 35, 0.08);
-            width: 44px;
-            height: 44px;
+            z-index: 9999;
+            /* Very high z-index to ensure visibility */
+            background: rgba(255, 255, 255, 0.9);
+            color: rgba(126, 12, 35, 0.8);
+            border: 2px solid rgba(126, 12, 35, 0.3);
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(126, 12, 35, 0.05);
+            box-shadow: 0 4px 20px rgba(126, 12, 35, 0.2);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
-            /* Stronger blur for glass effect */
+            -webkit-tap-highlight-color: transparent;
+            /* Remove tap highlight on mobile */
+            touch-action: manipulation;
+            /* Better touch response */
         }
 
-        .music-toggle-btn:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.5);
-            color: rgba(126, 12, 35, 0.8);
-            box-shadow: 0 8px 20px rgba(126, 12, 35, 0.1);
+        /* Attention-grabbing animation when music is OFF */
+        .music-toggle-btn:not(.playing) {
+            animation: attentionPulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes attentionPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(126, 12, 35, 0.2);
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 30px rgba(126, 12, 35, 0.5);
+            }
+        }
+
+        .music-toggle-btn:hover,
+        .music-toggle-btn:active {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 1);
+            color: rgba(126, 12, 35, 1);
+            box-shadow: 0 8px 30px rgba(126, 12, 35, 0.3);
         }
 
         .music-toggle-btn.playing {
-            background: rgba(126, 12, 35, 0.7);
-            /* Transparent theme color when playing */
+            background: rgba(126, 12, 35, 0.85);
             color: white;
-            border-color: rgba(126, 12, 35, 0.2);
+            border-color: rgba(126, 12, 35, 0.5);
             animation: musicPulse 2s infinite ease-in-out;
         }
 
         .music-toggle-btn .material-symbols-outlined {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
+            pointer-events: none;
+            /* Ensure icon doesn't block clicks */
         }
 
         @keyframes musicPulse {

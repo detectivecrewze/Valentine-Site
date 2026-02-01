@@ -389,6 +389,12 @@ function MapsTo(fromId, toId) {
             printerSfx.currentTime = 0;
         }
 
+        // Reset page 10 flag when leaving
+        if (fromId === 'page-10') {
+            window.isOnPage10 = false;
+            console.log('[Nav] Left Infinity Scroll page, parent music can play now');
+        }
+
         // Finalize transition (Restored drama: 1.8s)
         transitionTimeout = setTimeout(() => {
             fromPage.classList.add('hidden');
@@ -443,14 +449,17 @@ function MapsTo(fromId, toId) {
             }
         } else if (toId === 'page-2') {
             // ✅ Trigger music autoplay on greeting card as requested
-            if (bgMusic.paused) {
+            // But only if not already playing and not going to page-10
+            if (bgMusic.paused && !window.isOnPage10) {
                 console.log('[Navigation] Triggering autoplay for Greeting Card');
                 playMusic();
             }
         } else if (toId === 'page-3') {
             loadSong(currentSongIndex).then(() => {
                 setTimeout(() => {
-                    playMusic();
+                    if (!window.isOnPage10) { // Don't play if user is on page 10
+                        playMusic();
+                    }
                 }, 500);
             });
         } else if (toId === 'page-5') {
@@ -466,12 +475,10 @@ function MapsTo(fromId, toId) {
             if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
             console.log('[Nav] Navigated to Infinity Scroll page');
+            window.isOnPage10 = true; // Flag to prevent parent music from playing
 
-            // ✅ Only stop parent music if Page 10 has its own independent music
-            const hasLocalMusic = CONFIG.infinityScroll && CONFIG.infinityScroll.music && CONFIG.infinityScroll.music.audioSrc;
-            if (hasLocalMusic && typeof fadeOutAudio === 'function') {
-                fadeOutAudio(bgMusic, 1500);
-            }
+            // ✅ ALWAYS stop parent music when entering Page 10
+            fadeOutAudio(bgMusic, 1000);
 
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {
