@@ -615,10 +615,113 @@
                 transform: translate(-50%, -20px);
             }
         }
+
+        /* ========================================
+           MOBILE START OVERLAY - Required for audio
+           ======================================== */
+        .start-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: linear-gradient(135deg, rgba(127, 29, 57, 0.97) 0%, rgba(76, 5, 25, 0.99) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .start-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .start-overlay .start-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: overlayPulse 2s infinite;
+        }
+
+        .start-overlay .start-circle:hover,
+        .start-overlay .start-circle:active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.08);
+        }
+
+        .start-overlay .start-circle .material-symbols-outlined {
+            font-size: 56px;
+            color: white;
+        }
+
+        .start-overlay h2 {
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .start-overlay p {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            font-style: italic;
+            text-align: center;
+            max-width: 280px;
+        }
+
+        .start-overlay .music-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
+        .start-overlay .music-hint .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        @keyframes overlayPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+            }
+        }
     </style>
 </head>
 
 <body class="font-sans overflow-x-hidden">
+    <!-- START OVERLAY - User must tap to begin -->
+    <div id="start-overlay" class="start-overlay">
+        <button class="start-circle" id="start-btn">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+        </button>
+        <h2>Tap to Begin</h2>
+        <p>Experience the cinematic journey with music</p>
+        <div class="music-hint">
+            <span class="material-symbols-outlined">music_note</span>
+            <span>Sound will play</span>
+        </div>
+    </div>
+
     <div class="grain-overlay"></div>
 
     <!-- Floating Particles Background (Generated via JS) -->
@@ -1630,37 +1733,52 @@
                     });
             }
 
-            // Listen for any user interaction to trigger retry
-            ['click', 'touchstart', 'scroll'].forEach(event => {
-                window.addEventListener(event, () => {
-                    // Try to kickstart music
-                    if (!isInfinityMusicPlaying && autoplayRetryCount < maxAutoplayRetries) {
-                        retryAutoplay();
+            // ========================================
+            // START OVERLAY HANDLER
+            // ========================================
+            const startOverlay = document.getElementById('start-overlay');
+            const startBtn = document.getElementById('start-btn');
+
+            if (startOverlay && startBtn) {
+                // Handler for start button
+                const handleStart = () => {
+                    console.log('[Start] User tapped start button');
+
+                    // Hide overlay
+                    startOverlay.classList.add('hidden');
+
+                    // Start music (this is direct user gesture!)
+                    if (infinityAudio && INFINITY_AUDIO_SRC) {
+                        infinityAudio.play().then(() => {
+                            console.log('[Music] Started via overlay!');
+                            fadeInAudio(infinityAudio, 2500);
+                            updateInfinityMusicUI(true);
+                        }).catch(e => {
+                            console.error('[Music] Play failed:', e);
+                        });
                     }
 
-                    // Try to kickstart scroll if it's supposed to be running
-                    // and was not manually stopped by user
-                    if (!isAutoScrolling && !autoScrollManuallyStopped && isPageActuallyVisible()) {
-                        setTimeout(() => {
-                            if (!isAutoScrolling && !autoScrollManuallyStopped) {
-                                toggleAutoScroll(true);
-                                console.log('[AutoScroll] Kickstarted by user interaction');
-                            }
-                        }, 500);
+                    // Start auto-scroll after short delay
+                    setTimeout(() => {
+                        if (!isAutoScrolling) {
+                            toggleAutoScroll(true);
+                            console.log('[AutoScroll] Started via overlay');
+                        }
+                    }, 1000);
+                };
+
+                startBtn.addEventListener('click', handleStart);
+                startBtn.addEventListener('touchend', handleStart);
+
+                // Also handle tap anywhere on overlay
+                startOverlay.addEventListener('click', (e) => {
+                    if (e.target === startOverlay) {
+                        handleStart();
                     }
-                }, { once: true, passive: true });
-            });
+                });
+            }
 
-            // Periodic Visibility Check (Fallback)
-            setInterval(() => {
-                if (!isAutoScrolling && !autoScrollManuallyStopped && isPageActuallyVisible()) {
-                    console.log('[AutoScroll] Periodic check triggered start');
-                    toggleAutoScroll(true);
-                }
-            }, 3000);
-
-            // Performance monitoring (optional)
-            // Memory logger removed for production performance
+            // Performance monitoring removed for production
         });
 
         // ========================================
@@ -1920,42 +2038,16 @@
             // Listen for parent message that page is now active
             window.addEventListener('message', (e) => {
                 if (e.data && e.data.type === 'PAGE_VISIBLE') {
-                    console.log('[Music] Page became visible, checking music and starting scroll...');
-
-                    // Only stop parent music if we actually have music to play here
-                    if (INFINITY_AUDIO_SRC) {
-                        stopParentMusic();
-                        attemptAutoplay();
-                    }
-
-                    // ✅ Start auto-scroll automatically when entering Page 10
-                    setTimeout(() => {
-                        // Only start if user hasn't manually stopped it
-                        if (!isAutoScrolling && !autoScrollManuallyStopped) {
-                            toggleAutoScroll(true);
-                            console.log('[AutoScroll] Automatically started (via message)');
-                        }
-                    }, 2000); // 2 second delay for transition
+                    console.log('[Music] Page became visible, stopping parent music...');
+                    // Stop parent music (user will tap overlay to start local music)
+                    stopParentMusic();
                 }
             });
 
-            // Check if already visible (page opened directly or parent section is visible)
-            if (isPageActuallyVisible()) {
-                console.log('[Music] Page is visible on load, checking music...');
-                if (INFINITY_AUDIO_SRC) {
-                    stopParentMusic();
-                    attemptAutoplay();
-                }
+            // Stop parent music immediately on load
+            stopParentMusic();
 
-                setTimeout(() => {
-                    if (!isAutoScrolling && !autoScrollManuallyStopped) {
-                        toggleAutoScroll(true);
-                        console.log('[AutoScroll] Automatically started (via initial visible)');
-                    }
-                }, 2000);
-            }
-
-            console.log('[Music] Infinity music initialized (waiting for visibility)');
+            console.log('[Music] Infinity music initialized (waiting for user to tap overlay)');
         }
 
         function isPageActuallyVisible() {
