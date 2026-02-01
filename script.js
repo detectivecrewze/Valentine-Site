@@ -455,15 +455,17 @@ function MapsTo(fromId, toId) {
         } else if (toId === 'page-9') {
             if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
-            // ✅ FIX: Stop parent music immediately when starting finale to avoid overlaps on slow servers
-            if (typeof fadeOutAudio === 'function') {
+            // ✅ Only stop parent music if Page 10 has its own independent music
+            const hasLocalMusic = CONFIG.infinityScroll && CONFIG.infinityScroll.music && CONFIG.infinityScroll.music.audioSrc;
+            if (hasLocalMusic && typeof fadeOutAudio === 'function') {
                 fadeOutAudio(bgMusic, 1500);
             }
 
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {
-                // Force reload to get fresh data
-                iframe.contentWindow.location.reload();
+                // Force reload with unique timestamp to bypass cache and get fresh data
+                const currentSrc = iframe.src.split('?')[0];
+                iframe.src = `${currentSrc}?t=${Date.now()}`;
 
                 // After reload, notify iframe that it's now visible (for music autoplay)
                 iframe.onload = () => {

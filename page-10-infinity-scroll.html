@@ -1339,7 +1339,10 @@
         function performAutoScroll() {
             if (!isAutoScrolling) return;
 
-            window.scrollBy(0, scrollSpeed);
+            // Use scrollingElement for better cross-browser mobile support
+            const scrollElement = document.scrollingElement || document.documentElement;
+            scrollElement.scrollTop += parseFloat(scrollSpeed);
+
             scrollRequest = requestAnimationFrame(performAutoScroll);
         }
 
@@ -1371,9 +1374,9 @@
                     speedCtrl.classList.remove('opacity-0', 'pointer-events-none');
                 }
 
-                // Set grace period to ignore interaction for 1s
+                // Set grace period to ignore interaction for 2s (increased for mobile)
                 autoScrollGracePeriod = true;
-                setTimeout(() => autoScrollGracePeriod = false, 1000);
+                setTimeout(() => autoScrollGracePeriod = false, 2000);
 
                 performAutoScroll();
             } else {
@@ -1410,7 +1413,10 @@
             }, { passive: true });
 
             window.addEventListener('touchstart', (e) => {
-                if (isAutoScrolling && !autoScrollGracePeriod && !e.target.closest('#toggle-auto-scroll') && !e.target.closest('#speed-control-container')) {
+                // Ignore if clicking buttons or in grace period
+                if (e.target.closest('#toggle-auto-scroll') || e.target.closest('#speed-control-container')) return;
+
+                if (isAutoScrolling && !autoScrollGracePeriod) {
                     toggleAutoScroll(false); // Force stop
                 }
             }, { passive: true });
@@ -1748,24 +1754,37 @@
             // Listen for parent message that page is now active
             window.addEventListener('message', (e) => {
                 if (e.data && e.data.type === 'PAGE_VISIBLE') {
-                    console.log('[Music] Page became visible, attempting autoplay...');
-                    stopParentMusic();
-                    attemptAutoplay();
-                    // ✅ NEW: Start auto-scroll automatically when entering Page 10
+                    console.log('[Music] Page became visible, checking music and starting scroll...');
+
+                    // Only stop parent music if we actually have music to play here
+                    if (INFINITY_AUDIO_SRC) {
+                        stopParentMusic();
+                        attemptAutoplay();
+                    } else {
+                        console.log('[Music] No independent music, allowing parent music to continue');
+                    }
+
+                    // ✅ Start auto-scroll automatically when entering Page 10
                     setTimeout(() => {
-                        toggleAutoScroll(true); // Force start
-                        console.log('[AutoScroll] Automatically started');
-                    }, 1500);
+                        if (!isAutoScrolling) {
+                            toggleAutoScroll(true); // Force start
+                            console.log('[AutoScroll] Automatically started');
+                        }
+                    }, 2000);
                 }
             });
 
             // Check if already visible (page opened directly or parent section is visible)
             if (isPageActuallyVisible()) {
-                console.log('[Music] Page is visible on load, attempting autoplay...');
-                stopParentMusic();
-                attemptAutoplay();
+                console.log('[Music] Page is visible on load, checking music...');
+                if (INFINITY_AUDIO_SRC) {
+                    stopParentMusic();
+                    attemptAutoplay();
+                }
 
-                setTimeout(() => toggleAutoScroll(true), 1500);
+                setTimeout(() => {
+                    if (!isAutoScrolling) toggleAutoScroll(true);
+                }, 2000);
             }
 
             console.log('[Music] Infinity music initialized (waiting for visibility)');
@@ -1819,7 +1838,17 @@
                     icon.textContent = 'music_off';
                     isInfinityMusicPlaying = false;
                     infinityAudio.volume = 0.5; // Reset volume for manual play
-                    startAutoplayTriggered = false; // Allow retry on manual click
+
+                    // Add one-time listener to start music on first interaction
+                    const startOnInteraction = () => {
+                        if (!isInfinityMusicPlaying && infinityAudio) {
+                            toggleInfinityMusic();
+                            document.removeEventListener('click', startOnInteraction);
+                            document.removeEventListener('touchstart', startOnInteraction);
+                        }
+                    };
+                    document.addEventListener('click', startOnInteraction, { once: true });
+                    document.addEventListener('touchstart', startOnInteraction, { once: true });
                 });
             }, 1200);
         }
