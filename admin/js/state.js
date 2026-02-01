@@ -359,7 +359,12 @@ const state = {
             reasons_personal: ["...of how we met that one rainy day"],
             reasons_poetic: ["...you are the melody to my song"],
             photos: [],
-            videoMemories: []
+            videoMemories: [],
+            music: {
+                audioSrc: '',
+                songTitle: '',
+                artist: ''
+            }
         });
     },
 

@@ -1911,6 +1911,23 @@ const renderers = {
             state.save();
             state.syncToPreview();
         }
+    },
+
+    // ✅ NEW: Update Infinity Scroll Music
+    updateInfinityMusic(key, value) {
+        const page = state.findPageById('page-10');
+        if (!page) return;
+
+        // Initialize music object if it doesn't exist
+        if (!page.music) {
+            page.music = { audioSrc: '', songTitle: '', artist: '' };
+        }
+
+        page.music[key] = value;
+        console.log(`[Admin] Infinity music ${key} updated:`, value);
+
+        state.save();
+        state.syncToPreview();
     }
 };
 
