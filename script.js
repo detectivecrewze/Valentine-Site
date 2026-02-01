@@ -170,7 +170,21 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'STOP_MUSIC') {
         console.log('[Music] Received STOP_MUSIC request from iframe');
-        fadeOutAudio(bgMusic, 1500);
+
+        // Mark that we're on page 10
+        window.isOnPage10 = true;
+
+        // Fade out
+        fadeOutAudio(bgMusic, 800);
+
+        // Hard stop failsafe for iOS
+        setTimeout(() => {
+            if (bgMusic && !bgMusic.paused) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                console.log('[Music] Hard stopped via message (iOS failsafe)');
+            }
+        }, 1000);
     }
 });
 
@@ -477,8 +491,23 @@ function MapsTo(fromId, toId) {
             console.log('[Nav] Navigated to Infinity Scroll page');
             window.isOnPage10 = true; // Flag to prevent parent music from playing
 
-            // ✅ ALWAYS stop parent music when entering Page 10
-            fadeOutAudio(bgMusic, 1000);
+            // ✅ AGGRESSIVE music stop for iOS compatibility
+            // First: Immediate pause (in case fade doesn't work on iOS)
+            if (bgMusic && !bgMusic.paused) {
+                console.log('[Music] Stopping parent music for Page 10 (iOS fix)');
+
+                // Start fade
+                fadeOutAudio(bgMusic, 800);
+
+                // Hard stop after fade (failsafe for iOS)
+                setTimeout(() => {
+                    if (bgMusic && !bgMusic.paused) {
+                        bgMusic.pause();
+                        bgMusic.currentTime = 0;
+                        console.log('[Music] Hard stopped (iOS failsafe)');
+                    }
+                }, 1000);
+            }
 
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {
