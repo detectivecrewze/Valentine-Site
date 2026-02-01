@@ -455,6 +455,8 @@ function MapsTo(fromId, toId) {
         } else if (toId === 'page-9') {
             if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
+            console.log('[Nav] Navigated to Infinity Scroll page');
+
             // ✅ Only stop parent music if Page 10 has its own independent music
             const hasLocalMusic = CONFIG.infinityScroll && CONFIG.infinityScroll.music && CONFIG.infinityScroll.music.audioSrc;
             if (hasLocalMusic && typeof fadeOutAudio === 'function') {
@@ -463,16 +465,31 @@ function MapsTo(fromId, toId) {
 
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {
-                // Force reload with unique timestamp to bypass cache and get fresh data
-                const currentSrc = iframe.src.split('?')[0];
-                iframe.src = `${currentSrc}?t=${Date.now()}`;
+                // Determine if we need to reload (to get fresh data or if first load)
+                // We avoid force-reloading every time to preserve user interaction states for autoplay
+                const needsReload = !iframe.src || iframe.src === 'about:blank' || iframe.src.includes('?v=1.0.1');
 
-                // After reload, notify iframe that it's now visible (for music autoplay)
-                iframe.onload = () => {
-                    setTimeout(() => {
+                if (needsReload) {
+                    const currentSrc = iframe.src.split('?')[0] || 'page-10-infinity-scroll.html';
+                    iframe.src = `${currentSrc}?t=${Date.now()}`;
+                }
+
+                // Robust notification system
+                const notify = () => {
+                    if (iframe.contentWindow) {
                         iframe.contentWindow.postMessage({ type: 'PAGE_VISIBLE' }, '*');
-                        console.log('[Navigation] Sent PAGE_VISIBLE to infinity scroll');
-                    }, 500);
+                        console.log('[Nav] Sent PAGE_VISIBLE to infinity scroll');
+                    }
+                };
+
+                // Notify immediately and in sequences to ensure iframe catches it
+                notify();
+                [100, 500, 1000, 2000, 5000].forEach(ms => setTimeout(notify, ms));
+
+                // Also notify when iframe reloads
+                iframe.onload = () => {
+                    notify();
+                    setTimeout(notify, 500);
                 };
             }
         }
