@@ -889,17 +889,32 @@
             scrollRequest = requestAnimationFrame(performAutoScroll);
         }
 
-        function toggleAutoScroll() {
+        let lastAutoScrollToggle = 0;
+        let autoScrollGracePeriod = false;
+
+        function toggleAutoScroll(forceState) {
+            const now = Date.now();
+            if (now - lastAutoScrollToggle < 500 && forceState === undefined) return;
+
+            // If forceState is provided, ensure we only act if different
+            if (forceState !== undefined && isAutoScrolling === forceState) return;
+
             const btn = document.getElementById('toggle-auto-scroll');
             const icon = btn.querySelector('.material-symbols-outlined');
             const text = btn.querySelector('.btn-text');
 
-            isAutoScrolling = !isAutoScrolling;
+            isAutoScrolling = (forceState !== undefined) ? forceState : !isAutoScrolling;
+            lastAutoScrollToggle = now;
 
             if (isAutoScrolling) {
                 btn.classList.add('active');
                 icon.textContent = 'pause';
                 text.textContent = 'Pause Mode';
+
+                // Set grace period to ignore interaction for 1s
+                autoScrollGracePeriod = true;
+                setTimeout(() => autoScrollGracePeriod = false, 1000);
+
                 performAutoScroll();
             } else {
                 btn.classList.remove('active');
@@ -914,15 +929,23 @@
             const btn = document.getElementById('toggle-auto-scroll');
             if (!btn) return;
 
-            btn.addEventListener('click', toggleAutoScroll);
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleAutoScroll();
+            });
 
             // Stop auto-scroll on manual touch/wheel to give control back to user
-            window.addEventListener('wheel', () => {
-                if (isAutoScrolling) toggleAutoScroll();
+            window.addEventListener('wheel', (e) => {
+                if (isAutoScrolling && !autoScrollGracePeriod && !e.target.closest('#toggle-auto-scroll')) {
+                    toggleAutoScroll(false); // Force stop
+                }
             }, { passive: true });
 
-            window.addEventListener('touchstart', () => {
-                if (isAutoScrolling) toggleAutoScroll();
+            window.addEventListener('touchstart', (e) => {
+                if (isAutoScrolling && !autoScrollGracePeriod && !e.target.closest('#toggle-auto-scroll')) {
+                    toggleAutoScroll(false); // Force stop
+                }
             }, { passive: true });
         }
 
@@ -1246,6 +1269,11 @@
                     console.log('[Music] Page became visible, attempting autoplay...');
                     stopParentMusic();
                     attemptAutoplay();
+                    // ✅ NEW: Start auto-scroll automatically when entering Page 10
+                    setTimeout(() => {
+                        toggleAutoScroll(true); // Force start
+                        console.log('[AutoScroll] Automatically started');
+                    }, 1500);
                 }
             });
 
@@ -1254,6 +1282,8 @@
                 console.log('[Music] Page is visible on load, attempting autoplay...');
                 stopParentMusic();
                 attemptAutoplay();
+
+                setTimeout(() => toggleAutoScroll(true), 1500);
             }
 
             console.log('[Music] Infinity music initialized (waiting for visibility)');
@@ -1280,42 +1310,54 @@
             stopParentMusic();
         }
 
+        let startAutoplayTriggered = false;
         function attemptAutoplay() {
-            if (!infinityAudio) return;
+            if (!infinityAudio || isInfinityMusicPlaying || startAutoplayTriggered) return;
+            startAutoplayTriggered = true; // Prevent double calls
 
             const btn = document.getElementById('toggle-infinity-music');
             const icon = btn.querySelector('.material-symbols-outlined');
 
-            fadeInAudio(infinityAudio, 3000); // 3 seconds fade in
+            console.log('[Music] Delaying fade in for smooth transition...');
 
-            infinityAudio.play().then(() => {
-                // Autoplay succeeded!
-                btn.classList.add('playing');
-                icon.textContent = 'music_note';
-                isInfinityMusicPlaying = true;
-                console.log('[Music] Autoplay successful with fade-in!');
-            }).catch(e => {
-                // Autoplay blocked, user needs to click
-                console.log('[Music] Autoplay blocked, waiting for user interaction');
-                btn.classList.remove('playing');
-                icon.textContent = 'music_off';
-                isInfinityMusicPlaying = false;
-                infinityAudio.volume = 0.5; // Reset volume for manual play
-            });
+            // Wait 1.2s for parent music to fade down before starting our fade up
+            setTimeout(() => {
+                fadeInAudio(infinityAudio, 3000); // 3 seconds fade in
+
+                infinityAudio.play().then(() => {
+                    // Autoplay succeeded!
+                    btn.classList.add('playing');
+                    icon.textContent = 'music_note';
+                    isInfinityMusicPlaying = true;
+                    console.log('[Music] Autoplay successful with fade-in!');
+                }).catch(e => {
+                    // Autoplay blocked, user needs to click
+                    console.log('[Music] Autoplay blocked, waiting for user interaction');
+                    btn.classList.remove('playing');
+                    icon.textContent = 'music_off';
+                    isInfinityMusicPlaying = false;
+                    infinityAudio.volume = 0.5; // Reset volume for manual play
+                    startAutoplayTriggered = false; // Allow retry on manual click
+                });
+            }, 1200);
         }
 
+        let localFadeInterval = null;
         function fadeInAudio(audio, duration) {
+            if (localFadeInterval) clearInterval(localFadeInterval);
+
             audio.volume = 0;
             const targetVolume = 0.5;
             const speed = 50;
             const step = targetVolume / (duration / speed);
 
-            const fadeInterval = setInterval(() => {
+            localFadeInterval = setInterval(() => {
                 if (audio.volume < targetVolume - step) {
                     audio.volume += step;
                 } else {
                     audio.volume = targetVolume;
-                    clearInterval(fadeInterval);
+                    clearInterval(localFadeInterval);
+                    localFadeInterval = null;
                 }
             }, speed);
         }
@@ -1325,36 +1367,42 @@
                 if (callback) callback();
                 return;
             }
+            if (localFadeInterval) clearInterval(localFadeInterval);
 
             const startVolume = audio.volume;
             const speed = 50;
             const step = startVolume / (duration / speed);
 
-            const fadeInterval = setInterval(() => {
+            localFadeInterval = setInterval(() => {
                 if (audio.volume > step) {
                     audio.volume -= step;
                 } else {
                     audio.volume = 0;
                     audio.pause();
                     audio.volume = startVolume;
-                    clearInterval(fadeInterval);
+                    clearInterval(localFadeInterval);
+                    localFadeInterval = null;
                     if (callback) callback();
                 }
             }, speed);
         }
 
         function stopParentMusic() {
+            console.log('[Music] Requesting parent music to fade out...');
             try {
-                // Try to access parent's bgMusic and stop it
+                // Try to access parent's bgMusic and fade it out
                 if (window.parent && window.parent.bgMusic) {
-                    window.parent.bgMusic.pause();
-                    console.log('[Music] Parent music stopped');
+                    if (typeof window.parent.fadeOutAudio === 'function') {
+                        window.parent.fadeOutAudio(window.parent.bgMusic, 2000);
+                    } else {
+                        window.parent.bgMusic.pause();
+                    }
                 }
             } catch (e) {
-                console.log('[Music] Could not access parent music (cross-origin)');
+                console.log('[Music] Could not access parent music directly (cross-origin)');
             }
 
-            // Also send message to parent to stop music
+            // Also send message to parent (more robust)
             try {
                 window.parent.postMessage({ type: 'STOP_MUSIC' }, '*');
             } catch (e) {

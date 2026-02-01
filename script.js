@@ -165,21 +165,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Helper: Smooth Audio Fade Out
+let fadeOutInterval = null;
 function fadeOutAudio(audio, duration) {
     if (!audio || audio.paused) return;
+
+    // Clear any existing fade
+    if (fadeOutInterval) {
+        clearInterval(fadeOutInterval);
+        fadeOutInterval = null;
+    }
 
     const startVolume = audio.volume;
     const speed = 50; // Interval in ms
     const step = startVolume / (duration / speed);
 
-    const fadeInterval = setInterval(() => {
+    fadeOutInterval = setInterval(() => {
         if (audio.volume > step) {
             audio.volume -= step;
         } else {
             audio.volume = 0;
             audio.pause();
             audio.volume = startVolume; // Reset volume for next play
-            clearInterval(fadeInterval);
+            clearInterval(fadeOutInterval);
+            fadeOutInterval = null;
             console.log('[Music] Main music faded out and paused');
         }
     }, speed);
