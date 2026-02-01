@@ -501,27 +501,11 @@ function MapsTo(fromId, toId) {
             if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
             console.log('[Nav] Navigated to Infinity Scroll page');
-            window.isOnPage10 = true; // Flag to prevent parent music from playing
+            window.isOnPage10 = true; // Flag to prevent parent music from auto-playing later
 
-            // ✅ ALWAYS stop parent music when entering Page 10
-            // Stop immediately AND set up delayed stops to catch late-starting audio
-            console.log('[Music] Stopping parent music for Page 10');
-
-            // Immediate stop attempt
-            if (bgMusic) {
-                bgMusic.pause();
-                console.log('[Music] Immediate pause sent');
-            }
-
-            // Delayed stops to catch audio that's still loading
-            [100, 500, 1000, 2000].forEach(delay => {
-                setTimeout(() => {
-                    if (bgMusic && !bgMusic.paused && window.isOnPage10) {
-                        bgMusic.pause();
-                        console.log(`[Music] Delayed pause at ${delay}ms`);
-                    }
-                }, delay);
-            });
+            // ✅ NOTE: Parent music keeps playing until user taps the start overlay
+            // The iframe will send STOP_MUSIC message when user taps to begin
+            console.log('[Music] Parent music continues until user taps overlay');
 
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {

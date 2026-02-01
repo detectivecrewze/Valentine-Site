@@ -1744,27 +1744,33 @@
                 const handleStart = () => {
                     console.log('[Start] User tapped start button');
 
-                    // Hide overlay
+                    // Hide overlay with transition
                     startOverlay.classList.add('hidden');
 
-                    // Start music (this is direct user gesture!)
-                    if (infinityAudio && INFINITY_AUDIO_SRC) {
-                        infinityAudio.play().then(() => {
-                            console.log('[Music] Started via overlay!');
-                            fadeInAudio(infinityAudio, 2500);
-                            updateInfinityMusicUI(true);
-                        }).catch(e => {
-                            console.error('[Music] Play failed:', e);
-                        });
-                    }
+                    // 1. Tell parent to FADE OUT its music
+                    stopParentMusic(); // This sends STOP_MUSIC message
+                    console.log('[Music] Sent fade out request to parent');
 
-                    // Start auto-scroll after short delay
+                    // 2. Wait for parent fade out, then start local music with fade in
+                    setTimeout(() => {
+                        if (infinityAudio && INFINITY_AUDIO_SRC) {
+                            infinityAudio.play().then(() => {
+                                console.log('[Music] Starting Infinity music with fade in');
+                                fadeInAudio(infinityAudio, 2000); // 2 second fade in
+                                updateInfinityMusicUI(true);
+                            }).catch(e => {
+                                console.error('[Music] Play failed:', e);
+                            });
+                        }
+                    }, 1000); // Wait 1 second for parent to fade out
+
+                    // 3. Start auto-scroll after music transition
                     setTimeout(() => {
                         if (!isAutoScrolling) {
                             toggleAutoScroll(true);
                             console.log('[AutoScroll] Started via overlay');
                         }
-                    }, 1000);
+                    }, 1500);
                 };
 
                 startBtn.addEventListener('click', handleStart);
@@ -2035,19 +2041,10 @@
             const btn = document.getElementById('toggle-infinity-music');
             if (btn) btn.addEventListener('click', toggleInfinityMusic);
 
-            // Listen for parent message that page is now active
-            window.addEventListener('message', (e) => {
-                if (e.data && e.data.type === 'PAGE_VISIBLE') {
-                    console.log('[Music] Page became visible, stopping parent music...');
-                    // Stop parent music (user will tap overlay to start local music)
-                    stopParentMusic();
-                }
-            });
+            // NOTE: Parent music keeps playing until user taps the start overlay
+            // The overlay handler will call stopParentMusic() when user taps
 
-            // Stop parent music immediately on load
-            stopParentMusic();
-
-            console.log('[Music] Infinity music initialized (waiting for user to tap overlay)');
+            console.log('[Music] Infinity music initialized (waiting for user to tap overlay to transition)');
         }
 
         function isPageActuallyVisible() {
