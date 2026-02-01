@@ -428,6 +428,11 @@ function MapsTo(fromId, toId) {
     }
 
     if (toPage) {
+        // Reset page 10 flag when navigating to any page except page-10
+        if (toId !== 'page-10') {
+            window.isOnPage10 = false;
+        }
+
         // Page-Specific Logic
         if (toId === 'page-4') {
             const printerComp = document.getElementById('printer-comp');
@@ -462,11 +467,18 @@ function MapsTo(fromId, toId) {
                 }, 300);
             }
         } else if (toId === 'page-2') {
-            // ✅ Trigger music autoplay on greeting card as requested
-            // But only if not already playing and not going to page-10
-            if (bgMusic.paused && !window.isOnPage10) {
+            // Reset page 10 flag when on page 2
+            window.isOnPage10 = false;
+
+            // ✅ Trigger music autoplay on greeting card
+            if (bgMusic.paused) {
                 console.log('[Navigation] Triggering autoplay for Greeting Card');
-                playMusic();
+                // Small delay to ensure audio context is ready
+                setTimeout(() => {
+                    if (bgMusic.paused && !window.isOnPage10) {
+                        playMusic();
+                    }
+                }, 100);
             }
         } else if (toId === 'page-3') {
             loadSong(currentSongIndex).then(() => {
