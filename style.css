@@ -1266,108 +1266,6 @@ body {
     border-top: 1px solid rgba(190, 18, 60, 0.1);
 }
 
-/* Real Vintage Postage Stamp */
-.vintage-stamp {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    width: 90px;
-    /* Increased from 65px */
-    height: 110px;
-    /* Increased from 80px */
-    background: transparent;
-    /* Changed to transparent so image shows through */
-    /* Perforated edge effect using radial patterns */
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: rotate(12deg);
-    z-index: 50;
-    padding: 0;
-    /* Removed padding to allow image to fill entire space */
-    box-sizing: border-box;
-    animation: stamp-land 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.5s both;
-    overflow: visible;
-    /* Ensure perforations show */
-    position: relative;
-}
-
-.stamp-image-raw {
-    position: static;
-    /* ← KEMBALIKAN ke normal */
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    /* ← Gunakan contain karena gambar sudah punya border */
-    border: none;
-    z-index: 1;
-}
-
-/* The Stamp Body with Perforations */
-.vintage-stamp::before {
-    content: '';
-    position: absolute;
-    inset: -5px;
-    background: transparent;
-    /* ← HAPUS bintik-bintik CSS, karena sudah ada di gambar */
-    z-index: -1;
-}
-
-.stamp-inner {
-    width: 100%;
-    height: 100%;
-    border: 1px dashed rgba(190, 18, 60, 0.4);
-    background: rgba(255, 255, 255, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Postmark Effect */
-.stamp-inner::after {
-    content: '';
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    border: 1px solid rgba(190, 18, 60, 0.1);
-    border-radius: 50%;
-    top: -20px;
-    left: -20px;
-}
-
-.stamp-inner .material-symbols-outlined {
-    font-size: 32px !important;
-    color: #be123c;
-    font-variation-settings: 'FILL' 0, 'wght' 300;
-}
-
-.stamp-price {
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #9f1239;
-    letter-spacing: 1px;
-    opacity: 0.6;
-}
-
-@keyframes stamp-land {
-    0% {
-        opacity: 0;
-        transform: rotate(20deg) scale(2) translateY(-100px);
-        filter: blur(10px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: rotate(12deg) scale(1) translateY(0);
-        filter: blur(0);
-    }
-}
 
 /* ===== DECORATIVE FLOURISHES ===== */
 .flourish-top,
@@ -2117,15 +2015,7 @@ body {
     margin: 1.5rem 0;
 }
 
-@media (max-width: 768px) {
-    .vintage-stamp {
-        width: 70px;
-        /* ← Tablet size */
-        height: 85px;
-        top: 25px;
-        right: 25px;
-    }
-}
+
 
 .cursor-zoom-out {
     cursor: zoom-out;
@@ -2497,46 +2387,7 @@ body {
    PREMIUM DECORATIVE ELEMENTS - PAGE 8 LETTER
    ============================================ */
 
-/* ----------------
-   VINTAGE POSTAGE STAMP - Top Right
-   ---------------- */
-.stamp-image-raw {
-    position: static;
-    /* ← KEMBALIKAN ke normal */
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    /* ← Gunakan contain karena gambar sudah punya border */
-    border: none;
-    z-index: 1;
-}
 
-.vintage-stamp {
-    position: absolute;
-    top: -10px;
-    right: -25px;
-    width: 200px;
-    height: 200px;
-    background: transparent;
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: rotate(12deg);
-    z-index: 50;
-    padding: 8px;
-    /* ← TAMBAH sedikit padding agar gambar tidak terlalu mepet */
-    box-sizing: border-box;
-    animation: stamp-land 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.5s both;
-    overflow: visible;
-}
-
-.stamp-image-raw {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: contain;
-}
 
 
 /* ----------------
@@ -2740,21 +2591,7 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .vintage-stamp {
-        width: 150px;
-        height: 140px;
-        top: 2%;
-        right: -5%;
-    }
 
-    .stamp-heart-icon {
-        width: 28px;
-        height: 28px;
-    }
-
-    .stamp-value {
-        font-size: 7px;
-    }
 
     .polaroid-photo {
         width: 120px;
@@ -2768,21 +2605,7 @@ body {
 }
 
 @media (max-width: 480px) {
-    .vintage-stamp {
-        width: 120px;
-        height: 146px;
-        top: 15px;
-        right: 15px;
-    }
 
-    .stamp-heart-icon {
-        width: 24px;
-        height: 24px;
-    }
-
-    .stamp-value {
-        font-size: 6px;
-    }
 
     .polaroid-photo {
         width: 100px;
@@ -2801,7 +2624,6 @@ body {
 }
 
 /* Ensure decorations only appear when envelope is opened */
-.envelope-premium-wrapper:not(.is-sealed) .vintage-stamp,
 .envelope-premium-wrapper:not(.is-sealed) .polaroid-photo {
     opacity: 1 !important;
     visibility: visible !important;

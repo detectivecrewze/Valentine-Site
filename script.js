@@ -2130,11 +2130,7 @@ function initLetterPage() {
         recipientEl.textContent = `${greeting},`;
     }
 
-    // Set Stamp Image
-    const stampImg = document.getElementById('letter-stamp-img');
-    if (stampImg && CONFIG.letter.stampSrc) {
-        stampImg.src = CONFIG.letter.stampSrc;
-    }
+
 
     // Set Polaroid Content
     const polaroidImg = document.getElementById('letter-polaroid-img');

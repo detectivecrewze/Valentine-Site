@@ -175,7 +175,7 @@ const CONFIG = {
         "recipient": "Dearest Lisa",
         "message": "I find myself sitting here, thinking about all the moments we've shared...",
         "signature": "Your Favorite Person",
-        "stampSrc": "assets/stamp.png",
+
         "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769894647359-3oq81.jpg",
         "polaroidCaption": "Love You, Always",
         "finaleChoice": "choice"
