@@ -164,6 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('[App] Initialization complete');
 });
 
+// ============================================================
+// IFRAME MESSAGE LISTENER - Handle messages from Infinity Scroll iframe
+// ============================================================
+window.addEventListener('message', function (event) {
+    if (event.data && event.data.type === 'STOP_MUSIC') {
+        console.log('[Music] Received STOP_MUSIC request from iframe');
+        fadeOutAudio(bgMusic, 1500);
+    }
+});
+
 // Helper: Smooth Audio Fade Out
 let fadeOutInterval = null;
 function fadeOutAudio(audio, duration) {

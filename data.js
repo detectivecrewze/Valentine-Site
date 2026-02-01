@@ -217,7 +217,12 @@ const CONFIG = {
                 "caption": "Kamu Bau",
                 "milestone": 25
             }
-        ]
+        ],
+        "music": {
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769968365113-zkoe64.mp3",
+            "songTitle": "Cincin",
+            "artist": "Hindia"
+        }
     },
     "metadata": {
         "brandName": "For you, Always",

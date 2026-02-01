@@ -1864,6 +1864,9 @@
         async function initInfinityMusic() {
             console.log('[Music] Initializing music system...');
 
+            // ✅ IMMEDIATELY stop parent music on load
+            stopParentMusic();
+
             if (!INFINITY_AUDIO_SRC) {
                 console.warn('[Music] No infinity music source found in config');
                 const musicBtn = document.getElementById('toggle-infinity-music');
