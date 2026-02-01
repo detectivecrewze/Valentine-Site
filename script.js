@@ -191,27 +191,12 @@ window.addEventListener('message', function (event) {
 // Helper: Smooth Audio Fade Out
 let fadeOutInterval = null;
 function fadeOutAudio(audio, duration) {
-    if (!audio) return;
+    if (!audio || audio.paused) return;
 
     // Clear any existing fade
     if (fadeOutInterval) {
         clearInterval(fadeOutInterval);
         fadeOutInterval = null;
-    }
-
-    // If audio is paused but has source (might auto-play soon), just ensure it stays paused
-    if (audio.paused) {
-        // Set up a one-time listener to catch if it starts playing
-        const preventPlay = () => {
-            if (window.isOnPage10) {
-                audio.pause();
-                console.log('[Music] Prevented late autoplay (page 10 active)');
-            }
-            audio.removeEventListener('play', preventPlay);
-        };
-        audio.addEventListener('play', preventPlay, { once: true });
-        console.log('[Music] Audio paused, set up play prevention');
-        return;
     }
 
     const startVolume = audio.volume;
@@ -506,23 +491,25 @@ function MapsTo(fromId, toId) {
             console.log('[Nav] Navigated to Infinity Scroll page');
             window.isOnPage10 = true; // Flag to prevent parent music from playing
 
-            // ✅ AGGRESSIVE music stop for iOS compatibility
-            // First: Immediate pause (in case fade doesn't work on iOS)
-            if (bgMusic && !bgMusic.paused) {
-                console.log('[Music] Stopping parent music for Page 10 (iOS fix)');
+            // ✅ ALWAYS stop parent music when entering Page 10
+            // Stop immediately AND set up delayed stops to catch late-starting audio
+            console.log('[Music] Stopping parent music for Page 10');
 
-                // Start fade
-                fadeOutAudio(bgMusic, 800);
-
-                // Hard stop after fade (failsafe for iOS)
-                setTimeout(() => {
-                    if (bgMusic && !bgMusic.paused) {
-                        bgMusic.pause();
-                        bgMusic.currentTime = 0;
-                        console.log('[Music] Hard stopped (iOS failsafe)');
-                    }
-                }, 1000);
+            // Immediate stop attempt
+            if (bgMusic) {
+                bgMusic.pause();
+                console.log('[Music] Immediate pause sent');
             }
+
+            // Delayed stops to catch audio that's still loading
+            [100, 500, 1000, 2000].forEach(delay => {
+                setTimeout(() => {
+                    if (bgMusic && !bgMusic.paused && window.isOnPage10) {
+                        bgMusic.pause();
+                        console.log(`[Music] Delayed pause at ${delay}ms`);
+                    }
+                }, delay);
+            });
 
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {
@@ -2021,12 +2008,6 @@ async function changeSong(direction) {
 // FIX 4: Improved playMusic - Handles autoplay blocks & muting
 // ============================================================
 function playMusic() {
-    // ✅ CRITICAL: Don't play parent music if user is on Page 10
-    if (window.isOnPage10) {
-        console.log('[Music] Blocked playMusic - user is on Page 10 (Infinity Scroll)');
-        return;
-    }
-
     if (isMusicLoading) return; // Prevent re-entrant calls
     window.musicStarted = true; // Flag for visibility logic
 
