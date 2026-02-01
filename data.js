@@ -8,7 +8,7 @@ const CONFIG = {
     },
     "navigation": {
         "showPageIndicator": true,
-        "enableSwipe": true
+        "enableSwipe": false
     },
     "login": {
         "password": "123",
@@ -19,7 +19,7 @@ const CONFIG = {
         "placeholder": "*your secret word...*"
     },
     "countdown": {
-        "targetDate": "2026-02-14T22:00:00Z",
+        "targetDate": "2026-02-05T15:00:00.000Z",
         "finishMessage": "It's Time! ❤️",
         "finishLabel": "Happy Valentine's Day!"
     },
@@ -33,10 +33,10 @@ const CONFIG = {
     "wrapped": {
         "vibeLabel": "Our Vibe",
         "vibe": "Bonnie & Clyde",
-        "HoursTogetherLabel": "Minutes Together",
+        "HoursTogetherLabel": "hours Together",
         "HoursTogether": "525,600",
         "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769734795217-t4uwbr.jpg",
-        "topPlacesLabel": "Top Places We've Been",
+        "topPlacesLabel": "Top Places",
         "topPlaces": [
             "The Sunset Pier ",
             "Corner Bakery",
@@ -83,7 +83,7 @@ const CONFIG = {
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
     ],
-    "musicSectionTitle": "the song that defines u",
+    "musicSectionTitle": "",
     "gallery": {
         "title": "Our Memories",
         "subtitle": "Scratch to reveal",
@@ -173,9 +173,9 @@ const CONFIG = {
     },
     "letter": {
         "recipient": "Dearest Lisa",
-        "message": "I find myself sitting here, thinking about all the moments we've shared...",
+        "message": "I find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...",
         "signature": "Your Favorite Person",
-
+        "stampSrc": "assets/stamp.png",
         "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769894647359-3oq81.jpg",
         "polaroidCaption": "Love You, Always",
         "finaleChoice": "choice"
@@ -192,13 +192,28 @@ const CONFIG = {
             "generic": [
                 "...your smile lights up the room",
                 "...you make me a better person",
-                "...The way you look at me"
+                "...The way you look at me",
+                "...Senyummu menerangi duniaku",
+                "...Kamu bikin aku ketawa lepas",
+                "...Kebaikanmu menginspirasiku",
+                "...Kamu adalah tempat ternyamanku",
+                "...Cara kamu menatapku"
             ],
             "personal": [
-                "...of how we met that one rainy day"
+                "...of how we met that one rainy day",
+                "...ingat hari hujan pas kita pertama ketemu",
+                "...kamu masih ingat pesanan kopiku",
+                "...kamu berdansa denganku di dapur",
+                "...jalan-jalan tengah malam kita cari makan",
+                "...kamu ketawa denger jokes recehku"
             ],
             "poetic": [
-                "...you are the melody to my song"
+                "...you are the melody to my song",
+                "...kamu adalah melodi dalam laguku",
+                "...jantungku berdebar saat kamu dekat",
+                "...kamu jawaban dari doa yang tak terucap",
+                "...mencintaimu rasanya seperti pulang ke rumah",
+                "...kamu adalah bab favorit dalam hidupku"
             ]
         },
         "photos": [
@@ -219,16 +234,14 @@ const CONFIG = {
             }
         ],
         "music": {
-            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769968365113-zkoe64.mp3",
-            "songTitle": "Cincin",
-            "artist": "Hindia"
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769968365113-zkoe64.mp3"
         }
     },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-01T17:52:57.844Z"
+        "generatedAt": "2026-02-01T22:02:38.225Z"
     },
     "adminLang": "id",
     "currentStep": 9,

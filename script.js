@@ -2361,6 +2361,15 @@ async function startLetterTyping() {
     // Stop typing sound
     playAmbientTyping(false);
 
+    // Reveal Polaroid Photo
+    await sleep(500);
+    const polaroid = document.querySelector('.polaroid-photo');
+    if (polaroid) {
+        polaroid.style.display = ''; // Reset inline style
+        polaroid.classList.remove('pointer-events-none');
+        polaroid.classList.add('animate-slap');
+    }
+
     // Reveal next button with elegant fade
     await sleep(800);
     const finaleNextBtn = document.getElementById('finale-next-btn');
@@ -2434,6 +2443,13 @@ function resetLetterPage() {
     if (envelope) {
         envelope.classList.add('is-sealed');
         envelope.style.pointerEvents = '';
+    }
+
+    const polaroid = document.querySelector('.polaroid-photo');
+    if (polaroid) {
+        polaroid.classList.remove('animate-slap');
+        polaroid.classList.add('opacity-0', 'pointer-events-none');
+        polaroid.style.display = 'none';
     }
 
     // Hide next button

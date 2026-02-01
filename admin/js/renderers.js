@@ -428,10 +428,6 @@ const renderers = {
                         ${this.createStateInput('greet_signature', 'greeting', 'signature', 'With Love')}
                     </div>
                     
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-600 mb-1">${t('page_greeting_label_footer')}</label>
-                        ${this.createStateInput('greet_footer', 'greeting', 'footerText', 'For you, Always')}
-                    </div>
                 </div>
             </div>
         `;
@@ -472,11 +468,6 @@ const renderers = {
                 </div>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_music_label_section')}</label>
-                <input type="text" id="music-title" class="form-input" value="${pageData.songTitle}" 
-                    oninput="renderers.updateMusicTitle(this.value)">
-            </div>
 
             <div id="music-list" class="space-y-4">
                 ${songsHtml}
@@ -642,10 +633,10 @@ const renderers = {
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
                 <div class="flex gap-3">
-                    <span class="material-symbols-outlined text-blue-400">auto_awesome</span>
+                    <span class="material-symbols-outlined text-blue-400">lightbulb</span>
                     <div class="text-xs text-blue-900/80 leading-relaxed">
-                        <span class="font-bold block text-blue-900 mb-1 text-sm">✨ ${t('page_wrapped_title')}</span>
-                        ${t('page_wrapped_desc')}
+                        <span class="font-bold block text-blue-900 mb-1 text-sm">💡 ${t('page_wrapped_tips')}</span>
+                        ${t('page_wrapped_tips_desc')}
                     </div>
                 </div>
             </div>
@@ -815,10 +806,10 @@ const renderers = {
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
                 <div class="flex gap-3">
-                    <span class="material-symbols-outlined text-blue-400">psychology</span>
+                    <span class="material-symbols-outlined text-blue-400">lightbulb</span>
                     <div class="text-xs text-blue-900/80 leading-relaxed">
-                        <span class="font-bold block text-blue-900 mb-1 text-sm">🧠 ${t('page_quiz_title')}</span>
-                        ${t('page_quiz_desc')}
+                        <span class="font-bold block text-blue-900 mb-1 text-sm">💡 ${t('page_quiz_tips')}</span>
+                        ${t('page_quiz_tips_desc')}
                     </div>
                 </div>
             </div>
@@ -974,10 +965,10 @@ const renderers = {
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
                 <div class="flex gap-3">
-                    <span class="material-symbols-outlined text-blue-400">photo_library</span>
+                    <span class="material-symbols-outlined text-blue-400">lightbulb</span>
                     <div class="text-xs text-blue-900/80 leading-relaxed">
-                        <span class="font-bold block text-blue-900 mb-1 text-sm">📷 ${t('page_gallery_title')}</span>
-                        ${t('page_gallery_desc')}
+                        <span class="font-bold block text-blue-900 mb-1 text-sm">💡 ${t('page_gallery_tips')}</span>
+                        ${t('page_gallery_tips_desc')}
                     </div>
                 </div>
             </div>
@@ -1345,10 +1336,10 @@ const renderers = {
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
                 <div class="flex gap-3">
-                    <span class="material-symbols-outlined text-blue-400">edit_note</span>
+                    <span class="material-symbols-outlined text-blue-400">lightbulb</span>
                     <div class="text-xs text-blue-900/80 leading-relaxed">
-                        <span class="font-bold block text-blue-900 mb-1 text-sm">💌 ${t('page_letter_title')}</span>
-                        ${t('page_letter_desc')}
+                        <span class="font-bold block text-blue-900 mb-1 text-sm">💡 ${t('page_letter_tips')}</span>
+                        ${t('page_letter_tips_desc')}
                     </div>
                 </div>
             </div>
@@ -1525,33 +1516,28 @@ const renderers = {
                 <div class="flex gap-3">
                     <span class="material-symbols-outlined text-blue-400">lightbulb</span>
                     <div class="text-xs text-blue-900/80 leading-relaxed">
-                        <span class="font-bold block text-blue-900 mb-1 text-sm">💡 ${t('welcome_step3_desc')}</span>
-                        ${t('page_infinity_desc')}
+                        <span class="font-bold block text-blue-900 mb-1 text-sm">💡 ${t('page_infinity_tips')}</span>
+                        ${t('page_infinity_tips_desc')}
                     </div>
                 </div>
             </div>
 
             <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_infinity_label_title')}</label>
-                    <input type="text" class="form-input" value="${pageData.headerTitle}" 
-                        oninput="renderers.updateInfinity('headerTitle', this.value)">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('theme_subtitle')}</label>
-                    <input type="text" class="form-input" value="${pageData.headerSubtitle}" 
-                        oninput="renderers.updateInfinity('headerSubtitle', this.value)">
-                </div>
 
                 <!-- Generic Reasons -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
                     <div class="flex justify-between items-center mb-3">
                         <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_generic')}</label>
-                        <button type="button" class="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors"
-                            onclick="renderers.fillInfinityPresets('reasons_generic')">
-                            ${t('page_infinity_btn_fill')}
-                        </button>
+                        <div class="flex gap-2">
+                             <button type="button" class="text-xs bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition-colors"
+                                onclick="renderers.fillInfinityPresets('reasons_generic', 'id')">
+                                Isi (ID)
+                            </button>
+                             <button type="button" class="text-xs bg-indigo-500 text-white px-2 py-1 rounded-lg hover:bg-indigo-600 transition-colors"
+                                onclick="renderers.fillInfinityPresets('reasons_generic', 'en')">
+                                Fill (EN)
+                            </button>
+                        </div>
                     </div>
                     <div id="infinity-generic-list" class="space-y-2">
                         ${this.renderInfinityReasonsList(pageData.reasons_generic, 'reasons_generic')}
@@ -1566,10 +1552,16 @@ const renderers = {
                 <div class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 border border-pink-200">
                     <div class="flex justify-between items-center mb-3">
                         <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_personal')}</label>
-                        <button type="button" class="text-xs bg-pink-500 text-white px-3 py-1 rounded-lg hover:bg-pink-600 transition-colors"
-                            onclick="renderers.fillInfinityPresets('reasons_personal')">
-                            ${t('page_infinity_btn_fill')}
-                        </button>
+                        <div class="flex gap-2">
+                            <button type="button" class="text-xs bg-pink-500 text-white px-2 py-1 rounded-lg hover:bg-pink-600 transition-colors"
+                                onclick="renderers.fillInfinityPresets('reasons_personal', 'id')">
+                                Isi (ID)
+                            </button>
+                            <button type="button" class="text-xs bg-rose-500 text-white px-2 py-1 rounded-lg hover:bg-rose-600 transition-colors"
+                                onclick="renderers.fillInfinityPresets('reasons_personal', 'en')">
+                                Fill (EN)
+                            </button>
+                        </div>
                     </div>
                     <div id="infinity-personal-list" class="space-y-2">
                         ${this.renderInfinityReasonsList(pageData.reasons_personal, 'reasons_personal')}
@@ -1584,10 +1576,16 @@ const renderers = {
                 <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200">
                     <div class="flex justify-between items-center mb-3">
                         <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_poetic')}</label>
-                        <button type="button" class="text-xs bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-purple-600 transition-colors"
-                            onclick="renderers.fillInfinityPresets('reasons_poetic')">
-                            ${t('page_infinity_btn_fill')}
-                        </button>
+                        <div class="flex gap-2">
+                            <button type="button" class="text-xs bg-purple-500 text-white px-2 py-1 rounded-lg hover:bg-purple-600 transition-colors"
+                                onclick="renderers.fillInfinityPresets('reasons_poetic', 'id')">
+                                Isi (ID)
+                            </button>
+                            <button type="button" class="text-xs bg-indigo-500 text-white px-2 py-1 rounded-lg hover:bg-indigo-600 transition-colors"
+                                onclick="renderers.fillInfinityPresets('reasons_poetic', 'en')">
+                                Fill (EN)
+                            </button>
+                        </div>
                     </div>
                     <div id="infinity-poetic-list" class="space-y-2">
                         ${this.renderInfinityReasonsList(pageData.reasons_poetic, 'reasons_poetic')}
@@ -1636,8 +1634,10 @@ const renderers = {
                     <div class="flex gap-3 items-start mb-4">
                         <span class="material-symbols-outlined text-violet-500 text-2xl">music_note</span>
                         <div>
-                            <label class="block text-sm font-bold text-gray-900">${t('page_infinity_music_title')}</label>
-                            <p class="text-xs text-gray-600 mt-1">${t('page_infinity_music_desc')}</p>
+                            <label class="block text-sm font-bold text-gray-900">${t('page_infinity_tips_music')}</label>
+                            <div class="mt-1 text-xs text-violet-900/80 bg-white/50 p-2 rounded-lg border border-violet-100">
+                                ${t('page_infinity_tips_music_desc')}
+                            </div>
                         </div>
                     </div>
                     <div class="space-y-3">
@@ -1665,6 +1665,15 @@ const renderers = {
                 </div>
             </div>
         `;
+    },
+
+    updateInfinity(field, value) {
+        const page = state.findPageById('page-10');
+        if (page) {
+            page[field] = value;
+            state.save();
+            state.syncToPreview();
+        }
     },
 
     renderInfinityReasonsList(reasons, listType) {
@@ -1754,40 +1763,74 @@ const renderers = {
         }
     },
 
-    fillInfinityPresets(listType) {
+    fillInfinityPresets(listType, lang = 'en') {
         const PRESETS = {
-            reasons_generic: [
-                "...Your smile lights up my world", "...You make me laugh like no one else", "...Your kindness inspires me",
-                "...You are my safe space", "...The way you look at me", "...You support my wildest dreams",
-                "...Your hugs heal everything", "...You make the ordinary feel extraordinary", "...You are my best friend",
-                "...I love your passion for life", "...You make me want to be a better person", "...Your voice is my favorite sound",
-                "...You always know how to cheer me up", "...I love our late-night talks", "...You are my home"
-            ],
-            reasons_personal: [
-                "...of that rainy day when we first met", "...you still remember my coffee order", "...you dance with me in the kitchen",
-                "...of our midnight grocery runs", "...you laugh at all my bad jokes", "...we got lost together on that road trip",
-                "...you cry at the same movies I do", "...of our secret language", "...you let me steal your hoodies",
-                "...of that time we stayed up until sunrise talking", "...you know when I need space and when I need a hug"
-            ],
-            reasons_poetic: [
-                "...you are the melody to my song", "...my heart skips a beat when you're near", "...you are the answer to questions I never knew I had",
-                "...loving you feels like coming home", "...you are my favorite chapter", "...in your eyes, I see forever",
-                "...you are the reason I believe in magic", "...every moment with you is a treasure", "...you are my yesterday, today, and tomorrow"
-            ]
+            en: {
+                reasons_generic: [
+                    "...Your smile lights up my world", "...You make me laugh like no one else", "...Your kindness inspires me",
+                    "...You are my safe space", "...The way you look at me", "...You support my wildest dreams",
+                    "...Your hugs heal everything", "...You make the ordinary feel extraordinary", "...You are my best friend",
+                    "...I love your passion for life", "...You make me want to be a better person", "...Your voice is my favorite sound",
+                    "...You always know how to cheer me up", "...I love our late-night talks", "...You are my home"
+                ],
+                reasons_personal: [
+                    "...of that rainy day when we first met", "...you still remember my coffee order", "...you dance with me in the kitchen",
+                    "...of our midnight grocery runs", "...you laugh at all my bad jokes", "...we got lost together on that road trip",
+                    "...you cry at the same movies I do", "...of our secret language", "...you let me steal your hoodies",
+                    "...of that time we stayed up until sunrise talking", "...you know when I need space and when I need a hug"
+                ],
+                reasons_poetic: [
+                    "...you are the melody to my song", "...my heart skips a beat when you're near", "...you are the answer to questions I never knew I had",
+                    "...loving you feels like coming home", "...you are the favorite chapter", "...in your eyes, I see forever",
+                    "...you are the reason I believe in magic", "...every moment with you is a treasure", "...you are my yesterday, today, and tomorrow"
+                ]
+            },
+            id: {
+                reasons_generic: [
+                    "...Senyummu menerangi duniaku", "...Kamu bikin aku ketawa lepas", "...Kebaikanmu menginspirasiku",
+                    "...Kamu adalah tempat ternyamanku", "...Cara kamu menatapku", "...Kamu dukung mimpi-mimpiku",
+                    "...Pelukanmu menyembuhkan segalanya", "...Kamu bikin hal biasa jadi luar biasa", "...Kamu sahabat terbaikku",
+                    "...Aku suka semangat hidupmu", "...Kamu bikin aku ingin jadi lebih baik", "...Suaramu adalah suara favoritku",
+                    "...Kamu selalu tau cara ngehibur aku", "...Aku suka obrolan tengah malam kita", "...Kamu adalah rumahku"
+                ],
+                reasons_personal: [
+                    "...ingat hari hujan pas kita pertama ketemu", "...kamu masih ingat pesanan kopiku", "...kamu berdansa denganku di dapur",
+                    "...jalan-jalan tengah malam kita cari makan", "...kamu ketawa denger jokes recehku", "...kita nyasar bareng pas road trip",
+                    "...kamu nangis nonton film sedih bareng aku", "...bahasa rahasia kita berdua", "...kamu bolehin aku pake jaketmu",
+                    "...waktu kita begadang ngobrol sampe pagi", "...kamu tau kapan aku butuh sendiri dan kapan butuh peluk"
+                ],
+                reasons_poetic: [
+                    "...kamu adalah melodi dalam laguku", "...jantungku berdebar saat kamu dekat", "...kamu jawaban dari doa yang tak terucap",
+                    "...mencintaimu rasanya seperti pulang ke rumah", "...kamu adalah bab favorit dalam hidupku", "...di matamu, aku melihat keabadian",
+                    "...kamu alasanku percaya keajaiban", "...setiap detik bersamamu adalah harta karun", "...kamu adalah kemarin, hari ini, dan esokku"
+                ]
+            }
         };
 
         const page = state.findPageById('page-10');
         if (!page[listType]) page[listType] = [];
 
-        const availablePresets = PRESETS[listType].filter(p => !page[listType].includes(p));
+        // Get presets for requested language, default to EN if not found
+        const langPresets = PRESETS[lang] || PRESETS['en'];
+        const listPresets = langPresets[listType] || langPresets['reasons_generic'];
+
+        // Filter out existing
+        const availablePresets = listPresets.filter(p => !page[listType].includes(p));
+
+        // Add up to 5
         const toAdd = availablePresets.slice(0, 5);
+
+        if (toAdd.length === 0) {
+            utils.showNotification('All presets for this language added!', 'info');
+            return;
+        }
 
         page[listType].push(...toAdd);
         app.renderCurrentStep();
         state.save();
         state.syncToPreview();
 
-        utils.showNotification(`Added ${toAdd.length} preset reasons!`, 'success');
+        utils.showNotification(`Added ${toAdd.length} presets (${lang.toUpperCase()})!`, 'success');
     },
 
     addInfinityPhoto() {

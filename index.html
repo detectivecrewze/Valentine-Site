@@ -74,6 +74,36 @@
     <script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.4.39/dist/index.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <style>
+        @keyframes slap-in {
+            0% {
+                opacity: 0;
+                transform: scale(5) rotate(-10deg);
+                filter: blur(4px);
+            }
+
+            60% {
+                opacity: 1;
+                transform: scale(0.9) rotate(3deg);
+                filter: blur(0px);
+            }
+
+            80% {
+                transform: scale(1.05) rotate(-2deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(-1deg);
+                opacity: 1;
+            }
+        }
+
+        .animate-slap {
+            animation: slap-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2) forwards !important;
+            display: block !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 
 <body class="font-display overflow-hidden h-screen w-screen selection:bg-rosegold/30" oncontextmenu="return false">
@@ -1081,7 +1111,8 @@
 
 
                             <!-- Realistic Polaroid Photo - Bottom Left/Center -->
-                            <div class="polaroid-photo">
+                            <div class="polaroid-photo opacity-0 transition-opacity duration-1000 pointer-events-none"
+                                style="display: none;">
                                 <!-- Washi tape holding the photo -->
                                 <div class="washi-tape"></div>
 
@@ -1137,10 +1168,6 @@
                     </div>
 
                     <!-- Interaction Hint -->
-                    <div class="envelope-hint">
-                        <span class="hint-text">Unseal your letter</span>
-                        <div class="hint-line"></div>
-                    </div>
                 </div>
             </div>
 
