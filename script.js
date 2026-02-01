@@ -1,5 +1,6 @@
 // Core Architecture
 const bgMusic = new Audio(); // Global Audio Object
+window.bgMusic = bgMusic; // ✅ FIX: Expose to window for iframe access (Cross-origin safe)
 let currentSongIndex = 0;
 let mapInstance = null;
 let revealedMemories = []; // Persistent state for gallery
@@ -154,26 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Helper: Smooth Audio Fade Out
-    function fadeOutAudio(audio, duration) {
-        if (!audio || audio.paused) return;
-
-        const startVolume = audio.volume;
-        const speed = 50; // Interval in ms
-        const step = startVolume / (duration / speed);
-
-        const fadeInterval = setInterval(() => {
-            if (audio.volume > step) {
-                audio.volume -= step;
-            } else {
-                audio.volume = 0;
-                audio.pause();
-                audio.volume = startVolume; // Reset volume for next play
-                clearInterval(fadeInterval);
-                console.log('[Music] Main music faded out and paused');
-            }
-        }, speed);
-    }
 
     // Notify parent that we're ready
     if (window.self !== window.top) {
@@ -182,6 +163,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('[App] Initialization complete');
 });
+
+// Helper: Smooth Audio Fade Out
+function fadeOutAudio(audio, duration) {
+    if (!audio || audio.paused) return;
+
+    const startVolume = audio.volume;
+    const speed = 50; // Interval in ms
+    const step = startVolume / (duration / speed);
+
+    const fadeInterval = setInterval(() => {
+        if (audio.volume > step) {
+            audio.volume -= step;
+        } else {
+            audio.volume = 0;
+            audio.pause();
+            audio.volume = startVolume; // Reset volume for next play
+            clearInterval(fadeInterval);
+            console.log('[Music] Main music faded out and paused');
+        }
+    }, speed);
+}
 
 // ✅ NEW: Preload first song (Claude's Recommendation)
 async function preloadFirstSong() {
@@ -445,6 +447,11 @@ function MapsTo(fromId, toId) {
         } else if (toId === 'page-9') {
             if (typeof initInvitationPage === 'function') initInvitationPage();
         } else if (toId === 'page-10') {
+            // ✅ FIX: Stop parent music immediately when starting finale to avoid overlaps on slow servers
+            if (typeof fadeOutAudio === 'function') {
+                fadeOutAudio(bgMusic, 1500);
+            }
+
             const iframe = document.getElementById('infinity-frame');
             if (iframe) {
                 // Force reload to get fresh data

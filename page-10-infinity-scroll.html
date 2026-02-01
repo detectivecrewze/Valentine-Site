@@ -1261,15 +1261,23 @@
 
         function isPageActuallyVisible() {
             try {
+                // If same-origin, we can check directly
                 const parentSection = window.parent.document.getElementById('page-10');
                 if (parentSection && !parentSection.classList.contains('hidden')) {
                     return true;
                 }
             } catch (e) {
-                // Cross-origin or opened directly - assume visible
-                return window.self === window.top;
+                // If cross-origin, we can't check parent's DOM.
+                // In this case, we'll rely on the message but also try to stop music proactively.
+                return false;
             }
-            return false;
+            // If we are Top level (not in iframe), we are visible
+            return window.self === window.top;
+        }
+
+        function forceStopParentMusicOnLoad() {
+            console.log('[Music] Proactive stopParentMusic on load');
+            stopParentMusic();
         }
 
         function attemptAutoplay() {
