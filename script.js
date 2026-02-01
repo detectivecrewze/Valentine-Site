@@ -191,12 +191,27 @@ window.addEventListener('message', function (event) {
 // Helper: Smooth Audio Fade Out
 let fadeOutInterval = null;
 function fadeOutAudio(audio, duration) {
-    if (!audio || audio.paused) return;
+    if (!audio) return;
 
     // Clear any existing fade
     if (fadeOutInterval) {
         clearInterval(fadeOutInterval);
         fadeOutInterval = null;
+    }
+
+    // If audio is paused but has source (might auto-play soon), just ensure it stays paused
+    if (audio.paused) {
+        // Set up a one-time listener to catch if it starts playing
+        const preventPlay = () => {
+            if (window.isOnPage10) {
+                audio.pause();
+                console.log('[Music] Prevented late autoplay (page 10 active)');
+            }
+            audio.removeEventListener('play', preventPlay);
+        };
+        audio.addEventListener('play', preventPlay, { once: true });
+        console.log('[Music] Audio paused, set up play prevention');
+        return;
     }
 
     const startVolume = audio.volume;
@@ -2006,6 +2021,12 @@ async function changeSong(direction) {
 // FIX 4: Improved playMusic - Handles autoplay blocks & muting
 // ============================================================
 function playMusic() {
+    // ✅ CRITICAL: Don't play parent music if user is on Page 10
+    if (window.isOnPage10) {
+        console.log('[Music] Blocked playMusic - user is on Page 10 (Infinity Scroll)');
+        return;
+    }
+
     if (isMusicLoading) return; // Prevent re-entrant calls
     window.musicStarted = true; // Flag for visibility logic
 
