@@ -210,13 +210,20 @@ const CONFIG = {
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769789221789-206zr.jpg",
                 "caption": ""
             }
+        ],
+        "videoMemories": [
+            {
+                "url": "https://valentine-upload.aldoramadhan16.workers.dev/1769967296922-6qaedg.mp4",
+                "caption": "Kamu Bau",
+                "milestone": 25
+            }
         ]
     },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-01T16:46:05.644Z"
+        "generatedAt": "2026-02-01T17:52:57.844Z"
     },
     "adminLang": "id",
     "currentStep": 9,

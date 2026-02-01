@@ -38,6 +38,7 @@ const translations = {
         // Theme Setup Page
         theme_header_title: "Theme & Configuration",
         theme_header_desc: "Choose your visual style and set basic information",
+        theme_subtitle: "Subtitle / Tagline",
         theme_label_presets: "Quick Theme Presets",
         theme_label_bg_image: "Custom Background Image",
         theme_label_bg_color: "Fallback Background Color",
@@ -171,6 +172,15 @@ const translations = {
         page_infinity_label_title: "Infinity Page Title",
         page_infinity_label_msg: "The Message",
         page_infinity_btn_add: "Add Image",
+        page_infinity_btn_add_video: "Add Video Memory",
+        page_infinity_video_label: "Video URL / GDrive Link",
+        page_infinity_video_milestone: "Appears after Reason #",
+        page_infinity_music_title: "Special Background Music",
+        page_infinity_music_desc: "This song will automatically play when visiting the Infinity Scroll page, replacing the main site music.",
+        page_infinity_label_generic: "Generic Reasons",
+        page_infinity_label_personal: "Personal Memories",
+        page_infinity_label_poetic: "Poetic Reasons",
+        page_infinity_btn_fill: "Fill Presets",
 
         // Particle Options
         part_none: "None (Clean)",
@@ -213,6 +223,7 @@ const translations = {
         // Theme Setup Page
         theme_header_title: "Tema & Konfigurasi",
         theme_header_desc: "Pilih gaya visual dan atur informasi dasar",
+        theme_subtitle: "Sub-judul / Tagline",
         theme_label_presets: "Pilihan Tema Cepat (Presets)",
         theme_label_bg_image: "Gambar Latar Kustom",
         theme_label_bg_color: "Warna Latar (Cadangan)",
@@ -346,6 +357,15 @@ const translations = {
         page_infinity_label_title: "Judul Halaman Infinity",
         page_infinity_label_msg: "Pesan Cintamu",
         page_infinity_btn_add: "Tambah Gambar",
+        page_infinity_btn_add_video: "Tambah Video Memori",
+        page_infinity_video_label: "URL Video / Link GDrive",
+        page_infinity_video_milestone: "Muncul setelah Alasan #",
+        page_infinity_music_title: "Musik Latar Spesial",
+        page_infinity_music_desc: "Lagu ini akan diputar secara otomatis saat mengunjungi halaman Infinity Scroll, menggantikan musik utama.",
+        page_infinity_label_generic: "Alasan Umum",
+        page_infinity_label_personal: "Kenangan Pribadi",
+        page_infinity_label_poetic: "Kalimat Puitis",
+        page_infinity_btn_fill: "Isi Otomatis",
 
         // Particle Options
         part_none: "Tidak Ada (Bersih)",

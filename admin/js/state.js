@@ -242,7 +242,9 @@ const state = {
                 reasons_generic: CONFIG.infinityScroll.reasons?.generic || [],
                 reasons_personal: CONFIG.infinityScroll.reasons?.personal || [],
                 reasons_poetic: CONFIG.infinityScroll.reasons?.poetic || [],
-                photos: CONFIG.infinityScroll.photos || []
+                photos: CONFIG.infinityScroll.photos || [],
+                videoMemories: CONFIG.infinityScroll.videoMemories || [],
+                music: CONFIG.infinityScroll.music || {}
             });
         } else {
             this.loadDefaultInfinityPage();
@@ -356,7 +358,8 @@ const state = {
             reasons_generic: ["...your smile lights up the room", "...you make me a better person"],
             reasons_personal: ["...of how we met that one rainy day"],
             reasons_poetic: ["...you are the melody to my song"],
-            photos: []
+            photos: [],
+            videoMemories: []
         });
     },
 
@@ -496,7 +499,9 @@ const state = {
                     personal: infinityPage.reasons_personal || [],
                     poetic: infinityPage.reasons_poetic || []
                 },
-                photos: infinityPage.photos || []
+                photos: infinityPage.photos || [],
+                videoMemories: infinityPage.videoMemories || [],
+                music: infinityPage.music || {}
             } : null,
             metadata: {
                 brandName: this.configData.metadata.brandName || 'For you, Always',

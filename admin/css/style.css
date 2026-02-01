@@ -199,20 +199,10 @@ html {
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Only sticky on larger screens */
+/* Footnav at the absolute bottom of container, not floating */
 @media (min-width: 768px) {
     .wizard-footer {
-        position: sticky;
-        bottom: 0;
-    }
-
-    /* Fix for iOS Safari address bar on tablets */
-    @supports (-webkit-touch-callout: none) {
-        .wizard-footer {
-            position: -webkit-sticky;
-            position: sticky;
-            bottom: 0;
-        }
+        position: relative;
     }
 }
 

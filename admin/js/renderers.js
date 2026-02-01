@@ -1547,10 +1547,10 @@ const renderers = {
                 <!-- Generic Reasons -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
                     <div class="flex justify-between items-center mb-3">
-                        <label class="block text-sm font-bold text-gray-900">Generic Reasons</label>
+                        <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_generic')}</label>
                         <button type="button" class="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors"
                             onclick="renderers.fillInfinityPresets('reasons_generic')">
-                            Fill Presets
+                            ${t('page_infinity_btn_fill')}
                         </button>
                     </div>
                     <div id="infinity-generic-list" class="space-y-2">
@@ -1565,10 +1565,10 @@ const renderers = {
                 <!-- Personal Reasons -->
                 <div class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 border border-pink-200">
                     <div class="flex justify-between items-center mb-3">
-                        <label class="block text-sm font-bold text-gray-900">Personal Memories</label>
+                        <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_personal')}</label>
                         <button type="button" class="text-xs bg-pink-500 text-white px-3 py-1 rounded-lg hover:bg-pink-600 transition-colors"
                             onclick="renderers.fillInfinityPresets('reasons_personal')">
-                            Fill Presets
+                            ${t('page_infinity_btn_fill')}
                         </button>
                     </div>
                     <div id="infinity-personal-list" class="space-y-2">
@@ -1583,10 +1583,10 @@ const renderers = {
                 <!-- Poetic Reasons -->
                 <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200">
                     <div class="flex justify-between items-center mb-3">
-                        <label class="block text-sm font-bold text-gray-900">Poetic Reasons</label>
+                        <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_poetic')}</label>
                         <button type="button" class="text-xs bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-purple-600 transition-colors"
                             onclick="renderers.fillInfinityPresets('reasons_poetic')">
-                            Fill Presets
+                            ${t('page_infinity_btn_fill')}
                         </button>
                     </div>
                     <div id="infinity-poetic-list" class="space-y-2">
@@ -1613,13 +1613,31 @@ const renderers = {
                     </button>
                 </div>
 
+                <!-- Video Memories Section -->
+                <div class="bg-gradient-to-r from-rose-50 to-red-50 rounded-xl p-4 border border-rose-200">
+                    <div class="mb-3 flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-900 mb-1">Video Clips</label>
+                            <p class="text-xs text-gray-600">Add videos that appear at specific milestones.</p>
+                        </div>
+                        <span class="material-symbols-outlined text-rose-500">video_library</span>
+                    </div>
+                    <div id="infinity-videos-list" class="space-y-3">
+                        ${this.renderInfinityVideosList(pageData.videoMemories)}
+                    </div>
+                    <button type="button" class="btn-add" onclick="renderers.addInfinityVideo()">
+                        <span class="material-symbols-outlined">add_video_call</span>
+                        ${t('page_infinity_btn_add_video')}
+                    </button>
+                </div>
+
                 <!-- Special Music Section -->
                 <div class="bg-gradient-to-r from-violet-50 to-fuchsia-50 rounded-xl p-4 border border-violet-200">
                     <div class="flex gap-3 items-start mb-4">
                         <span class="material-symbols-outlined text-violet-500 text-2xl">music_note</span>
                         <div>
-                            <label class="block text-sm font-bold text-gray-900">Special Background Music</label>
-                            <p class="text-xs text-gray-600 mt-1">This song will automatically play when visiting the Infinity Scroll page, replacing the main site music.</p>
+                            <label class="block text-sm font-bold text-gray-900">${t('page_infinity_music_title')}</label>
+                            <p class="text-xs text-gray-600 mt-1">${t('page_infinity_music_desc')}</p>
                         </div>
                     </div>
                     <div class="space-y-3">
@@ -1630,17 +1648,17 @@ const renderers = {
                                 oninput="renderers.updateInfinityMusic('audioSrc', this.value)">
                             <label class="cursor-pointer bg-violet-500 hover:bg-violet-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
                                 <span class="material-symbols-outlined text-base">audio_file</span>
-                                <input type="file" class="hidden" accept="audio/*" data-target="infinity-music-src">
+                                <input type="file" class="hidden" accept="audio/*" data-target="infinity-music-src" onchange="utils.handleMediaUpload(this, 'infinity-music-src')">
                             </label>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <input type="text" class="form-input text-sm" 
                                 value="${pageData.music?.songTitle || ''}" 
-                                placeholder="Song Title"
+                                placeholder="${t('page_music_label_song')}"
                                 oninput="renderers.updateInfinityMusic('songTitle', this.value)">
                             <input type="text" class="form-input text-sm" 
                                 value="${pageData.music?.artist || ''}" 
-                                placeholder="Artist Name"
+                                placeholder="${t('page_music_label_artist')}"
                                 oninput="renderers.updateInfinityMusic('artist', this.value)">
                         </div>
                     </div>
@@ -1805,6 +1823,93 @@ const renderers = {
         if (input && img) {
             img.src = input.value;
             img.classList.toggle('hidden', !input.value);
+        }
+    },
+
+    renderInfinityVideosList(videos) {
+        if (!videos || videos.length === 0) return '';
+
+        return videos.map((video, idx) => `
+            <div class="bg-white p-4 rounded-xl border border-rose-100 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-rose-500 text-sm">movie</span>
+                        </div>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Video #${idx + 1}</span>
+                    </div>
+                    <button type="button" class="text-rose-400 hover:text-rose-600 transition-colors" 
+                        onclick="renderers.removeInfinityVideo(${idx})">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">${t('page_infinity_video_label')}</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="inf-video-input-${idx}" class="form-input text-xs font-mono flex-1" 
+                                value="${video.url || ''}" 
+                                placeholder="https://example.com/video.mp4"
+                                oninput="renderers.updateInfinityVideo(${idx}, 'url', this.value)">
+                            <label class="cursor-pointer bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 rounded-lg flex items-center transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-base">video_file</span>
+                                <input type="file" class="hidden" accept="video/*" 
+                                    onchange="utils.handleMediaUpload(this, 'inf-video-input-${idx}')">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">${t('page_gallery_label_caption')}</label>
+                            <input type="text" class="form-input text-sm" value="${video.caption || ''}" 
+                                placeholder="Caption..."
+                                oninput="renderers.updateInfinityVideo(${idx}, 'caption', this.value)">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">${t('page_infinity_video_milestone')}</label>
+                            <input type="number" class="form-input text-sm" value="${video.milestone || 10}" 
+                                oninput="renderers.updateInfinityVideo(${idx}, 'milestone', parseInt(this.value))">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    addInfinityVideo() {
+        const page = state.findPageById('page-10');
+        if (!page.videoMemories) page.videoMemories = [];
+        page.videoMemories.push({ url: '', caption: '', milestone: (page.videoMemories.length + 1) * 25 });
+        app.renderCurrentStep();
+        state.save();
+    },
+
+    removeInfinityVideo(idx) {
+        const page = state.findPageById('page-10');
+        if (page && page.videoMemories) {
+            page.videoMemories.splice(idx, 1);
+            app.renderCurrentStep();
+            state.save();
+            state.syncToPreview();
+        }
+    },
+
+    updateInfinityVideo(idx, key, value) {
+        const page = state.findPageById('page-10');
+        if (page && page.videoMemories && page.videoMemories[idx]) {
+            // Auto-convert GDrive links if the key is 'url'
+            if (key === 'url') {
+                value = utils.convertGDriveLink(value);
+                // Also update the input field if it exists
+                const input = document.getElementById(`inf-video-input-${idx}`);
+                if (input) input.value = value;
+            }
+
+            page.videoMemories[idx][key] = value;
+            state.save();
+            state.syncToPreview();
         }
     }
 };

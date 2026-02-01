@@ -291,6 +291,19 @@ const utils = {
         }
     },
 
+    // Convert GDrive share link to direct link
+    convertGDriveLink(url) {
+        if (!url) return '';
+        if (url.includes('drive.google.com')) {
+            const match = url.match(/\/d\/([^\/]+)/);
+            if (match && match[1]) {
+                const id = match[1];
+                return `https://drive.google.com/uc?export=download&id=${id}`;
+            }
+        }
+        return url;
+    },
+
     // Debounce function
     debounce(func, wait) {
         let timeout;
