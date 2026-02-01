@@ -1536,10 +1536,6 @@ body {
         height: 350px;
     }
 
-    .vintage-stamp {
-        width: 50px;
-        height: 70px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -2122,8 +2118,12 @@ body {
 }
 
 @media (max-width: 768px) {
-    .magazine-dropcap::first-letter {
-        font-size: 2.5rem;
+    .vintage-stamp {
+        width: 70px;
+        /* ← Tablet size */
+        height: 85px;
+        top: 25px;
+        right: 25px;
     }
 }
 
@@ -2741,9 +2741,10 @@ body {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .vintage-stamp {
-        width: 50px;
-        top: 1%;
-        right: 1%;
+        width: 150px;
+        height: 140px;
+        top: 2%;
+        right: -5%;
     }
 
     .stamp-heart-icon {
@@ -2768,9 +2769,10 @@ body {
 
 @media (max-width: 480px) {
     .vintage-stamp {
-        width: 40px;
-        top: 0.5%;
-        right: 0.5%;
+        width: 120px;
+        height: 146px;
+        top: 15px;
+        right: 15px;
     }
 
     .stamp-heart-icon {
@@ -2805,4 +2807,14 @@ body {
     visibility: visible !important;
     transition: opacity 1s ease 1s;
     /* Fade in after flap opens */
+}
+
+/* Music Player Title Fix */
+#music-section-title {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center;
 }

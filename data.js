@@ -2,7 +2,7 @@ const CONFIG = {
     "theme": {
         "backgroundColor": "#ffe5ec",
         "fontDisplay": "Cinzel, serif",
-        "fontSans": "Poppins, sans-serif",
+        "fontSans": "Cormorant Garamond, serif",
         "particles": "hearts",
         "backgroundImage": ""
     },
@@ -71,7 +71,7 @@ const CONFIG = {
         {
             "songTitle": "Selfless",
             "artist": "The Strokes",
-            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769735240679-4bfqv9.mp3",
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769897932779-xfl03b.mp3",
             "coverSrc": "assets/cover1.jpg",
             "lyrics": "Life is too short, but i will live for you"
         },
@@ -83,7 +83,7 @@ const CONFIG = {
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
     ],
-    "musicSectionTitle": "",
+    "musicSectionTitle": "the song that defines u",
     "gallery": {
         "title": "Our Memories",
         "subtitle": "Scratch to reveal",
@@ -172,12 +172,12 @@ const CONFIG = {
         ]
     },
     "letter": {
-        "recipient": "Dearest Love",
+        "recipient": "Dearest Lisa",
         "message": "I find myself sitting here, thinking about all the moments we've shared...",
         "signature": "Your Favorite Person",
         "stampSrc": "assets/stamp.png",
         "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769894647359-3oq81.jpg",
-        "polaroidCaption": "Us, always, 2026",
+        "polaroidCaption": "Love You, Always",
         "finaleChoice": "choice"
     },
     "lock": {
@@ -192,10 +192,6 @@ const CONFIG = {
             "generic": [
                 "...your smile lights up the room",
                 "...you make me a better person",
-                "...Your smile lights up my world",
-                "...You make me laugh like no one else",
-                "...Your kindness inspires me",
-                "...You are my safe space",
                 "...The way you look at me"
             ],
             "personal": [
@@ -214,18 +210,13 @@ const CONFIG = {
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769789221789-206zr.jpg",
                 "caption": ""
             }
-        ],
-        "music": {
-            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769897932779-xfl03b.mp3",
-            "songTitle": "Infinity Theme",
-            "artist": ""
-        }
+        ]
     },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-01-31T21:28:15.341Z"
+        "generatedAt": "2026-02-01T16:46:05.644Z"
     },
     "adminLang": "id",
     "currentStep": 9,
