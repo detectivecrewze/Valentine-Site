@@ -13,9 +13,26 @@ body {
 
 /* Ensure content respects safe areas (Notch/Dynamic Island) */
 #page-8-container {
-    padding-top: calc(4rem + env(safe-area-inset-top)) !important;
+    padding-top: calc(6rem + env(safe-area-inset-top, 0px)) !important;
     /* Extra padding for top notch */
-    padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* AGGRESSIVE FIX: Letter paper position on mobile devices */
+@media (max-width: 900px) {
+    #page-8-scroll-wrapper {
+        padding-top: calc(2rem + env(safe-area-inset-top, 0px)) !important;
+    }
+
+    .envelope-premium-wrapper:not(.is-sealed) .letter-paper-premium {
+        top: calc(80px + env(safe-area-inset-top, 0px)) !important;
+        margin-top: 0 !important;
+    }
+
+    .envelope-scene-wrapper {
+        padding-top: calc(3rem + env(safe-area-inset-top, 0px)) !important;
+        min-height: auto !important;
+    }
 }
 
 .glass-card {
