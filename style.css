@@ -7,12 +7,14 @@ body {
 /* Fix for Mobile Viewport and Notches */
 .page {
     height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    height: 100dvh;
+    /* Dynamic viewport height for mobile browsers */
 }
 
 /* Ensure content respects safe areas (Notch/Dynamic Island) */
 #page-8-container {
-    padding-top: calc(4rem + env(safe-area-inset-top)) !important; /* Extra padding for top notch */
+    padding-top: calc(4rem + env(safe-area-inset-top)) !important;
+    /* Extra padding for top notch */
     padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
 }
 
@@ -1447,6 +1449,16 @@ body {
         height: 350px;
     }
 
+    /* Fix: Move letter down on mobile to prevent cropping by notch/status bar */
+    .envelope-premium-wrapper:not(.is-sealed) .letter-paper-premium {
+        top: 15%;
+    }
+
+    .envelope-scene-wrapper {
+        min-height: 450px;
+        padding-top: 2rem;
+    }
+
 }
 
 @media (max-width: 480px) {
@@ -1466,6 +1478,15 @@ body {
     .nav-btn-premium {
         padding: 0.875rem 1.5rem;
         font-size: 0.875rem;
+    }
+
+    /* Fix: Move letter further down on smaller mobile phones */
+    .envelope-premium-wrapper:not(.is-sealed) .letter-paper-premium {
+        top: 18%;
+    }
+
+    .envelope-scene-wrapper {
+        padding-top: 3rem;
     }
 }
 
