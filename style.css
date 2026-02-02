@@ -1120,7 +1120,8 @@ body {
 }
 
 .envelope-premium-wrapper:not(.is-sealed) .letter-paper-premium {
-    transform: translate(-50%, -50%) translateY(-30px) scale(1);
+    top: 5%;
+    transform: translateX(-50%) scale(1);
     opacity: 1;
     z-index: 40;
 }

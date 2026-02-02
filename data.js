@@ -83,7 +83,7 @@ const CONFIG = {
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
     ],
-    "musicSectionTitle": "",
+    "musicSectionTitle": "Our Playlist",
     "gallery": {
         "title": "Our Memories",
         "subtitle": "Scratch to reveal",
@@ -173,11 +173,11 @@ const CONFIG = {
     },
     "letter": {
         "recipient": "Dearest Lisa",
-        "message": "I find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...\nI find myself sitting here, thinking about all the moments we've shared...",
+        "message": "I find myself sitting here, thinking about all the moments we've shared... and it feels like I’m watching the most beautiful movie play out in my mind. It’s not just the big milestones or the dates on the calendar that stick with me; it’s the quiet spaces in between. It’s the way you look at me when you think I’m not noticing, the sound of your laugh filling a room, and the comfort of sitting in silence with you and feeling completely understood.\n\nLooking back, I realize how much you have colored my world. Before you, things were just ordinary. Now, everything seems to have more depth, more meaning. You’ve become the first person I want to tell when something good happens, and the only person I want to hold when the world feels heavy. You are my safe harbor, the place where I can finally just breathe and be myself without fear or pretense.",
         "signature": "Your Favorite Person",
         "stampSrc": "assets/stamp.png",
         "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769894647359-3oq81.jpg",
-        "polaroidCaption": "Love You, Always",
+        "polaroidCaption": "Love You.",
         "finaleChoice": "choice"
     },
     "lock": {
@@ -241,7 +241,7 @@ const CONFIG = {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-01T22:02:38.225Z"
+        "generatedAt": "2026-02-02T00:09:42.276Z"
     },
     "adminLang": "id",
     "currentStep": 9,
