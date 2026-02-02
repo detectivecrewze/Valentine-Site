@@ -4,6 +4,18 @@ body {
     background-size: cover;
 }
 
+/* Fix for Mobile Viewport and Notches */
+.page {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+}
+
+/* Ensure content respects safe areas (Notch/Dynamic Island) */
+#page-8-container {
+    padding-top: calc(4rem + env(safe-area-inset-top)) !important; /* Extra padding for top notch */
+    padding-bottom: calc(8rem + env(safe-area-inset-bottom)) !important;
+}
+
 .glass-card {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(12px);
