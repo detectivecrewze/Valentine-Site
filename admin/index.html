@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- EXIF.js for reading photo metadata (GPS location, date) -->
+    <script src="https://cdn.jsdelivr.net/npm/exif-js@2.3.0/exif.min.js"></script>
+
     <script src="../data.js"></script>
     <script>
         tailwind.config = {
@@ -221,24 +224,54 @@
                 </button>
             </div>
 
-            <!-- Search Area -->
+            <!-- Search Area - Enhanced with Tabs -->
             <div class="p-4 bg-gray-50 border-b border-gray-100 shrink-0">
-                <div class="relative max-w-lg mx-auto">
+                <!-- Tab Buttons -->
+                <div class="flex gap-2 mb-3 max-w-lg mx-auto">
+                    <button id="tabSearch" onclick="mapPicker.switchTab('search')"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white border-2 border-blue-500 text-blue-600 shadow-sm">
+                        <span class="material-symbols-outlined text-base">search</span>
+                        Search Place
+                    </button>
+                    <button id="tabPasteLink" onclick="mapPicker.switchTab('paste')"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white border border-gray-200 text-gray-500 hover:border-gray-300">
+                        <span class="material-symbols-outlined text-base">link</span>
+                        Paste Google Maps Link
+                    </button>
+                </div>
+
+                <!-- Search Input (Tab 1) -->
+                <div id="searchTabContent" class="relative max-w-lg mx-auto">
                     <span
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
                     <input type="text" id="mapSearchInput"
-                        class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                        placeholder="Search location..." data-i18n-placeholder="map_search_placeholder"
-                        autocomplete="off">
-                    <button onclick="mapPicker.search()"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm"
-                        data-i18n="map_btn_search">
+                        class="w-full pl-10 pr-24 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                        placeholder="Search location (e.g., Mall Kelapa Gading)..." autocomplete="off">
+                    <button onclick="mapPicker.search(true)"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm">
                         Search
                     </button>
                     <!-- Search Results Dropdown -->
                     <div id="mapSearchResults"
                         class="absolute z-[100] left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl hidden overflow-hidden max-h-64 overflow-y-auto">
                         <!-- Results injected here -->
+                    </div>
+                </div>
+
+                <!-- Paste Link Input (Tab 2) - Hidden by default -->
+                <div id="pasteTabContent" class="relative max-w-lg mx-auto hidden">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">link</span>
+                    <input type="text" id="gmapsLinkInput"
+                        class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 shadow-sm"
+                        placeholder="Paste URL dari browser atau koordinat dari app"
+                        oninput="mapPicker.handleGoogleMapsLink(this.value)"
+                        onpaste="setTimeout(() => mapPicker.handleGoogleMapsLink(this.value), 100)">
+                    <div class="mt-3 bg-blue-50 rounded-lg p-3 text-[11px] text-blue-800">
+                        <p class="font-bold mb-1">📱 Dari App Google Maps:</p>
+                        <p class="mb-2">Tap & tahan lokasi → Copy koordinat di atas → Paste di kotak "Coordinates"</p>
+                        <p class="font-bold mb-1">💻 Dari Browser:</p>
+                        <p>Buka maps.google.com → Cari lokasi → Copy URL dari address bar → Paste di sini</p>
                     </div>
                 </div>
             </div>

@@ -46,6 +46,85 @@ const utils = {
     },
 
     // ============================================================
+    // EXIF DATA EXTRACTION
+    // Extract GPS coordinates and date from photo metadata
+    // ============================================================
+    async extractExifData(file) {
+        return new Promise((resolve) => {
+            // Check if EXIF library is loaded
+            if (typeof EXIF === 'undefined') {
+                console.warn('[EXIF] EXIF library not loaded');
+                resolve(null);
+                return;
+            }
+
+            // Only process image files
+            if (!file.type.startsWith('image/')) {
+                resolve(null);
+                return;
+            }
+
+            EXIF.getData(file, function () {
+                try {
+                    const exifData = {};
+
+                    // Extract GPS coordinates
+                    const latDMS = EXIF.getTag(this, 'GPSLatitude');
+                    const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
+                    const lngDMS = EXIF.getTag(this, 'GPSLongitude');
+                    const lngRef = EXIF.getTag(this, 'GPSLongitudeRef');
+
+                    if (latDMS && lngDMS) {
+                        // Convert DMS (Degrees, Minutes, Seconds) to Decimal
+                        let lat = utils.dmsToDecimal(latDMS[0], latDMS[1], latDMS[2]);
+                        let lng = utils.dmsToDecimal(lngDMS[0], lngDMS[1], lngDMS[2]);
+
+                        // Apply direction (S = negative, W = negative)
+                        if (latRef === 'S') lat = -lat;
+                        if (lngRef === 'W') lng = -lng;
+
+                        exifData.lat = lat;
+                        exifData.lng = lng;
+                        console.log('[EXIF] GPS found:', lat, lng);
+                    }
+
+                    // Extract date
+                    const dateOriginal = EXIF.getTag(this, 'DateTimeOriginal');
+                    const dateDigitized = EXIF.getTag(this, 'DateTimeDigitized');
+                    const dateString = dateOriginal || dateDigitized;
+
+                    if (dateString) {
+                        // EXIF date format: "2024:02:14 15:30:00"
+                        // Convert to: "2024-02-14"
+                        const parts = dateString.split(' ')[0].split(':');
+                        if (parts.length === 3) {
+                            exifData.date = `${parts[0]}-${parts[1]}-${parts[2]}`;
+                            console.log('[EXIF] Date found:', exifData.date);
+                        }
+                    }
+
+                    // Return data if we found anything useful
+                    if (exifData.lat || exifData.date) {
+                        resolve(exifData);
+                    } else {
+                        console.log('[EXIF] No GPS or date data found in image');
+                        resolve(null);
+                    }
+                } catch (error) {
+                    console.error('[EXIF] Error extracting data:', error);
+                    resolve(null);
+                }
+            });
+        });
+    },
+
+    // Convert Degrees-Minutes-Seconds to Decimal degrees
+    dmsToDecimal(degrees, minutes, seconds) {
+        return degrees + (minutes / 60) + (seconds / 3600);
+    },
+
+
+    // ============================================================
     // REAL FIX: Apply Theme Preset
     // Problem: setVal() doesn't trigger input events
     // Solution: Manually trigger events AND use requestAnimationFrame

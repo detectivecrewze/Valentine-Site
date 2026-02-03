@@ -1238,11 +1238,15 @@ const renderers = {
                                 value="${loc.imageSrc || ''}" 
                                 placeholder="assets/photo.jpg"
                                 oninput="renderers.updateMapLocation(${idx}, 'imageSrc', this.value); renderers.updateMapPreview(${idx})">
-                            <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
-                                <span class="material-symbols-outlined text-gray-400 text-base">image</span>
-                                <input type="file" class="hidden" accept="image/*" data-target="map-loc-input-${idx}">
+                            <label class="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-600 text-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:from-blue-600 hover:to-indigo-700 shadow-sm transition-all" title="Upload photo (auto-detect location & date)">
+                                <span class="material-symbols-outlined text-white text-base">add_a_photo</span>
+                                <input type="file" class="hidden" accept="image/*" 
+                                    data-target="map-loc-input-${idx}" 
+                                    data-map-index="${idx}"
+                                    onchange="renderers.handleMapPhotoUpload(this, ${idx})">
                             </label>
                         </div>
+                        <p class="text-[10px] text-gray-400 mt-1 italic">📍 Upload foto dari HP untuk otomatis isi lokasi & tanggal</p>
                     </div>
                 </div>
             </div>
@@ -1310,6 +1314,91 @@ const renderers = {
         if (input && img) {
             img.src = input.value;
             img.classList.toggle('hidden', !input.value);
+        }
+    },
+
+    // Handle photo upload for Map locations with EXIF extraction
+    async handleMapPhotoUpload(input, idx) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Show loading state
+        const targetInput = document.getElementById(`map-loc-input-${idx}`);
+        if (targetInput) {
+            targetInput.value = '📷 Reading photo data...';
+            targetInput.disabled = true;
+        }
+
+        try {
+            // 1. Extract EXIF data BEFORE compression (this is crucial!)
+            console.log('[MapUpload] Extracting EXIF data from photo...');
+            const exifData = await utils.extractExifData(file);
+
+            // 2. Upload the image (with compression) - use existing handler
+            await utils.handleMediaUpload(input, `map-loc-input-${idx}`);
+
+            // 3. If EXIF data found, prompt user and auto-fill
+            if (exifData) {
+                console.log('[MapUpload] EXIF data found:', exifData);
+
+                let message = '📍 Data terdeteksi dari foto!\n\n';
+                if (exifData.lat && exifData.lng) {
+                    message += `📌 Lokasi: ${exifData.lat.toFixed(6)}, ${exifData.lng.toFixed(6)}\n`;
+                }
+                if (exifData.date) {
+                    message += `📅 Tanggal: ${exifData.date}\n`;
+                }
+                message += '\nGunakan data ini?';
+
+                // Ask user if they want to use the EXIF data
+                if (confirm(message)) {
+                    const page = state.findPageById('page-7');
+                    if (page && page.locations && page.locations[idx]) {
+                        // Auto-fill coordinates
+                        if (exifData.lat && exifData.lng) {
+                            page.locations[idx].lat = exifData.lat.toFixed(6);
+                            page.locations[idx].lng = exifData.lng.toFixed(6);
+
+                            // Update coordinate input field
+                            const coordInput = document.getElementById(`map-coords-${idx}`);
+                            if (coordInput) {
+                                coordInput.value = `${exifData.lat.toFixed(6)}, ${exifData.lng.toFixed(6)}`;
+                            }
+                        }
+
+                        // Auto-fill date
+                        if (exifData.date) {
+                            page.locations[idx].date = exifData.date;
+
+                            // Find and update date input - it's inside the dynamic-item
+                            const locationItems = document.querySelectorAll('.dynamic-item');
+                            if (locationItems[idx]) {
+                                const dateInput = locationItems[idx].querySelector('input[type="date"]');
+                                if (dateInput) {
+                                    dateInput.value = exifData.date;
+                                }
+                            }
+                        }
+
+                        state.save();
+                        state.syncToPreview();
+                        utils.showNotification('📍 Lokasi & tanggal berhasil diisi dari foto!', 'success');
+                    }
+                }
+            } else {
+                console.log('[MapUpload] No EXIF data found in photo');
+            }
+
+            // Update preview
+            this.updateMapPreview(idx);
+
+        } catch (error) {
+            console.error('[MapUpload] Error:', error);
+            utils.showNotification('Error uploading photo: ' + error.message, 'error');
+            if (targetInput) {
+                targetInput.value = '';
+                targetInput.disabled = false;
+            }
         }
     },
 
