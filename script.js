@@ -1,4 +1,28 @@
 // Core Architecture
+// 🔧 FIX: Reactive CONFIG System - Solves variable shadowing
+if (typeof window !== 'undefined') {
+    // Create a reactive CONFIG that always points to the latest data
+    Object.defineProperty(window, 'CONFIG', {
+        get: function () {
+            // Priority: window._CONFIG_DATA > existing CONFIG > empty object
+            return window._CONFIG_DATA || (typeof CONFIG !== 'undefined' ? CONFIG : {});
+        },
+        set: function (value) {
+            window._CONFIG_DATA = value;
+            console.log('[CONFIG] ✅ Global CONFIG updated reactively');
+
+            // Dispatch custom event for other components
+            if (typeof CustomEvent !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('config-updated', {
+                    detail: { config: value }
+                }));
+            }
+        },
+        configurable: true,
+        enumerable: true
+    });
+}
+
 const bgMusic = new Audio(); // Global Audio Object
 window.bgMusic = bgMusic; // ✅ FIX: Expose to window for iframe access (Cross-origin safe)
 let currentSongIndex = 0;
@@ -32,7 +56,7 @@ function getCustomerId() {
 function showLoadingScreen(show, message = 'Loading your Valentine...') {
     const loader = document.getElementById('config-loader');
     const loaderText = document.getElementById('config-loader-text');
-    
+
     if (loader) {
         if (show) {
             loader.classList.remove('hidden');
@@ -91,7 +115,7 @@ async function loadConfig() {
             // ✅ FIX: Add cache busting to prevent cached 404 responses
             const cacheBuster = `&_t=${Date.now()}_${attempt}`;
             const url = `${API_BASE_URL}/get-config?id=${encodeURIComponent(customerId)}${cacheBuster}`;
-            
+
             console.log(`[Config] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS}: ${url}`);
             showLoadingScreen(true, `Loading configuration... (attempt ${attempt}/${MAX_RETRY_ATTEMPTS})`);
 
@@ -113,7 +137,7 @@ async function loadConfig() {
                         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
                         continue;
                     }
-                    
+
                     // Final attempt - config really doesn't exist
                     throw new Error(`Configuration "${customerId}" not found. Please check your link or publish your configuration first.`);
                 }
@@ -124,10 +148,10 @@ async function loadConfig() {
             console.log('[Config] ✅ Successfully loaded config from API');
             console.log('[Config] Config keys:', Object.keys(data));
             return data;
-            
+
         } catch (error) {
             console.error(`[Config] Attempt ${attempt} failed:`, error);
-            
+
             if (attempt < MAX_RETRY_ATTEMPTS) {
                 console.log(`[Config] Retrying in ${RETRY_DELAY_MS}ms...`);
                 await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
@@ -139,12 +163,12 @@ async function loadConfig() {
             }
         }
     }
-    
+
     return null;
 }
 
 /**
- * Initialize app with dynamic config
+ * Initialize app with dynamic config - UPDATED VERSION
  */
 async function initializeApp() {
     showLoadingScreen(true, 'Initializing your Valentine experience...');
@@ -156,11 +180,11 @@ async function initializeApp() {
         // ✅ FIX: If API config failed, FORCE fallback to local CONFIG
         if (!config) {
             console.warn('[Config] ⚠️ API config failed, falling back to local data.js');
-            
+
             if (typeof CONFIG !== 'undefined' && CONFIG) {
                 config = CONFIG;
                 console.log('[Config] ✅ Using local CONFIG from data.js');
-                
+
                 // Show subtle indicator that using local config
                 setTimeout(() => {
                     const indicator = document.createElement('div');
@@ -168,7 +192,7 @@ async function initializeApp() {
                     indicator.className = 'fixed bottom-4 left-4 z-[9999] bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg';
                     indicator.innerHTML = '⚠️ Using Local Config';
                     document.body.appendChild(indicator);
-                    
+
                     // Auto-hide after 5 seconds
                     setTimeout(() => {
                         indicator.style.opacity = '0';
@@ -191,18 +215,41 @@ async function initializeApp() {
             return;
         }
 
-        // Make config globally available
+        // ✅ CRITICAL FIX: Force global CONFIG update yang reaktif
+        // Delete any existing CONFIG to avoid conflicts
+        try {
+            delete window.CONFIG;
+        } catch (e) {
+            // Ignore if can't delete (const from data.js)
+        }
+
+        // Set via our reactive property
         window.CONFIG = config;
-        console.log('[Config] Config summary:', {
-            source: config === CONFIG ? 'LOCAL (data.js)' : 'API (Cloudflare KV)',
+
+        // Also set the internal storage
+        window._CONFIG_DATA = config;
+
+        // Verify assignment worked
+        if (window.CONFIG !== config) {
+            console.warn('[Config] ⚠️ Direct assignment verification failed, using fallback');
+            window._CONFIG_DATA = config;
+        }
+
+        console.log('[Config] Config updated successfully:', {
+            source: 'API (Cloudflare KV)',
+            windowConfigMatches: window.CONFIG === config,
             hasLogin: !!(config.login && config.login.password),
+            loginTitle: config.login ? config.login.title : 'MISSING',
             hasGreeting: !!(config.greeting && config.greeting.title),
+            greetingTitle: config.greeting ? config.greeting.title : 'MISSING',
             hasMusic: !!(config.music && config.music.length),
             musicCount: config.music ? config.music.length : 0,
             hasGallery: !!(config.gallery && config.gallery.memories),
             galleryCount: config.gallery && config.gallery.memories ? config.gallery.memories.length : 0,
             hasMap: !!(config.map && config.map.locations),
             mapCount: config.map && config.map.locations ? config.map.locations.length : 0,
+            hasWrapped: !!(config.wrapped),
+            wrappedVibe: config.wrapped ? config.wrapped.vibe : 'MISSING',
             hasLetter: !!(config.letter && config.letter.message),
             configKeys: Object.keys(config)
         });
@@ -215,6 +262,7 @@ async function initializeApp() {
         if (typeof CONFIG !== 'undefined' && CONFIG) {
             console.warn('[Config] Emergency fallback to local CONFIG after error');
             window.CONFIG = CONFIG;
+            window._CONFIG_DATA = CONFIG;
             startApp();
         } else {
             showLoadingScreen(true, 'Error: ' + error.message);
@@ -228,6 +276,8 @@ async function initializeApp() {
  * Start app after config is loaded
  */
 function startApp() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     console.log('[App] Starting with config loaded...');
     console.log('[App] CONFIG check:', {
         exists: !!window.CONFIG,
@@ -256,13 +306,13 @@ function startApp() {
     loadDynamicContent();
     initLogin();
     initCountdown();
-    
+
     // ✅ DEBUG: Check music before init
     console.log('[App] Music config before initMusicPlayer:', {
         configMusic: window.CONFIG && window.CONFIG.music,
         musicLength: window.CONFIG && window.CONFIG.music ? window.CONFIG.music.length : 0
     });
-    
+
     initMusicPlayer();
     loadGallery();
     loadQuiz();
@@ -558,30 +608,39 @@ function initParticles() {
 
 // Apply Theme Settings
 function applyTheme() {
-    if (CONFIG.theme) {
-        // Apply background color
-        if (CONFIG.theme.backgroundColor) {
-            document.body.style.backgroundColor = CONFIG.theme.backgroundColor;
-        }
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
 
-        // Apply custom background image if specified (overrides CSS default)
-        if (CONFIG.theme.backgroundImage && CONFIG.theme.backgroundImage.trim() !== '') {
-            document.body.style.backgroundImage = `url('${CONFIG.theme.backgroundImage}')`;
-        } else {
-            // FIX: Explicitly set to 'none' to remove CSS gradient and reveal backgroundColor
-            document.body.style.backgroundImage = 'none';
-        }
-
-        // Apply dynamic fonts
-        if (CONFIG.theme.fontDisplay) {
-            document.documentElement.style.setProperty('--font-display', CONFIG.theme.fontDisplay);
-            loadGoogleFont(CONFIG.theme.fontDisplay);
-        }
-        if (CONFIG.theme.fontSans) {
-            document.documentElement.style.setProperty('--font-sans', CONFIG.theme.fontSans);
-            loadGoogleFont(CONFIG.theme.fontSans);
-        }
+    if (!CONFIG || !CONFIG.theme) {
+        console.warn('[Theme] No theme config available');
+        return;
     }
+
+    console.log('[Theme] Applying theme:', CONFIG.theme);
+
+    // Apply background color
+    if (CONFIG.theme.backgroundColor) {
+        document.body.style.backgroundColor = CONFIG.theme.backgroundColor;
+    }
+
+    // Apply custom background image if specified
+    if (CONFIG.theme.backgroundImage && CONFIG.theme.backgroundImage.trim() !== '') {
+        document.body.style.backgroundImage = `url('${CONFIG.theme.backgroundImage}')`;
+    } else {
+        document.body.style.backgroundImage = 'none';
+    }
+
+    // Apply dynamic fonts
+    if (CONFIG.theme.fontDisplay) {
+        document.documentElement.style.setProperty('--font-display', CONFIG.theme.fontDisplay);
+        loadGoogleFont(CONFIG.theme.fontDisplay);
+    }
+    if (CONFIG.theme.fontSans) {
+        document.documentElement.style.setProperty('--font-sans', CONFIG.theme.fontSans);
+        loadGoogleFont(CONFIG.theme.fontSans);
+    }
+
+    console.log('[Theme] ✅ Theme applied successfully');
 }
 
 // Dynamic Font Loader helper
@@ -890,14 +949,24 @@ function handleSwipe() {
 
 // Dynamic Content Loader
 function loadDynamicContent() {
+    // ✅ FIX: Use window.CONFIG explicitly to avoid shadowing
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+
     console.log('[LoadContent] Starting with CONFIG:', {
-        hasLogin: !!CONFIG.login,
-        hasGreeting: !!CONFIG.greeting,
-        hasMusic: !!(CONFIG.music && CONFIG.music.length),
-        hasGallery: !!(CONFIG.gallery && CONFIG.gallery.memories),
-        hasWrapped: !!CONFIG.wrapped
+        configExists: !!CONFIG,
+        configIsObject: typeof CONFIG === 'object',
+        hasLogin: !!(CONFIG && CONFIG.login),
+        hasGreeting: !!(CONFIG && CONFIG.greeting),
+        hasMusic: !!(CONFIG && CONFIG.music && CONFIG.music.length),
+        hasGallery: !!(CONFIG && CONFIG.gallery && CONFIG.gallery.memories),
+        hasWrapped: !!(CONFIG && CONFIG.wrapped)
     });
-    
+
+    if (!CONFIG) {
+        console.error('[LoadContent] ❌ CONFIG is undefined! Cannot load content.');
+        return;
+    }
+
     // Page 1: Login
     const p1Subtitle = document.getElementById('p1-subtitle');
     const p1Title = document.getElementById('p1-title');
@@ -905,15 +974,26 @@ function loadDynamicContent() {
     const loginInput = document.getElementById('login-input');
 
     if (CONFIG.login) {
-        if (p1Subtitle) p1Subtitle.textContent = CONFIG.login.collectionText;
-        if (p1Title) p1Title.textContent = CONFIG.login.title;
-        if (p1Instruction) p1Instruction.textContent = CONFIG.login.instruction;
-        if (loginInput) loginInput.placeholder = CONFIG.login.placeholder;
-        console.log('[LoadContent] Login loaded:', CONFIG.login.title);
+        if (p1Subtitle) {
+            p1Subtitle.textContent = CONFIG.login.collectionText;
+            console.log('[LoadContent] Updated p1-subtitle:', CONFIG.login.collectionText);
+        }
+        if (p1Title) {
+            p1Title.textContent = CONFIG.login.title;
+            console.log('[LoadContent] Updated p1-title:', CONFIG.login.title);
+        }
+        if (p1Instruction) {
+            p1Instruction.textContent = CONFIG.login.instruction;
+        }
+        if (loginInput) {
+            loginInput.placeholder = CONFIG.login.placeholder;
+        }
+        console.log('[LoadContent] ✅ Login section loaded');
     } else {
         console.warn('[LoadContent] CONFIG.login missing!');
     }
 
+    // Music Section
     if (CONFIG.music && CONFIG.music.length > 0) {
         const musicTitle = document.getElementById('music-section-title');
         if (musicTitle && CONFIG.musicSectionTitle !== undefined) {
@@ -924,15 +1004,15 @@ function loadDynamicContent() {
                 musicTitle.classList.remove('hidden');
             }
         }
-        // Lyrics will be handled by loadSong() to ensure typewriter effect works correctly
+        console.log('[LoadContent] ✅ Music section updated, songs:', CONFIG.music.length);
     }
 
-    // Page 2: Wrapped
+    // Page 4: Wrapped
     if (CONFIG.wrapped) {
-        // Elements for Wrapped Page
+        console.log('[LoadContent] Loading Wrapped with data:', CONFIG.wrapped);
+
         const minutesEl = document.getElementById('minutes-together');
         const vibeEl = document.getElementById('vibe-text');
-
         const wrappedImg = document.getElementById('wrapped-image');
         const topPlacesList = document.getElementById('top-places-list');
         const coreMemoriesList = document.getElementById('core-memories-list');
@@ -942,7 +1022,6 @@ function loadDynamicContent() {
         const coreMemoriesLabel = document.getElementById('core-memories-label');
         const hoursTogetherLabel = document.getElementById('minutes-together-label');
         const vibeLabel = document.getElementById('vibe-label');
-
 
         // Populate labels
         if (topPlacesLabel && CONFIG.wrapped.topPlacesLabel) {
@@ -958,30 +1037,40 @@ function loadDynamicContent() {
             vibeLabel.textContent = CONFIG.wrapped.vibeLabel;
         }
 
-
         // Populate data
-        if (minutesEl) minutesEl.textContent = CONFIG.wrapped.HoursTogether;
-        if (vibeEl) vibeEl.textContent = CONFIG.wrapped.vibe;
+        if (minutesEl) {
+            minutesEl.textContent = CONFIG.wrapped.HoursTogether;
+            console.log('[LoadContent] Updated minutes-together:', CONFIG.wrapped.HoursTogether);
+        }
+        if (vibeEl) {
+            vibeEl.textContent = CONFIG.wrapped.vibe;
+            console.log('[LoadContent] Updated vibe-text:', CONFIG.wrapped.vibe);
+        }
 
-        if (wrappedImg) {
+        if (wrappedImg && CONFIG.wrapped.imageSrc) {
             wrappedImg.src = CONFIG.wrapped.imageSrc;
             wrappedImg.onerror = function () {
-                // Fallback if Imgur fails or 403s
                 this.src = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=400&auto=format&fit=crop";
                 console.warn("Wrapped image failed to load, using fallback.");
             };
         }
 
-        if (topPlacesList && CONFIG.wrapped.topPlaces) {
+        if (topPlacesList && CONFIG.wrapped.topPlaces && Array.isArray(CONFIG.wrapped.topPlaces)) {
             topPlacesList.innerHTML = CONFIG.wrapped.topPlaces.map(place => `<li>${place}</li>`).join('');
-        }
-        if (coreMemoriesList && CONFIG.wrapped.coreMemories) {
-            coreMemoriesList.innerHTML = CONFIG.wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
+            console.log('[LoadContent] Updated top places:', CONFIG.wrapped.topPlaces.length, 'items');
         }
 
+        if (coreMemoriesList && CONFIG.wrapped.coreMemories && Array.isArray(CONFIG.wrapped.coreMemories)) {
+            coreMemoriesList.innerHTML = CONFIG.wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
+            console.log('[LoadContent] Updated core memories:', CONFIG.wrapped.coreMemories.length, 'items');
+        }
+
+        console.log('[LoadContent] ✅ Wrapped section loaded');
+    } else {
+        console.warn('[LoadContent] CONFIG.wrapped missing!');
     }
 
-    // Page 3: Greeting Card
+    // Page 2: Greeting Card
     if (CONFIG.greeting) {
         const p3Title = document.getElementById('p3-title');
         const p3Message = document.getElementById('p3-message');
@@ -989,12 +1078,23 @@ function loadDynamicContent() {
         const p3Signature = document.getElementById('p3-signature');
         const p3Footer = document.getElementById('p3-footer');
 
-        if (p3Title) p3Title.textContent = CONFIG.greeting.title;
-        if (p3Message) p3Message.textContent = CONFIG.greeting.message;
-        if (p3Image) p3Image.src = CONFIG.greeting.imageSrc;
-        if (p3Signature) p3Signature.textContent = CONFIG.greeting.signature || "With Love";
-        if (p3Footer) p3Footer.textContent = CONFIG.greeting.footerText;
-        console.log('[LoadContent] Greeting loaded:', CONFIG.greeting.title);
+        if (p3Title) {
+            p3Title.textContent = CONFIG.greeting.title;
+            console.log('[LoadContent] Updated p3-title:', CONFIG.greeting.title);
+        }
+        if (p3Message) {
+            p3Message.textContent = CONFIG.greeting.message;
+        }
+        if (p3Image && CONFIG.greeting.imageSrc) {
+            p3Image.src = CONFIG.greeting.imageSrc;
+        }
+        if (p3Signature) {
+            p3Signature.textContent = CONFIG.greeting.signature || "With Love";
+        }
+        if (p3Footer) {
+            p3Footer.textContent = CONFIG.greeting.footerText;
+        }
+        console.log('[LoadContent] ✅ Greeting section loaded');
     } else {
         console.warn('[LoadContent] CONFIG.greeting missing!');
     }
@@ -1006,6 +1106,7 @@ function loadDynamicContent() {
 
         if (mapTitle && CONFIG.map.title) mapTitle.textContent = CONFIG.map.title;
         if (mapDesc && CONFIG.map.description) mapDesc.textContent = CONFIG.map.description;
+        console.log('[LoadContent] ✅ Map section loaded');
     }
 
     // Page 8: Letter
@@ -1014,29 +1115,12 @@ function loadDynamicContent() {
         const bodyEl = document.getElementById('letter-body');
         const signatureEl = document.getElementById('letter-signature');
 
-        if (recipientEl) {
-            // Logic handled by initLetterPage to ensure consistency
-        }
-        if (signatureEl) signatureEl.textContent = ''; // Clear for typewriter
-
-        if (bodyEl) {
-            bodyEl.innerHTML = ''; // Keep empty for typewriter effect
-        }
-    }
-    // Page 9: Invitation
-    if (CONFIG.invitation) {
-        const p9Subtitle = document.getElementById('p9-subtitle');
-        const p9Question = document.getElementById('p9-question');
-        const yesBtn = document.getElementById('yes-btn');
-        const noBtn = document.getElementById('no-btn');
-
-        if (p9Subtitle) p9Subtitle.textContent = CONFIG.invitation.subtitle;
-        if (p9Question) p9Question.textContent = CONFIG.invitation.title;
-        if (yesBtn) yesBtn.textContent = CONFIG.invitation.yesText;
-        if (noBtn) noBtn.textContent = CONFIG.invitation.noText;
+        if (signatureEl) signatureEl.textContent = '';
+        if (bodyEl) bodyEl.innerHTML = '';
+        console.log('[LoadContent] ✅ Letter section prepared');
     }
 
-    // Page 9: Love-Lock Finale
+    // Page 9: Love Lock
     if (CONFIG.lock) {
         const lockInitials = document.getElementById('lock-initials');
         const lockInstr = document.getElementById('lock-instruction');
@@ -1045,23 +1129,25 @@ function loadDynamicContent() {
         if (lockInitials) lockInitials.textContent = CONFIG.lock.initials || "A + B";
         if (lockInstr) lockInstr.textContent = CONFIG.lock.instruction || "Click to lock our love forever...";
         if (lockFinal) lockFinal.textContent = CONFIG.lock.finalMessage || "Safely locked in my heart. Always.";
+        console.log('[LoadContent] ✅ Lock section loaded');
     }
 
-    // Global Brand Identity mapping
+    // Global Brand Identity
     if (CONFIG.metadata) {
         const brandName = CONFIG.metadata.brandName || "For you, Always";
         const brandIcon = CONFIG.metadata.brandIcon || "diamond";
 
-        // Update all elements with class 'brand-name'
         document.querySelectorAll('.brand-name').forEach(el => {
             el.textContent = brandName;
         });
 
-        // Update all elements with class 'brand-logo'
         document.querySelectorAll('.brand-logo').forEach(el => {
             el.textContent = brandIcon;
         });
+        console.log('[LoadContent] ✅ Metadata loaded');
     }
+
+    console.log('[LoadContent] ✅ All content successfully updated!');
 }
 
 
@@ -1073,22 +1159,68 @@ async function fetchMediaBlob(url) {
         // ✅ CRITICAL FIX: Don't add query params to data: URLs
         if (url.startsWith('data:')) {
             console.log('[Media] Data URL detected, using directly');
-            return url; // Return as-is, no blob conversion needed
+            return url;
         }
 
-        // Add query param to deceive IDM sniffing (only for http/https URLs)
-        const shieldedUrl = url + (url.includes('?') ? '&' : '?') + 'shield=' + Date.now();
-        const response = await fetch(shieldedUrl);
-        const blob = await response.blob();
+        // ✅ Add retry logic for unreliable R2 connections
+        const maxRetries = 3;
+        let lastError;
 
-        // Force MIME type to audio/mp3 if it's one of our renamed .dat files
-        const type = url.endsWith('.dat') ? 'audio/mpeg' : blob.type;
-        const audioBlob = new Blob([blob], { type: type });
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const shieldedUrl = url + (url.includes('?') ? '&' : '?') + 'shield=' + Date.now();
+                console.log(`[Media] Attempt ${attempt}/${maxRetries}:`, url.substring(0, 60) + '...');
 
-        return URL.createObjectURL(audioBlob);
-    } catch (e) {
-        console.error("[Media] Failed to fetch blob:", e);
+                const response = await fetch(shieldedUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const blob = await response.blob();
+
+                // Force MIME type to audio/mp3 if it's one of our renamed .dat files
+                const type = url.endsWith('.dat') ? 'audio/mpeg' : blob.type;
+                const audioBlob = new Blob([blob], { type: type });
+
+                console.log('[Media] ✅ Successfully fetched');
+                return URL.createObjectURL(audioBlob);
+
+            } catch (err) {
+                lastError = err;
+                console.warn(`[Media] Attempt ${attempt} failed:`, err.message);
+
+                // Wait before retry (exponential backoff)
+                if (attempt < maxRetries) {
+                    const delay = 1000 * attempt;
+                    console.log(`[Media] Retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        // All retries failed
+        console.error("[Media] ❌ All fetch attempts failed for:", url);
+        console.error("[Media] Last error:", lastError);
+
+        // Show helpful error for R2 URLs
+        if (url.includes('valentine-upload.aldoramadhan16.workers.dev')) {
+            console.error('[Media] 💡 Troubleshooting:');
+            console.error('[Media]    1. Check R2 bucket CORS configuration');
+            console.error('[Media]    2. Verify file exists in bucket');
+            console.error('[Media]    3. Check worker permissions');
+        }
+
         return url; // Fallback to original URL
+
+    } catch (e) {
+        console.error("[Media] Fatal error in fetchMediaBlob:", e);
+        return url;
     }
 }
 
@@ -1100,6 +1232,8 @@ let loadingTargetIndex = -1;
 let isMusicLoading = false;
 
 async function loadSong(index, forceReload = false) {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     if (!CONFIG.music || CONFIG.music.length === 0) {
         console.log('[Music] No music configured');
         return;
@@ -1228,6 +1362,8 @@ async function loadSong(index, forceReload = false) {
 }
 
 function initMusicPlayer() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     const toggleBtn = document.getElementById('p2-music-toggle');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
@@ -1309,6 +1445,8 @@ let currentQuestionIndex = 0;
 let quizScore = 0;
 
 function loadQuiz() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     if (!CONFIG.quiz || !CONFIG.quiz.questions) return;
 
     const totalQuestions = CONFIG.quiz.questions.length;
@@ -1472,6 +1610,8 @@ function nextQuestion() {
 // --- Gallery Logic ---
 // --- Gallery Logic with Real scratching ---
 function loadGallery() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     console.log("Loading Gallery...");
     if (!CONFIG.gallery || !CONFIG.gallery.memories) return;
 
@@ -1873,6 +2013,8 @@ let tilesLoadedCount = 0;
 let tilesLoaded = false;
 
 async function initMap() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     console.log("Initializing Map with Journey Animation...");
 
     // Cancel any previous initialization
@@ -2365,6 +2507,8 @@ window.debugAudioState = debugAudioState;
 
 // Page 1: Login Logic
 function initLogin() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     const loginInput = document.getElementById('login-input');
     const loginBtn = document.getElementById('login-btn');
     const lockIcon = document.getElementById('login-lock-icon');
@@ -2444,6 +2588,8 @@ let letterTyped = false;
 let isDustAnimationActive = false;
 
 function initLetterPage() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     // Initialize floating dust particles
     initFloatingDust();
 
@@ -3049,7 +3195,9 @@ function unlockFinale() {
 let countdownInterval = null; // Global to allow clearing
 
 function initCountdown() {
-    if (!CONFIG.countdown || !CONFIG.countdown.targetDate) {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    if (!CONFIG || !CONFIG.countdown || !CONFIG.countdown.targetDate) {
         console.warn("[Countdown] No target date in CONFIG");
         return;
     }
@@ -3220,7 +3368,9 @@ function checkLetterCompletion() {
  * Sync page visibility in DOM based on enabled status
  */
 function syncPageVisibility() {
-    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) return;
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) return;
 
     const allPageIds = Object.keys(CONFIG.pageConfig.pages);
 
@@ -3313,7 +3463,9 @@ function getCurrentPageNumber(pageId) {
  * Check if a page is enabled
  */
 function isPageEnabled(pageId) {
-    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) return true;
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) return true;
     const page = CONFIG.pageConfig.pages[pageId];
     return page ? page.enabled : true;
 }
@@ -3322,7 +3474,9 @@ function isPageEnabled(pageId) {
  * Get page configuration by ID
  */
 function getPageConfig(pageId) {
-    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) return null;
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) return null;
     return CONFIG.pageConfig.pages[pageId] || null;
 }
 
@@ -3348,3 +3502,38 @@ function goPrevPage() {
         MapsTo(currentPageId, prevId);
     }
 }
+
+// ============================================================
+// STEP 6: TAMBAHKAN DI AKHIR FILE (DEBUG & EVENT LISTENER)
+// ============================================================
+
+// Listen for config updates
+if (typeof window !== 'undefined') {
+    window.addEventListener('config-updated', function (event) {
+        console.log('[Event] Config updated event received:', event.detail);
+
+        // Auto-reload content when config changes
+        if (typeof loadDynamicContent === 'function') {
+            console.log('[Event] Auto-reloading dynamic content...');
+            loadDynamicContent();
+        }
+
+        if (typeof applyTheme === 'function') {
+            console.log('[Event] Auto-applying theme...');
+            applyTheme();
+        }
+    });
+}
+
+// Expose diagnostic function to console
+window.diagnosticConfig = function () {
+    console.log('=================================');
+    console.log('CONFIG DIAGNOSTIC');
+    console.log('=================================');
+    console.log('window.CONFIG:', window.CONFIG);
+    console.log('window._CONFIG_DATA:', window._CONFIG_DATA);
+    console.log('Are they same?', window.CONFIG === window._CONFIG_DATA);
+    console.log('=================================');
+};
+
+console.log('[Script] ✅ All CONFIG fixes applied. Run diagnosticConfig() to check status.');
