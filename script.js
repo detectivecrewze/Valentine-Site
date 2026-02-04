@@ -786,24 +786,33 @@ function MapsTo(fromId, toId) {
             // Reset page 10 flag when on page 2
             window.isOnPage10 = false;
 
-            // ✅ Trigger music autoplay on greeting card
-            if (bgMusic.paused) {
-                console.log('[Navigation] Triggering autoplay for Greeting Card');
-                // Small delay to ensure audio context is ready
+            // ✅ Don't try to re-play if already playing from login
+            if (bgMusic.paused && !window.musicStartedFromLogin) {
+                console.log('[Navigation] Music paused, attempting start');
                 setTimeout(() => {
                     if (bgMusic.paused && !window.isOnPage10) {
                         playMusic();
                     }
                 }, 100);
+            } else {
+                console.log('[Navigation] Music already playing from login ✅');
             }
         } else if (toId === 'page-3') {
-            loadSong(currentSongIndex).then(() => {
-                setTimeout(() => {
-                    if (!window.isOnPage10) { // Don't play if user is on page 10
-                        playMusic();
-                    }
-                }, 500);
-            });
+            if (bgMusic.paused) {
+                console.log('[Navigation] Music paused, reloading for Music Player');
+                loadSong(currentSongIndex).then(() => {
+                    setTimeout(() => {
+                        if (!window.isOnPage10) {
+                            playMusic();
+                        }
+                    }, 500);
+                });
+            } else {
+                console.log('[Navigation] Music already playing ✅');
+                // Just update UI to reflect current state
+                updatePlayIcon();
+                updateMusicToggleVisibility();
+            }
         } else if (toId === 'page-5') {
             if (typeof loadQuiz === 'function') loadQuiz();
         } else if (toId === 'page-6') {
@@ -2529,25 +2538,24 @@ function initLogin() {
                 createHeartExplosion(btn);
             }
 
-            // ✅ CRITICAL FIX: Synchronous Play (Claude's Recommendation)
-            // If source is already loaded (from preload), play immediately within the gesture context
-            console.log('[Login] Synchronous audio play attempt...');
+            // ✅ Start music IMMEDIATELY within user gesture
+            window.musicStartedFromLogin = true; // Flag for navigation
+
             if (bgMusic.src) {
-                const playPromise = bgMusic.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => {
-                            console.log("[Login] Audio started successfully (Synchronous)");
-                            updatePlayIcon();
-                            updateMusicToggleVisibility();
-                        })
-                        .catch(err => {
-                            console.error("[Login] Synchronous play blocked:", err);
-                            // Even if blocked, we try to show the toggles so the user can click manually
-                            updatePlayIcon();
-                            updateMusicToggleVisibility();
-                        });
-                }
+                const shouldMute = shouldMuteAudio();
+                bgMusic.muted = shouldMute;
+                bgMusic.volume = shouldMute ? 0 : 0.7;
+
+                bgMusic.play()
+                    .then(() => {
+                        console.log("[Login] ✅ Music started - will continue to Greeting Card");
+                        window.musicStarted = true;
+                        updatePlayIcon();
+                    })
+                    .catch(err => {
+                        console.error("[Login] ❌ Music blocked:", err);
+                        window.musicStartedFromLogin = false;
+                    });
             } else {
                 console.warn("[Login] Source not preloaded, falling back to playMusic()");
                 playMusic();
