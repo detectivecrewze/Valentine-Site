@@ -144,7 +144,7 @@ const state = {
                 this.restoreFromConfig(data);
 
                 // Save to localStorage so it persists
-                this.saveToStorage();
+                this.save();
 
                 // Reload UI
                 app.init();
