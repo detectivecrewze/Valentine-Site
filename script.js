@@ -786,19 +786,34 @@ function MapsTo(fromId, toId) {
             // Reset page 10 flag when on page 2
             window.isOnPage10 = false;
 
-            // ✅ Don't try to re-play if already playing from login
+            // ✅ FIX: Don't try to play if music is already playing from login
+            // The music was started in validateLogin() with the user gesture, so it should continue here
             if (bgMusic.paused && !window.musicStartedFromLogin) {
-                console.log('[Navigation] Music paused, attempting start');
+                console.log('[Navigation] Music was paused, attempting to start for Greeting Card');
+                // Only try if user explicitly paused, not on initial navigation
                 setTimeout(() => {
                     if (bgMusic.paused && !window.isOnPage10) {
                         playMusic();
                     }
                 }, 100);
             } else {
-                console.log('[Navigation] Music already playing from login ✅');
+                console.log('[Navigation] Music already playing from login - continuing to Greeting Card ✅');
             }
         } else if (toId === 'page-3') {
-            if (bgMusic.paused) {
+            // ✅ CRITICAL FIX: Smart song loading for Music Player page
+            const CONFIG = window.CONFIG || window._CONFIG_DATA;
+            const currentSong = CONFIG.music[currentSongIndex];
+            const isSameSong = bgMusic.dataset.originalSrc === currentSong.audioSrc;
+            const isMusicPlaying = !bgMusic.paused;
+
+            if (isSameSong && isMusicPlaying) {
+                // Song already loaded and playing - just update UI instantly
+                console.log('[Navigation] ✅ Music Player: Song already playing, updating UI only');
+
+                // Force immediate UI update using helper function
+                updateMusicPlayerUI();
+            } else if (bgMusic.paused) {
+                // Music was paused - reload song and play
                 console.log('[Navigation] Music paused, reloading for Music Player');
                 loadSong(currentSongIndex).then(() => {
                     setTimeout(() => {
@@ -808,10 +823,9 @@ function MapsTo(fromId, toId) {
                     }, 500);
                 });
             } else {
-                console.log('[Navigation] Music already playing ✅ - Updating UI');
-                loadSong(currentSongIndex); // Sync UI metadata (Title, Artist, Cover)
-                updatePlayIcon();
-                updateMusicToggleVisibility();
+                // Music playing but different song - shouldn't happen but handle it
+                console.log('[Navigation] Music playing but need to sync UI');
+                loadSong(currentSongIndex); // This will now update UI instantly
             }
         } else if (toId === 'page-5') {
             if (typeof loadQuiz === 'function') loadQuiz();
@@ -1276,15 +1290,23 @@ async function loadSong(index, forceReload = false) {
             const musicCover = document.getElementById('music-cover');
             const lyrics = document.getElementById('song-lyrics');
 
-            // Update labels and cover immediately (sync)
-            if (songTitle) songTitle.textContent = song.songTitle;
-            if (artistName) artistName.textContent = song.artist;
+            // ✅ CRITICAL FIX: Update UI IMMEDIATELY (synchronously) regardless of audio state
+            // This prevents "Loading..." from being stuck when audio is already playing
+            if (songTitle) {
+                songTitle.textContent = song.songTitle;
+                console.log(`[Music] ✅ Title updated: ${song.songTitle}`);
+            }
+            if (artistName) {
+                artistName.textContent = song.artist;
+                console.log(`[Music] ✅ Artist updated: ${song.artist}`);
+            }
 
             if (musicCover) {
                 musicCover.src = song.coverSrc;
                 musicCover.onerror = () => {
                     musicCover.src = "https://images.unsplash.com/photo-1518193583867-0ef427db9aa2?q=80&w=400&h=400&auto=format&fit=crop";
                 };
+                console.log(`[Music] ✅ Cover updated: ${song.coverSrc}`);
             }
 
             if (lyrics) {
@@ -1308,10 +1330,20 @@ async function loadSong(index, forceReload = false) {
                 type();
             }
 
-            // Load audio source
+            // Load audio source ONLY if it's different or missing
             const newSrc = song.audioSrc;
 
-            // ✅ FIX: Always load if source changed or missing
+            // ✅ CRITICAL FIX: Check if audio already loaded with same source
+            const isSameSong = bgMusic.dataset.originalSrc === newSrc;
+            const hasAudioLoaded = bgMusic.src && bgMusic.readyState >= 2; // HAVE_CURRENT_DATA or better
+
+            if (isSameSong && hasAudioLoaded) {
+                console.log(`[Music] ✅ Song already loaded and playing - UI updated instantly!`);
+                updatePlayIcon();
+                return; // Exit early - no need to fetch
+            }
+
+            // Different song or audio not loaded - fetch it
             if (!bgMusic.src || bgMusic.dataset.originalSrc !== newSrc) {
                 // Revoke old blob URL if it exists
                 if (bgMusic.src && bgMusic.src.startsWith('blob:') && bgMusic.dataset.originalSrc !== newSrc) {
@@ -1376,6 +1408,58 @@ async function loadSong(index, forceReload = false) {
     return musicLoadingPromise;
 }
 
+/**
+ * ✅ NEW: Force update music player UI with current song data
+ * Called when navigating to page-3 to prevent "Loading..." state
+ */
+function updateMusicPlayerUI() {
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    if (!CONFIG || !CONFIG.music || CONFIG.music.length === 0) return;
+
+    const currentSong = CONFIG.music[currentSongIndex];
+    if (!currentSong) return;
+
+    console.log(`[Music UI] Force updating UI for: ${currentSong.songTitle}`);
+
+    const songTitle = document.getElementById('song-title');
+    const artistName = document.getElementById('artist-name');
+    const musicCover = document.getElementById('music-cover');
+    const lyrics = document.getElementById('song-lyrics');
+
+    // Remove "Loading..." and set actual song data
+    if (songTitle) {
+        songTitle.textContent = currentSong.songTitle;
+        console.log(`[Music UI] ✅ Title: ${currentSong.songTitle}`);
+    }
+
+    if (artistName) {
+        artistName.textContent = currentSong.artist;
+        console.log(`[Music UI] ✅ Artist: ${currentSong.artist}`);
+    }
+
+    if (musicCover) {
+        musicCover.src = currentSong.coverSrc;
+        musicCover.onerror = () => {
+            musicCover.src = "https://images.unsplash.com/photo-1518193583867-0ef427db9aa2?q=80&w=400&h=400&auto=format&fit=crop";
+        };
+        console.log(`[Music UI] ✅ Cover updated`);
+    }
+
+    if (lyrics && currentSong.lyrics) {
+        // Cancel previous typing if any
+        if (window.lyricsTypingTimeout) clearTimeout(window.lyricsTypingTimeout);
+
+        lyrics.textContent = currentSong.lyrics; // Show immediately, no typing animation
+        console.log(`[Music UI] ✅ Lyrics updated`);
+    }
+
+    // Update play/pause button state
+    updatePlayIcon();
+    updateMusicToggleVisibility();
+
+    console.log(`[Music UI] ✅ All UI elements updated successfully`);
+}
+
 function initMusicPlayer() {
     // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = window.CONFIG || window._CONFIG_DATA;
@@ -1383,6 +1467,9 @@ function initMusicPlayer() {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const progressBar = document.getElementById('progress-bar');
+
+    // ✅ NEW: Force UI update on page load if music is already playing
+    updateMusicPlayerUI();
 
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -2538,26 +2625,35 @@ function initLogin() {
                 createHeartExplosion(btn);
             }
 
-            // ✅ Start music IMMEDIATELY within user gesture
-            window.musicStartedFromLogin = true; // Flag for navigation
+            // ✅ CRITICAL FIX: Start music IMMEDIATELY within user gesture context
+            // This ensures autoplay works when navigating to Greeting Card (page 2)
+            console.log('[Login] Starting music with user gesture...');
+            window.musicStartedFromLogin = true; // Flag to prevent re-triggering on page 2
 
             if (bgMusic.src) {
+                // Apply muting based on preview mode
                 const shouldMute = shouldMuteAudio();
                 bgMusic.muted = shouldMute;
                 bgMusic.volume = shouldMute ? 0 : 0.7;
 
-                bgMusic.play()
-                    .then(() => {
-                        console.log("[Login] ✅ Music started - will continue to Greeting Card");
-                        window.musicStarted = true;
-                        updatePlayIcon();
-                    })
-                    .catch(err => {
-                        console.error("[Login] ❌ Music blocked:", err);
-                        window.musicStartedFromLogin = false;
-                    });
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            console.log("[Login] ✅ Music started successfully - will continue to Greeting Card");
+                            window.musicStarted = true;
+                            updatePlayIcon();
+                            updateMusicToggleVisibility();
+                        })
+                        .catch(err => {
+                            console.error("[Login] ❌ Music start blocked:", err);
+                            window.musicStartedFromLogin = false; // Reset flag if failed
+                            updatePlayIcon();
+                            updateMusicToggleVisibility();
+                        });
+                }
             } else {
-                console.warn("[Login] Source not preloaded, falling back to playMusic()");
+                console.warn("[Login] No source preloaded, attempting emergency load...");
                 playMusic();
             }
 
