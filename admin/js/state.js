@@ -108,6 +108,55 @@ const state = {
         return false;
     },
 
+    // ✅ NEW: Import from published website link
+    async importFromLink(input) {
+        if (!input) return;
+
+        // Extract ID from URL if necessary
+        let id = input;
+        if (input.includes('?to=')) {
+            id = input.split('?to=')[1].split('&')[0];
+        } else if (input.includes('?id=')) {
+            id = input.split('?id=')[1].split('&')[0];
+        } else if (input.includes('/')) {
+            // Might be a clean URL or something else
+            const parts = input.split('/');
+            id = parts[parts.length - 1] || parts[parts.length - 2];
+        }
+
+        if (!id) {
+            alert('Invalid link or ID');
+            return;
+        }
+
+        try {
+            console.log('[State] 📥 Importing from:', id);
+            const response = await fetch(`https://valentine-upload.aldoramadhan16.workers.dev/get-config?id=${encodeURIComponent(id)}&_t=${Date.now()}`);
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (confirm('Importing will overwrite your current unsaved progress. Continue?')) {
+                // Restore state from this config
+                this.restoreFromConfig(data);
+
+                // Save to localStorage so it persists
+                this.saveToStorage();
+
+                // Reload UI
+                app.init();
+
+                alert('Successfully imported data from: ' + id);
+            }
+        } catch (e) {
+            console.error('[State] ❌ Import failed:', e);
+            alert('Failed to import data. Please check the ID and try again.');
+        }
+    },
+
     // ✅ NEW: Load from existing CONFIG (preserves user data from data.js)
     loadFromExistingConfig() {
         // Merge existing CONFIG values into configData

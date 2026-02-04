@@ -1,39 +1,72 @@
-// Core Architecture
-// 🔧 FIX: Reactive CONFIG System - Solves variable shadowing
-if (typeof window !== 'undefined') {
-    // Create a reactive CONFIG that always points to the latest data
-    Object.defineProperty(window, 'CONFIG', {
-        get: function () {
-            // Priority: window._CONFIG_DATA > existing CONFIG > empty object
-            return window._CONFIG_DATA || (typeof CONFIG !== 'undefined' ? CONFIG : {});
-        },
-        set: function (value) {
-            window._CONFIG_DATA = value;
-            console.log('[CONFIG] ✅ Global CONFIG updated reactively');
+// ============================================================
+// 🔧 FIXED: Core Architecture - Reactive CONFIG System
+// ============================================================
+// This fix prevents "Cannot redefine property: CONFIG" error
+// when data.js already declares "const CONFIG = { ... }"
 
-            // Dispatch custom event for other components
-            if (typeof CustomEvent !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('config-updated', {
-                    detail: { config: value }
-                }));
-            }
-        },
-        configurable: true,
-        enumerable: true
-    });
+// Store original CONFIG if it exists (from data.js)
+const ORIGINAL_CONFIG = typeof CONFIG !== 'undefined' ? { ...CONFIG } : {};
+
+// Create reactive storage for CONFIG updates
+if (!window._CONFIG_DATA) {
+    window._CONFIG_DATA = null;
 }
 
-const bgMusic = new Audio(); // Global Audio Object
-window.bgMusic = bgMusic; // ✅ FIX: Expose to window for iframe access (Cross-origin safe)
+/**
+ * Safe getter for CONFIG - works regardless of property definition
+ * Priority: _CONFIG_DATA (from API) > window.CONFIG (from data.js) > ORIGINAL_CONFIG (backup)
+ */
+function safeGetConfig() {
+    return window._CONFIG_DATA || window.CONFIG || ORIGINAL_CONFIG;
+}
+
+/**
+ * Safe setter for CONFIG - updates internal storage and dispatches events
+ */
+function safeSetConfig(value) {
+    if (!value) return;
+    window._CONFIG_DATA = value;
+
+    // Attempt to keep window.CONFIG in sync for iframes and legacy scripts
+    try {
+        // We set it as a property if possible
+        window.CONFIG = value;
+    } catch (e) {
+        // Expected if 'const CONFIG' exists in data.js
+        // In this case, window.CONFIG is already defined by the browser
+    }
+
+    console.log('[CONFIG] ✅ Global CONFIG updated reactively');
+
+    // Dispatch custom event for reactivity
+    if (typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('config-updated', {
+            detail: { config: value }
+        }));
+    }
+}
+
+// Initialize with original CONFIG if available
+if (ORIGINAL_CONFIG && Object.keys(ORIGINAL_CONFIG).length > 0) {
+    console.log('[CONFIG] Initializing with ORIGINAL_CONFIG from data.js');
+    safeSetConfig(ORIGINAL_CONFIG);
+}
+
+let isNavigating = false;
+let currentPageId = 'page-1';
 let currentSongIndex = 0;
 let mapInstance = null;
-let revealedMemories = []; // Persistent state for gallery
-const printerSfx = new Audio(); // Will be initialized with Blob
-const scratchSfx = new Audio(); // Will be initialized with Blob
-scratchSfx.volume = 0.4;
+let revealedMemories = [];
 let transitionTimeout = null;
-let currentPageId = 'page-1'; // Track current active page ID
-let isNavigating = false; // Lock to prevent rapid click race conditions
+let musicLoadingPromise = null;
+let loadingTargetIndex = null;
+let isMusicLoading = false;
+
+const bgMusic = new Audio();
+window.bgMusic = bgMusic;
+const printerSfx = new Audio();
+const scratchSfx = new Audio();
+scratchSfx.volume = 0.4;
 
 // ============================================================
 // 🚀 DYNAMIC CONFIG SYSTEM - Load from API based on URL parameter
@@ -104,7 +137,7 @@ async function loadConfig() {
     // If no customer ID in URL, use local CONFIG (backward compatible)
     if (!customerId) {
         console.log('[Config] No customer ID in URL, using local CONFIG');
-        return typeof CONFIG !== 'undefined' ? CONFIG : null;
+        return safeGetConfig();
     }
 
     console.log(`[Config] Fetching config for customer: ${customerId}`);
@@ -181,7 +214,7 @@ async function initializeApp() {
         if (!config) {
             console.warn('[Config] ⚠️ API config failed, falling back to local data.js');
 
-            if (typeof CONFIG !== 'undefined' && CONFIG) {
+            if (safeGetConfig() && Object.keys(safeGetConfig()).length > 0) {
                 config = CONFIG;
                 console.log('[Config] ✅ Using local CONFIG from data.js');
 
@@ -224,7 +257,7 @@ async function initializeApp() {
         }
 
         // Set via our reactive property
-        window.CONFIG = config;
+        safeSetConfig(config);
 
         // Also set the internal storage
         window._CONFIG_DATA = config;
@@ -259,13 +292,14 @@ async function initializeApp() {
     } catch (error) {
         console.error('[Config] ❌ Initialization failed:', error);
         // Even if error, try to use local config
-        if (typeof CONFIG !== 'undefined' && CONFIG) {
-            console.warn('[Config] Emergency fallback to local CONFIG after error');
-            window.CONFIG = CONFIG;
-            window._CONFIG_DATA = CONFIG;
+        const localConf = safeGetConfig();
+        if (localConf && Object.keys(localConf).length > 0) {
+            console.warn('[Config] Emergency fallback back to local data.js after error');
+            safeSetConfig(localConf);
             startApp();
         } else {
-            showLoadingScreen(true, 'Error: ' + error.message);
+            console.error('[Config] ❌ No config available even after fallback');
+            showConfigError('Unknown', 'No configuration available');
         }
     } finally {
         setTimeout(() => showLoadingScreen(false), 500);
@@ -277,7 +311,7 @@ async function initializeApp() {
  */
 function startApp() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     console.log('[App] Starting with config loaded...');
     console.log('[App] CONFIG check:', {
         exists: !!window.CONFIG,
@@ -376,7 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`[App] Running in preview mode: ${previewMode}`);
         // In preview mode, use local CONFIG directly (for admin panel live preview)
         if (typeof CONFIG !== 'undefined') {
-            window.CONFIG = CONFIG;
+            safeSetConfig(CONFIG);
             startApp();
             showLoadingScreen(false); // 🚀 Ensure loader is hidden in preview
         }
@@ -522,7 +556,7 @@ function fadeOutAudio(audio, duration) {
 async function preloadFirstSong() {
     try {
         // ✅ FIX: Use window.CONFIG explicitly
-        const CONFIG = window.CONFIG || window._CONFIG_DATA;
+        const CONFIG = safeGetConfig();
         if (!CONFIG || !CONFIG.music || CONFIG.music.length === 0) return;
 
         const song = CONFIG.music[0];
@@ -541,7 +575,7 @@ async function preloadFirstSong() {
 // Update SEO/OG Settings
 function updateSEO() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG || !CONFIG.seo) return;
 
     const { title, description, image } = CONFIG.seo;
@@ -577,7 +611,7 @@ function updateSEO() {
 // Particle System
 function initParticles() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     const container = document.getElementById('particle-container');
     if (!container || !CONFIG || !CONFIG.theme || !CONFIG.theme.particles || CONFIG.theme.particles === 'none') return;
 
@@ -615,7 +649,7 @@ function initParticles() {
 // Apply Theme Settings
 function applyTheme() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
 
     if (!CONFIG || !CONFIG.theme) {
         console.warn('[Theme] No theme config available');
@@ -801,7 +835,7 @@ function MapsTo(fromId, toId) {
             }
         } else if (toId === 'page-3') {
             // ✅ CRITICAL FIX: Smart song loading for Music Player page
-            const CONFIG = window.CONFIG || window._CONFIG_DATA;
+            const CONFIG = safeGetConfig();
             const currentSong = CONFIG.music[currentSongIndex];
             const isSameSong = bgMusic.dataset.originalSrc === currentSong.audioSrc;
             const isMusicPlaying = !bgMusic.paused;
@@ -979,7 +1013,7 @@ function handleSwipe() {
 // Dynamic Content Loader
 function loadDynamicContent() {
     // ✅ FIX: Use window.CONFIG explicitly to avoid shadowing
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
 
     console.log('[LoadContent] Starting with CONFIG:', {
         configExists: !!CONFIG,
@@ -1256,13 +1290,11 @@ async function fetchMediaBlob(url) {
 // ============================================================
 // FIX 3: Improved loadSong - Robust against all URL types
 // ============================================================
-let musicLoadingPromise = null;
-let loadingTargetIndex = -1;
-let isMusicLoading = false;
+isMusicLoading = false;
 
 async function loadSong(index, forceReload = false) {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG.music || CONFIG.music.length === 0) {
         console.log('[Music] No music configured');
         return;
@@ -1413,7 +1445,7 @@ async function loadSong(index, forceReload = false) {
  * Called when navigating to page-3 to prevent "Loading..." state
  */
 function updateMusicPlayerUI() {
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG || !CONFIG.music || CONFIG.music.length === 0) return;
 
     const currentSong = CONFIG.music[currentSongIndex];
@@ -1462,7 +1494,7 @@ function updateMusicPlayerUI() {
 
 function initMusicPlayer() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     const toggleBtn = document.getElementById('p2-music-toggle');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
@@ -1548,7 +1580,7 @@ let quizScore = 0;
 
 function loadQuiz() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG.quiz || !CONFIG.quiz.questions) return;
 
     const totalQuestions = CONFIG.quiz.questions.length;
@@ -1713,7 +1745,7 @@ function nextQuestion() {
 // --- Gallery Logic with Real scratching ---
 function loadGallery() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     console.log("Loading Gallery...");
     if (!CONFIG.gallery || !CONFIG.gallery.memories) return;
 
@@ -2160,7 +2192,7 @@ let tilesLoaded = false;
 
 async function initMap() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     console.log("Initializing Map with Journey Animation...");
 
     // Cancel any previous initialization
@@ -2654,7 +2686,7 @@ window.debugAudioState = debugAudioState;
 // Page 1: Login Logic
 function initLogin() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     const loginInput = document.getElementById('login-input');
     const loginBtn = document.getElementById('login-btn');
     const lockIcon = document.getElementById('login-lock-icon');
@@ -2743,7 +2775,7 @@ let isDustAnimationActive = false;
 
 function initLetterPage() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     // Initialize floating dust particles
     initFloatingDust();
 
@@ -3300,7 +3332,7 @@ function createHeartExplosion(el) {
 
 function unlockFinale() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     const lockOverlay = document.getElementById('video-lock-overlay');
     const items = document.getElementById('treasure-hunt-items');
     const container = document.getElementById('finale-video-container');
@@ -3386,7 +3418,7 @@ let countdownInterval = null; // Global to allow clearing
 
 function initCountdown() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG || !CONFIG.countdown || !CONFIG.countdown.targetDate) {
         console.warn("[Countdown] No target date in CONFIG");
         return;
@@ -3559,7 +3591,7 @@ function checkLetterCompletion() {
  */
 function syncPageVisibility() {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) return;
 
     const allPageIds = Object.keys(CONFIG.pageConfig.pages);
@@ -3592,7 +3624,7 @@ function syncPageVisibility() {
  */
 function getPages(onlyEnabled = true) {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
 
     if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) {
         return [];
@@ -3657,7 +3689,7 @@ function getCurrentPageNumber(pageId) {
  */
 function isPageEnabled(pageId) {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) return true;
     const page = CONFIG.pageConfig.pages[pageId];
     return page ? page.enabled : true;
@@ -3668,7 +3700,7 @@ function isPageEnabled(pageId) {
  */
 function getPageConfig(pageId) {
     // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    const CONFIG = safeGetConfig();
     if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) return null;
     return CONFIG.pageConfig.pages[pageId] || null;
 }

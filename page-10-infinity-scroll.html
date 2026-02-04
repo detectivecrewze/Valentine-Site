@@ -832,9 +832,13 @@
         // ✅ FIX: Use Parent's Reactive CONFIG if available, else local
         let parentConfig = {};
         try {
-            if (window.parent && window.parent.CONFIG) {
+            // Check for safeGetConfig first (Claude fix)
+            if (window.parent && typeof window.parent.safeGetConfig === 'function') {
+                parentConfig = window.parent.safeGetConfig();
+                console.log('[Config] Using parent safeGetConfig()');
+            } else if (window.parent && window.parent.CONFIG) {
                 parentConfig = window.parent.CONFIG;
-                console.log('[Config] Using parent window.CONFIG');
+                console.log('[Config] Fallback to parent window.CONFIG');
             } else {
                 parentConfig = (typeof CONFIG !== 'undefined') ? CONFIG : {};
             }
