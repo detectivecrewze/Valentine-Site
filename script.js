@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof CONFIG !== 'undefined') {
             window.CONFIG = CONFIG;
             startApp();
+            showLoadingScreen(false); // 🚀 Ensure loader is hidden in preview
         }
     } else {
         // Normal mode: Load config dynamically from API
