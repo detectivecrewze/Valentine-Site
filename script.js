@@ -11,41 +11,102 @@ let transitionTimeout = null;
 let currentPageId = 'page-1'; // Track current active page ID
 let isNavigating = false; // Lock to prevent rapid click race conditions
 
-// Debug Helper: Send logs to parent admin
-function logToParent(message) {
-    if (window.self !== window.top) {
-        window.parent.postMessage({ type: 'LOG', message: message }, '*');
-    }
-}
-
-window.onerror = function (msg, url, lineNo, columnNo, error) {
-    logToParent(`Error: ${msg} at ${lineNo}:${columnNo}`);
-    return false;
-};
-
 // ============================================================
-// FIX 2: Silence Mux - Proper preview detection
+// 🚀 DYNAMIC CONFIG SYSTEM - Load from API based on URL parameter
 // ============================================================
-function getPreviewMode() {
+const API_BASE_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+
+/**
+ * Get customer ID from URL parameter (?to=xxx)
+ */
+function getCustomerId() {
     const urlParams = new URLSearchParams(window.location.search);
-    const previewMode = urlParams.get('preview');
-    return previewMode; // Returns: 'modal', 'side', or null
+    return urlParams.get('to') || urlParams.get('id');
 }
 
-function shouldMuteAudio() {
-    const mode = getPreviewMode();
-    // Only mute in modal preview to avoid dual audio
-    return mode === 'modal';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('[App] DOMContentLoaded - Initializing...');
-
-    // Detect preview mode early
-    const previewMode = getPreviewMode();
-    if (previewMode) {
-        console.log(`[App] Running in preview mode: ${previewMode}`);
+/**
+ * Show/hide loading screen
+ */
+function showLoadingScreen(show) {
+    const loader = document.getElementById('config-loader');
+    if (loader) {
+        if (show) {
+            loader.classList.remove('hidden');
+        } else {
+            loader.classList.add('fade-out');
+            setTimeout(() => loader.remove(), 500);
+        }
     }
+}
+
+/**
+ * Fetch config from API or fallback to local CONFIG
+ */
+async function loadConfig() {
+    const customerId = getCustomerId();
+
+    // If no customer ID in URL, use local CONFIG (backward compatible)
+    if (!customerId) {
+        console.log('[Config] No customer ID in URL, using local CONFIG');
+        return typeof CONFIG !== 'undefined' ? CONFIG : null;
+    }
+
+    console.log(`[Config] Fetching config for customer: ${customerId}`);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/get-config?id=${encodeURIComponent(customerId)}`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.warn(`[Config] Customer "${customerId}" not found, using local CONFIG`);
+                return typeof CONFIG !== 'undefined' ? CONFIG : null;
+            }
+            throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('[Config] Successfully loaded config from API');
+        return data;
+    } catch (error) {
+        console.error('[Config] Failed to fetch from API:', error);
+        // Fallback to local CONFIG if API fails
+        return typeof CONFIG !== 'undefined' ? CONFIG : null;
+    }
+}
+
+/**
+ * Initialize app with dynamic config
+ */
+async function initializeApp() {
+    showLoadingScreen(true);
+
+    try {
+        // Load config (from API or local)
+        const config = await loadConfig();
+
+        if (!config) {
+            console.error('[Config] No config available!');
+            showLoadingScreen(false);
+            return;
+        }
+
+        // Make config globally available
+        window.CONFIG = config;
+
+        // Now initialize the app
+        startApp();
+    } catch (error) {
+        console.error('[Config] Initialization failed:', error);
+    } finally {
+        showLoadingScreen(false);
+    }
+}
+
+/**
+ * Start app after config is loaded
+ */
+function startApp() {
+    console.log('[App] Starting with config loaded...');
 
     updateSEO();
     applyTheme();
@@ -76,16 +137,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const activePage = document.querySelector('.page:not(.hidden)');
     if (activePage) currentPageId = activePage.id;
 
-    // ✅ FIX: Pre-load the first song immediately so it's ready for play (Claude's Recommendation)
+    // Pre-load the first song
     if (CONFIG.music && CONFIG.music.length > 0) {
         console.log('[Init] Preloading first song...');
         preloadFirstSong();
     }
 
-    // ✅ FIX: Set muted state ONLY, don't prevent playback
+    // Set muted state for preview mode
     if (shouldMuteAudio()) {
         bgMusic.muted = true;
         console.log('🤫 [App] Background music will be muted (modal preview)');
+    }
+
+    console.log('[App] Initialization complete');
+}
+
+// Debug Helper: Send logs to parent admin
+function logToParent(message) {
+    if (window.self !== window.top) {
+        window.parent.postMessage({ type: 'LOG', message: message }, '*');
+    }
+}
+
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    logToParent(`Error: ${msg} at ${lineNo}:${columnNo}`);
+    return false;
+};
+
+// ============================================================
+// FIX 2: Silence Mux - Proper preview detection
+// ============================================================
+function getPreviewMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const previewMode = urlParams.get('preview');
+    return previewMode; // Returns: 'modal', 'side', or null
+}
+
+function shouldMuteAudio() {
+    const mode = getPreviewMode();
+    // Only mute in modal preview to avoid dual audio
+    return mode === 'modal';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[App] DOMContentLoaded - Starting dynamic initialization...');
+
+    // Detect preview mode early
+    const previewMode = getPreviewMode();
+    if (previewMode) {
+        console.log(`[App] Running in preview mode: ${previewMode}`);
+        // In preview mode, use local CONFIG directly (for admin panel live preview)
+        if (typeof CONFIG !== 'undefined') {
+            window.CONFIG = CONFIG;
+            startApp();
+        }
+    } else {
+        // Normal mode: Load config dynamically from API
+        initializeApp();
     }
 
     // Listen for config updates from admin

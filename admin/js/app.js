@@ -308,48 +308,74 @@ const app = {
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-4';
         modal.innerHTML = `
-            <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative">
+            <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <span class="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
                     </div>
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Configuration Complete!</h2>
-                    <p class="text-gray-600">Your Valentine's experience is ready</p>
+                    <p class="text-gray-600">Your Valentine's experience is ready to share</p>
                 </div>
                 
-                <div class="space-y-3 mb-6">
-                    <button id="btnTelegram" onclick="app.submitToTelegram()" class="w-full bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-600 transition-all flex items-center justify-center gap-2 shadow-sm">
-                        <span class="material-symbols-outlined">send</span>
-                        Send to Admin (Telegram)
+                <!-- PRIMARY ACTION: Publish Online -->
+                <div class="bg-gradient-to-r from-rose-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-rose-200">
+                    <h3 class="font-bold text-rose-900 mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-rose-500">cloud_upload</span>
+                        Publish Online (Recommended)
+                    </h3>
+                    <p class="text-sm text-rose-700 mb-4">Save to cloud and get an instant shareable link!</p>
+                    
+                    <div class="flex gap-3 mb-4">
+                        <input type="text" id="customerIdInput" 
+                            class="flex-1 px-4 py-3 border-2 border-rose-200 rounded-xl focus:border-rose-500 focus:ring-2 focus:ring-rose-200 text-sm"
+                            placeholder="Enter unique ID (e.g., lisa, budi-santi)">
+                    </div>
+                    
+                    <button id="btnPublish" onclick="app.publishOnline()" 
+                        class="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white py-4 px-6 rounded-xl font-bold hover:from-rose-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+                        <span class="material-symbols-outlined">rocket_launch</span>
+                        Publish & Get Link
                     </button>
+                    
+                    <!-- Result Link (hidden initially) -->
+                    <div id="publishResult" class="hidden mt-4 p-4 bg-white rounded-xl border border-green-200">
+                        <p class="text-xs text-gray-500 mb-2">Your Valentine is live at:</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="resultLink" readonly 
+                                class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono">
+                            <button onclick="app.copyResultLink()" 
+                                class="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SECONDARY OPTIONS -->
+                <details class="group">
+                    <summary class="cursor-pointer text-gray-500 hover:text-gray-700 text-sm font-semibold flex items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined text-base group-open:rotate-90 transition-transform">chevron_right</span>
+                        Other Options (Legacy)
+                    </summary>
+                    <div class="space-y-3 pl-6">
+                        <button id="btnTelegram" onclick="app.submitToTelegram()" class="w-full bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-600 transition-all flex items-center justify-center gap-2 shadow-sm">
+                            <span class="material-symbols-outlined">send</span>
+                            Send to Admin (Telegram)
+                        </button>
 
-                    <button onclick="app.downloadConfig()" class="w-full bg-rose-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-rose-700 transition-all flex items-center justify-center gap-2 shadow-sm">
-                        <span class="material-symbols-outlined">download</span>
-                        Download Configuration (data.js)
-                    </button>
-                    
-                    <button onclick="app.copyConfig()" class="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined">content_copy</span>
-                        Copy to Clipboard
-                    </button>
-                    
-                    <button onclick="app.viewCode()" class="w-full bg-indigo-100 text-indigo-700 py-3 px-6 rounded-xl font-semibold hover:bg-indigo-200 transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined">code</span>
-                        View Code
-                    </button>
-                </div>
+                        <button onclick="app.downloadConfig()" class="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">download</span>
+                            Download Configuration (data.js)
+                        </button>
+                        
+                        <button onclick="app.copyConfig()" class="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">content_copy</span>
+                            Copy to Clipboard
+                        </button>
+                    </div>
+                </details>
                 
-                <div class="bg-gray-50 rounded-xl p-4 text-xs text-gray-600">
-                    <p class="font-semibold mb-2">Next Steps:</p>
-                    <ol class="list-decimal list-inside space-y-1">
-                        <li>Send the config to Admin via Telegram (Recommended)</li>
-                        <li>OR Download the <code class="bg-white px-1 py-0.5 rounded">data.js</code> file manually</li>
-                        <li>Replace the existing <code class="bg-white px-1 py-0.5 rounded">data.js</code> in your project folder</li>
-                        <li>Open <code class="bg-white px-1 py-0.5 rounded">index.html</code> to see your customized Valentine's site!</li>
-                    </ol>
-                </div>
-                
-                <button onclick="this.closest('.fixed').remove()" class="mt-4 w-full py-3 text-gray-500 hover:text-gray-700 font-semibold">
+                <button onclick="this.closest('.fixed').remove()" class="mt-6 w-full py-3 text-gray-500 hover:text-gray-700 font-semibold">
                     Close
                 </button>
             </div>
@@ -413,6 +439,77 @@ const app = {
             btn.innerHTML = originalContent;
             btn.className = originalClass;
             alert("Errors: " + err.message + "\n\nMake sure your Cloudflare Worker is deployed with the secrets!");
+        }
+    },
+
+    // 🚀 NEW: Publish config to Cloudflare KV and get shareable link
+    async publishOnline() {
+        const customerIdInput = document.getElementById('customerIdInput');
+        const btn = document.getElementById('btnPublish');
+        const resultDiv = document.getElementById('publishResult');
+        const resultLink = document.getElementById('resultLink');
+
+        const customerId = customerIdInput.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+        if (!customerId) {
+            utils.showNotification('Please enter a unique ID!', 'error');
+            customerIdInput.focus();
+            return;
+        }
+
+        // Disable button and show loading
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Publishing...';
+
+        try {
+            const config = state.getConfig();
+            const API_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+
+            const response = await fetch(`${API_URL}/save-config?id=${encodeURIComponent(customerId)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to save configuration');
+            }
+
+            const result = await response.json();
+            console.log('[Publish] Success:', result);
+
+            // Generate the shareable link
+            const VERCEL_URL = 'https://valentine-site-sigma.vercel.app';
+            const shareableUrl = `${VERCEL_URL}/?to=${customerId}`;
+
+            // Show result
+            resultDiv.classList.remove('hidden');
+            resultLink.value = shareableUrl;
+
+            // Update button to success state
+            btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Published!';
+            btn.className = btn.className.replace('from-rose-500 to-pink-500', 'from-green-500 to-emerald-500');
+
+            utils.showNotification('🎉 Published successfully!', 'success');
+
+        } catch (error) {
+            console.error('[Publish] Error:', error);
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            utils.showNotification('Failed to publish: ' + error.message, 'error');
+        }
+    },
+
+    // Copy the generated result link
+    copyResultLink() {
+        const resultLink = document.getElementById('resultLink');
+        if (resultLink && resultLink.value) {
+            navigator.clipboard.writeText(resultLink.value);
+            utils.showNotification('Link copied!', 'success');
         }
     },
 

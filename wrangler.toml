@@ -1,0 +1,14 @@
+# Valentine API - Cloudflare Worker Configuration
+name = "valentine-upload"
+main = "worker-telegram.js"
+compatibility_date = "2024-01-01"
+
+# R2 Bucket for file uploads (existing)
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "valentine-upload"
+
+# KV Namespace for storing customer configurations (NEW!)
+[[kv_namespaces]]
+binding = "VALENTINE_DATA"
+id = "86ef0ba0095c4d9cb428e2959c827812"

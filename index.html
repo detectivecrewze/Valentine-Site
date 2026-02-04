@@ -107,6 +107,26 @@
 </head>
 
 <body class="font-display overflow-hidden h-screen w-screen selection:bg-rosegold/30" oncontextmenu="return false">
+    <!-- 🚀 LOADING SCREEN - Shown while fetching customer config from API -->
+    <div id="config-loader"
+        class="fixed inset-0 z-[9999] bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative">
+            <!-- Pulsing Heart -->
+            <div class="w-20 h-20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-rose-500 text-6xl animate-pulse"
+                    style="font-variation-settings: 'FILL' 1;">
+                    favorite
+                </span>
+            </div>
+            <!-- Orbiting dots -->
+            <div class="absolute inset-0 animate-spin" style="animation-duration: 3s;">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-rose-300 rounded-full"></div>
+            </div>
+        </div>
+        <p class="mt-6 text-rose-400 font-sans text-sm tracking-widest uppercase animate-pulse">Loading your surprise...
+        </p>
+    </div>
+
     <div class="grain-overlay"></div>
     <div id="particle-container"></div>
 

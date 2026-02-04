@@ -78,6 +78,88 @@ var index_default = {
         }
 
         // ============================================================
+        // ROUTE 3: GET CONFIG - Retrieve customer configuration from KV
+        // ============================================================
+        if (request.method === "GET" && url.pathname === "/get-config") {
+            const id = url.searchParams.get("id");
+            if (!id) {
+                return new Response(JSON.stringify({ error: "Missing 'id' parameter" }), {
+                    status: 400,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+
+            try {
+                const data = await env.VALENTINE_DATA.get(id);
+                if (!data) {
+                    return new Response(JSON.stringify({ error: "Config not found", id: id }), {
+                        status: 404,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" }
+                    });
+                }
+                return new Response(data, {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            } catch (error) {
+                return new Response(JSON.stringify({ error: error.message }), {
+                    status: 500,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+        }
+
+        // ============================================================
+        // ROUTE 4: SAVE CONFIG - Store customer configuration to KV
+        // ============================================================
+        if (request.method === "POST" && url.pathname === "/save-config") {
+            const id = url.searchParams.get("id");
+            if (!id) {
+                return new Response(JSON.stringify({ error: "Missing 'id' parameter" }), {
+                    status: 400,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+
+            try {
+                const body = await request.json();
+                await env.VALENTINE_DATA.put(id, JSON.stringify(body));
+
+                console.log(`[KV] Saved config for: ${id}`);
+                return new Response(JSON.stringify({
+                    success: true,
+                    message: "Configuration saved!",
+                    id: id,
+                    previewUrl: `${url.origin.replace('valentine-upload', 'YOUR_VERCEL_URL')}/?to=${id}`
+                }), {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            } catch (error) {
+                return new Response(JSON.stringify({ error: error.message }), {
+                    status: 500,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+        }
+
+        // ============================================================
+        // ROUTE 5: LIST CONFIGS - Get all saved customer IDs (Admin only)
+        // ============================================================
+        if (request.method === "GET" && url.pathname === "/list-configs") {
+            try {
+                const list = await env.VALENTINE_DATA.list();
+                const ids = list.keys.map(k => k.name);
+                return new Response(JSON.stringify({ configs: ids, count: ids.length }), {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            } catch (error) {
+                return new Response(JSON.stringify({ error: error.message }), {
+                    status: 500,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+        }
+
+        // ============================================================
         // ROUTE 3: FILE RETRIEVAL (Existing Logic)
         // ============================================================
         if (request.method === "GET" && url.pathname !== "/") {
@@ -130,8 +212,11 @@ var index_default = {
           <h2>Endpoints:</h2>
           <ul>
             <li><code>POST /upload</code> - Upload file (R2)</li>
-            <li><code>POST /telegram</code> <span class="badge">NEW</span> - Secure Telegram Forwarder</li>
+            <li><code>POST /telegram</code> - Secure Telegram Forwarder</li>
             <li><code>GET /{filename}</code> - Download file</li>
+            <li><code>GET /get-config?id=xxx</code> <span class="badge">NEW</span> - Get customer config</li>
+            <li><code>POST /save-config?id=xxx</code> <span class="badge">NEW</span> - Save customer config</li>
+            <li><code>GET /list-configs</code> <span class="badge">NEW</span> - List all customers</li>
           </ul>
         </body>
       </html>
