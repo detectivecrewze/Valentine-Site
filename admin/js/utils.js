@@ -26,21 +26,21 @@ const utils = {
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Convert to base64
+                    // Resolve with the Blob directly
                     canvas.toBlob((blob) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result);
-                        };
-                        reader.readAsDataURL(blob);
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('Failed to create blob from canvas'));
+                        }
                     }, 'image/jpeg', quality);
                 };
 
-                img.onerror = reject;
+                img.onerror = () => reject(new Error('Failed to load image for compression'));
                 img.src = e.target.result;
             };
 
-            reader.onerror = reject;
+            reader.onerror = () => reject(new Error('Failed to read file for compression'));
             reader.readAsDataURL(file);
         });
     },
@@ -198,51 +198,83 @@ const utils = {
 
             // 1. Optimize Images (skip for Audio/Video)
             if (file.type.startsWith('image/')) {
-                // Compress Image
-                const base64 = await this.compressImage(file, 1200, 0.85);
+                try {
+                    console.log('[Utils] Compressing image...');
+                    const compressedBlob = await this.compressImage(file, 1200, 0.85);
 
-                // Convert Base64 back to Blob for upload
-                const res = await fetch(base64);
-                const blob = await res.blob();
-                fileToUpload = new File([blob], file.name, { type: 'image/jpeg' });
+                    // Create a proper File object from the compressed Blob
+                    fileToUpload = new File([compressedBlob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    console.log(`[Utils] Compressed: ${(file.size / 1024).toFixed(1)}KB -> ${(fileToUpload.size / 1024).toFixed(1)}KB`);
+                } catch (err) {
+                    console.warn('[Utils] Compression failed, using original:', err);
+                }
             } else {
                 console.log('[Utils] Non-image file detected, skipping compression:', file.type);
             }
 
-            // 2. Upload to Cloudflare Worker
-            console.log('[Utils] Uploading to Cloudflare...');
+            // 2. Prepare Form Data
             const formData = new FormData();
             formData.append('file', fileToUpload);
 
-            // Use the same worker domain
+            // 3. Upload to Cloudflare via Worker
             const WORKER_URL = 'https://valentine-upload.aldoramadhan16.workers.dev/upload';
+            console.log('[Utils] Uploading to:', WORKER_URL);
 
             const response = await fetch(WORKER_URL, {
                 method: 'POST',
                 body: formData
             });
 
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({ error: 'Unknown server error' }));
+                throw new Error(errData.error || `Upload failed (${response.status})`);
+            }
+
             const result = await response.json();
 
-            if (!response.ok || !result.success) {
+            if (!result.success) {
                 throw new Error(result.error || 'Upload failed');
             }
 
-            // 3. Update Input with Public URL
+            // 4. Update Input with Public URL
             if (targetInput) {
                 targetInput.value = result.url;
                 targetInput.disabled = false;
-                targetInput.dispatchEvent(new Event('input'));
+
+                // Trigger events to update state and UI
+                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                targetInput.dispatchEvent(new Event('change', { bubbles: true }));
             }
 
-            // 4. Update Preview (Images or Audio)
-            this.updatePreview('prev_' + targetInputId, result.url, file.type);
+            // 5. Update Preview (Images or Audio)
+            // Try various naming conventions for preview elements
+            const previewIds = [
+                'prev_' + targetInputId,
+                targetInputId.replace('-input', '-img'),
+                targetInputId.replace('-input', '-preview'),
+                targetInputId.replace('-input', ''),
+                targetInputId.replace('input-', ''),
+                targetInputId.replace('-src', '-preview'),
+                targetInputId.replace('-src', '-img'),
+                targetInputId.replace('-src', ''),
+                'preview-' + targetInputId
+            ];
 
-            // 5. Sync State
+            for (const pid of previewIds) {
+                const previewEl = document.getElementById(pid);
+                if (previewEl) {
+                    this.updatePreview(pid, result.url, file.type);
+                    break;
+                }
+            }
+
+            // 6. Finalize
             state.save();
             state.syncToPreview();
-
-            console.log('[Utils] Upload success:', result.url);
+            console.log('[Utils] Upload successful:', result.url);
             utils.showNotification('File uploaded successfully!', 'success');
 
         } catch (error) {
@@ -317,9 +349,9 @@ const utils = {
     },
 
     // Show notification
-    showNotification(message, type = 'success') {
+    showNotification(message, type = 'success', duration = 3000) {
         const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-[300] px-6 py-3 rounded-xl shadow-lg transition-all ${type === 'success' ? 'bg-green-500 text-white' :
+        notification.className = `fixed top-4 right-4 z-[300] px-6 py-3 rounded-xl shadow-lg transition-all max-w-md ${type === 'success' ? 'bg-green-500 text-white' :
             type === 'error' ? 'bg-red-500 text-white' :
                 'bg-blue-500 text-white'
             }`;
@@ -330,7 +362,7 @@ const utils = {
         setTimeout(() => {
             notification.style.opacity = '0';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, duration);
     },
 
     // Download JSON file

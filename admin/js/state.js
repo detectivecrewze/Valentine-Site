@@ -12,6 +12,7 @@ const state = {
     configData: {
         pages: [],
         // ✅ NEW: Store all form values here
+        pageConfig: null, // 🚀 Will be initialized by ensurePageConfig
         theme: {
             backgroundColor: '#F5E6D3',
             fontDisplay: 'Playfair Display, serif',
@@ -62,13 +63,20 @@ const state = {
         this.loadFromStorage();
     },
 
-    // Ensure CONFIG.pageConfig exists
+    // Ensure configData.pageConfig exists and is synced with global CONFIG
     ensurePageConfig() {
         if (typeof CONFIG === 'undefined') {
             window.CONFIG = {};
         }
+
+        // Initialize internal pageConfig if missing
+        if (!this.configData.pageConfig) {
+            this.configData.pageConfig = JSON.parse(JSON.stringify(DEFAULT_PAGE_CONFIG));
+        }
+
+        // Keep global CONFIG in sync for other components
         if (!CONFIG.pageConfig) {
-            CONFIG.pageConfig = JSON.parse(JSON.stringify(DEFAULT_PAGE_CONFIG));
+            CONFIG.pageConfig = this.configData.pageConfig;
         }
     },
 
@@ -136,7 +144,7 @@ const state = {
         if (CONFIG.music && CONFIG.music.length > 0) {
             this.configData.pages.push({
                 pageId: 'page-3',
-                type: 'music-section',
+                type: 'music',
                 songTitle: CONFIG.musicSectionTitle || 'Our Playlist',
                 music: CONFIG.music
             });
@@ -148,7 +156,7 @@ const state = {
         if (CONFIG.wrapped) {
             this.configData.pages.push({
                 pageId: 'page-4',
-                type: 'wrapped-section',
+                type: 'wrapped',
                 ...CONFIG.wrapped
             });
         } else {
@@ -159,7 +167,7 @@ const state = {
         if (CONFIG.quiz) {
             this.configData.pages.push({
                 pageId: 'page-5',
-                type: 'quiz-section',
+                type: 'quiz',
                 title: CONFIG.quiz.title || 'How Well Do You Know Me?',
                 resultMessage: CONFIG.quiz.resultMessage || 'You know me so well! ❤️',
                 questions: CONFIG.quiz.questions || []
@@ -172,7 +180,7 @@ const state = {
         if (CONFIG.gallery) {
             this.configData.pages.push({
                 pageId: 'page-6',
-                type: 'gallery-section',
+                type: 'gallery',
                 title: CONFIG.gallery.title || 'Our Memories',
                 subtitle: CONFIG.gallery.subtitle || 'Scratch to reveal',
                 memories: CONFIG.gallery.memories || []
@@ -185,7 +193,7 @@ const state = {
         if (CONFIG.map) {
             this.configData.pages.push({
                 pageId: 'page-7',
-                type: 'map-section',
+                type: 'map',
                 title: CONFIG.map.title || 'The Atlas of Us',
                 description: CONFIG.map.description || '',
                 locations: (CONFIG.map.locations || []).map(loc => ({
@@ -206,7 +214,7 @@ const state = {
         if (CONFIG.letter) {
             this.configData.pages.push({
                 pageId: 'page-8',
-                type: 'letter-section',
+                type: 'letter',
                 recipient: CONFIG.letter.recipient || CONFIG.letter.recipientName || 'Dearest Love',
                 message: CONFIG.letter.message || '',
                 signature: CONFIG.letter.signature || 'Your Favorite Person',
@@ -223,7 +231,7 @@ const state = {
         if (CONFIG.lock) {
             this.configData.pages.push({
                 pageId: 'page-9',
-                type: 'lock-section',
+                type: 'lock',
                 initials: CONFIG.lock.initials || 'A + B',
                 instruction: CONFIG.lock.instruction || 'Click to lock our love forever...',
                 finalMessage: CONFIG.lock.finalMessage || 'Safely locked in my heart. Always.'
@@ -236,7 +244,7 @@ const state = {
         if (CONFIG.infinityScroll) {
             this.configData.pages.push({
                 pageId: 'page-10',
-                type: 'infinity-section',
+                type: 'infinity',
                 headerTitle: CONFIG.infinityScroll.headerTitle || 'I love you because...',
                 headerSubtitle: CONFIG.infinityScroll.headerSubtitle || 'An endless collection of reasons',
                 reasons_generic: CONFIG.infinityScroll.reasons?.generic || [],
@@ -248,6 +256,11 @@ const state = {
             });
         } else {
             this.loadDefaultInfinityPage();
+        }
+
+        // Load pageConfig if exists
+        if (CONFIG.pageConfig) {
+            this.configData.pageConfig = JSON.parse(JSON.stringify(CONFIG.pageConfig));
         }
     },
 
@@ -267,7 +280,7 @@ const state = {
     loadDefaultMusicPage() {
         this.configData.pages.push({
             pageId: 'page-3',
-            type: 'music-section',
+            type: 'music',
             songTitle: 'Our Playlist',
             music: [
                 { songTitle: "Selfless", artist: "The Strokes", audioSrc: "assets/song1.dat", coverSrc: "assets/cover1.jpg", lyrics: "Life is too short..." },
@@ -279,7 +292,7 @@ const state = {
     loadDefaultWrappedPage() {
         this.configData.pages.push({
             pageId: 'page-4',
-            type: 'wrapped-section',
+            type: 'wrapped',
             vibeLabel: "Our Vibe",
             vibe: "Bonnie & Clyde",
             HoursTogetherLabel: "Minutes Together",
@@ -293,7 +306,7 @@ const state = {
     loadDefaultQuizPage() {
         this.configData.pages.push({
             pageId: 'page-5',
-            type: 'quiz-section',
+            type: 'quiz',
             title: 'How Well Do You Know Me?',
             resultMessage: 'You know me so well! ❤️',
             questions: [
@@ -305,7 +318,7 @@ const state = {
     loadDefaultGalleryPage() {
         this.configData.pages.push({
             pageId: 'page-6',
-            type: 'gallery-section',
+            type: 'gallery',
             title: 'Our Memories',
             subtitle: 'Scratch to reveal',
             memories: [
@@ -317,7 +330,7 @@ const state = {
     loadDefaultMapPage() {
         this.configData.pages.push({
             pageId: 'page-7',
-            type: 'map-section',
+            type: 'map',
             title: 'The Atlas of Us',
             description: 'Every pin is a heartbeat, every line a path we walked together.',
             locations: [
@@ -329,7 +342,7 @@ const state = {
     loadDefaultLetterPage() {
         this.configData.pages.push({
             pageId: 'page-8',
-            type: 'letter-section',
+            type: 'letter',
             recipient: 'Dearest Love',
             message: 'I find myself sitting here, thinking about all the moments we\'ve shared...',
             signature: 'Your Favorite Person',
@@ -342,7 +355,7 @@ const state = {
     loadDefaultLockPage() {
         this.configData.pages.push({
             pageId: 'page-9',
-            type: 'lock-section',
+            type: 'lock',
             initials: 'A + B',
             instruction: 'Click to lock our love forever...',
             finalMessage: 'Safely locked in my heart. Always.'
@@ -352,7 +365,7 @@ const state = {
     loadDefaultInfinityPage() {
         this.configData.pages.push({
             pageId: 'page-10',
-            type: 'infinity-section',
+            type: 'infinity',
             headerTitle: 'I love you because...',
             headerSubtitle: 'An endless collection of reasons',
             reasons_generic: ["...your smile lights up the room", "...you make me a better person"],
@@ -375,7 +388,11 @@ const state = {
         const pages = data.pages;
 
         if (pages && Array.isArray(pages) && pages.length > 0) {
-            this.configData.pages = pages;
+            // Migration: Strip '-section' from older types
+            this.configData.pages = pages.map(p => ({
+                ...p,
+                type: p.type ? p.type.replace('-section', '') : p.type
+            }));
         }
 
         // ✅ RESTORE ALL CATEGORIES
@@ -391,6 +408,7 @@ const state = {
         if (config.currentStep !== undefined) this.currentStep = config.currentStep;
 
         if (config.pageConfig) {
+            this.configData.pageConfig = config.pageConfig;
             CONFIG.pageConfig = config.pageConfig;
         }
     },
@@ -432,14 +450,14 @@ const state = {
     // ✅ CRITICAL FIX: Get config from STATE, not DOM
     getConfig() {
         // Extract page data from state
-        const wrappedPage = this.configData.pages.find(p => p.type === 'wrapped-section');
-        const quizPage = this.configData.pages.find(p => p.type === 'quiz-section');
-        const musicPage = this.configData.pages.find(p => p.type === 'music-section');
-        const galleryPage = this.configData.pages.find(p => p.type === 'gallery-section');
-        const mapPage = this.configData.pages.find(p => p.type === 'map-section');
-        const letterPage = this.configData.pages.find(p => p.type === 'letter-section');
-        const lockPage = this.configData.pages.find(p => p.type === 'lock-section');
-        const infinityPage = this.configData.pages.find(p => p.type === 'infinity-section');
+        const wrappedPage = this.configData.pages.find(p => p.type === 'wrapped');
+        const quizPage = this.configData.pages.find(p => p.type === 'quiz');
+        const musicPage = this.configData.pages.find(p => p.type === 'music');
+        const galleryPage = this.configData.pages.find(p => p.type === 'gallery');
+        const mapPage = this.configData.pages.find(p => p.type === 'map');
+        const letterPage = this.configData.pages.find(p => p.type === 'letter');
+        const lockPage = this.configData.pages.find(p => p.type === 'lock');
+        const infinityPage = this.configData.pages.find(p => p.type === 'infinity');
 
         return {
             theme: this.configData.theme,
@@ -516,7 +534,7 @@ const state = {
             },
             adminLang: this.configData.adminLang || 'en',
             currentStep: this.currentStep || 0,
-            pageConfig: CONFIG.pageConfig
+            pageConfig: this.configData.pageConfig || CONFIG.pageConfig
         };
     },
 

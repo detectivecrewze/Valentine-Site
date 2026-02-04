@@ -305,6 +305,18 @@ const app = {
 
     // Show completion modal
     showCompletionModal(config) {
+        // ✅ FIX: Log config summary for debugging
+        console.log('[Completion] Config summary:', {
+            hasLogin: !!config.login,
+            hasGreeting: !!config.greeting,
+            hasMusic: !!(config.music && config.music.length),
+            hasGallery: !!(config.gallery && config.gallery.memories),
+            hasMap: !!(config.map && config.map.locations),
+            hasLetter: !!config.letter,
+            musicCount: config.music ? config.music.length : 0,
+            galleryCount: config.gallery && config.gallery.memories ? config.gallery.memories.length : 0
+        });
+        
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-4';
         modal.innerHTML = `
@@ -315,6 +327,12 @@ const app = {
                     </div>
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Configuration Complete!</h2>
                     <p class="text-gray-600">Your Valentine's experience is ready to share</p>
+                    <!-- ✅ FIX: Config summary -->
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500 font-mono">
+                        📊 ${config.music ? config.music.length : 0} songs | 
+                        📷 ${config.gallery && config.gallery.memories ? config.gallery.memories.length : 0} photos | 
+                        📍 ${config.map && config.map.locations ? config.map.locations.length : 0} locations
+                    </div>
                 </div>
                 
                 <!-- PRIMARY ACTION: Publish Online -->
@@ -459,12 +477,27 @@ const app = {
 
         // Disable button and show loading
         const originalHTML = btn.innerHTML;
+        const originalClass = btn.className;
         btn.disabled = true;
         btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Publishing...';
 
         try {
             const config = state.getConfig();
+            
+            // ✅ FIX: Validate config before sending
+            if (!config.login || !config.greeting) {
+                throw new Error('Configuration is incomplete. Please fill in at least the login and greeting sections.');
+            }
+            
             const API_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+
+            console.log('[Publish] Sending config to KV:', { 
+                id: customerId, 
+                configSize: JSON.stringify(config).length + ' bytes',
+                hasMusic: !!(config.music && config.music.length),
+                hasGallery: !!(config.gallery && config.gallery.memories),
+                hasMap: !!(config.map && config.map.locations)
+            });
 
             const response = await fetch(`${API_URL}/save-config?id=${encodeURIComponent(customerId)}`, {
                 method: 'POST',
@@ -480,7 +513,7 @@ const app = {
             }
 
             const result = await response.json();
-            console.log('[Publish] Success:', result);
+            console.log('[Publish] ✅ Success:', result);
 
             // Generate the shareable link
             const VERCEL_URL = 'https://valentine-site-sigma.vercel.app';
@@ -492,13 +525,19 @@ const app = {
 
             // Update button to success state
             btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Published!';
-            btn.className = btn.className.replace('from-rose-500 to-pink-500', 'from-green-500 to-emerald-500');
+            btn.className = originalClass.replace('from-rose-500 to-pink-500', 'from-green-500 to-emerald-500');
 
-            utils.showNotification('🎉 Published successfully!', 'success');
+            // ✅ FIX: Log success details
+            console.log('[Publish] ✅ Shareable URL:', shareableUrl);
+            console.log('[Publish] ⏳ Note: Wait 10-30 seconds before testing the link');
+
+            // ✅ FIX: Show warning about propagation delay
+            utils.showNotification('🎉 Published! Wait 10-30 seconds, then test your link.', 'success', 6000);
 
         } catch (error) {
-            console.error('[Publish] Error:', error);
+            console.error('[Publish] ❌ Error:', error);
             btn.innerHTML = originalHTML;
+            btn.className = originalClass;
             btn.disabled = false;
             utils.showNotification('Failed to publish: ' + error.message, 'error');
         }

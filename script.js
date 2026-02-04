@@ -15,6 +15,8 @@ let isNavigating = false; // Lock to prevent rapid click race conditions
 // 🚀 DYNAMIC CONFIG SYSTEM - Load from API based on URL parameter
 // ============================================================
 const API_BASE_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 2000;
 
 /**
  * Get customer ID from URL parameter (?to=xxx)
@@ -27,11 +29,14 @@ function getCustomerId() {
 /**
  * Show/hide loading screen
  */
-function showLoadingScreen(show) {
+function showLoadingScreen(show, message = 'Loading your Valentine...') {
     const loader = document.getElementById('config-loader');
+    const loaderText = document.getElementById('config-loader-text');
+    
     if (loader) {
         if (show) {
             loader.classList.remove('hidden');
+            if (loaderText) loaderText.textContent = message;
         } else {
             loader.classList.add('fade-out');
             setTimeout(() => loader.remove(), 500);
@@ -40,7 +45,34 @@ function showLoadingScreen(show) {
 }
 
 /**
- * Fetch config from API or fallback to local CONFIG
+ * Show error screen when config fails to load
+ */
+function showConfigError(customerId, error) {
+    const loader = document.getElementById('config-loader');
+    if (loader) {
+        loader.innerHTML = `
+            <div class="flex flex-col items-center justify-center p-8 text-center">
+                <div class="text-6xl mb-4">💔</div>
+                <h2 class="text-2xl font-display text-rose-800 mb-4">Configuration Not Found</h2>
+                <p class="text-rose-600 mb-4 max-w-md">
+                    We couldn't find a Valentine configuration for "<strong>${customerId}</strong>".
+                </p>
+                <p class="text-sm text-gray-500 mb-6">Error: ${error}</p>
+                <div class="flex gap-3">
+                    <button onclick="window.location.href='?'" class="px-6 py-3 bg-rose-500 text-white rounded-xl font-semibold hover:bg-rose-600 transition-all">
+                        Use Default Config
+                    </button>
+                    <button onclick="location.reload()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Fetch config from API with cache busting and retry logic
  */
 async function loadConfig() {
     const customerId = getCustomerId();
@@ -53,52 +85,142 @@ async function loadConfig() {
 
     console.log(`[Config] Fetching config for customer: ${customerId}`);
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/get-config?id=${encodeURIComponent(customerId)}`);
+    // Try with retry logic
+    for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
+        try {
+            // ✅ FIX: Add cache busting to prevent cached 404 responses
+            const cacheBuster = `&_t=${Date.now()}_${attempt}`;
+            const url = `${API_BASE_URL}/get-config?id=${encodeURIComponent(customerId)}${cacheBuster}`;
+            
+            console.log(`[Config] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS}: ${url}`);
+            showLoadingScreen(true, `Loading configuration... (attempt ${attempt}/${MAX_RETRY_ATTEMPTS})`);
 
-        if (!response.ok) {
-            if (response.status === 404) {
-                console.warn(`[Config] Customer "${customerId}" not found, using local CONFIG`);
-                return typeof CONFIG !== 'undefined' ? CONFIG : null;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    // ✅ FIX: Don't immediately fallback - KV might still be propagating
+                    if (attempt < MAX_RETRY_ATTEMPTS) {
+                        console.warn(`[Config] 404 on attempt ${attempt}, retrying in ${RETRY_DELAY_MS}ms... (KV propagation delay)`);
+                        showLoadingScreen(true, `Waiting for configuration to propagate... (${attempt}/${MAX_RETRY_ATTEMPTS})`);
+                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+                        continue;
+                    }
+                    
+                    // Final attempt - config really doesn't exist
+                    throw new Error(`Configuration "${customerId}" not found. Please check your link or publish your configuration first.`);
+                }
+                throw new Error(`API Error: ${response.status}`);
             }
-            throw new Error(`API Error: ${response.status}`);
-        }
 
-        const data = await response.json();
-        console.log('[Config] Successfully loaded config from API');
-        return data;
-    } catch (error) {
-        console.error('[Config] Failed to fetch from API:', error);
-        // Fallback to local CONFIG if API fails
-        return typeof CONFIG !== 'undefined' ? CONFIG : null;
+            const data = await response.json();
+            console.log('[Config] ✅ Successfully loaded config from API');
+            console.log('[Config] Config keys:', Object.keys(data));
+            return data;
+            
+        } catch (error) {
+            console.error(`[Config] Attempt ${attempt} failed:`, error);
+            
+            if (attempt < MAX_RETRY_ATTEMPTS) {
+                console.log(`[Config] Retrying in ${RETRY_DELAY_MS}ms...`);
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+            } else {
+                // All retries exhausted - show error
+                console.error('[Config] All retry attempts exhausted');
+                showConfigError(customerId, error.message);
+                return null; // ✅ FIX: Return null instead of silent fallback
+            }
+        }
     }
+    
+    return null;
 }
 
 /**
  * Initialize app with dynamic config
  */
 async function initializeApp() {
-    showLoadingScreen(true);
+    showLoadingScreen(true, 'Initializing your Valentine experience...');
 
     try {
         // Load config (from API or local)
-        const config = await loadConfig();
+        let config = await loadConfig();
 
+        // ✅ FIX: If API config failed, FORCE fallback to local CONFIG
         if (!config) {
-            console.error('[Config] No config available!');
-            showLoadingScreen(false);
+            console.warn('[Config] ⚠️ API config failed, falling back to local data.js');
+            
+            if (typeof CONFIG !== 'undefined' && CONFIG) {
+                config = CONFIG;
+                console.log('[Config] ✅ Using local CONFIG from data.js');
+                
+                // Show subtle indicator that using local config
+                setTimeout(() => {
+                    const indicator = document.createElement('div');
+                    indicator.id = 'local-config-indicator';
+                    indicator.className = 'fixed bottom-4 left-4 z-[9999] bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg';
+                    indicator.innerHTML = '⚠️ Using Local Config';
+                    document.body.appendChild(indicator);
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        indicator.style.opacity = '0';
+                        setTimeout(() => indicator.remove(), 500);
+                    }, 5000);
+                }, 1000);
+            } else {
+                console.error('[Config] ❌ No config available at all!');
+                showLoadingScreen(true, 'Error: No configuration found');
+                return;
+            }
+        } else {
+            console.log('[Config] ✅ API config loaded successfully');
+        }
+
+        // ✅ CRITICAL FIX: Ensure config is valid
+        if (!config || typeof config !== 'object') {
+            console.error('[Config] ❌ Invalid config object:', config);
+            showLoadingScreen(true, 'Error: Invalid configuration');
             return;
         }
 
         // Make config globally available
         window.CONFIG = config;
+        console.log('[Config] Config summary:', {
+            source: config === CONFIG ? 'LOCAL (data.js)' : 'API (Cloudflare KV)',
+            hasLogin: !!(config.login && config.login.password),
+            hasGreeting: !!(config.greeting && config.greeting.title),
+            hasMusic: !!(config.music && config.music.length),
+            musicCount: config.music ? config.music.length : 0,
+            hasGallery: !!(config.gallery && config.gallery.memories),
+            galleryCount: config.gallery && config.gallery.memories ? config.gallery.memories.length : 0,
+            hasMap: !!(config.map && config.map.locations),
+            mapCount: config.map && config.map.locations ? config.map.locations.length : 0,
+            hasLetter: !!(config.letter && config.letter.message),
+            configKeys: Object.keys(config)
+        });
 
         // Now initialize the app
         startApp();
     } catch (error) {
-        console.error('[Config] Initialization failed:', error);
+        console.error('[Config] ❌ Initialization failed:', error);
+        // Even if error, try to use local config
+        if (typeof CONFIG !== 'undefined' && CONFIG) {
+            console.warn('[Config] Emergency fallback to local CONFIG after error');
+            window.CONFIG = CONFIG;
+            startApp();
+        } else {
+            showLoadingScreen(true, 'Error: ' + error.message);
+        }
     } finally {
-        showLoadingScreen(false);
+        setTimeout(() => showLoadingScreen(false), 500);
     }
 }
 
@@ -107,6 +229,11 @@ async function initializeApp() {
  */
 function startApp() {
     console.log('[App] Starting with config loaded...');
+    console.log('[App] CONFIG check:', {
+        exists: !!window.CONFIG,
+        hasMusic: !!(window.CONFIG && window.CONFIG.music && window.CONFIG.music.length),
+        musicArray: window.CONFIG && window.CONFIG.music ? window.CONFIG.music : 'EMPTY or MISSING'
+    });
 
     updateSEO();
     applyTheme();
@@ -117,19 +244,28 @@ function startApp() {
         printerSfx.src = blobUrl;
         printerSfx.loop = true;
         console.log('[App] Printer SFX initialized');
-    });
+    }).catch(err => console.warn('[App] Printer SFX failed:', err));
 
     // Initialize Scratch SFX
     fetchMediaBlob('assets/scratching.mp3').then(blobUrl => {
         scratchSfx.src = blobUrl;
         scratchSfx.loop = true;
         console.log('[App] Scratch SFX initialized');
-    });
+    }).catch(err => console.warn('[App] Scratch SFX failed:', err));
 
     loadDynamicContent();
     initLogin();
     initCountdown();
+    
+    // ✅ DEBUG: Check music before init
+    console.log('[App] Music config before initMusicPlayer:', {
+        configMusic: window.CONFIG && window.CONFIG.music,
+        musicLength: window.CONFIG && window.CONFIG.music ? window.CONFIG.music.length : 0
+    });
+    
     initMusicPlayer();
+    loadGallery();
+    loadQuiz();
     initLetterPage();
     syncPageVisibility();
 
@@ -138,9 +274,11 @@ function startApp() {
     if (activePage) currentPageId = activePage.id;
 
     // Pre-load the first song
-    if (CONFIG.music && CONFIG.music.length > 0) {
-        console.log('[Init] Preloading first song...');
+    if (window.CONFIG && window.CONFIG.music && window.CONFIG.music.length > 0) {
+        console.log('[Init] Preloading first song...', window.CONFIG.music[0]);
         preloadFirstSong();
+    } else {
+        console.warn('[Init] No music to preload:', window.CONFIG && window.CONFIG.music);
     }
 
     // Set muted state for preview mode
@@ -224,6 +362,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof updateSEO === 'function') updateSEO();
                 if (typeof loadDynamicContent === 'function') loadDynamicContent();
                 if (typeof initCountdown === 'function') initCountdown();
+                if (typeof loadGallery === 'function') loadGallery(); // 🚀 Sync gallery
+                if (typeof loadQuiz === 'function') loadQuiz();       // 🚀 Sync quiz
+                if (typeof initMap === 'function') initMap();         // 🚀 Sync map
+                if (typeof loadLetter === 'function') loadLetter();   // 🚀 Sync letter
                 syncPageVisibility();
 
                 // Refresh current page
@@ -748,16 +890,29 @@ function handleSwipe() {
 
 // Dynamic Content Loader
 function loadDynamicContent() {
+    console.log('[LoadContent] Starting with CONFIG:', {
+        hasLogin: !!CONFIG.login,
+        hasGreeting: !!CONFIG.greeting,
+        hasMusic: !!(CONFIG.music && CONFIG.music.length),
+        hasGallery: !!(CONFIG.gallery && CONFIG.gallery.memories),
+        hasWrapped: !!CONFIG.wrapped
+    });
+    
     // Page 1: Login
     const p1Subtitle = document.getElementById('p1-subtitle');
     const p1Title = document.getElementById('p1-title');
     const p1Instruction = document.getElementById('p1-instruction');
     const loginInput = document.getElementById('login-input');
 
-    if (p1Subtitle) p1Subtitle.textContent = CONFIG.login.collectionText;
-    if (p1Title) p1Title.textContent = CONFIG.login.title;
-    if (p1Instruction) p1Instruction.textContent = CONFIG.login.instruction;
-    if (loginInput) loginInput.placeholder = CONFIG.login.placeholder;
+    if (CONFIG.login) {
+        if (p1Subtitle) p1Subtitle.textContent = CONFIG.login.collectionText;
+        if (p1Title) p1Title.textContent = CONFIG.login.title;
+        if (p1Instruction) p1Instruction.textContent = CONFIG.login.instruction;
+        if (loginInput) loginInput.placeholder = CONFIG.login.placeholder;
+        console.log('[LoadContent] Login loaded:', CONFIG.login.title);
+    } else {
+        console.warn('[LoadContent] CONFIG.login missing!');
+    }
 
     if (CONFIG.music && CONFIG.music.length > 0) {
         const musicTitle = document.getElementById('music-section-title');
@@ -839,6 +994,9 @@ function loadDynamicContent() {
         if (p3Image) p3Image.src = CONFIG.greeting.imageSrc;
         if (p3Signature) p3Signature.textContent = CONFIG.greeting.signature || "With Love";
         if (p3Footer) p3Footer.textContent = CONFIG.greeting.footerText;
+        console.log('[LoadContent] Greeting loaded:', CONFIG.greeting.title);
+    } else {
+        console.warn('[LoadContent] CONFIG.greeting missing!');
     }
 
     // Page 7: Map

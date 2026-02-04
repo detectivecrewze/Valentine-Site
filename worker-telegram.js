@@ -90,17 +90,25 @@ var index_default = {
             }
 
             try {
+                console.log(`[KV] Looking up config for: ${id}`);
                 const data = await env.VALENTINE_DATA.get(id);
                 if (!data) {
+                    console.log(`[KV] Config not found: ${id}`);
                     return new Response(JSON.stringify({ error: "Config not found", id: id }), {
                         status: 404,
                         headers: { ...corsHeaders, "Content-Type": "application/json" }
                     });
                 }
+                console.log(`[KV] Config found for: ${id} (${data.length} bytes)`);
                 return new Response(data, {
-                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                    headers: { 
+                        ...corsHeaders, 
+                        "Content-Type": "application/json",
+                        "Cache-Control": "no-cache, no-store, must-revalidate"
+                    }
                 });
             } catch (error) {
+                console.error(`[KV] Error retrieving config: ${error.message}`);
                 return new Response(JSON.stringify({ error: error.message }), {
                     status: 500,
                     headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -122,18 +130,33 @@ var index_default = {
 
             try {
                 const body = await request.json();
+                const configSize = JSON.stringify(body).length;
+                
+                console.log(`[KV] Saving config for: ${id} (${configSize} bytes)`);
+                console.log(`[KV] Config contents:`, {
+                    hasLogin: !!body.login,
+                    hasGreeting: !!body.greeting,
+                    hasMusic: !!(body.music && body.music.length),
+                    hasGallery: !!(body.gallery && body.gallery.memories),
+                    hasMap: !!(body.map && body.map.locations),
+                    hasLetter: !!body.letter,
+                    hasInfinity: !!body.infinityScroll
+                });
+                
                 await env.VALENTINE_DATA.put(id, JSON.stringify(body));
 
-                console.log(`[KV] Saved config for: ${id}`);
+                console.log(`[KV] ✅ Successfully saved config for: ${id}`);
                 return new Response(JSON.stringify({
                     success: true,
-                    message: "Configuration saved!",
+                    message: "Configuration saved! Note: It may take 10-30 seconds to propagate globally.",
                     id: id,
-                    previewUrl: `${url.origin.replace('valentine-upload', 'YOUR_VERCEL_URL')}/?to=${id}`
+                    size: configSize,
+                    previewUrl: `https://valentine-site-sigma.vercel.app/?to=${id}`
                 }), {
                     headers: { ...corsHeaders, "Content-Type": "application/json" }
                 });
             } catch (error) {
+                console.error(`[KV] ❌ Error saving config: ${error.message}`);
                 return new Response(JSON.stringify({ error: error.message }), {
                     status: 500,
                     headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -160,7 +183,24 @@ var index_default = {
         }
 
         // ============================================================
-        // ROUTE 3: FILE RETRIEVAL (Existing Logic)
+        // ROUTE 6: DEBUG - Check bindings status
+        // ============================================================
+        if (url.pathname === "/debug") {
+            const debug = {
+                hasBucket: !!env.BUCKET,
+                hasKV: !!env.VALENTINE_DATA,
+                hasChatId: !!env.TELEGRAM_CHAT_ID,
+                hasBotToken: !!env.TELEGRAM_BOT_TOKEN,
+                url: request.url,
+                method: request.method
+            };
+            return new Response(JSON.stringify(debug, null, 2), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" }
+            });
+        }
+
+        // ============================================================
+        // ROUTE 3 (REVISITED): FILE RETRIEVAL (Existing Logic)
         // ============================================================
         if (request.method === "GET" && url.pathname !== "/") {
             const filename = url.pathname.substring(1);
