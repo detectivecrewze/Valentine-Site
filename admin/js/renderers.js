@@ -131,30 +131,30 @@ const renderers = {
                     </div>
                 </div>
             </div>
-3: 
-14:             <!-- Import from Live Link -->
-15:             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-8">
-16:                 <div class="flex items-start gap-4">
-17:                     <div class="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center shrink-0">
-18:                         <span class="material-symbols-outlined text-gray-600">cloud_download</span>
-19:                     </div>
-20:                     <div class="flex-1">
-21:                         <label class="block text-[10px] font-bold text-gray-400 upper-case tracking-widest mb-1">DATA IMPORT</label>
-22:                         <h3 class="text-sm font-bold text-gray-900 mb-1">Import from Live Website</h3>
-23:                         <p class="text-xs text-gray-500 mb-4">Want to edit an existing Valentine? Enter the ID or link below to pull all images and messages automatically.</p>
-24:                         <div class="flex gap-2">
-25:                             <input type="text" id="importUrlInput" 
-26:                                 class="flex-1 bg-white border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-rose-500 focus:border-rose-500 block p-2.5 outline-none transition-all focus:shadow-md" 
-27:                                 placeholder="e.g. aldoramadhan or website.com/?to=id">
-28:                             <button type="button" 
-29:                                 onclick="state.importFromLink(document.getElementById('importUrlInput').value)"
-30:                                 class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-all shadow-lg active:scale-95">
-31:                                 Import
-32:                             </button>
-33:                         </div>
-34:                     </div>
-35:                 </div>
-36:             </div>
+
+            <!-- Import from Live Link -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-gray-600">cloud_download</span>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-[10px] font-bold text-gray-400 upper-case tracking-widest mb-1">DATA IMPORT</label>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Import from Live Website</h3>
+                        <p class="text-xs text-gray-500 mb-4">Want to edit an existing Valentine? Enter the ID or link below to pull all images and messages automatically.</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="importUrlInput" 
+                                class="flex-1 bg-white border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-rose-500 focus:border-rose-500 block p-2.5 outline-none transition-all focus:shadow-md" 
+                                placeholder="e.g. aldoramadhan or website.com/?to=id">
+                            <button type="button" 
+                                onclick="state.importFromLink(document.getElementById('importUrlInput').value)"
+                                class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-all shadow-lg active:scale-95">
+                                Import
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Theme Presets -->
             <div class="mb-8">
