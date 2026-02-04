@@ -808,8 +808,8 @@ function MapsTo(fromId, toId) {
                     }, 500);
                 });
             } else {
-                console.log('[Navigation] Music already playing ✅');
-                // Just update UI to reflect current state
+                console.log('[Navigation] Music already playing ✅ - Updating UI');
+                loadSong(currentSongIndex); // Sync UI metadata (Title, Artist, Cover)
                 updatePlayIcon();
                 updateMusicToggleVisibility();
             }
