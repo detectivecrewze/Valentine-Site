@@ -975,7 +975,7 @@ const renderers = {
 
             <div class="space-y-6 mb-6">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_quiz_label_title')}</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_gallery_label_title')}</label>
                     <input type="text" class="form-input" value="${pageData.title}" 
                         oninput="renderers.updateGallery('title', this.value)">
                 </div>
@@ -1120,7 +1120,7 @@ const renderers = {
     renderMapStep() {
         const pageData = state.findPageById('page-7') || {
             title: t('page_map_title'),
-            description: t('map_desc'),
+            description: t('page_map_desc'),
             locations: []
         };
 
@@ -1135,8 +1135,8 @@ const renderers = {
                     <span class="material-symbols-outlined">map</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900">${t('map_header')}</h2>
-                    <p class="text-sm text-gray-500 mt-1">${t('map_desc')}</p>
+                    <h2 class="text-2xl font-bold text-gray-900">${t('page_map_header')}</h2>
+                    <p class="text-sm text-gray-500 mt-1">${t('page_map_desc')}</p>
                 </div>
             </div>
 

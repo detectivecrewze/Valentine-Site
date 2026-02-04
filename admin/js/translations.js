@@ -139,6 +139,7 @@ const translations = {
         page_gallery_btn_add: "Add Photo",
         page_gallery_label_img: "Image File",
         page_gallery_label_caption: "Caption",
+        page_gallery_label_title: "Gallery Page Title",
 
         page_map_title: "The Atlas of Us",
         page_map_header: "The Atlas of Us",
@@ -338,6 +339,7 @@ const translations = {
         page_gallery_btn_add: "Tambah Foto",
         page_gallery_label_img: "File Gambar",
         page_gallery_label_caption: "Keterangan (Caption)",
+        page_gallery_label_title: "Judul Halaman Galeri",
 
         page_map_title: "The Atlas of Us",
         page_map_header: "The Atlas of Us",
