@@ -26,7 +26,7 @@ const CONFIG = {
     "greeting": {
         "title": "Happy Valentine's Day",
         "message": "I make this for you, since i've been thinking about you lately, and i want to do something nice for you.",
-        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769804948149-czoxq7.jpg",
+        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770248361963-l3gzwr.jpg",
         "signature": "With all my love",
         "footerText": "♥"
     },
@@ -35,7 +35,7 @@ const CONFIG = {
         "vibe": "Bonnie & Clyde",
         "HoursTogetherLabel": "hours Together",
         "HoursTogether": "525,600",
-        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769734795217-t4uwbr.jpg",
+        "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770248425479-ez1cb.jpg",
         "topPlacesLabel": "Top Places",
         "topPlaces": [
             "The Sunset Pier ",
@@ -71,14 +71,14 @@ const CONFIG = {
         {
             "songTitle": "Selfless",
             "artist": "The Strokes",
-            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769897932779-xfl03b.mp3",
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770248379427-1kgwens.mp3",
             "coverSrc": "assets/cover1.jpg",
             "lyrics": "Life is too short, but i will live for you"
         },
         {
             "songTitle": "Ivy",
             "artist": "Frank Ocean",
-            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769773133105-34968d.mp3",
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770248408961-cuso7h.mp3",
             "coverSrc": "assets/cover2.jpg",
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
@@ -90,10 +90,11 @@ const CONFIG = {
         "memories": [
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805139619-pxnlnf.jpg",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770248455711-q51q1s.jpg",
                 "caption": "Our Kiss That Day.",
                 "tape": "washi-tape",
-                "rotation": "rotate-2"
+                "rotation": "rotate-2",
+                "date": "05 Februari 2026"
             },
             {
                 "type": "image",
@@ -241,7 +242,7 @@ const CONFIG = {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-02T00:09:42.276Z"
+        "generatedAt": "2026-02-04T23:41:31.945Z"
     },
     "adminLang": "id",
     "currentStep": 9,

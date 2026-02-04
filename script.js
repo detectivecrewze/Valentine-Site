@@ -302,10 +302,12 @@ async function initializeApp() {
             window._CONFIG_DATA = config;
         }
 
-        // Detect if this is local or API config
+        // ✅ CONFIRM: Detect if this is local or API config
         const isLocalConfig = !getCustomerId();
-        console.log('[Config] Config updated successfully:', {
-            source: isLocalConfig ? 'LOCAL (data.js)' : 'API (Cloudflare KV)',
+        const sourceLabel = isLocalConfig ? 'LOCAL (data.js)' : 'API (Cloudflare KV)';
+        console.log(`[Config] ✅ FINAL: Using ${sourceLabel}`);
+        console.log('[Config] Config summary:', {
+            source: sourceLabel,
             windowConfigMatches: window.CONFIG === config,
             hasLogin: !!(config.login && config.login.password),
             loginTitle: config.login ? config.login.title : 'MISSING',
