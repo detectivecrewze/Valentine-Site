@@ -204,37 +204,40 @@
 
     <!-- Map Picker Modal -->
     <div id="mapPickerModal"
-        class="fixed inset-0 z-[400] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        class="fixed inset-0 z-[400] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center sm:p-4">
+        <div
+            class="bg-white w-full sm:max-w-4xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col">
             <!-- Header -->
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                        <span class="material-symbols-outlined text-blue-600">location_on</span>
+            <div
+                class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-blue-600 text-lg sm:text-2xl">location_on</span>
                     </div>
                     <div>
-                        <h3 class="font-bold text-gray-900" data-i18n="page_map_title">Pick Location</h3>
-                        <p class="text-xs text-gray-500" data-i18n="pageman_desc">Search or click on the map to choose a
-                            spot</p>
+                        <h3 class="font-bold text-gray-900 text-sm sm:text-base" data-i18n="page_map_title">Pick
+                            Location</h3>
+                        <p class="text-[10px] sm:text-xs text-gray-500" data-i18n="pageman_desc">Search or click on the
+                            map</p>
                     </div>
                 </div>
                 <button onclick="mapPicker.close()"
-                    class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                    class="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
             <!-- Search Area - Enhanced with Tabs -->
-            <div class="p-4 bg-gray-50 border-b border-gray-100 shrink-0">
+            <div class="p-3 sm:p-4 bg-gray-50 border-b border-gray-100 shrink-0">
                 <!-- Tab Buttons -->
-                <div class="flex gap-2 mb-3 max-w-lg mx-auto">
+                <div class="flex sm:flex-row flex-col gap-2 mb-3 max-w-lg mx-auto">
                     <button id="tabSearch" onclick="mapPicker.switchTab('search')"
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white border-2 border-blue-500 text-blue-600 shadow-sm">
+                        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white border-2 border-blue-500 text-blue-600 shadow-sm">
                         <span class="material-symbols-outlined text-base">search</span>
                         Search Place
                     </button>
                     <button id="tabPasteLink" onclick="mapPicker.switchTab('paste')"
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white border border-gray-200 text-gray-500 hover:border-gray-300">
+                        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white border border-gray-200 text-gray-500 hover:border-gray-300">
                         <span class="material-symbols-outlined text-base">link</span>
                         Paste Google Maps Link
                     </button>
@@ -277,22 +280,21 @@
             </div>
 
             <!-- Map View -->
-            <div class="flex-1 relative bg-gray-200 min-h-[400px]">
+            <div class="flex-1 relative bg-gray-200 min-h-[300px]">
                 <div id="leafletPickerContainer" class="absolute inset-0 z-10"></div>
                 <!-- Selection Overlay -->
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-4">
+                <div class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-3 sm:px-4">
                     <div
-                        class="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/40 flex items-center justify-between gap-4">
+                        class="bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl border border-white/40 flex items-center justify-between gap-3 sm:gap-4">
                         <div class="flex-1 min-w-0">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1"
-                                data-i18n="map_selected_loc">Selected
-                                Location</p>
-                            <p id="selectedLocationText" class="text-sm font-bold text-gray-900 truncate italic"
-                                data-i18n="map_click_to_pick">Click
-                                on map to pick...</p>
+                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1"
+                                data-i18n="map_selected_loc">Selected Location</p>
+                            <p id="selectedLocationText"
+                                class="text-xs sm:text-sm font-bold text-gray-900 truncate italic"
+                                data-i18n="map_click_to_pick">Click on map to pick...</p>
                         </div>
                         <button onclick="mapPicker.confirm()" id="confirmLocationBtn" disabled
-                            class="whitespace-nowrap bg-rose-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-rose-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="whitespace-nowrap bg-rose-600 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold hover:bg-rose-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                             data-i18n="map_btn_confirm">
                             Confirm Location
                         </button>
