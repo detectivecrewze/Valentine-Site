@@ -4,7 +4,7 @@ var index_default = {
         const corsHeaders = {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type"
+            "Access-Control-Allow-Headers": "Content-Type, Cache-Control"
         };
 
         // Handle CORS Preflight
@@ -101,8 +101,8 @@ var index_default = {
                 }
                 console.log(`[KV] Config found for: ${id} (${data.length} bytes)`);
                 return new Response(data, {
-                    headers: { 
-                        ...corsHeaders, 
+                    headers: {
+                        ...corsHeaders,
                         "Content-Type": "application/json",
                         "Cache-Control": "no-cache, no-store, must-revalidate"
                     }
@@ -131,7 +131,7 @@ var index_default = {
             try {
                 const body = await request.json();
                 const configSize = JSON.stringify(body).length;
-                
+
                 console.log(`[KV] Saving config for: ${id} (${configSize} bytes)`);
                 console.log(`[KV] Config contents:`, {
                     hasLogin: !!body.login,
@@ -142,7 +142,7 @@ var index_default = {
                     hasLetter: !!body.letter,
                     hasInfinity: !!body.infinityScroll
                 });
-                
+
                 await env.VALENTINE_DATA.put(id, JSON.stringify(body));
 
                 console.log(`[KV] ✅ Successfully saved config for: ${id}`);
