@@ -6,6 +6,9 @@
 
 // Store original CONFIG if it exists (from data.js)
 const ORIGINAL_CONFIG = typeof CONFIG !== 'undefined' ? { ...CONFIG } : {};
+console.log('[BOOT] Script loaded. ORIGINAL_CONFIG keys:', Object.keys(ORIGINAL_CONFIG));
+console.log('[BOOT] window.CONFIG exists:', typeof window.CONFIG !== 'undefined');
+console.log('[BOOT] typeof CONFIG:', typeof CONFIG);
 
 // Create reactive storage for CONFIG updates
 if (!window._CONFIG_DATA) {
@@ -17,7 +20,9 @@ if (!window._CONFIG_DATA) {
  * Priority: _CONFIG_DATA (from API) > window.CONFIG (from data.js) > ORIGINAL_CONFIG (backup)
  */
 function safeGetConfig() {
-    return window._CONFIG_DATA || window.CONFIG || ORIGINAL_CONFIG;
+    const result = window._CONFIG_DATA || window.CONFIG || ORIGINAL_CONFIG;
+    console.log('[safeGetConfig] Returning config with keys:', Object.keys(result || {}).length);
+    return result;
 }
 
 /**
@@ -50,6 +55,13 @@ function safeSetConfig(value) {
 if (ORIGINAL_CONFIG && Object.keys(ORIGINAL_CONFIG).length > 0) {
     console.log('[CONFIG] Initializing with ORIGINAL_CONFIG from data.js');
     safeSetConfig(ORIGINAL_CONFIG);
+} else {
+    console.warn('[CONFIG] ORIGINAL_CONFIG is empty at boot time!');
+    // Try to get from window.CONFIG directly (might be available even if const wasn't captured)
+    if (typeof window.CONFIG !== 'undefined' && window.CONFIG && Object.keys(window.CONFIG).length > 0) {
+        console.log('[CONFIG] Found window.CONFIG, using that instead');
+        safeSetConfig(window.CONFIG);
+    }
 }
 
 let isNavigating = false;
@@ -137,7 +149,15 @@ async function loadConfig() {
     // If no customer ID in URL, use local CONFIG (backward compatible)
     if (!customerId) {
         console.log('[Config] No customer ID in URL, using local CONFIG');
-        return safeGetConfig();
+        console.log('[Config] window.CONFIG exists:', typeof window.CONFIG !== 'undefined');
+        console.log('[Config] window.CONFIG keys:', window.CONFIG ? Object.keys(window.CONFIG) : 'N/A');
+        const localConfig = safeGetConfig();
+        console.log('[Config] localConfig keys:', Object.keys(localConfig || {}).length);
+        if (!localConfig || Object.keys(localConfig).length === 0) {
+            console.error('[Config] ❌ CRITICAL: Local config is empty!');
+            console.error('[Config] ORIGINAL_CONFIG keys:', Object.keys(ORIGINAL_CONFIG).length);
+        }
+        return localConfig;
     }
 
     console.log(`[Config] Fetching config for customer: ${customerId}`);
@@ -205,38 +225,52 @@ async function loadConfig() {
  */
 async function initializeApp() {
     showLoadingScreen(true, 'Initializing your Valentine experience...');
+    
+    console.log('[Init] Starting initializeApp...');
+    console.log('[Init] window.CONFIG at start:', window.CONFIG ? 'EXISTS' : 'MISSING');
 
     try {
         // Load config (from API or local)
         let config = await loadConfig();
+        console.log('[Init] loadConfig returned:', config ? 'CONFIG object' : 'NULL/EMPTY');
+        console.log('[Init] Config keys:', config ? Object.keys(config).length : 0);
 
-        // ✅ FIX: If API config failed, FORCE fallback to local CONFIG
-        if (!config) {
-            console.warn('[Config] ⚠️ API config failed, falling back to local data.js');
+        // ✅ FIX: If API config failed or empty, FORCE fallback to local CONFIG
+        if (!config || Object.keys(config || {}).length === 0) {
+            console.warn('[Config] ⚠️ API config failed or empty, falling back to local data.js');
 
-            if (safeGetConfig() && Object.keys(safeGetConfig()).length > 0) {
+            // Try safeGetConfig first, then window.CONFIG, then global CONFIG
+            const localConfig = safeGetConfig();
+            if (localConfig && Object.keys(localConfig).length > 0) {
+                config = localConfig;
+                console.log('[Config] ✅ Using local config via safeGetConfig()');
+            } else if (typeof window.CONFIG !== 'undefined' && window.CONFIG && Object.keys(window.CONFIG).length > 0) {
+                config = window.CONFIG;
+                console.log('[Config] ✅ Using window.CONFIG directly');
+            } else if (typeof CONFIG !== 'undefined' && CONFIG && Object.keys(CONFIG).length > 0) {
                 config = CONFIG;
-                console.log('[Config] ✅ Using local CONFIG from data.js');
-
-                // Show subtle indicator that using local config
-                setTimeout(() => {
-                    const indicator = document.createElement('div');
-                    indicator.id = 'local-config-indicator';
-                    indicator.className = 'fixed bottom-4 left-4 z-[9999] bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg';
-                    indicator.innerHTML = '⚠️ Using Local Config';
-                    document.body.appendChild(indicator);
-
-                    // Auto-hide after 5 seconds
-                    setTimeout(() => {
-                        indicator.style.opacity = '0';
-                        setTimeout(() => indicator.remove(), 500);
-                    }, 5000);
-                }, 1000);
+                console.log('[Config] ✅ Using global CONFIG');
             } else {
+                console.error('[Config] ❌ No local config available!');
                 console.error('[Config] ❌ No config available at all!');
                 showLoadingScreen(true, 'Error: No configuration found');
                 return;
             }
+            
+            // Show subtle indicator that using local config
+            setTimeout(() => {
+                const indicator = document.createElement('div');
+                indicator.id = 'local-config-indicator';
+                indicator.className = 'fixed bottom-4 left-4 z-[9999] bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg';
+                indicator.innerHTML = '⚠️ Using Local Config';
+                document.body.appendChild(indicator);
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    indicator.style.opacity = '0';
+                    setTimeout(() => indicator.remove(), 500);
+                }, 5000);
+            }, 1000);
         } else {
             console.log('[Config] ✅ API config loaded successfully');
         }
@@ -268,8 +302,10 @@ async function initializeApp() {
             window._CONFIG_DATA = config;
         }
 
+        // Detect if this is local or API config
+        const isLocalConfig = !getCustomerId();
         console.log('[Config] Config updated successfully:', {
-            source: 'API (Cloudflare KV)',
+            source: isLocalConfig ? 'LOCAL (data.js)' : 'API (Cloudflare KV)',
             windowConfigMatches: window.CONFIG === config,
             hasLogin: !!(config.login && config.login.password),
             loginTitle: config.login ? config.login.title : 'MISSING',
@@ -310,14 +346,20 @@ async function initializeApp() {
  * Start app after config is loaded
  */
 function startApp() {
-    // ✅ FIX: Use window.CONFIG explicitly
-    const CONFIG = safeGetConfig();
+    // ✅ FIX: Use safeGetConfig to get proper config
+    const activeConfig = safeGetConfig();
     console.log('[App] Starting with config loaded...');
-    console.log('[App] CONFIG check:', {
-        exists: !!window.CONFIG,
-        hasMusic: !!(window.CONFIG && window.CONFIG.music && window.CONFIG.music.length),
-        musicArray: window.CONFIG && window.CONFIG.music ? window.CONFIG.music : 'EMPTY or MISSING'
+    console.log('[App] activeConfig keys:', Object.keys(activeConfig || {}).length);
+    console.log('[App] activeConfig check:', {
+        exists: !!activeConfig,
+        hasLogin: !!(activeConfig && activeConfig.login),
+        hasGreeting: !!(activeConfig && activeConfig.greeting),
+        hasMusic: !!(activeConfig && activeConfig.music && activeConfig.music.length),
+        hasGallery: !!(activeConfig && activeConfig.gallery && activeConfig.gallery.memories)
     });
+    
+    // Create local CONFIG reference for this function
+    const CONFIG = activeConfig;
 
     updateSEO();
     applyTheme();
