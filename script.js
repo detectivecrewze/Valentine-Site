@@ -1717,6 +1717,28 @@ function loadGallery() {
     console.log("Loading Gallery...");
     if (!CONFIG.gallery || !CONFIG.gallery.memories) return;
 
+    // ✅ FIX: Initialize revealedMemories array if empty or wrong size
+    if (revealedMemories.length === 0) {
+        console.log('[Gallery] Initializing revealedMemories array...');
+        revealedMemories = new Array(CONFIG.gallery.memories.length).fill(false);
+    } else if (revealedMemories.length !== CONFIG.gallery.memories.length) {
+        // Resize array if memories count changed
+        const newArray = new Array(CONFIG.gallery.memories.length).fill(false);
+        // Copy existing values
+        for (let i = 0; i < Math.min(revealedMemories.length, newArray.length); i++) {
+            newArray[i] = revealedMemories[i];
+        }
+        revealedMemories = newArray;
+        console.log('[Gallery] Resized revealedMemories to:', revealedMemories.length);
+    }
+
+    // ✅ FIX: Auto-reveal all in preview mode so admin can see images
+    const isPreview = getPreviewMode() !== null;
+    if (isPreview) {
+        console.log('[Gallery] Preview mode detected - auto-revealing all images');
+        revealedMemories = revealedMemories.map(() => true);
+    }
+
     const titleEl = document.getElementById('gallery-title');
     const subtitleEl = document.getElementById('gallery-subtitle');
     const gridEl = document.getElementById('gallery-grid');
@@ -1726,7 +1748,9 @@ function loadGallery() {
 
     if (gridEl) {
         gridEl.innerHTML = '';
+
         CONFIG.gallery.memories.forEach(async (mem, index) => {
+
             const card = document.createElement('div');
             card.className = `polaroid-frame bg-white p-3 shadow-2xl relative ${mem.rotation} group`;
 
@@ -1754,10 +1778,16 @@ function loadGallery() {
                     ${mediaHTML}
                     ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
                 </div>
-                <div class="pt-5 pb-3 px-2 text-center overflow-hidden">
+                <div class="pt-5 pb-6 px-3 relative min-h-[70px] flex flex-col justify-center">
                     <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
                         ${mem.caption}
                     </p>
+                    ${mem.date ? `
+                        <p id="date-${index}" class="gallery-date absolute bottom-0 right-0.5 text-gray-400 font-normal ${revealedMemories[index] ? 'opacity-80' : 'opacity-0'} transition-opacity duration-1000" 
+                           style="font-family: 'Mrs Saint Delafield', cursive; font-size: 12px; letter-spacing: 0.5px; z-index: 20;">
+                            ${mem.date}
+                        </p>
+                    ` : ''}
                 </div>
             `;
             gridEl.appendChild(card);
@@ -1889,8 +1919,16 @@ function initScratchCard(index) {
             canvas.style.opacity = '0';
             canvas.style.pointerEvents = 'none'; // Ensure it doesn't block future clicks while fading
             setTimeout(() => canvas.remove(), 1500);
-            if (caption) caption.classList.remove('opacity-0');
-            if (caption) caption.classList.add('opacity-100');
+            if (caption) {
+                caption.classList.remove('opacity-0');
+                caption.classList.add('opacity-100');
+            }
+
+            const dateEl = document.getElementById(`date-${index}`);
+            if (dateEl) {
+                dateEl.classList.remove('opacity-0');
+                dateEl.classList.add('opacity-80');
+            }
 
             // Add capability
             const container = canvas.parentElement;
@@ -1972,8 +2010,14 @@ function openLightbox(index) {
                 ${mediaHTML}
             </div>
 
-            <div class="text-center pt-2">
-                <p class="polaroid-caption text-xl md:text-3xl" style="opacity: 1 !important; transform: rotate(-1deg) !important; transition: none !important;">${mem.caption}</p>
+            <div class="text-center pt-2 pb-6 px-3 relative">
+                <p class="polaroid-caption text-xl md:text-2xl" style="opacity: 1 !important; transform: rotate(-1deg) !important; transition: none !important;">${mem.caption}</p>
+                ${mem.date ? `
+                    <p class="absolute bottom-0 right-1 text-gray-400 font-normal" 
+                       style="font-family: 'Mrs Saint Delafield', cursive; font-size: 14px; letter-spacing: 0.5px;">
+                        ${mem.date}
+                    </p>
+                ` : ''}
             </div>
 
             <button onclick="this.closest('.fixed').remove()"
@@ -2833,21 +2877,22 @@ async function startLetterTyping() {
     playAmbientTyping(true);
 
     const fullText = CONFIG.letter.message;
-    const paragraphs = fullText.split('\n\n');
-
     bodyEl.innerHTML = '';
 
-    // Type each paragraph with breathing pause
-    for (const pText of paragraphs) {
-        if (!letterTyped) break;
-
-        const pEl = document.createElement('p');
-        bodyEl.appendChild(pEl);
-
-        await typeTargetPremium(pEl, pText);
-
-        // Breathe between paragraphs
-        await sleep(300);
+    // Check if it's Quill HTML (starts with <p>) or legacy plain text
+    if (fullText.startsWith('<p>')) {
+        // Rich Text mode: Type the whole blob
+        await typeTargetPremium(bodyEl, fullText);
+    } else {
+        // Legacy mode: split by newlines
+        const paragraphs = fullText.split('\n\n');
+        for (const pText of paragraphs) {
+            if (!letterTyped) break;
+            const pEl = document.createElement('p');
+            bodyEl.appendChild(pEl);
+            await typeTargetPremium(pEl, pText);
+            await sleep(300);
+        }
     }
 
     // Type closing with elegant pause
@@ -2908,45 +2953,78 @@ async function startLetterTyping() {
     console.log('[Letter] Typing complete');
 }
 
-// ===== ENHANCED TYPEWRITER WITH VARIABLE SPEED =====
-function typeTargetPremium(element, text, baseSpeed = 45) {
+// ===== ENHANCED TYPEWRITER WITH HTML SUPPORT =====
+function typeTargetPremium(element, htmlContent, baseSpeed = 45) {
     return new Promise(resolve => {
-        let i = 0;
+        if (!letterTyped) {
+            resolve();
+            return;
+        }
 
-        function type() {
-            if (!letterTyped) {
+        element.innerHTML = '';
+
+        // Helper to convert HTML to a sequence of typing actions
+        function getTypingActions(node) {
+            let actions = [];
+
+            node.childNodes.forEach(child => {
+                if (child.nodeType === Node.TEXT_NODE) {
+                    const characters = [...child.textContent];
+                    characters.forEach(char => {
+                        actions.push({ type: 'char', char: char });
+                    });
+                } else if (child.nodeType === Node.ELEMENT_NODE) {
+                    const el = document.createElement(child.tagName);
+                    Array.from(child.attributes).forEach(attr => el.setAttribute(attr.name, attr.value));
+
+                    actions.push({ type: 'openTag', element: el });
+                    actions.push(...getTypingActions(child));
+                    actions.push({ type: 'closeTag' });
+                }
+            });
+            return actions;
+        }
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const actions = getTypingActions(tempDiv);
+
+        let actionIdx = 0;
+        let activeElement = element;
+        const elementStack = [element];
+
+        function nextAction() {
+            if (!letterTyped || actionIdx >= actions.length) {
                 resolve();
                 return;
             }
 
-            if (i < text.length) {
-                const char = text.charAt(i);
-                element.textContent += char;
-                i++;
+            const action = actions[actionIdx];
+            actionIdx++;
 
-                // Variable speed: slower after punctuation
+            if (action.type === 'openTag') {
+                activeElement.appendChild(action.element);
+                elementStack.push(action.element);
+                activeElement = action.element;
+                nextAction();
+            } else if (action.type === 'closeTag') {
+                elementStack.pop();
+                activeElement = elementStack[elementStack.length - 1];
+                nextAction();
+            } else if (action.type === 'char') {
+                activeElement.append(action.char);
+
                 let delay = baseSpeed;
-                if (char === '.' || char === '!' || char === '?') {
-                    delay = baseSpeed * 4; // Pause after sentences
-                } else if (char === ',' || char === ';') {
-                    delay = baseSpeed * 2; // Pause after clauses
-                } else if (char === ' ') {
-                    delay = baseSpeed * 0.8; // Slightly faster for spaces
-                }
+                const char = action.char;
+                if (char === '.' || char === '!' || char === '?') delay = baseSpeed * 4;
+                else if (char === ',' || char === ';') delay = baseSpeed * 2;
+                else if (char === ' ') delay = baseSpeed * 0.8;
 
-                // Add subtle letter reveal effect
-                element.style.opacity = '0.98';
-                setTimeout(() => {
-                    element.style.opacity = '1';
-                }, delay / 2);
-
-                setTimeout(type, delay);
-            } else {
-                resolve();
+                setTimeout(nextAction, delay);
             }
         }
 
-        type();
+        nextAction();
     });
 }
 

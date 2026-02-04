@@ -13,6 +13,7 @@ const translations = {
         btn_next: "Next",
         btn_save: "Save Progress",
         btn_finish: "Finish & Submit",
+        btn_add_emoji: "Add Emoji",
         step_progress: "Step {current} of {total}",
         notif_saved: "Progress saved successfully!",
         notif_error: "Something went wrong.",
@@ -139,6 +140,7 @@ const translations = {
         page_gallery_btn_add: "Add Photo",
         page_gallery_label_img: "Image File",
         page_gallery_label_caption: "Caption",
+        page_gallery_label_date: "Memory Date (Optional)",
         page_gallery_label_title: "Gallery Page Title",
 
         page_map_title: "The Atlas of Us",
@@ -209,7 +211,12 @@ const translations = {
         publish_title: "Make It Live! (Online)",
         publish_desc: "Click below to create your shareable link immediately.",
         publish_placeholder: "Enter a nice link name (e.g., ryan-sara)",
-        publish_btn: "🚀 Activate & Get Link"
+        publish_btn: "🚀 Activate & Get Link",
+        publish_qr_scan: "Scan to Open on Mobile",
+        publish_qr_save: "Save QR Image",
+
+        // Confirmations
+        confirm_delete: "Are you sure you want to delete this item? This action cannot be undone."
     },
     id: {
         // Navigation & General
@@ -220,6 +227,7 @@ const translations = {
         btn_next: "Lanjut",
         btn_save: "Simpan Progres",
         btn_finish: "Selesai & Kirim",
+        btn_add_emoji: "Tambah Emoji",
         step_progress: "Langkah {current} dari {total}",
         notif_saved: "Progres berhasil disimpan!",
         notif_error: "Terjadi kesalahan.",
@@ -345,6 +353,7 @@ const translations = {
         page_gallery_btn_add: "Tambah Foto",
         page_gallery_label_img: "File Gambar",
         page_gallery_label_caption: "Keterangan (Caption)",
+        page_gallery_label_date: "Tanggal Kenangan (Opsional)",
         page_gallery_label_title: "Judul Halaman Galeri",
 
         page_map_title: "The Atlas of Us",
@@ -415,7 +424,12 @@ const translations = {
         publish_title: "Buat Website Kamu Online!",
         publish_desc: "Klik tombol di bawah agar website kalian aktif dan bisa dibuka oleh siapa saja.",
         publish_placeholder: "Tulis nama panggilan kalian (contoh: ryan-sara)",
-        publish_btn: "🚀 Aktifkan & Salin Link"
+        publish_btn: "🚀 Aktifkan & Salin Link",
+        publish_qr_scan: "Scan untuk Buka di HP",
+        publish_qr_save: "Simpan Gambar QR",
+
+        // Confirmations
+        confirm_delete: "Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan."
     }
 };
 

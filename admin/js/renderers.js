@@ -10,6 +10,19 @@ const renderers = {
         return defaultValue;
     },
 
+    // ✅ NEW: Create preview eye button for mobile users
+    createPreviewButton(pageId) {
+        return `
+            <button type="button" 
+                    onclick="app.showPreview(); app.sendMessageToPreview({type: 'NAVIGATE_TO_PAGE', pageId: '${pageId}'});"
+                    class="flex items-center gap-2 px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-xl font-semibold text-sm transition-all shadow-sm border border-rose-200"
+                    title="Preview this page">
+                <span class="material-symbols-outlined text-lg">visibility</span>
+                <span class="hidden sm:inline">Preview</span>
+            </button>
+        `;
+    },
+
     // Create input with state binding
     createStateInput(id, category, field, placeholder = '', type = 'text') {
         const value = this.getStateValue(category, field, '');
@@ -47,6 +60,40 @@ const renderers = {
                 </select>`;
     },
 
+    // ✅ NEW: Helper for collapsible items
+    toggleItem(el) {
+        const item = el.closest('.dynamic-item');
+        if (item) {
+            item.classList.toggle('is-collapsed');
+        }
+    },
+
+    renderCollapsible(idx, title, desc, bodyHtml, onRemove) {
+        return `
+            <div class="dynamic-item is-collapsed" data-index="${idx}">
+                <div class="item-header" onclick="renderers.toggleItem(this)">
+                    <div class="item-drag-handle">
+                        <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    <div class="item-badge">${idx + 1}</div>
+                    <div class="item-summary">
+                        <div class="item-summary-title">${title || 'New Item'}</div>
+                        <div class="item-summary-desc">${desc || 'Click to edit details'}</div>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="remove-btn" onclick="event.stopPropagation(); if(confirm(t('confirm_delete'))) { ${onRemove} }">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                        <span class="material-symbols-outlined expand-icon">expand_more</span>
+                    </div>
+                </div>
+                <div class="item-body">
+                    ${bodyHtml}
+                </div>
+            </div>
+        `;
+    },
+
     // ========================================
     // STEP 1: SETUP (Theme & Basic Config)
     // ========================================
@@ -56,10 +103,11 @@ const renderers = {
                 <div class="section-icon">
                     <span class="material-symbols-outlined">palette</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('theme_header_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('theme_header_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-1')}
             </div>
 
             <!-- Language Selection First -->
@@ -334,10 +382,11 @@ const renderers = {
                 <div class="section-icon !bg-rose-100 !text-rose-600">
                     <span class="material-symbols-outlined">dashboard_customize</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('pageman_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('pageman_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-1')}
             </div>
 
             <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-8">
@@ -388,47 +437,54 @@ const renderers = {
     // PAGE 2: GREETING CARD
     // ========================================
     renderGreetingStep() {
+        const bodyMsg = `
+            <div class="space-y-4 pt-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_greeting_label_hero')}</label>
+                    ${this.createStateInput('greet_title', 'greeting', 'title', "Happy Valentine's Day")}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_greeting_label_msg')}</label>
+                    ${this.createStateTextarea('greet_msg', 'greeting', 'message', 'Your heartfelt message', 5)}
+                </div>
+            </div>
+        `;
+
+        const bodyVisual = `
+            <div class="space-y-4 pt-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_greeting_label_img')}</label>
+                    <div class="flex gap-2 items-center">
+                        <img id="prev_greet_img" src="${this.getStateValue('greeting', 'imageSrc', '')}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${this.getStateValue('greeting', 'imageSrc') ? '' : 'hidden'}">
+                        ${this.createStateInput('greet_img', 'greeting', 'imageSrc', 'assets/photo.jpg')}
+                        <label class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
+                            <span class="material-symbols-outlined text-gray-400">add_photo_alternate</span>
+                            <input type="file" class="hidden" accept="image/*" onchange="utils.handleMediaUpload(this, 'greet_img')">
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_greeting_label_sig')}</label>
+                    ${this.createStateInput('greet_signature', 'greeting', 'signature', 'With Love')}
+                </div>
+            </div>
+        `;
+
         return `
             <div class="section-header">
                 <div class="section-icon">
                     <span class="material-symbols-outlined text-pink-500">favorite</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900 font-display italic">${t('page_greeting_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_greeting_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-2')}
             </div>
 
-            <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-600 mb-1">${t('page_greeting_label_hero')}</label>
-                        ${this.createStateInput('greet_title', 'greeting', 'title', "Happy Valentine's Day")}
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-600 mb-1">${t('page_greeting_label_msg')}</label>
-                        ${this.createStateTextarea('greet_msg', 'greeting', 'message', 'Your heartfelt message', 5)}
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-bold text-gray-600 mb-1">${t('page_greeting_label_img')}</label>
-                        <div class="flex gap-2 items-center">
-                            <img id="prev_greet_img" src="${this.getStateValue('greeting', 'imageSrc', '')}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${this.getStateValue('greeting', 'imageSrc') ? '' : 'hidden'}">
-                            ${this.createStateInput('greet_img', 'greeting', 'imageSrc', 'assets/photo.jpg')}
-                            <label class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
-                                <span class="material-symbols-outlined text-gray-400">add_photo_alternate</span>
-                                <input type="file" class="hidden" accept="image/*" onchange="utils.handleMediaUpload(this, 'greet_img')">
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-bold text-gray-600 mb-1">${t('page_greeting_label_sig')}</label>
-                        ${this.createStateInput('greet_signature', 'greeting', 'signature', 'With Love')}
-                    </div>
-                    
-                </div>
+            <div class="space-y-4">
+                ${this.renderCollapsible(0, 'Headline & Message', 'Primary content of your card', bodyMsg)}
+                ${this.renderCollapsible(1, 'Media & Signature', 'Photo and closing signature', bodyVisual)}
             </div>
         `;
     },
@@ -452,10 +508,11 @@ const renderers = {
                 <div class="section-icon !bg-purple-100 !text-purple-600">
                     <span class="material-symbols-outlined">library_music</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_music_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_music_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-3')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -481,62 +538,61 @@ const renderers = {
     },
 
     renderSongItem(song, idx) {
-        return `
-            <div class="dynamic-item" data-index="${idx}">
-                <button type="button" class="remove-btn" onclick="renderers.removeSong(${idx})">×</button>
-                <div class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_song')}</label>
-                            <input type="text" class="form-input text-sm" value="${song.songTitle || ''}" 
-                                oninput="renderers.updateSong(${idx}, 'songTitle', this.value)">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_artist')}</label>
-                            <input type="text" class="form-input text-sm" value="${song.artist || ''}" 
-                                oninput="renderers.updateSong(${idx}, 'artist', this.value)">
-                        </div>
-                    </div>
-                    
+        const bodyContent = `
+            <div class="space-y-3 pt-3">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_audio')}</label>
-                        <div class="flex gap-2 items-center">
-                            <input type="text" id="audio-input-${idx}" class="form-input text-xs font-mono flex-1" value="${song.audioSrc || ''}" 
-                                placeholder="assets/song.mp3" 
-                                oninput="renderers.updateSong(${idx}, 'audioSrc', this.value)">
-                            <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
-                                <span class="material-symbols-outlined text-gray-400 text-base">audiotrack</span>
-                                <input type="file" class="hidden" accept="audio/*" 
-                                    onchange="renderers.handleAudioUpload(${idx}, this)">
-                            </label>
-                        </div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_song')}</label>
+                        <input type="text" class="form-input text-sm" value="${song.songTitle || ''}" 
+                            oninput="renderers.updateSong(${idx}, 'songTitle', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Song'">
                     </div>
-                    
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_cover')}</label>
-                        <div class="flex gap-2 items-center">
-                            <img src="${song.coverSrc || ''}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${song.coverSrc ? '' : 'hidden'}" 
-                                onerror="this.classList.add('hidden')" id="song-cover-${idx}">
-                            <input type="text" class="form-input text-xs font-mono flex-1" value="${song.coverSrc || ''}" 
-                                id="song-cover-input-${idx}"
-                                placeholder="assets/cover.jpg" 
-                                oninput="renderers.updateSong(${idx}, 'coverSrc', this.value); renderers.updateSongPreview(${idx})">
-                            <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
-                                <span class="material-symbols-outlined text-gray-400 text-base">image</span>
-                                <input type="file" class="hidden" accept="image/*" onchange="utils.handleMediaUpload(this, 'song-cover-input-${idx}')">
-                            </label>
-                        </div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_artist')}</label>
+                        <input type="text" class="form-input text-sm" value="${song.artist || ''}" 
+                            oninput="renderers.updateSong(${idx}, 'artist', this.value); this.closest('.dynamic-item').querySelector('.item-summary-desc').textContent = this.value || 'Unknown Artist'">
                     </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_lyrics')}</label>
-                        <textarea class="form-input text-sm" rows="3" 
-                            placeholder="Enter lyrics here..." 
-                            oninput="renderers.updateSong(${idx}, 'lyrics', this.value)">${song.lyrics || ''}</textarea>
+                </div>
+                
+                <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_audio')}</label>
+                    <div class="flex gap-2 items-center">
+                        <input type="text" id="audio-input-${idx}" class="form-input text-xs font-mono flex-1" value="${song.audioSrc || ''}" 
+                            placeholder="assets/song.mp3" 
+                            oninput="renderers.updateSong(${idx}, 'audioSrc', this.value)">
+                        <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
+                            <span class="material-symbols-outlined text-gray-400 text-base">audiotrack</span>
+                            <input type="file" class="hidden" accept="audio/*" 
+                                onchange="renderers.handleAudioUpload(${idx}, this)">
+                        </label>
                     </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_cover')}</label>
+                    <div class="flex gap-2 items-center">
+                        <img src="${song.coverSrc || ''}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${song.coverSrc ? '' : 'hidden'}" 
+                            onerror="this.classList.add('hidden')" id="song-cover-${idx}">
+                        <input type="text" class="form-input text-xs font-mono flex-1" value="${song.coverSrc || ''}" 
+                            id="song-cover-input-${idx}"
+                            placeholder="assets/cover.jpg" 
+                            oninput="renderers.updateSong(${idx}, 'coverSrc', this.value); renderers.updateSongPreview(${idx})">
+                        <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
+                            <span class="material-symbols-outlined text-gray-400 text-base">image</span>
+                            <input type="file" class="hidden" accept="image/*" onchange="utils.handleMediaUpload(this, 'song-cover-input-${idx}')">
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('page_music_label_lyrics')}</label>
+                    <textarea class="form-input text-sm" rows="3" 
+                        placeholder="Enter lyrics here..." 
+                        oninput="renderers.updateSong(${idx}, 'lyrics', this.value)">${song.lyrics || ''}</textarea>
                 </div>
             </div>
         `;
+
+        return this.renderCollapsible(idx, song.songTitle || 'Untitled Song', song.artist || 'Unknown Artist', bodyContent, `renderers.removeSong(${idx})`);
     },
 
     updateMusicTitle(value) {
@@ -620,15 +676,24 @@ const renderers = {
             coreMemories: []
         };
 
+        const placesHtml = (pageData.topPlaces || []).map((item, idx) =>
+            this.renderWrappedListItem('topPlaces', item, idx)
+        ).join('');
+
+        const memoriesHtml = (pageData.coreMemories || []).map((item, idx) =>
+            this.renderWrappedListItem('coreMemories', item, idx)
+        ).join('');
+
         return `
             <div class="section-header">
                 <div class="section-icon !bg-gradient-to-br !from-purple-400 !to-pink-400 !text-white">
                     <span class="material-symbols-outlined">auto_awesome</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_wrapped_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_wrapped_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-4')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -686,13 +751,13 @@ const renderers = {
 
                 <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200">
                     <label class="block text-sm font-bold text-gray-900 mb-2">${pageData.topPlacesLabel || 'Top Places We\'ve Been'}</label>
-                    <input type="text" class="form-input mb-3" value="${pageData.topPlacesLabel || 'Top Places We\'ve Been'}" 
+                    <input type="text" class="form-input mb-4" value="${pageData.topPlacesLabel || 'Top Places We\'ve Been'}" 
                         oninput="renderers.updateWrapped('topPlacesLabel', this.value)">
                     
-                    <div id="wrapped-places-list" class="space-y-2">
-                        ${this.renderSimpleList(pageData.topPlaces, 'topPlaces')}
+                    <div id="wrapped-places-list" class="space-y-3 mb-4">
+                        ${placesHtml}
                     </div>
-                    <button type="button" class="btn-add" onclick="renderers.addWrappedPlace()">
+                    <button type="button" class="btn-add !mt-0" onclick="renderers.addWrappedPlace()">
                         <span class="material-symbols-outlined">add</span>
                         ${t('map_btn_add')}
                     </button>
@@ -700,13 +765,13 @@ const renderers = {
 
                 <div class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 border border-pink-200">
                     <label class="block text-sm font-bold text-gray-900 mb-2">${pageData.coreMemoriesLabel || 'Core Memories'}</label>
-                    <input type="text" class="form-input mb-3" value="${pageData.coreMemoriesLabel || 'Core Memories'}" 
+                    <input type="text" class="form-input mb-4" value="${pageData.coreMemoriesLabel || 'Core Memories'}" 
                         oninput="renderers.updateWrapped('coreMemoriesLabel', this.value)">
                     
-                    <div id="wrapped-memories-list" class="space-y-2">
-                        ${this.renderSimpleList(pageData.coreMemories, 'coreMemories')}
+                    <div id="wrapped-memories-list" class="space-y-3 mb-4">
+                        ${memoriesHtml}
                     </div>
-                    <button type="button" class="btn-add" onclick="renderers.addWrappedMemory()">
+                    <button type="button" class="btn-add !mt-0" onclick="renderers.addWrappedMemory()">
                         <span class="material-symbols-outlined">add</span>
                         ${t('page_music_btn_add')}
                     </button>
@@ -715,19 +780,19 @@ const renderers = {
         `;
     },
 
-    renderSimpleList(items, listType) {
-        if (!items || items.length === 0) return '';
-
-        return items.map((item, idx) => `
-            <div class="flex gap-2 items-center bg-white p-2 rounded-lg">
-                <input type="text" class="form-input text-sm flex-1" value="${item}" 
-                    oninput="renderers.updateWrappedListItem('${listType}', ${idx}, this.value)">
-                <button type="button" class="text-rose-500 hover:text-rose-700 p-2" 
-                    onclick="renderers.removeWrappedListItem('${listType}', ${idx})">
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                </button>
+    renderWrappedListItem(listType, item, idx) {
+        const body = `
+            <div class="pt-3">
+                <input type="text" class="form-input text-sm" value="${item}" 
+                    placeholder="Enter details..."
+                    oninput="renderers.updateWrappedListItem('${listType}', ${idx}, this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Item'">
             </div>
-        `).join('');
+        `;
+
+        const title = item || (listType === 'topPlaces' ? 'New Place' : 'New Memory');
+        const desc = listType === 'topPlaces' ? 'Place in your journey' : 'Special memory';
+
+        return this.renderCollapsible(idx, title, desc, body, `renderers.removeWrappedListItem('${listType}', ${idx})`);
     },
 
     updateWrapped(key, value) {
@@ -798,10 +863,11 @@ const renderers = {
                 <div class="section-icon !bg-green-100 !text-green-600">
                     <span class="material-symbols-outlined">quiz</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_quiz_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_quiz_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-5')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -815,12 +881,6 @@ const renderers = {
             </div>
 
             <div class="space-y-6 mb-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_quiz_label_title')}</label>
-                    <input type="text" class="form-input" value="${pageData.title}" 
-                        oninput="renderers.updateQuiz('title', this.value)">
-                </div>
-                
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_quiz_label_finish')}</label>
                     <input type="text" class="form-input" value="${pageData.resultMessage}" 
@@ -841,52 +901,50 @@ const renderers = {
 
     renderQuizQuestion(question, idx) {
         const options = question.options || ['', '', '', ''];
-
-        return `
-            <div class="dynamic-item">
-                <button type="button" class="remove-btn" onclick="renderers.removeQuizQuestion(${idx})">×</button>
-                <div class="space-y-4">
+        const bodyContent = `
+            <div class="space-y-4 pt-3">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Question ${idx + 1}</label>
+                    <input type="text" class="form-input" value="${question.question || ''}" 
+                        placeholder="Enter your question..."
+                        oninput="renderers.updateQuizQuestion(${idx}, 'question', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Question'">
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    ${options.map((opt, optIdx) => `
+                        <div class="flex gap-2 items-center">
+                            <input type="radio" name="quiz-${idx}-correct" value="${optIdx}" 
+                                ${question.correctIndex === optIdx ? 'checked' : ''}
+                                onchange="renderers.updateQuizQuestion(${idx}, 'correctIndex', ${optIdx})"
+                                class="w-4 h-4 text-green-600">
+                            <input type="text" class="form-input text-sm flex-1" 
+                                value="${opt}" 
+                                placeholder="Option ${optIdx + 1}"
+                                oninput="renderers.updateQuizOption(${idx}, ${optIdx}, this.value)">
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Question ${idx + 1}</label>
-                        <input type="text" class="form-input" value="${question.question || ''}" 
-                            placeholder="Enter your question..."
-                            oninput="renderers.updateQuizQuestion(${idx}, 'question', this.value)">
+                        <label class="block text-xs font-bold text-green-700 mb-1">Correct Message</label>
+                        <input type="text" class="form-input text-sm" 
+                            value="${question.correctMessage || 'Correct! ❤️'}" 
+                            placeholder="Correct! ❤️"
+                            oninput="renderers.updateQuizQuestion(${idx}, 'correctMessage', this.value)">
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        ${options.map((opt, optIdx) => `
-                            <div class="flex gap-2 items-center">
-                                <input type="radio" name="quiz-${idx}-correct" value="${optIdx}" 
-                                    ${question.correctIndex === optIdx ? 'checked' : ''}
-                                    onchange="renderers.updateQuizQuestion(${idx}, 'correctIndex', ${optIdx})"
-                                    class="w-4 h-4 text-green-600">
-                                <input type="text" class="form-input text-sm flex-1" 
-                                    value="${opt}" 
-                                    placeholder="Option ${optIdx + 1}"
-                                    oninput="renderers.updateQuizOption(${idx}, ${optIdx}, this.value)">
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-green-700 mb-1">Correct Message</label>
-                            <input type="text" class="form-input text-sm" 
-                                value="${question.correctMessage || 'Correct! ❤️'}" 
-                                placeholder="Correct! ❤️"
-                                oninput="renderers.updateQuizQuestion(${idx}, 'correctMessage', this.value)">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-rose-700 mb-1">Wrong Message</label>
-                            <input type="text" class="form-input text-sm" 
-                                value="${question.wrongMessage || 'Try again!'}" 
-                                placeholder="Try again!"
-                                oninput="renderers.updateQuizQuestion(${idx}, 'wrongMessage', this.value)">
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold text-rose-700 mb-1">Wrong Message</label>
+                        <input type="text" class="form-input text-sm" 
+                            value="${question.wrongMessage || 'Try again!'}" 
+                            placeholder="Try again!"
+                            oninput="renderers.updateQuizQuestion(${idx}, 'wrongMessage', this.value)">
                     </div>
                 </div>
             </div>
         `;
+
+        return this.renderCollapsible(idx, question.question || 'Untitled Question', 'Quiz Question', bodyContent, `renderers.removeQuizQuestion(${idx})`);
     },
 
     updateQuiz(key, value) {
@@ -957,10 +1015,11 @@ const renderers = {
                 <div class="section-icon !bg-yellow-100 !text-yellow-600">
                     <span class="material-symbols-outlined">photo_library</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_gallery_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_gallery_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-6')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -999,65 +1058,72 @@ const renderers = {
     },
 
     renderGalleryMemory(memory, idx) {
-        return `
-            <div class="dynamic-item">
-                <button type="button" class="remove-btn" onclick="renderers.removeGalleryMemory(${idx})">×</button>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-2">Media Type</label>
-                        <select class="form-input text-sm" onchange="renderers.updateGalleryMemory(${idx}, 'type', this.value)">
-                            <option value="image" ${memory.type === 'image' ? 'selected' : ''}>📷 Image</option>
-                            <option value="video" ${memory.type === 'video' ? 'selected' : ''}>🎬 Video</option>
-                        </select>
+        const bodyContent = `
+            <div class="space-y-3 pt-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">Media Type</label>
+                    <select class="form-input text-sm" onchange="renderers.updateGalleryMemory(${idx}, 'type', this.value)">
+                        <option value="image" ${memory.type === 'image' ? 'selected' : ''}>📷 Image</option>
+                        <option value="video" ${memory.type === 'video' ? 'selected' : ''}>🎬 Video</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">${memory.type === 'video' ? 'Video' : 'Image'} URL</label>
+                    <div class="flex gap-2 items-center">
+                        <img src="${memory.src || ''}" 
+                            id="gallery-mem-${idx}"
+                            class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${memory.src && memory.type === 'image' ? '' : 'hidden'}" 
+                            onerror="this.classList.add('hidden')">
+                        <input type="text" id="gallery-mem-input-${idx}" class="form-input text-xs font-mono flex-1" 
+                            value="${memory.src || ''}" 
+                            placeholder="assets/photo.jpg"
+                            oninput="renderers.updateGalleryMemory(${idx}, 'src', this.value); renderers.updateGalleryPreview(${idx})">
+                        <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
+                            <span class="material-symbols-outlined text-gray-400 text-base">upload</span>
+                            <input type="file" class="hidden" accept="${memory.type === 'video' ? 'video/*' : 'image/*'}" 
+                                onchange="utils.handleMediaUpload(this, 'gallery-mem-input-${idx}')">
+                        </label>
                     </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-2">${memory.type === 'video' ? 'Video' : 'Image'} URL</label>
-                        <div class="flex gap-2 items-center">
-                            <img src="${memory.src || ''}" 
-                                id="gallery-mem-${idx}"
-                                class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${memory.src && memory.type === 'image' ? '' : 'hidden'}" 
-                                onerror="this.classList.add('hidden')">
-                            <input type="text" id="gallery-mem-input-${idx}" class="form-input text-xs font-mono flex-1" 
-                                value="${memory.src || ''}" 
-                                placeholder="assets/photo.jpg"
-                                oninput="renderers.updateGalleryMemory(${idx}, 'src', this.value); renderers.updateGalleryPreview(${idx})">
-                            <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
-                                <span class="material-symbols-outlined text-gray-400 text-base">upload</span>
-                                <input type="file" class="hidden" accept="${memory.type === 'video' ? 'video/*' : 'image/*'}" 
-                                    onchange="utils.handleMediaUpload(this, 'gallery-mem-input-${idx}')">
-                            </label>
-                        </div>
-                    </div>
+                </div>
 
-                    
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_caption')}</label>
                         <input type="text" class="form-input text-sm" value="${memory.caption || ''}" 
                             placeholder="A special moment..."
-                            oninput="renderers.updateGalleryMemory(${idx}, 'caption', this.value)">
+                            oninput="renderers.updateGalleryMemory(${idx}, 'caption', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Memory'">
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-2">Tape Style</label>
-                            <select class="form-input text-xs" onchange="renderers.updateGalleryMemory(${idx}, 'tape', this.value)">
-                                <option value="washi-tape" ${memory.tape === 'washi-tape' ? 'selected' : ''}>🎀 PINK</option>
-                                <option value="washi-tape-gold" ${memory.tape === 'washi-tape-gold' ? 'selected' : ''}>✨ GOLD</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-2">Rotation</label>
-                            <select class="form-input text-xs" onchange="renderers.updateGalleryMemory(${idx}, 'rotation', this.value)">
-                                <option value="rotate-1" ${memory.rotation === 'rotate-1' ? 'selected' : ''}>Tilt L</option>
-                                <option value="rotate-2" ${memory.rotation === 'rotate-2' ? 'selected' : ''}>Tilt R</option>
-                                <option value="-rotate-1" ${memory.rotation === '-rotate-1' ? 'selected' : ''}>Tilt B</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_date')}</label>
+                        <input type="text" class="form-input text-sm" value="${memory.date || ''}" 
+                            placeholder="20 Feb 2024"
+                            oninput="renderers.updateGalleryMemory(${idx}, 'date', this.value)">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-2">Tape Style</label>
+                        <select class="form-input text-xs" onchange="renderers.updateGalleryMemory(${idx}, 'tape', this.value)">
+                            <option value="washi-tape" ${memory.tape === 'washi-tape' ? 'selected' : ''}>🎀 PINK</option>
+                            <option value="washi-tape-gold" ${memory.tape === 'washi-tape-gold' ? 'selected' : ''}>✨ GOLD</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-2">Rotation</label>
+                        <select class="form-input text-xs" onchange="renderers.updateGalleryMemory(${idx}, 'rotation', this.value)">
+                            <option value="rotate-1" ${memory.rotation === 'rotate-1' ? 'selected' : ''}>Tilt L</option>
+                            <option value="rotate-2" ${memory.rotation === 'rotate-2' ? 'selected' : ''}>Tilt R</option>
+                            <option value="-rotate-1" ${memory.rotation === '-rotate-1' ? 'selected' : ''}>Tilt B</option>
+                        </select>
                     </div>
                 </div>
             </div>
         `;
+
+        return this.renderCollapsible(idx, memory.caption || 'Untitled Memory', `Type: ${memory.type}`, bodyContent, `renderers.removeGalleryMemory(${idx})`);
     },
 
     updateGallery(key, value) {
@@ -1134,10 +1200,11 @@ const renderers = {
                 <div class="section-icon !bg-blue-100 !text-blue-600">
                     <span class="material-symbols-outlined">map</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_map_header')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_map_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-7')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -1173,84 +1240,83 @@ const renderers = {
     },
 
     renderMapLocation(loc, idx) {
-        return `
-            <div class="dynamic-item">
-                <button type="button" class="remove-btn" onclick="renderers.removeMapLocation(${idx})">×</button>
-                <div class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_label_icon')}</label>
-                            <select class="form-input text-sm" onchange="renderers.updateMapLocation(${idx}, 'icon', this.value)">
-                                <option value="favorite" ${loc.icon === 'favorite' || !loc.icon ? 'selected' : ''}>❤️ Heart</option>
-                                <option value="star" ${loc.icon === 'star' ? 'selected' : ''}>⭐ Star</option>
-                                <option value="location_on" ${loc.icon === 'location_on' ? 'selected' : ''}>📍 Location</option>
-                                <option value="restaurant" ${loc.icon === 'restaurant' ? 'selected' : ''}>🍴 Food</option>
-                                <option value="park" ${loc.icon === 'park' ? 'selected' : ''}>🌳 Park</option>
-                                <option value="theater_comedy" ${loc.icon === 'theater_comedy' ? 'selected' : ''}>🎬 Cinema</option>
-                                <option value="photo_camera" ${loc.icon === 'photo_camera' ? 'selected' : ''}>📸 Photo</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_label_date')}</label>
-                            <input type="date" class="form-input text-sm" value="${loc.date || ''}" 
-                                oninput="renderers.updateMapLocation(${idx}, 'date', this.value)">
-                        </div>
-                    </div>
-                    
+        const bodyContent = `
+            <div class="space-y-3 pt-3">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_label_name')}</label>
-                        <input type="text" class="form-input text-sm font-bold" value="${loc.title || ''}" 
-                            placeholder="${t('map_placeholder_name')}"
-                            oninput="renderers.updateMapLocation(${idx}, 'title', this.value)">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_label_icon')}</label>
+                        <select class="form-input text-sm" onchange="renderers.updateMapLocation(${idx}, 'icon', this.value)">
+                            <option value="favorite" ${loc.icon === 'favorite' || !loc.icon ? 'selected' : ''}>❤️ Heart</option>
+                            <option value="star" ${loc.icon === 'star' ? 'selected' : ''}>⭐ Star</option>
+                            <option value="location_on" ${loc.icon === 'location_on' ? 'selected' : ''}>📍 Location</option>
+                            <option value="restaurant" ${loc.icon === 'restaurant' ? 'selected' : ''}>🍴 Food</option>
+                            <option value="park" ${loc.icon === 'park' ? 'selected' : ''}>🌳 Park</option>
+                            <option value="theater_comedy" ${loc.icon === 'theater_comedy' ? 'selected' : ''}>🎬 Cinema</option>
+                            <option value="photo_camera" ${loc.icon === 'photo_camera' ? 'selected' : ''}>📸 Photo</option>
+                        </select>
                     </div>
-                    
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_coordinates')}</label>
-                        <div class="flex gap-2 mb-1">
-                            <input type="text" class="form-input text-xs font-mono flex-1" 
-                                id="map-coords-${idx}"
-                                value="${loc.lat && loc.lng ? loc.lat + ', ' + loc.lng : ''}" 
-                                placeholder="-6.200000, 106.816000"
-                                oninput="renderers.handleMapCoordinates(${idx}, this.value)">
-                            <button type="button" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 flex items-center gap-1" onclick="mapPicker.open(${idx})">
-                                <span class="material-symbols-outlined text-sm">map</span>
-                                ${t('map_pick_btn')}
-                            </button>
-                        </div>
-                        <p class="text-[10px] text-gray-400 italic">${t('map_coords_tip')}</p>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_label_date')}</label>
+                        <input type="date" class="form-input text-sm" value="${loc.date || ''}" 
+                            oninput="renderers.updateMapLocation(${idx}, 'date', this.value); this.closest('.dynamic-item').querySelector('.item-summary-desc').textContent = this.value + ' - ' + (loc.memory || 'No memory')">
                     </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Memory Description</label>
-                        <input type="text" class="form-input text-sm" value="${loc.memory || ''}" 
-                            placeholder="What happened here?"
-                            oninput="renderers.updateMapLocation(${idx}, 'memory', this.value)">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_label_name')}</label>
+                    <input type="text" class="form-input text-sm font-bold" value="${loc.title || ''}" 
+                        placeholder="${t('map_placeholder_name')}"
+                        oninput="renderers.updateMapLocation(${idx}, 'title', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Place'">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">${t('map_coordinates')}</label>
+                    <div class="flex gap-2 mb-1">
+                        <input type="text" class="form-input text-xs font-mono flex-1" 
+                            id="map-coords-${idx}"
+                            value="${loc.lat && loc.lng ? loc.lat + ', ' + loc.lng : ''}" 
+                            placeholder="-6.200000, 106.816000"
+                            oninput="renderers.handleMapCoordinates(${idx}, this.value)">
+                        <button type="button" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 flex items-center gap-1" onclick="mapPicker.open(${idx})">
+                            <span class="material-symbols-outlined text-sm">map</span>
+                            ${t('map_pick_btn')}
+                        </button>
                     </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-2">Location Photo (Optional)</label>
-                        <div class="flex gap-2 items-center">
-                            <img src="${loc.imageSrc || ''}" 
-                                id="map-loc-${idx}"
-                                class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${loc.imageSrc ? '' : 'hidden'}" 
-                                onerror="this.classList.add('hidden')">
-                            <input type="text" id="map-loc-input-${idx}" class="form-input text-xs font-mono flex-1" 
-                                value="${loc.imageSrc || ''}" 
-                                placeholder="assets/photo.jpg"
-                                oninput="renderers.updateMapLocation(${idx}, 'imageSrc', this.value); renderers.updateMapPreview(${idx})">
-                            <label class="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-600 text-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:from-blue-600 hover:to-indigo-700 shadow-sm transition-all" title="Upload photo (auto-detect location & date)">
-                                <span class="material-symbols-outlined text-white text-base">add_a_photo</span>
-                                <input type="file" class="hidden" accept="image/*" 
-                                    data-target="map-loc-input-${idx}" 
-                                    data-map-index="${idx}"
-                                    onchange="renderers.handleMapPhotoUpload(this, ${idx})">
-                            </label>
-                        </div>
-                        <p class="text-[10px] text-gray-400 mt-1 italic">📍 Upload foto dari HP untuk otomatis isi lokasi & tanggal</p>
+                    <p class="text-[10px] text-gray-400 italic">${t('map_coords_tip')}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Memory Description</label>
+                    <input type="text" class="form-input text-sm" value="${loc.memory || ''}" 
+                        placeholder="What happened here?"
+                        oninput="renderers.updateMapLocation(${idx}, 'memory', this.value); this.closest('.dynamic-item').querySelector('.item-summary-desc').textContent = (loc.date || 'No date') + ' - ' + this.value">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">Location Photo (Optional)</label>
+                    <div class="flex gap-2 items-center">
+                        <img src="${loc.imageSrc || ''}" 
+                            id="map-loc-${idx}"
+                            class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${loc.imageSrc ? '' : 'hidden'}" 
+                            onerror="this.classList.add('hidden')">
+                        <input type="text" id="map-loc-input-${idx}" class="form-input text-xs font-mono flex-1" 
+                            value="${loc.imageSrc || ''}" 
+                            placeholder="assets/photo.jpg"
+                            oninput="renderers.updateMapLocation(${idx}, 'imageSrc', this.value); renderers.updateMapPreview(${idx})">
+                        <label class="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-600 text-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:from-blue-600 hover:to-indigo-700 shadow-sm transition-all" title="Upload photo (auto-detect location & date)">
+                            <span class="material-symbols-outlined text-white text-base">add_a_photo</span>
+                            <input type="file" class="hidden" accept="image/*" 
+                                data-target="map-loc-input-${idx}" 
+                                data-map-index="${idx}"
+                                onchange="renderers.handleMapPhotoUpload(this, ${idx})">
+                        </label>
                     </div>
+                    <p class="text-[10px] text-gray-400 mt-1 italic">📍 Upload foto dari HP untuk otomatis isi lokasi & tanggal</p>
                 </div>
             </div>
         `;
+
+        return this.renderCollapsible(idx, loc.title || 'Untitled Place', `${loc.date || ''} - ${loc.memory || ''}`, bodyContent, `renderers.removeMapLocation(${idx})`);
     },
 
     updateMap(key, value) {
@@ -1417,10 +1483,11 @@ const renderers = {
                 <div class="section-icon !bg-red-100 !text-red-600">
                     <span class="material-symbols-outlined">mail</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_letter_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_letter_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-8')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -1442,10 +1509,22 @@ const renderers = {
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_letter_label_content')}</label>
-                    <textarea class="form-input" rows="12" 
-                        placeholder="Dear love, I find myself sitting here, thinking about all the moments we've shared..."
-                        oninput="renderers.updateLetter('message', this.value)">${pageData.message}</textarea>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-bold text-gray-700">${t('page_letter_label_content')}</label>
+                        <div class="emoji-btn-wrapper">
+                            <button type="button" onclick="renderers.toggleEmojiPicker(event)" 
+                                class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition-colors">
+                                <span class="material-symbols-outlined text-base">mood</span>
+                                ${t('btn_add_emoji') || 'Add Emoji'}
+                            </button>
+                            <div id="emoji-picker" class="emoji-picker-mini hidden">
+                                ${['❤️', '💖', '😍', '🌹', '✨', '🌸', '🦋', '💍', '💌', '🥰', '🫂', '🎀', '🧸', '🍷', '🕯️', '🌙', '☀️', '🌈', '🍭', '🍓', '🍑', '🍒', '🎈', '🎁', '🔥', '💎', '🕊️', '🧸', '🎹', '🎻'].map(e => `
+                                    <span class="emoji-item" onclick="renderers.addEmoji('${e}')">${e}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div id="letter-editor">${pageData.message || ''}</div>
                 </div>
                 
                 <div>
@@ -1508,6 +1587,70 @@ const renderers = {
         `;
     },
 
+    // ✅ NEW: Post-render logic handler
+    initStepLogic(stepId) {
+        if (stepId === 'page-8') {
+            this.initQuill();
+        }
+    },
+
+    // ✅ NEW: Initialize Quill Editor
+    initQuill() {
+        const container = document.getElementById('letter-editor');
+        if (!container || typeof Quill === 'undefined') return;
+
+        // Prevent double init
+        if (container.classList.contains('ql-container')) return;
+
+        this.quill = new Quill('#letter-editor', {
+            theme: 'snow',
+            placeholder: 'Write your heartfelt message here...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Sync with state
+        this.quill.on('text-change', () => {
+            const html = this.quill.root.innerHTML;
+            // Only update if content changed to avoid cursor jumps if re-rendered
+            this.updateLetter('message', html);
+        });
+    },
+
+    // ✅ NEW: Emoji Picker Logic
+    toggleEmojiPicker(e) {
+        e.stopPropagation();
+        const picker = document.getElementById('emoji-picker');
+        if (picker) {
+            picker.classList.toggle('hidden');
+
+            // Close picker when clicking outside
+            const closePicker = (event) => {
+                if (!picker.contains(event.target)) {
+                    picker.classList.add('hidden');
+                    document.removeEventListener('click', closePicker);
+                }
+            };
+
+            if (!picker.classList.contains('hidden')) {
+                document.addEventListener('click', closePicker);
+            }
+        }
+    },
+
+    addEmoji(emoji) {
+        if (this.quill) {
+            const range = this.quill.getSelection(true);
+            this.quill.insertText(range.index, emoji);
+            this.quill.setSelection(range.index + emoji.length);
+        }
+    },
+
     updateLetter(key, value) {
         state.updatePageData('page-8', { [key]: value });
     },
@@ -1542,10 +1685,11 @@ const renderers = {
                 <div class="section-icon !bg-purple-100 !text-purple-600">
                     <span class="material-symbols-outlined">lock_person</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_lock_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_lock_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-9')}
             </div>
 
             <div class="space-y-6">
@@ -1595,10 +1739,11 @@ const renderers = {
                 <div class="section-icon !bg-pink-100 !text-pink-600">
                     <span class="material-symbols-outlined">all_inclusive</span>
                 </div>
-                <div>
+                <div class="flex-1">
                     <h2 class="text-2xl font-bold text-gray-900">${t('page_infinity_title')}</h2>
                     <p class="text-sm text-gray-500 mt-1">${t('page_infinity_desc')}</p>
                 </div>
+                ${this.createPreviewButton('page-10')}
             </div>
 
             <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
@@ -1614,76 +1759,91 @@ const renderers = {
             <div class="space-y-6">
 
                 <!-- Generic Reasons -->
-                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
-                    <div class="flex justify-between items-center mb-3">
-                        <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_generic')}</label>
-                        <div class="flex gap-2">
-                             <button type="button" class="text-xs bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition-colors"
+                <details class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 group overflow-hidden" open>
+                    <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-blue-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                            <label class="block text-sm font-bold text-gray-900 cursor-pointer">${t('page_infinity_label_generic')}</label>
+                        </div>
+                        <div class="flex gap-2" onclick="event.stopPropagation()">
+                             <button type="button" class="text-[10px] bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition-colors font-bold"
                                 onclick="renderers.fillInfinityPresets('reasons_generic', 'id')">
                                 Isi (ID)
                             </button>
-                             <button type="button" class="text-xs bg-indigo-500 text-white px-2 py-1 rounded-lg hover:bg-indigo-600 transition-colors"
+                             <button type="button" class="text-[10px] bg-indigo-500 text-white px-2 py-1 rounded-md hover:bg-indigo-600 transition-colors font-bold"
                                 onclick="renderers.fillInfinityPresets('reasons_generic', 'en')">
                                 Fill (EN)
                             </button>
                         </div>
+                    </summary>
+                    <div class="p-4 pt-0">
+                        <div id="infinity-generic-list" class="space-y-2 mb-3">
+                            ${this.renderInfinityReasonsList(pageData.reasons_generic, 'reasons_generic')}
+                        </div>
+                        <button type="button" class="btn-add !py-2 !text-xs" onclick="renderers.addInfinityReason('reasons_generic')">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            ${t('page_infinity_btn_add')}
+                        </button>
                     </div>
-                    <div id="infinity-generic-list" class="space-y-2">
-                        ${this.renderInfinityReasonsList(pageData.reasons_generic, 'reasons_generic')}
-                    </div>
-                    <button type="button" class="btn-add" onclick="renderers.addInfinityReason('reasons_generic')">
-                        <span class="material-symbols-outlined">add</span>
-                        ${t('page_infinity_btn_add')}
-                    </button>
-                </div>
+                </details>
 
                 <!-- Personal Reasons -->
-                <div class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 border border-pink-200">
-                    <div class="flex justify-between items-center mb-3">
-                        <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_personal')}</label>
-                        <div class="flex gap-2">
-                            <button type="button" class="text-xs bg-pink-500 text-white px-2 py-1 rounded-lg hover:bg-pink-600 transition-colors"
+                <details class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-200 group overflow-hidden">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-pink-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                            <label class="block text-sm font-bold text-gray-900 cursor-pointer">${t('page_infinity_label_personal')}</label>
+                        </div>
+                        <div class="flex gap-2" onclick="event.stopPropagation()">
+                            <button type="button" class="text-[10px] bg-pink-500 text-white px-2 py-1 rounded-md hover:bg-pink-600 transition-colors font-bold"
                                 onclick="renderers.fillInfinityPresets('reasons_personal', 'id')">
                                 Isi (ID)
                             </button>
-                            <button type="button" class="text-xs bg-rose-500 text-white px-2 py-1 rounded-lg hover:bg-rose-600 transition-colors"
+                            <button type="button" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded-md hover:bg-rose-600 transition-colors font-bold"
                                 onclick="renderers.fillInfinityPresets('reasons_personal', 'en')">
                                 Fill (EN)
                             </button>
                         </div>
+                    </summary>
+                    <div class="p-4 pt-0">
+                        <div id="infinity-personal-list" class="space-y-2 mb-3">
+                            ${this.renderInfinityReasonsList(pageData.reasons_personal, 'reasons_personal')}
+                        </div>
+                        <button type="button" class="btn-add !py-2 !text-xs" onclick="renderers.addInfinityReason('reasons_personal')">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            ${t('page_music_btn_add')}
+                        </button>
                     </div>
-                    <div id="infinity-personal-list" class="space-y-2">
-                        ${this.renderInfinityReasonsList(pageData.reasons_personal, 'reasons_personal')}
-                    </div>
-                    <button type="button" class="btn-add" onclick="renderers.addInfinityReason('reasons_personal')">
-                        <span class="material-symbols-outlined">add</span>
-                        ${t('page_music_btn_add')}
-                    </button>
-                </div>
+                </details>
 
                 <!-- Poetic Reasons -->
-                <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200">
-                    <div class="flex justify-between items-center mb-3">
-                        <label class="block text-sm font-bold text-gray-900">${t('page_infinity_label_poetic')}</label>
-                        <div class="flex gap-2">
-                            <button type="button" class="text-xs bg-purple-500 text-white px-2 py-1 rounded-lg hover:bg-purple-600 transition-colors"
+                <details class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 group overflow-hidden">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-purple-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                            <label class="block text-sm font-bold text-gray-900 cursor-pointer">${t('page_infinity_label_poetic')}</label>
+                        </div>
+                        <div class="flex gap-2" onclick="event.stopPropagation()">
+                            <button type="button" class="text-[10px] bg-purple-500 text-white px-2 py-1 rounded-md hover:bg-purple-600 transition-colors font-bold"
                                 onclick="renderers.fillInfinityPresets('reasons_poetic', 'id')">
                                 Isi (ID)
                             </button>
-                            <button type="button" class="text-xs bg-indigo-500 text-white px-2 py-1 rounded-lg hover:bg-indigo-600 transition-colors"
+                            <button type="button" class="text-[10px] bg-indigo-500 text-white px-2 py-1 rounded-md hover:bg-indigo-600 transition-colors font-bold"
                                 onclick="renderers.fillInfinityPresets('reasons_poetic', 'en')">
                                 Fill (EN)
                             </button>
                         </div>
+                    </summary>
+                    <div class="p-4 pt-0">
+                        <div id="infinity-poetic-list" class="space-y-2 mb-3">
+                            ${this.renderInfinityReasonsList(pageData.reasons_poetic, 'reasons_poetic')}
+                        </div>
+                        <button type="button" class="btn-add !py-2 !text-xs" onclick="renderers.addInfinityReason('reasons_poetic')">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            ${t('page_infinity_btn_add')}
+                        </button>
                     </div>
-                    <div id="infinity-poetic-list" class="space-y-2">
-                        ${this.renderInfinityReasonsList(pageData.reasons_poetic, 'reasons_poetic')}
-                    </div>
-                    <button type="button" class="btn-add" onclick="renderers.addInfinityReason('reasons_poetic')">
-                        <span class="material-symbols-outlined">add</span>
-                        ${t('page_infinity_btn_add')}
-                    </button>
-                </div>
+                </details>
 
                 <!-- Photos Section -->
                 <div class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-4 border border-amber-200">
@@ -1768,29 +1928,24 @@ const renderers = {
     renderInfinityReasonsList(reasons, listType) {
         if (!reasons || reasons.length === 0) return '';
 
-        return reasons.map((reason, idx) => `
-            <div class="flex gap-2 items-center bg-white p-2 rounded-lg">
-                <input type="text" class="form-input text-sm flex-1" value="${reason}" 
-                    placeholder="...a reason why"
-                    oninput="renderers.updateInfinityReason('${listType}', ${idx}, this.value)">
-                <button type="button" class="text-rose-500 hover:text-rose-700 p-2" 
-                    onclick="renderers.removeInfinityReason('${listType}', ${idx})">
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                </button>
-            </div>
-        `).join('');
+        return reasons.map((reason, idx) => {
+            const bodyContent = `
+                <div class="pt-3">
+                    <input type="text" class="form-input text-sm" value="${reason}" 
+                        placeholder="...a reason why"
+                        oninput="renderers.updateInfinityReason('${listType}', ${idx}, this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Reason'">
+                </div>
+            `;
+            return this.renderCollapsible(idx, reason || 'Untitled Reason', 'Reason Why', bodyContent, `renderers.removeInfinityReason('${listType}', ${idx})`);
+        }).join('');
     },
 
     renderInfinityPhotosList(photos) {
         if (!photos || photos.length === 0) return '';
 
-        return photos.map((photo, idx) => `
-            <div class="bg-white p-3 rounded-lg">
-                <button type="button" class="float-right text-rose-500 hover:text-rose-700" 
-                    onclick="renderers.removeInfinityPhoto(${idx})">
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                </button>
-                <div class="space-y-2 clear-both">
+        return photos.map((photo, idx) => {
+            const bodyContent = `
+                <div class="space-y-2 pt-3">
                     <div class="flex gap-2 items-center">
                         <img src="${photo.src || ''}" 
                             id="inf-photo-${idx}"
@@ -1802,15 +1957,16 @@ const renderers = {
                             oninput="renderers.updateInfinityPhoto(${idx}, 'src', this.value); renderers.updateInfinityPhotoPreview(${idx})">
                         <label class="cursor-pointer bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 transition-colors shadow-sm">
                             <span class="material-symbols-outlined text-base">image</span>
-                            <input type="file" class="hidden" accept="image/*" data-target="inf-photo-input-${idx}">
+                            <input type="file" class="hidden" accept="image/*" data-target="inf-photo-input-${idx}" onchange="utils.handleMediaUpload(this, 'inf-photo-input-${idx}')">
                         </label>
                     </div>
                     <input type="text" class="form-input text-sm" value="${photo.caption || ''}" 
                         placeholder="Short caption..."
-                        oninput="renderers.updateInfinityPhoto(${idx}, 'caption', this.value)">
+                        oninput="renderers.updateInfinityPhoto(${idx}, 'caption', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Reason'">
                 </div>
-            </div>
-        `).join('');
+            `;
+            return this.renderCollapsible(idx, photo.caption || 'Untitled Reason', 'Photo with Reason', bodyContent, `renderers.removeInfinityPhoto(${idx})`);
+        }).join('');
     },
 
     updateInfinity(key, value) {
@@ -1961,22 +2117,9 @@ const renderers = {
     renderInfinityVideosList(videos) {
         if (!videos || videos.length === 0) return '';
 
-        return videos.map((video, idx) => `
-            <div class="bg-white p-4 rounded-xl border border-rose-100 shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-rose-500 text-sm">movie</span>
-                        </div>
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Video #${idx + 1}</span>
-                    </div>
-                    <button type="button" class="text-rose-400 hover:text-rose-600 transition-colors" 
-                        onclick="renderers.removeInfinityVideo(${idx})">
-                        <span class="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                </div>
-                
-                <div class="space-y-3">
+        return videos.map((video, idx) => {
+            const bodyContent = `
+                <div class="space-y-3 pt-3">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">${t('page_infinity_video_label')}</label>
                         <div class="flex gap-2">
@@ -1997,17 +2140,18 @@ const renderers = {
                             <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">${t('page_gallery_label_caption')}</label>
                             <input type="text" class="form-input text-sm" value="${video.caption || ''}" 
                                 placeholder="Caption..."
-                                oninput="renderers.updateInfinityVideo(${idx}, 'caption', this.value)">
+                                oninput="renderers.updateInfinityVideo(${idx}, 'caption', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Video'">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">${t('page_infinity_video_milestone')}</label>
                             <input type="number" class="form-input text-sm" value="${video.milestone || 10}" 
-                                oninput="renderers.updateInfinityVideo(${idx}, 'milestone', parseInt(this.value))">
+                                oninput="renderers.updateInfinityVideo(${idx}, 'milestone', parseInt(this.value)); this.closest('.dynamic-item').querySelector('.item-summary-desc').textContent = 'Milestone: ' + this.value">
                         </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+            return this.renderCollapsible(idx, video.caption || 'Untitled Video', `Milestone: ${video.milestone}`, bodyContent, `renderers.removeInfinityVideo(${idx})`);
+        }).join('');
     },
 
     addInfinityVideo() {

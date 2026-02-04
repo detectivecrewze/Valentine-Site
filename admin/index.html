@@ -19,6 +19,13 @@
     <!-- EXIF.js for reading photo metadata (GPS location, date) -->
     <script src="https://cdn.jsdelivr.net/npm/exif-js@2.3.0/exif.min.js"></script>
 
+    <!-- Quill Rich Text Editor Assets -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <!-- QRCode.js for generating shareable links -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <script src="../data.js"></script>
     <script>
         tailwind.config = {
@@ -59,6 +66,13 @@
                     <div class="flex items-center gap-4">
 
 
+                        <button onclick="app.togglePreview()"
+                            class="preview-btn !bg-gray-100 !text-gray-600 hover:!bg-gray-200" id="togglePreviewBtn"
+                            title="Toggle Preview Pane">
+                            <span class="material-symbols-outlined">side_navigation</span>
+                            <span class="hidden md:inline">Layout</span>
+                        </button>
+
                         <button onclick="app.showPreview()" class="preview-btn">
                             <span class="material-symbols-outlined">visibility</span>
                             <span data-i18n="btn_preview">Preview</span>
@@ -77,8 +91,20 @@
         </header>
 
         <!-- Main Content Area -->
-        <div class="wizard-main">
-            <!-- Left: Form Content -->
+        <div class="wizard-main" id="wizardMain">
+            <!-- Left: Sidebar Navigation (NEW) -->
+            <aside class="wizard-sidebar" id="wizardSidebar">
+                <div class="sidebar-header">
+                    <button onclick="app.toggleSidebar()" class="sidebar-toggle-btn" title="Toggle Sidebar">
+                        <span class="material-symbols-outlined">menu_open</span>
+                    </button>
+                </div>
+                <nav class="sidebar-nav" id="sidebarNav">
+                    <!-- Steps will be injected here -->
+                </nav>
+            </aside>
+
+            <!-- Middle: Form Content -->
             <div class="wizard-content">
                 <div id="stepContent" class="step-content">
                     <!-- Dynamic step content injected here -->

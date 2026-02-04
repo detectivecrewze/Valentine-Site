@@ -48,6 +48,9 @@ const app = {
         // Auto-save on input changes (debounced)
         this.setupAutoSave();
 
+        // Populate sidebar
+        this.updateSidebar();
+
         console.log('[App] Wizard initialized with', this.wizardSteps.length, 'steps');
     },
 
@@ -118,11 +121,16 @@ const app = {
         this.updateHeader();
         this.updateProgress();
 
-        // Attach event listeners
-        this.attachEventListeners();
+        // Update Sidebar
+        this.updateSidebar();
 
         // **FIX: Scroll preview to corresponding page**
         this.scrollPreviewToCurrentPage();
+
+        // **NEW: Post-render initializations (e.g. Quill)**
+        if (renderers.initStepLogic) {
+            renderers.initStepLogic(step.id);
+        }
     },
 
     // **NEW: Scroll preview iframe to match current wizard step**
@@ -152,6 +160,58 @@ const app = {
         if (modalIframe && modalIframe.contentWindow && modalIframe.getAttribute('src')) {
             modalIframe.contentWindow.postMessage(message, '*');
         }
+    },
+
+    // Sidebar logic
+    toggleSidebar() {
+        const sidebar = document.getElementById('wizardSidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('is-minimized');
+        }
+    },
+
+    togglePreview() {
+        const main = document.getElementById('wizardMain');
+        if (main) {
+            main.classList.toggle('is-preview-hidden');
+        }
+    },
+
+    updateSidebar() {
+        const nav = document.getElementById('sidebarNav');
+        if (!nav) return;
+
+        const lang = state.configData.adminLang || 'en';
+
+        nav.innerHTML = this.wizardSteps.map((step, idx) => {
+            const isActive = idx === this.currentStep;
+
+            // Try to translate title
+            let title = step.name;
+            if (step.id === 'setup') title = t('theme_header_title');
+            else if (step.id === 'page-manager') title = t('pageman_title');
+            else {
+                const pageIdKey = step.id.replace(/-/g, '_');
+                title = translations[lang][`page_${pageIdKey}_title`] || step.name;
+            }
+
+            return `
+                <div class="nav-item ${isActive ? 'active' : ''}" onclick="app.goToStep(${idx})">
+                    <div class="nav-item-icon">
+                        <span class="material-symbols-outlined">${step.icon}</span>
+                    </div>
+                    <span class="nav-item-text">${title}</span>
+                </div>
+            `;
+        }).join('');
+    },
+
+    goToStep(idx) {
+        if (idx < 0 || idx >= this.wizardSteps.length) return;
+        this.currentStep = idx;
+        state.currentStep = idx;
+        state.save();
+        this.renderCurrentStep();
     },
 
     // Update progress bar
@@ -359,12 +419,23 @@ const app = {
                     <!-- Result Link (hidden initially) -->
                     <div id="publishResult" class="hidden mt-4 p-4 bg-white rounded-xl border border-green-200">
                         <p class="text-xs text-gray-500 mb-2">Your Valentine is live at:</p>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 mb-4">
                             <input type="text" id="resultLink" readonly 
-                                class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono">
+                                class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono truncate">
                             <button onclick="app.copyResultLink()" 
-                                class="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all">
+                                class="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all text-xs shrink-0">
                                 Copy
+                            </button>
+                        </div>
+
+                        <!-- QR CODE SECTION -->
+                        <div class="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                            <div id="qrcode" class="bg-white p-2 rounded-lg shadow-sm mb-3"></div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-3" data-i18n="publish_qr_scan">${t('publish_qr_scan')}</p>
+                            <button onclick="app.downloadQRCode()" 
+                                class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-sm">download</span>
+                                <span data-i18n="publish_qr_save">${t('publish_qr_save')}</span>
                             </button>
                         </div>
                     </div>
@@ -524,6 +595,20 @@ const app = {
             resultDiv.classList.remove('hidden');
             resultLink.value = shareableUrl;
 
+            // GENERATE QR CODE
+            const qrContainer = document.getElementById('qrcode');
+            if (qrContainer && typeof QRCode !== 'undefined') {
+                qrContainer.innerHTML = ''; // Clear previous
+                new QRCode(qrContainer, {
+                    text: shareableUrl,
+                    width: 128,
+                    height: 128,
+                    colorDark: "#9f1239", // Rose 800
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+
             // Update button to success state
             btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Published!';
             btn.className = originalClass.replace('from-rose-500 to-pink-500', 'from-green-500 to-emerald-500');
@@ -544,12 +629,33 @@ const app = {
         }
     },
 
-    // Copy the generated result link
     copyResultLink() {
         const resultLink = document.getElementById('resultLink');
         if (resultLink && resultLink.value) {
             navigator.clipboard.writeText(resultLink.value);
             utils.showNotification('Link copied!', 'success');
+        }
+    },
+
+    // Download QR Code as PNG
+    downloadQRCode() {
+        const qrContainer = document.getElementById('qrcode');
+        if (!qrContainer) return;
+
+        const img = qrContainer.querySelector('img');
+        if (img) {
+            const a = document.createElement('a');
+            a.href = img.src;
+            a.download = 'valentine-qr.png';
+            a.click();
+        } else {
+            const canvas = qrContainer.querySelector('canvas');
+            if (canvas) {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = 'valentine-qr.png';
+                a.click();
+            }
         }
     },
 
