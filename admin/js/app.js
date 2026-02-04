@@ -316,7 +316,7 @@ const app = {
             musicCount: config.music ? config.music.length : 0,
             galleryCount: config.gallery && config.gallery.memories ? config.gallery.memories.length : 0
         });
-        
+
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-4';
         modal.innerHTML = `
@@ -339,20 +339,21 @@ const app = {
                 <div class="bg-gradient-to-r from-rose-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-rose-200">
                     <h3 class="font-bold text-rose-900 mb-3 flex items-center gap-2">
                         <span class="material-symbols-outlined text-rose-500">cloud_upload</span>
-                        Publish Online (Recommended)
+                        <span data-i18n="publish_title">Publish Online</span>
                     </h3>
-                    <p class="text-sm text-rose-700 mb-4">Save to cloud and get an instant shareable link!</p>
+                    <p class="text-sm text-rose-700 mb-4" data-i18n="publish_desc">Save to cloud instantly!</p>
                     
                     <div class="flex gap-3 mb-4">
                         <input type="text" id="customerIdInput" 
                             class="flex-1 px-4 py-3 border-2 border-rose-200 rounded-xl focus:border-rose-500 focus:ring-2 focus:ring-rose-200 text-sm"
-                            placeholder="Enter unique ID (e.g., lisa, budi-santi)">
+                            placeholder="e.g., lisa, budi-santi"
+                            data-i18n-placeholder="publish_placeholder">
                     </div>
                     
                     <button id="btnPublish" onclick="app.publishOnline()" 
                         class="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white py-4 px-6 rounded-xl font-bold hover:from-rose-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
                         <span class="material-symbols-outlined">rocket_launch</span>
-                        Publish & Get Link
+                        <span data-i18n="publish_btn">Publish Now</span>
                     </button>
                     
                     <!-- Result Link (hidden initially) -->
@@ -483,16 +484,16 @@ const app = {
 
         try {
             const config = state.getConfig();
-            
+
             // ✅ FIX: Validate config before sending
             if (!config.login || !config.greeting) {
                 throw new Error('Configuration is incomplete. Please fill in at least the login and greeting sections.');
             }
-            
+
             const API_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
 
-            console.log('[Publish] Sending config to KV:', { 
-                id: customerId, 
+            console.log('[Publish] Sending config to KV:', {
+                id: customerId,
                 configSize: JSON.stringify(config).length + ' bytes',
                 hasMusic: !!(config.music && config.music.length),
                 hasGallery: !!(config.gallery && config.gallery.memories),

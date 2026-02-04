@@ -159,8 +159,8 @@ const translations = {
         map_pick_btn: "Pick",
         map_coordinates: "Coordinates (Lat, Lng)",
         map_coords_tip: "TIP: You can paste 'Lat, Lng' directly from Google Maps here",
-        map_help_title: "Interactive Map Picker",
-        map_help_desc: "You can choose locations in two ways: 1) Click the 'Pick' button and search for a place (e.g., 'Central Park'), or 2) Click directly on the interactive map to set your pin. If you have specific coordinates from Google Maps, you can also paste them directly into the Coordinates field!",
+        map_help_title: "How to Pin Your Memories 📍",
+        map_help_desc: "Three magic ways to add a spot: 1) **Search & Pick** via the button, 2) **Click the Map** directly, or... 3) **✨ Magic Upload**: Just upload a photo! If it has location data (EXIF), we'll automatically fill in the place and date for you. How cool is that?",
 
         page_letter_title: "Love Letter",
         page_letter_desc: "Write an intimate letter that fills up line by line",
@@ -203,7 +203,13 @@ const translations = {
         part_hearts: "Hearts & Petals (Romantic)",
         part_stars: "Twinkling Stars (Magic)",
         part_dust: "Vintage Dust (Nostalgic)",
-        part_snow: "Soft Snow (Winter/Dreamy)"
+        part_snow: "Soft Snow (Winter/Dreamy)",
+
+        // Publish Step
+        publish_title: "Make It Live! (Online)",
+        publish_desc: "Click below to create your shareable link immediately.",
+        publish_placeholder: "Enter a nice link name (e.g., ryan-sara)",
+        publish_btn: "🚀 Activate & Get Link"
     },
     id: {
         // Navigation & General
@@ -359,8 +365,8 @@ const translations = {
         map_pick_btn: "Pilih",
         map_coordinates: "Koordinat (Lat, Lng)",
         map_coords_tip: "TIP: Kamu bisa tempel 'Lat, Lng' langsung dari Google Maps di sini",
-        map_help_title: "Pilih Lokasi Interaktif",
-        map_help_desc: "Kamu bisa memilih lokasi dengan dua cara: 1) Klik tombol 'Pilih' lalu cari nama tempat (misal: 'Monas'), atau 2) Klik langsung pada peta interaktif untuk menentukan titik. Jika kamu punya koordinat dari Google Maps, kamu juga bisa langsung menempelkannya (paste) ke kolom Koordinat!",
+        map_help_title: "Cara Menandai Kenangan 📍",
+        map_help_desc: "Ada 3 cara ajaib buat nambahin lokasi: 1) **Cari & Pilih** lewat tombol, 2) **Klik Peta** langsung di titiknya, atau... 3) **✨ Upload Ajaib**: Cukup upload foto kenangan kalian! Kalau fotonya ada data lokasi (GPS), sistem bakal otomatis ngisi lokasi dan tanggalnya buat kamu. Keren kan?",
 
         page_letter_title: "Surat Cinta",
         page_letter_desc: "Tulis surat intim yang muncul baris demi baris",
@@ -403,7 +409,13 @@ const translations = {
         part_hearts: "Hati & Kelopak Bunga",
         part_stars: "Bintang Berkelap-kelip",
         part_dust: "Debu Vintage (Klasik)",
-        part_snow: "Salju Lembut (Musim Dingin)"
+        part_snow: "Salju Lembut (Musim Dingin)",
+
+        // Publish Step
+        publish_title: "Buat Website Kamu Online!",
+        publish_desc: "Klik tombol di bawah agar website kalian aktif dan bisa dibuka oleh siapa saja.",
+        publish_placeholder: "Tulis nama panggilan kalian (contoh: ryan-sara)",
+        publish_btn: "🚀 Aktifkan & Salin Link"
     }
 };
 
