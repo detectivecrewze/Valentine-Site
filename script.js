@@ -521,7 +521,9 @@ function fadeOutAudio(audio, duration) {
 // ✅ NEW: Preload first song (Claude's Recommendation)
 async function preloadFirstSong() {
     try {
-        if (!CONFIG.music || CONFIG.music.length === 0) return;
+        // ✅ FIX: Use window.CONFIG explicitly
+        const CONFIG = window.CONFIG || window._CONFIG_DATA;
+        if (!CONFIG || !CONFIG.music || CONFIG.music.length === 0) return;
 
         const song = CONFIG.music[0];
         console.log(`[Init] Fetching blob for preload: ${song.audioSrc.substring(0, 50)}...`);
@@ -538,42 +540,46 @@ async function preloadFirstSong() {
 
 // Update SEO/OG Settings
 function updateSEO() {
-    if (CONFIG.seo) {
-        const { title, description, image } = CONFIG.seo;
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+    if (!CONFIG || !CONFIG.seo) return;
 
-        // Update browser title
-        if (title) document.title = title;
+    const { title, description, image } = CONFIG.seo;
 
-        // Update description
-        const descTag = document.querySelector('meta[name="description"]');
-        if (descTag) descTag.setAttribute('content', description);
+    // Update browser title
+    if (title) document.title = title;
 
-        // Update OpenGraph
-        const ogTitle = document.querySelector('meta[property="og:title"]');
-        if (ogTitle) ogTitle.setAttribute('content', title);
+    // Update description
+    const descTag = document.querySelector('meta[name="description"]');
+    if (descTag) descTag.setAttribute('content', description);
 
-        const ogDesc = document.querySelector('meta[property="og:description"]');
-        if (ogDesc) ogDesc.setAttribute('content', description);
+    // Update OpenGraph
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', title);
 
-        const ogImage = document.querySelector('meta[property="og:image"]');
-        if (ogImage) ogImage.setAttribute('content', image);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', description);
 
-        // Update Twitter
-        const twTitle = document.querySelector('meta[name="twitter:title"]');
-        if (twTitle) twTitle.setAttribute('content', title);
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage) ogImage.setAttribute('content', image);
 
-        const twDesc = document.querySelector('meta[name="twitter:description"]');
-        if (twDesc) twDesc.setAttribute('content', description);
+    // Update Twitter
+    const twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle) twTitle.setAttribute('content', title);
 
-        const twImage = document.querySelector('meta[name="twitter:image"]');
-        if (twImage) twImage.setAttribute('content', image);
-    }
+    const twDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twDesc) twDesc.setAttribute('content', description);
+
+    const twImage = document.querySelector('meta[name="twitter:image"]');
+    if (twImage) twImage.setAttribute('content', image);
 }
 
 // Particle System
 function initParticles() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     const container = document.getElementById('particle-container');
-    if (!container || !CONFIG.theme || !CONFIG.theme.particles || CONFIG.theme.particles === 'none') return;
+    if (!container || !CONFIG || !CONFIG.theme || !CONFIG.theme.particles || CONFIG.theme.particles === 'none') return;
 
     const type = CONFIG.theme.particles;
     const count = 20; // Maintain performance
@@ -3111,6 +3117,8 @@ function createHeartExplosion(el) {
 }
 
 function unlockFinale() {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
     const lockOverlay = document.getElementById('video-lock-overlay');
     const items = document.getElementById('treasure-hunt-items');
     const container = document.getElementById('finale-video-container');
@@ -3127,7 +3135,7 @@ function unlockFinale() {
     bgMusic.muted = true;
 
     // Inject and Play Video
-    if (container && CONFIG.finale && CONFIG.finale.videoSrc) {
+    if (container && CONFIG && CONFIG.finale && CONFIG.finale.videoSrc) {
         const src = CONFIG.finale.videoSrc;
         const isYoutube = src.includes('youtube.com') || src.includes('youtu.be');
 
@@ -3401,7 +3409,10 @@ function syncPageVisibility() {
  * Get all pages sorted by order, filtered by enabled status
  */
 function getPages(onlyEnabled = true) {
-    if (!CONFIG.pageConfig || !CONFIG.pageConfig.pages) {
+    // ✅ FIX: Use window.CONFIG explicitly
+    const CONFIG = window.CONFIG || window._CONFIG_DATA;
+
+    if (!CONFIG || !CONFIG.pageConfig || !CONFIG.pageConfig.pages) {
         return [];
     }
 

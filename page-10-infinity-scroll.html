@@ -828,7 +828,19 @@
          * 3. Handles window messages for live updates (Admin Preview)
          */
         const LS_KEY = 'valentine_admin_v2';
-        let parentConfig = (typeof CONFIG !== 'undefined') ? CONFIG : {};
+
+        // ✅ FIX: Use Parent's Reactive CONFIG if available, else local
+        let parentConfig = {};
+        try {
+            if (window.parent && window.parent.CONFIG) {
+                parentConfig = window.parent.CONFIG;
+                console.log('[Config] Using parent window.CONFIG');
+            } else {
+                parentConfig = (typeof CONFIG !== 'undefined') ? CONFIG : {};
+            }
+        } catch (e) {
+            parentConfig = (typeof CONFIG !== 'undefined') ? CONFIG : {};
+        }
 
         // Load from LocalStorage if available (Admin override)
         try {
@@ -1975,32 +1987,34 @@
         // ============================================================
         // AUDIO UTILITIES (Ported from main app for mobile support)
         // ============================================================
-        async function fetchMediaBlob(url) {
+        async function fetchMediaBlob(url, attempt = 1) {
             if (!url) return '';
-            try {
-                if (url.startsWith('data:')) {
-                    console.log('[Music] Data URL detected');
-                    return url;
-                }
+            const maxAttempts = 3;
 
-                // Add skip cache to bypass potential corrupted versions
-                const shieldedUrl = url + (url.includes('?') ? '&' : '?') + 'shield=' + Date.now();
-                console.log(`[Music] Fetching blob for: ${url.substring(0, 40)}...`);
+            try {
+                if (url.startsWith('data:')) return url;
+
+                // Add cache busting shield
+                const shieldedUrl = url + (url.includes('?') ? '&' : '?') + 'shield=' + Date.now() + '_' + attempt;
+                console.log(`[Media] Fetching (${attempt}/${maxAttempts}): ${url.substring(0, 40)}...`);
 
                 const response = await fetch(shieldedUrl);
-                const blob = await response.blob();
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-                // Force MIME type for audio files
+                const blob = await response.blob();
                 const type = (url.toLowerCase().endsWith('.mp3') || url.toLowerCase().endsWith('.dat'))
                     ? 'audio/mpeg' : blob.type;
 
                 const audioBlob = new Blob([blob], { type: type });
-                const blobUrl = URL.createObjectURL(audioBlob);
-                console.log('[Music] Blob created successfully');
-                return blobUrl;
+                return URL.createObjectURL(audioBlob);
             } catch (e) {
-                console.error("[Music] Failed to fetch blob:", e);
-                return url; // Fallback to original URL
+                console.warn(`[Media] Attempt ${attempt} failed:`, e.message);
+                if (attempt < maxAttempts) {
+                    await new Promise(r => setTimeout(r, 1000 * attempt));
+                    return fetchMediaBlob(url, attempt + 1);
+                }
+                console.error("[Media] Final failure for:", url);
+                return url; // Final fallback
             }
         }
 
@@ -2011,8 +2025,9 @@
         async function initInfinityMusic() {
             console.log('[Music] Initializing music system...');
 
-            // ✅ IMMEDIATELY stop parent music on load
-            stopParentMusic();
+            // ✅ FIX: DO NOT stop parent music here. 
+            // It should only stop when handleStart is triggered by user tap.
+            // stopParentMusic(); ❌ Removed
 
             if (!INFINITY_AUDIO_SRC) {
                 console.warn('[Music] No infinity music source found in config');
