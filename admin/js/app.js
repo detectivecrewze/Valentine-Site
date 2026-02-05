@@ -390,7 +390,7 @@ const app = {
                     <!-- ✅ FIX: Config summary -->
                     <div class="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500 font-mono">
                         📊 ${config.music ? config.music.length : 0} songs | 
-                        📷 ${config.gallery && config.gallery.memories ? config.gallery.memories.length : 0} photos | 
+                        📷 ${utils.countAllPhotos(config)} photos | 
                         📍 ${config.map && config.map.locations ? config.map.locations.length : 0} locations
                     </div>
                 </div>

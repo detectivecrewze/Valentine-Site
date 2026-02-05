@@ -426,6 +426,59 @@ const utils = {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    },
+
+    // ✅ NEW: Count all photos across the entire configuration (Excluding Theme and Music Player)
+    countAllPhotos(config) {
+        if (!config) return 0;
+        let count = 0;
+
+        // Helper to check if string is a valid image URL (including local assets)
+        const isPhoto = (url) => {
+            if (!url || typeof url !== 'string' || url.trim() === '') return false;
+            // Any string that looks like a path or URL for an image
+            const lower = url.toLowerCase();
+            return lower.includes('http') ||
+                lower.startsWith('assets/') ||
+                lower.includes('.jpg') ||
+                lower.includes('.jpeg') ||
+                lower.includes('.png') ||
+                lower.includes('.webp') ||
+                lower.includes('.gif');
+        };
+
+        // 1. Greeting
+        if (isPhoto(config.greeting?.imageSrc)) count++;
+
+        // 2. Wrapped
+        if (isPhoto(config.wrapped?.imageSrc)) count++;
+
+        // 3. Memory Gallery
+        if (config.gallery?.memories) {
+            config.gallery.memories.forEach(m => {
+                // Count if it's explicitly type image OR just has a valid src
+                if ((m.type === 'image' || !m.type) && isPhoto(m.src)) count++;
+            });
+        }
+
+        // 4. Map
+        if (config.map?.locations) {
+            config.map.locations.forEach(l => {
+                if (isPhoto(l.imageSrc)) count++;
+            });
+        }
+
+        // 5. Letter
+        if (isPhoto(config.letter?.polaroidSrc)) count++;
+
+        // 6. Infinity Scroll
+        if (config.infinityScroll?.photos) {
+            config.infinityScroll.photos.forEach(p => {
+                if (isPhoto(p.src)) count++;
+            });
+        }
+
+        return count;
     }
 };
 
