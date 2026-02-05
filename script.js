@@ -225,7 +225,7 @@ async function loadConfig() {
  */
 async function initializeApp() {
     showLoadingScreen(true, 'Initializing your Valentine experience...');
-    
+
     console.log('[Init] Starting initializeApp...');
     console.log('[Init] window.CONFIG at start:', window.CONFIG ? 'EXISTS' : 'MISSING');
 
@@ -256,7 +256,7 @@ async function initializeApp() {
                 showLoadingScreen(true, 'Error: No configuration found');
                 return;
             }
-            
+
             // Show subtle indicator that using local config
             setTimeout(() => {
                 const indicator = document.createElement('div');
@@ -360,7 +360,7 @@ function startApp() {
         hasMusic: !!(activeConfig && activeConfig.music && activeConfig.music.length),
         hasGallery: !!(activeConfig && activeConfig.gallery && activeConfig.gallery.memories)
     });
-    
+
     // Create local CONFIG reference for this function
     const CONFIG = activeConfig;
 
@@ -2416,6 +2416,12 @@ async function initMap() {
         }
 
         await new Promise(resolve => setTimeout(resolve, 800));
+    } else {
+        // FIX: Even if journey is completed, make sure the overlay is hidden 
+        // when map is re-initialized (e.g., after admin updates)
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+        }
     }
 
     // ==========================================
@@ -2519,6 +2525,9 @@ async function initMap() {
 
         // Mark journey as completed after first time
         mapJourneyCompleted = true;
+
+        // NEW: Trigger Discovery Pop-up with stats
+        setTimeout(() => showMapDiscoveryPopUp(), 1000);
     }
 
     // Add Zoom control to bottom left if missing
@@ -2526,6 +2535,100 @@ async function initMap() {
         L.control.zoom({
             position: 'bottomleft'
         }).addTo(mapInstance);
+    }
+}
+
+// ==========================================
+// NEW: Discovery Pop-up & Stats Logic (Cumulative Exploration)
+// ==========================================
+function calculateMapStats() {
+    const CONFIG = safeGetConfig();
+    const locations = CONFIG.map?.locations || [];
+
+    if (locations.length < 2) {
+        return {
+            spots: locations.length,
+            distance: 0,
+            html: `
+                <div class="flex flex-col gap-2">
+                    <p class="text-rose-950 font-medium leading-relaxed">
+                        Together we've explored <span class="text-rose-600 font-bold">${locations.length} different spots</span>. 
+                    </p>
+                    <p class="text-xs text-rose-400 italic">Let's keep making beautiful memories together! ❤️</p>
+                </div>`
+        };
+    }
+
+    let totalDistance = 0;
+
+    try {
+        for (let i = 0; i < locations.length - 1; i++) {
+            const locA = locations[i].coordinates;
+            const locB = locations[i + 1].coordinates;
+
+            // Ensure coordinates are numbers (sometimes they come as strings from Admin)
+            const pA = [parseFloat(locA[1]), parseFloat(locA[0])]; // [Lon, Lat] for Turf
+            const pB = [parseFloat(locB[1]), parseFloat(locB[0])];
+
+            const from = turf.point(pA);
+            const to = turf.point(pB);
+
+            totalDistance += turf.distance(from, to, { units: 'kilometers' });
+        }
+
+        const finalKm = totalDistance.toFixed(1);
+
+        return {
+            spots: locations.length,
+            distance: finalKm,
+            html: `
+                <div class="space-y-4">
+                    <p class="text-rose-950/70 text-xs font-bold uppercase tracking-widest">Together we've explored</p>
+                    <div class="flex items-end gap-3">
+                        <span class="text-5xl stat-badge">${locations.length}</span>
+                        <span class="text-rose-900/40 font-display italic text-2xl mb-1">spots</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <p class="text-rose-950/60 text-[10px] font-bold uppercase tracking-widest">Total journey traveled together</p>
+                        <p class="text-4xl font-display shimmer-gold font-bold">${finalKm} KM</p>
+                    </div>
+                </div>`
+        };
+    } catch (e) {
+        console.error("Distance calculation error:", e);
+        return {
+            spots: locations.length,
+            distance: 0,
+            html: `<p class="text-rose-950 font-medium">Together we've explored <span class="text-rose-600 font-bold">${locations.length} different spots</span> in our journey of love. ❤️</p>`
+        };
+    }
+}
+
+function showMapDiscoveryPopUp() {
+    const popup = document.getElementById('discovery-popup');
+    const messageEl = document.getElementById('discovery-message');
+    if (!popup || !messageEl) return;
+
+    const stats = calculateMapStats();
+
+    // Set message with new structure
+    messageEl.innerHTML = stats.html;
+
+    // Show popup
+    popup.classList.add('show');
+
+    // Auto-hide after 10 seconds (make it longer for premium feel)
+    if (window.discoveryTimeout) clearTimeout(window.discoveryTimeout);
+    window.discoveryTimeout = setTimeout(() => {
+        hideDiscoveryPopUp();
+    }, 10000);
+}
+
+function hideDiscoveryPopUp() {
+    const popup = document.getElementById('discovery-popup');
+    if (popup) {
+        popup.classList.remove('show');
+        if (window.discoveryTimeout) clearTimeout(window.discoveryTimeout);
     }
 }
 

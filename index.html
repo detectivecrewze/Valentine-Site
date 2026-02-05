@@ -37,6 +37,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
+    <!-- Turf.js for Map Calculations -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
     <!-- Tailwind Config -->
     <script>
         tailwind.config = {
@@ -108,6 +111,95 @@
         #config-loader.fade-out {
             opacity: 0;
             pointer-events: none;
+        }
+
+        /* Enhanced Discovery Pop-up (Premium) */
+        .discovery-popup {
+            perspective: 2000px;
+        }
+
+        .discovery-popup.show .discovery-content {
+            transform: translateY(0) rotateX(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .discovery-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 245, 247, 0.9) 100%);
+            box-shadow:
+                0 25px 50px -12px rgba(244, 63, 94, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+            transform: translateY(100px) rotateX(-30deg) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Playfair Display', serif;
+            filter: drop-shadow(0 2px 4px rgba(244, 63, 94, 0.1));
+        }
+
+        @keyframes shimmer-gold {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .shimmer-gold {
+            background: linear-gradient(90deg, #9f1239 0%, #f43f5e 40%, #e11d48 60%, #9f1239 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer-gold 6s linear infinite;
+        }
+
+        .sparkle-slow {
+            animation: sparkle-float 4s infinite ease-in-out;
+        }
+
+        @keyframes sparkle-float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translate(10px, -10px) scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .pulse-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid #fda4af;
+            border-radius: inherit;
+            animation: pulse-ring 2s infinite cubic-bezier(0.25, 0, 0, 1);
         }
     </style>
 </head>
@@ -743,11 +835,11 @@
                     </div>
                 </div>
             </div>
-    </section>
-    <div class="hidden">
-        <div data-alt="Frosted glass greeting card with pink bow and roses"></div>
-        <div data-alt="Dreamy pink and peach gradient background with grain"></div>
-    </div>
+        </main>
+        <div class="hidden">
+            <div data-alt="Frosted glass greeting card with pink bow and roses"></div>
+            <div data-alt="Dreamy pink and peach gradient background with grain"></div>
+        </div>
     </section>
     <!-- Page 5: Trivia Quiz (Formerly Page 4) -->
     <section id="page-5" class="page hidden fixed inset-0 w-full h-full text-left">
@@ -938,14 +1030,50 @@
                 class="page-indicator-text text-[10px] font-sans font-bold text-primary tracking-widest leading-none">7/--</span>
         </div>
 
-        <!-- Music Toggle -->
-        <div class="absolute top-4 right-4 z-[2001]">
-            <button
-                class="page-music-toggle bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-all hidden">
-                🎵
-            </button>
-        </div>
+
         <main id="page-7-container" class="h-full w-full relative overflow-hidden">
+            <!-- Discovery Pop-up (Surprise Achievement) -->
+            <div id="discovery-popup"
+                class="discovery-popup fixed inset-x-0 bottom-32 md:bottom-24 z-[1500] pointer-events-none flex justify-center px-6">
+                <div
+                    class="discovery-content relative p-6 md:p-8 rounded-[2rem] max-w-sm w-full pointer-events-auto flex flex-col gap-6">
+
+                    <!-- Decorative Sparkles -->
+
+                    <span class="material-symbols-outlined absolute bottom-4 -left-4 text-rose-200 sparkle-slow text-xl"
+                        style="animation-delay: 2s">auto_awesome</span>
+
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center text-white shadow-[0_10px_25px_rgba(244,63,94,0.3)] shrink-0 relative pulse-ring">
+                            <span class="material-symbols-outlined text-3xl">map</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4
+                                class="text-[10px] font-sans font-extrabold text-rose-500 uppercase tracking-[0.3em] mb-1">
+                                Adventure Summary</h4>
+                            <div class="h-[1px] w-12 bg-rose-200"></div>
+                        </div>
+                        <button onclick="hideDiscoveryPopUp()"
+                            class="text-rose-300 hover:text-rose-500 transition-colors p-2 self-start -mt-2 -mr-2">
+                            <span class="material-symbols-outlined text-2xl">close</span>
+                        </button>
+                    </div>
+
+                    <div id="discovery-message" class="space-y-4">
+                        <!-- Stats will be injected here with beautiful formatting -->
+                        <div class="animate-pulse bg-rose-50 h-16 rounded-xl w-full"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-rose-100 flex items-center justify-center">
+                        <span class="text-[9px] font-bold text-rose-400 uppercase tracking-[0.3em]">Our Shared
+                            Milestone</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="map" class="h-full w-full"></div>
+
             <!-- Map Loading Overlay -->
             <div id="map-loading-overlay"
                 class="absolute inset-0 z-[2000] flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
@@ -998,7 +1126,7 @@
 
             <!-- Map Overlay Info -->
             <div id="map-card"
-                class="absolute top-20 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-8 z-[1000] w-[90%] md:w-auto max-w-sm pointer-events-none transition-all duration-300">
+                class="absolute top-0 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-8 z-[1000] w-[90%] md:w-auto max-w-sm pointer-events-none transition-all duration-300">
                 <div
                     class="bg-white/60 md:bg-white/40 backdrop-blur-xl border border-white/60 p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl pointer-events-auto relative transition-all duration-500">
 

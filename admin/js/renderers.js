@@ -110,13 +110,20 @@ const renderers = {
                 ${this.createPreviewButton('page-1')}
             </div>
 
-            <!-- Language Selection First -->
-            <div class="bg-rose-50 border border-rose-100 rounded-xl p-5 mb-8">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-rose-600">translate</span>
+            <!-- 1. Language & Data Management -->
+            <details class="bg-gradient-to-r from-rose-50 to-orange-50 rounded-xl border border-rose-100 group overflow-hidden mb-6" open>
+                <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-rose-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                        <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-rose-600">translate</span>
+                        </div>
+                        <label class="block text-sm font-bold text-gray-900 cursor-pointer">Language & Data Import</label>
                     </div>
-                    <div class="flex-1">
+                </summary>
+                <div class="p-4 pt-0 space-y-6">
+                    <!-- Language Selection -->
+                    <div class="bg-white/40 p-4 rounded-xl border border-rose-100/50">
                         <label class="block text-[10px] font-bold text-rose-600 uppercase tracking-widest mb-1.5">${t('theme_label_language')}</label>
                         <div class="relative">
                             <select onchange="state.setLanguage(this.value)" 
@@ -129,89 +136,107 @@ const renderers = {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Import from Live Link -->
-            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-8">
-                <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-gray-600">cloud_download</span>
-                    </div>
-                    <div class="flex-1">
-                        <label class="block text-[10px] font-bold text-gray-400 upper-case tracking-widest mb-1">DATA IMPORT</label>
-                        <h3 class="text-sm font-bold text-gray-900 mb-1">Import from Live Website</h3>
-                        <p class="text-xs text-gray-500 mb-4">Want to edit an existing Valentine? Enter the ID or link below to pull all images and messages automatically.</p>
-                        <div class="flex gap-2">
-                            <input type="text" id="importUrlInput" 
-                                class="flex-1 bg-white border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-rose-500 focus:border-rose-500 block p-2.5 outline-none transition-all focus:shadow-md" 
-                                placeholder="e.g. aldoramadhan or website.com/?to=id">
-                            <button type="button" 
-                                onclick="state.importFromLink(document.getElementById('importUrlInput').value)"
-                                class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-all shadow-lg active:scale-95">
-                                Import
-                            </button>
+                    <!-- Import from Live Link -->
+                    <div class="bg-white/40 p-4 rounded-xl border border-rose-100/50">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-bold text-gray-400 upper-case tracking-widest mb-1">DATA IMPORT</label>
+                                <h3 class="text-sm font-bold text-gray-900 mb-1">Import from Live Website</h3>
+                                <p class="text-xs text-gray-500 mb-4">Enter the link or ID to pull config immediately.</p>
+                                <div class="flex gap-2">
+                                    <input type="text" id="importUrlInput" 
+                                        class="flex-1 bg-white border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-rose-500 focus:border-rose-500 block p-2.5 outline-none transition-all focus:shadow-md" 
+                                        placeholder="e.g. aldoramadhan">
+                                    <button type="button" 
+                                        onclick="state.importFromLink(document.getElementById('importUrlInput').value)"
+                                        class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-all shadow-lg active:scale-95">
+                                        Import
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </details>
 
-            <!-- Theme Presets -->
-            <div class="mb-8">
-                <label class="block text-sm font-bold text-gray-700 mb-3">${t('theme_label_presets')}</label>
-                <div class="theme-grid">
-                    <button type="button" data-theme-preset="vintage" class="theme-card">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%)"></div>
-                        <div class="theme-name">Vintage Romance</div>
-                    </button>
-                    <button type="button" data-theme-preset="modern" class="theme-card">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)"></div>
-                        <div class="theme-name">Modern Minimal</div>
-                    </button>
-                    <button type="button" data-theme-preset="romantic" class="theme-card">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #FFE5EC 0%, #FFC2D1 100%)"></div>
-                        <div class="theme-name">Romantic Dreams</div>
-                    </button>
-                    <button type="button" data-theme-preset="elegant" class="theme-card">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)"></div>
-                        <div class="theme-name">Elegant Night</div>
-                    </button>
-                    <button type="button" data-theme-preset="playful" class="theme-card">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%)"></div>
-                        <div class="theme-name">Playful & Fun</div>
-                    </button>
-                    <button type="button" data-theme-preset="coffee" class="theme-card">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #D7CCC8 0%, #BCAAA4 100%)"></div>
-                        <div class="theme-name">Coffee House</div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Custom Theme Settings -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-600 mb-2">${t('theme_label_bg_image')}</label>
-                    <div class="flex gap-2 items-center">
-                        <img id="prev_theme_bg" src="${this.getStateValue('theme', 'backgroundImage', '')}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${this.getStateValue('theme', 'backgroundImage') ? '' : 'hidden'}">
-                        ${this.createStateInput('theme_bg', 'theme', 'backgroundImage', t('theme_placeholder_bg'))}
-                        <label class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 py-2 flex items-center hover:bg-gray-50 transition-colors shadow-sm">
-                            <span class="material-symbols-outlined text-gray-500">upload_file</span>
-                            <input type="file" class="hidden" accept="image/*" onchange="utils.handleMediaUpload(this, 'theme_bg')">
-                        </label>
+            <!-- 2. Theme Presets -->
+            <details class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100 group overflow-hidden mb-6">
+                <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-amber-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                        <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-amber-600">style</span>
+                        </div>
+                        <label class="block text-sm font-bold text-gray-900 cursor-pointer">${t('theme_label_presets')}</label>
+                    </div>
+                </summary>
+                <div class="p-4 pt-0">
+                    <div class="theme-grid">
+                        <button type="button" data-theme-preset="vintage" class="theme-card">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%)"></div>
+                            <div class="theme-name">Vintage Romance</div>
+                        </button>
+                        <button type="button" data-theme-preset="modern" class="theme-card">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)"></div>
+                            <div class="theme-name">Modern Minimal</div>
+                        </button>
+                        <button type="button" data-theme-preset="romantic" class="theme-card">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #FFE5EC 0%, #FFC2D1 100%)"></div>
+                            <div class="theme-name">Romantic Dreams</div>
+                        </button>
+                        <button type="button" data-theme-preset="elegant" class="theme-card">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)"></div>
+                            <div class="theme-name">Elegant Night</div>
+                        </button>
+                        <button type="button" data-theme-preset="playful" class="theme-card">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%)"></div>
+                            <div class="theme-name">Playful & Fun</div>
+                        </button>
+                        <button type="button" data-theme-preset="coffee" class="theme-card">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #D7CCC8 0%, #BCAAA4 100%)"></div>
+                            <div class="theme-name">Coffee House</div>
+                        </button>
                     </div>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-600 mb-2">${t('theme_label_bg_color')}</label>
-                    <div class="flex gap-2">
-                        <input type="color" id="theme_color_picker" class="w-12 h-11 rounded-lg border-gray-200" value="${this.getStateValue('theme', 'backgroundColor', '#F5E6D3')}" oninput="state.updateField('theme', 'backgroundColor', this.value); document.getElementById('theme_color').value = this.value">
-                        <input type="text" id="theme_color" class="form-input" value="${this.getStateValue('theme', 'backgroundColor', '#F5E6D3')}" oninput="state.updateField('theme', 'backgroundColor', this.value); document.getElementById('theme_color_picker').value = this.value">
+            </details>
+
+            <!-- 3. Custom Theme Details -->
+            <details class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100 group overflow-hidden mb-6">
+                <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-pink-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                        <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-pink-600">tune</span>
+                        </div>
+                        <label class="block text-sm font-bold text-gray-900 cursor-pointer">Custom Style Detail</label>
                     </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-600 mb-2">${t('theme_label_font_display')}</label>
-                    ${this.createStateSelect('theme_font_display', 'theme', 'fontDisplay', [
+                </summary>
+                <div class="p-6 pt-0 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">${t('theme_label_bg_image')}</label>
+                            <div class="flex gap-2 items-center">
+                                <img id="prev_theme_bg" src="${this.getStateValue('theme', 'backgroundImage', '')}" class="img-preview-mini w-12 h-12 object-cover rounded-lg shadow-sm ${this.getStateValue('theme', 'backgroundImage') ? '' : 'hidden'}">
+                                ${this.createStateInput('theme_bg', 'theme', 'backgroundImage', t('theme_placeholder_bg'))}
+                                <label class="cursor-pointer bg-white border border-gray-200 rounded-xl px-4 py-2 flex items-center hover:bg-gray-50 transition-colors shadow-sm">
+                                    <span class="material-symbols-outlined text-gray-500">upload_file</span>
+                                    <input type="file" class="hidden" accept="image/*" onchange="utils.handleMediaUpload(this, 'theme_bg')">
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">${t('theme_label_bg_color')}</label>
+                            <div class="flex gap-2">
+                                <input type="color" id="theme_color_picker" class="w-12 h-11 rounded-lg border-gray-200" value="${this.getStateValue('theme', 'backgroundColor', '#F5E6D3')}" oninput="state.updateField('theme', 'backgroundColor', this.value); document.getElementById('theme_color').value = this.value">
+                                <input type="text" id="theme_color" class="form-input" value="${this.getStateValue('theme', 'backgroundColor', '#F5E6D3')}" oninput="state.updateField('theme', 'backgroundColor', this.value); document.getElementById('theme_color_picker').value = this.value">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">${t('theme_label_font_display')}</label>
+                            ${this.createStateSelect('theme_font_display', 'theme', 'fontDisplay', [
             { value: 'Playfair Display, serif', label: 'Playfair Display (Vintage)' },
             { value: 'Great Vibes, cursive', label: 'Great Vibes (Romantic & Flowy)' },
             { value: 'Dancing Script, cursive', label: 'Dancing Script (Elegant Script)' },
@@ -222,144 +247,91 @@ const renderers = {
             { value: 'Montserrat, sans-serif', label: 'Montserrat (Bold Modern)' },
             { value: 'Inter, sans-serif', label: 'Inter (Clean)' }
         ])}
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-600 mb-2">${t('theme_label_font_sans')}</label>
-                    ${this.createStateSelect('theme_font_sans', 'theme', 'fontSans', [
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">${t('theme_label_font_sans')}</label>
+                            ${this.createStateSelect('theme_font_sans', 'theme', 'fontSans', [
             { value: 'Poppins, sans-serif', label: 'Poppins (Smooth & Modern)' },
             { value: 'Inter, sans-serif', label: 'Inter (Standard)' },
             { value: 'Cormorant Garamond, serif', label: 'Cormorant Garamond (Fine Italic)' },
             { value: 'Roboto, sans-serif', label: 'Roboto (Clean)' },
             { value: 'Courier New, monospace', label: 'Courier New (Old School)' }
         ])}
-                </div>
-                
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-bold text-gray-600 mb-2">${t('theme_label_particles')}</label>
-                    ${this.createStateSelect('theme_particles', 'theme', 'particles', [
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">${t('theme_label_particles')}</label>
+                            ${this.createStateSelect('theme_particles', 'theme', 'particles', [
             { value: 'none', label: t('part_none') },
             { value: 'hearts', label: t('part_hearts') },
             { value: 'stars', label: t('part_stars') },
             { value: 'dust', label: t('part_dust') },
             { value: 'snow', label: t('part_snow') }
         ])}
-                    <p class="text-xs text-gray-400 mt-2 italic">Note: Keep it subtle. These float gently in the background.</p>
-                </div>
-            </div>
-
-            <!-- Global Branding (Locked) -->
-            <!-- Global Branding (Locked) -->
-            <div class="bg-gray-100/50 border border-gray-200 rounded-xl p-6 mb-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-gray-400">lock</span>
-                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest">${t('brand_protect')}</h3>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 bg-white/50 border border-dashed border-gray-200 p-4 rounded-lg">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-gray-400 scale-75">${this.getStateValue('metadata', 'brandIcon', 'diamond')}</span>
-                        <div class="text-[11px] font-bold text-gray-400 uppercase">Icon</div>
-                    </div>
-                    <div>
-                        <div class="text-[11px] font-bold text-gray-400 uppercase">${t('theme_label_brand')}</div>
-                        <div class="text-gray-600 font-medium">${this.getStateValue('metadata', 'brandName', 'For you, Always')}</div>
-                    </div>
-                </div>
-                <p class="text-[10px] text-gray-400 mt-3 italic">${t('brand_note')}</p>
-            </div>
-
-            <!-- Login & Countdown Settings -->
-            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 mb-6">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="material-symbols-outlined text-indigo-600">lock_person</span>
-                    <h3 class="text-lg font-bold text-gray-900">${t('login_header')}</h3>
-                </div>
-                
-                <div class="bg-white rounded-lg p-4 mb-4">
-                    <div class="flex gap-3 mb-4">
-                        <span class="material-symbols-outlined text-indigo-400">shield_lock</span>
-                        <div class="text-xs text-indigo-900/80 leading-relaxed">
-                            <span class="font-bold block text-indigo-900 mb-1">🔑 ${t('login_help_title')}</span>
-                            ${t('login_help_desc')}
+                            <p class="text-[10px] text-gray-400 mt-2 italic">Note: Keep it subtle. These float gently in the background.</p>
                         </div>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">${t('login_password')}</label>
-                        ${this.createStateInput('password', 'login', 'password', 'Enter password')}
+            </details>
+
+            <!-- 4. Security & Identity -->
+            <details class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100 group overflow-hidden mb-6">
+                <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/50 transition-colors list-none">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-indigo-500 group-open:rotate-90 transition-transform">chevron_right</span>
+                        <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-indigo-600">lock_person</span>
+                        </div>
+                        <label class="block text-sm font-bold text-gray-900 cursor-pointer">${t('login_header')}</label>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">${t('login_subtitle')}</label>
-                        ${this.createStateInput('collectionText', 'login', 'collectionText', 'Collection text')}
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">${t('login_title')}</label>
-                        ${this.createStateInput('p1_title', 'login', 'title', 'Login page title')}
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">${t('login_hint')}</label>
-                        ${this.createStateInput('p1_instr', 'login', 'instruction', 'Login instruction')}
-                    </div>
-                    
-                    <div class="md:col-span-2 bg-rose-50 rounded-lg p-4 border border-rose-100">
+                </summary>
+                <div class="p-6 pt-0 space-y-6">
+                    <div class="bg-white/60 rounded-xl p-4 border border-indigo-100/50">
+                        <div class="flex gap-3 mb-4">
+                            <span class="material-symbols-outlined text-indigo-400">shield_lock</span>
+                            <div class="text-xs text-indigo-900/80 leading-relaxed">
+                                <span class="font-bold block text-indigo-900 mb-1">🔑 ${t('login_help_title')}</span>
+                                ${t('login_help_desc')}
+                            </div>
+                        </div>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-bold text-rose-800 mb-1">${t('count_target')}</label>
-                                <input type="datetime-local" 
-                                       id="count_date" 
-                                       class="form-input border-rose-200" 
-                                       value="${this.getStateValue('countdown', 'targetDate', '2026-02-14T22:00').substring(0, 16)}"
-                                       oninput="state.updateField('countdown', 'targetDate', new Date(this.value).toISOString())">
-                                <p class="text-xs text-rose-400 mt-1">${t('count_note')}</p>
+                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">${t('login_password')}</label>
+                                ${this.createStateInput('password', 'login', 'password', 'Enter password')}
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-rose-800 mb-1">${t('count_finish')}</label>
-                                ${this.createStateInput('count_finish', 'countdown', 'finishMessage', 'Finish message')}
+                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">${t('login_subtitle')}</label>
+                                ${this.createStateInput('collectionText', 'login', 'collectionText', 'Collection text')}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">${t('login_title')}</label>
+                                ${this.createStateInput('login_title', 'login', 'title', 'Main Title')}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">${t('login_hint')}</label>
+                                ${this.createStateInput('login_instruction', 'login', 'instruction', 'Instruction hint')}
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Navigation Settings -->
-            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <h3 class="text-sm font-bold text-gray-900 mb-4">${t('nav_settings')}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-900">${t('nav_indicator')}</label>
-                            <p class="text-xs text-gray-500 font-medium">${t('nav_indicator_desc')}</p>
+                    <div class="bg-white/60 rounded-xl p-4 border border-indigo-100/50">
+                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">${t('count_target')}</label>
+                        <div class="flex gap-3">
+                            <input type="datetime-local" id="count_target_date" class="form-input" 
+                                value="${this.getStateValue('countdown', 'targetDate', '').split('.')[0]}" 
+                                oninput="state.updateField('countdown', 'targetDate', new Date(this.value).toISOString())">
+                            <div class="flex-1">
+                                ${this.createStateInput('count_finish_msg', 'countdown', 'finishMessage', t('count_finish'))}
+                            </div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" 
-                                   id="show_indicator" 
-                                   class="form-checkbox h-5 w-5 text-rose-600 rounded focus:ring-rose-500" 
-                                   ${this.getStateValue('navigation', 'showPageIndicator', true) ? 'checked' : ''}
-                                   onchange="state.updateField('navigation', 'showPageIndicator', this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-900">${t('nav_swipe')}</label>
-                            <p class="text-xs text-gray-500 font-medium">${t('nav_swipe_desc')}</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" 
-                                   id="enable_swipe" 
-                                   class="form-checkbox h-5 w-5 text-rose-600 rounded focus:ring-rose-500" 
-                                   ${this.getStateValue('navigation', 'enableSwipe', true) ? 'checked' : ''}
-                                   onchange="state.updateField('navigation', 'enableSwipe', this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <p class="text-[10px] text-gray-400 mt-2 italic">${t('count_note')}</p>
                     </div>
                 </div>
-            </div>
+            </details>
+
+
 
             <div class="mt-6">
                 <label class="block text-sm font-bold text-gray-600 mb-2">${t('theme_label_recipient')}</label>
@@ -1915,16 +1887,6 @@ const renderers = {
                                 <span class="material-symbols-outlined text-base">audio_file</span>
                                 <input type="file" class="hidden" accept="audio/*" data-target="infinity-music-src" onchange="utils.handleMediaUpload(this, 'infinity-music-src')">
                             </label>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <input type="text" class="form-input text-sm" 
-                                value="${pageData.music?.songTitle || ''}" 
-                                placeholder="${t('page_music_label_song')}"
-                                oninput="renderers.updateInfinityMusic('songTitle', this.value)">
-                            <input type="text" class="form-input text-sm" 
-                                value="${pageData.music?.artist || ''}" 
-                                placeholder="${t('page_music_label_artist')}"
-                                oninput="renderers.updateInfinityMusic('artist', this.value)">
                         </div>
                     </div>
                 </div>

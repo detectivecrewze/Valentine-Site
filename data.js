@@ -169,6 +169,17 @@ const CONFIG = {
                 "date": "2021-05-21",
                 "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283909515-jd0otg.jpg",
                 "icon": "favorite"
+            },
+            {
+                "coordinates": [
+                    "-6.625734",
+                    "106.149928"
+                ],
+                "title": "Our Trip to the Zoo",
+                "memory": "It was a fun day!!",
+                "date": "1990-10-12",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770293163738-ik4ojl.jpg",
+                "icon": "favorite"
             }
         ]
     },
@@ -236,7 +247,7 @@ const CONFIG = {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-05T09:39:29.841Z"
+        "generatedAt": "2026-02-05T12:17:45.185Z"
     },
     "adminLang": "id",
     "currentStep": 9,

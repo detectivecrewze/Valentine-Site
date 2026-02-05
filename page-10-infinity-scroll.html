@@ -948,11 +948,11 @@
 
         // Merge all sources
         const PHOTO_MEMORIES = [
-            ...greetingImage,
-            ...wrappedImage,
+            ...processedInfinityPhotos, // 1. Prioritize photos uploaded specifically for Page 10
+            ...greetingImage.map(p => ({ ...p, noCaption: true })), // 2. Remove caption for Greeting
+            ...wrappedImage.map(p => ({ ...p, noCaption: true })),  // 3. Remove caption for Wrapped
             ...galleryMemories,
             ...mapMemories,
-            ...processedInfinityPhotos
         ];
 
         // Fallback if no photos at all
@@ -1312,6 +1312,7 @@
                              loading="lazy" />
                         
                         <!-- Caption -->
+                        ${photo.noCaption ? '' : `
                         <div class="pt-6 pb-6 px-3 relative min-h-[60px] flex flex-col justify-center">
                             <p class="font-dancing text-xl text-rose-800 opacity-90">${photo.caption}</p>
                             ${photo.date ? `
@@ -1321,6 +1322,7 @@
                                 </p>
                             ` : ''}
                         </div>
+                        `}
                     </div>
                 </div>
             `;

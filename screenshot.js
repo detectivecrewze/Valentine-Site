@@ -225,6 +225,48 @@ async function shareMusic() {
     }
 }
 
+// Share Map Discovery function
+async function shareMapDiscovery() {
+    try {
+        const shareTitle = "Adventure Summary";
+        const shareText = "Look at how far we've traveled together! ❤️🗺️";
+
+        // Step 1: Capture the discovery content
+        // We capture the specific content box for better quality
+        const canvas = await captureElement('#discovery-popup .discovery-content', 'journey_summary.png', true);
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+        // Step 2: Prepare the file
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], 'journey_summary.png', { type: 'image/png' });
+
+        // Step 3: Use Web Share API
+        if (navigator.share) {
+            const shareData = {
+                title: shareTitle,
+                text: shareText
+            };
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                shareData.files = [file];
+            }
+
+            try {
+                await navigator.share(shareData);
+            } catch (shareError) {
+                if (shareError.name !== 'AbortError') {
+                    downloadBlob(blob, 'journey_summary.png');
+                }
+            }
+        } else {
+            downloadBlob(blob, 'journey_summary.png');
+        }
+    } catch (err) {
+        console.error('Journey share failed:', err);
+        alert('Could not open sharing. The image has been saved to your device instead.');
+    }
+}
+
 // Utility to handle downloads
 function downloadBlob(blob, filename) {
     const url = URL.createObjectURL(blob);
