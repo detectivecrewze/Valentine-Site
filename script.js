@@ -272,7 +272,8 @@ async function initializeApp() {
                 }, 5000);
             }, 1000);
         } else {
-            console.log('[Config] ✅ API config loaded successfully');
+            const source = getCustomerId() ? 'API (Cloudflare KV)' : 'LOCAL (data.js)';
+            console.log(`[Config] ✅ Config loaded from: ${source}`);
         }
 
         // ✅ CRITICAL FIX: Ensure config is valid
@@ -1854,16 +1855,10 @@ function loadGallery() {
                     ${mediaHTML}
                     ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
                 </div>
-                <div class="pt-5 pb-6 px-3 relative min-h-[70px] flex flex-col justify-center">
+                <div class="pt-5 pb-6 px-3 text-center">
                     <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
                         ${mem.caption}
                     </p>
-                    ${mem.date ? `
-                        <p id="date-${index}" class="gallery-date absolute bottom-0 right-0.5 text-gray-400 font-normal ${revealedMemories[index] ? 'opacity-80' : 'opacity-0'} transition-opacity duration-1000" 
-                           style="font-family: 'Mrs Saint Delafield', cursive; font-size: 12px; letter-spacing: 0.5px; z-index: 20;">
-                            ${mem.date}
-                        </p>
-                    ` : ''}
                 </div>
             `;
             gridEl.appendChild(card);
@@ -2000,12 +1995,6 @@ function initScratchCard(index) {
                 caption.classList.add('opacity-100');
             }
 
-            const dateEl = document.getElementById(`date-${index}`);
-            if (dateEl) {
-                dateEl.classList.remove('opacity-0');
-                dateEl.classList.add('opacity-80');
-            }
-
             // Add capability
             const container = canvas.parentElement;
             container.classList.add('shadow-inner');
@@ -2086,14 +2075,8 @@ function openLightbox(index) {
                 ${mediaHTML}
             </div>
 
-            <div class="text-center pt-2 pb-6 px-3 relative">
+            <div class="text-center pt-2 pb-6 px-3">
                 <p class="polaroid-caption text-xl md:text-2xl" style="opacity: 1 !important; transform: rotate(-1deg) !important; transition: none !important;">${mem.caption}</p>
-                ${mem.date ? `
-                    <p class="absolute bottom-0 right-1 text-gray-400 font-normal" 
-                       style="font-family: 'Mrs Saint Delafield', cursive; font-size: 14px; letter-spacing: 0.5px;">
-                        ${mem.date}
-                    </p>
-                ` : ''}
             </div>
 
             <button onclick="this.closest('.fixed').remove()"

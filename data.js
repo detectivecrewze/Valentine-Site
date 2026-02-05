@@ -83,7 +83,7 @@ const CONFIG = {
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
         }
     ],
-    "musicSectionTitle": "Our Playlist",
+    "musicSectionTitle": "",
     "gallery": {
         "title": "Our Memories",
         "subtitle": "Scratch to reveal",
@@ -98,35 +98,35 @@ const CONFIG = {
             },
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805183715-20618q.jpg",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284239980-05097k.jpg",
                 "caption": "We're Dancing While Watching The Sunrise.",
                 "tape": "washi-tape-gold",
                 "rotation": "rotate-2"
             },
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805230987-7ty5b.jpg",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284260646-pwst3j.jpg",
                 "caption": "Our Trip To Berlin!",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             },
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805276131-cts88.jpg",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284269260-3nun3.jpg",
                 "caption": "We're Getting Ready For The Dates.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             },
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805302423-nfl0um.jpg",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284284621-yrtguu.jpg",
                 "caption": "Watching The Swains As They Past.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             },
             {
                 "type": "image",
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769805374361-oqdib.jpg",
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284302091-b9srf.jpg",
                 "caption": "That Night When We Go Nowhere.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
@@ -145,7 +145,7 @@ const CONFIG = {
                 "title": "Where we first met.",
                 "memory": "The air was sweet...",
                 "date": "2020-01-20",
-                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769735563998-z1hev.jpg",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283881691-7rejuu.jpg",
                 "icon": "favorite"
             },
             {
@@ -156,7 +156,7 @@ const CONFIG = {
                 "title": "Where you kiss me for the first time.",
                 "memory": "The Moments Was Just Perfect.",
                 "date": "2020-02-25",
-                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769805492176-k2bc5u.jpg",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283894304-rk5h.jpg",
                 "icon": "favorite"
             },
             {
@@ -167,7 +167,7 @@ const CONFIG = {
                 "title": "Trip to Beach !!",
                 "memory": "Our First Trip Ever !!",
                 "date": "2021-05-21",
-                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769805546306-4o1wr.jpg",
+                "imageSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283909515-jd0otg.jpg",
                 "icon": "favorite"
             }
         ]
@@ -177,7 +177,7 @@ const CONFIG = {
         "message": "I find myself sitting here, thinking about all the moments we've shared... and it feels like I’m watching the most beautiful movie play out in my mind. It’s not just the big milestones or the dates on the calendar that stick with me; it’s the quiet spaces in between. It’s the way you look at me when you think I’m not noticing, the sound of your laugh filling a room, and the comfort of sitting in silence with you and feeling completely understood.\n\nLooking back, I realize how much you have colored my world. Before you, things were just ordinary. Now, everything seems to have more depth, more meaning. You’ve become the first person I want to tell when something good happens, and the only person I want to hold when the world feels heavy. You are my safe harbor, the place where I can finally just breathe and be myself without fear or pretense.",
         "signature": "Your Favorite Person",
         "stampSrc": "assets/stamp.png",
-        "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769894647359-3oq81.jpg",
+        "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283993044-a3q2v.jpg",
         "polaroidCaption": "Love You.",
         "finaleChoice": "choice"
     },
@@ -219,30 +219,24 @@ const CONFIG = {
         },
         "photos": [
             {
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769789202159-7uqa2b.png",
-                "caption": ""
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284072476-v65amd.png",
+                "caption": "Running."
             },
             {
-                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1769789221789-206zr.jpg",
-                "caption": ""
+                "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284086207-2uejjh.jpg",
+                "caption": "Dancing With You."
             }
         ],
-        "videoMemories": [
-            {
-                "url": "https://valentine-upload.aldoramadhan16.workers.dev/1769967296922-6qaedg.mp4",
-                "caption": "Kamu Bau",
-                "milestone": 25
-            }
-        ],
+        "videoMemories": [],
         "music": {
-            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1769968365113-zkoe64.mp3"
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770284156537-7axsz9.mp3"
         }
     },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-04T23:41:31.945Z"
+        "generatedAt": "2026-02-05T09:39:29.841Z"
     },
     "adminLang": "id",
     "currentStep": 9,

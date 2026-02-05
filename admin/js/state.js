@@ -194,7 +194,7 @@ const state = {
             this.configData.pages.push({
                 pageId: 'page-3',
                 type: 'music',
-                songTitle: CONFIG.musicSectionTitle || 'Our Playlist',
+                songTitle: CONFIG.musicSectionTitle || '',
                 music: CONFIG.music
             });
         } else {
@@ -330,7 +330,7 @@ const state = {
         this.configData.pages.push({
             pageId: 'page-3',
             type: 'music',
-            songTitle: 'Our Playlist',
+            songTitle: '',
             music: [
                 { songTitle: "Selfless", artist: "The Strokes", audioSrc: "https://valentine-upload.aldoramadhan16.workers.dev/1769897932779-xfl03b.mp3", coverSrc: "assets/cover1.jpg", lyrics: "Life is too short, but i will live for you" },
                 { songTitle: "Ivy", artist: "Frank Ocean", audioSrc: "https://valentine-upload.aldoramadhan16.workers.dev/1769773133105-34968d.mp3", coverSrc: "assets/cover2.jpg", lyrics: "I thought that I was dreaming when you said that you loves me.." }
@@ -567,7 +567,7 @@ const state = {
                 resultMessage: quizPage.resultMessage
             } : null,
             music: musicPage ? musicPage.music : [],
-            musicSectionTitle: musicPage ? musicPage.songTitle : 'Our Playlist',
+            musicSectionTitle: musicPage ? musicPage.songTitle : '',
             gallery: galleryPage ? {
                 title: galleryPage.title,
                 subtitle: galleryPage.subtitle,

@@ -514,7 +514,7 @@ const renderers = {
     },
 
     // ========================================
-    // PAGE 3: MUSIC (Our Playlist)
+    // PAGE 3: MUSIC (Music Player)
     // ========================================
     renderMusicStep() {
         const pageData = state.findPageById('page-3') || {
@@ -629,7 +629,7 @@ const renderers = {
             state.configData.pages.push({
                 pageId: 'page-3',
                 type: 'music-section',
-                songTitle: 'Our Playlist',
+                songTitle: '',
                 music: []
             });
         }
@@ -1112,19 +1112,11 @@ const renderers = {
                 </div>
 
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_caption')}</label>
-                        <input type="text" class="form-input text-sm" value="${memory.caption || ''}" 
-                            placeholder="A special moment..."
-                            oninput="renderers.updateGalleryMemory(${idx}, 'caption', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Memory'">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_date')}</label>
-                        <input type="text" class="form-input text-sm" value="${memory.date || ''}" 
-                            placeholder="20 Feb 2024"
-                            oninput="renderers.updateGalleryMemory(${idx}, 'date', this.value)">
-                    </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_caption')}</label>
+                    <input type="text" class="form-input text-sm" value="${memory.caption || ''}" 
+                        placeholder="A special moment..."
+                        oninput="renderers.updateGalleryMemory(${idx}, 'caption', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Memory'">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-2">

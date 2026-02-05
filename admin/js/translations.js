@@ -98,7 +98,7 @@ const translations = {
         page_greeting_label_sig: "Closing Signature",
         page_greeting_label_footer: "Footer Tagline",
 
-        page_music_title: "Our Playlist",
+        page_music_title: "Music Player",
         page_music_desc: "Create a personal mixtape with songs that tell your story.",
         page_music_tips: "Music Tips",
         page_music_tips_desc: "Make this your emotional mixtape! Upload your favorite songs, and use the Lyrics section to highlight lines that perfectly describe them or your relationship.",
@@ -311,7 +311,7 @@ const translations = {
         page_greeting_label_sig: "Salam Penutup (Tanda Tangan)",
         page_greeting_label_footer: "Teks Kecil di Bawah (Footer)",
 
-        page_music_title: "Playlist Kita",
+        page_music_title: "Musik Kita",
         page_music_desc: "Buat mixtape pribadi dengan lagu dan lirik",
         page_music_tips: "Tips Musik",
         page_music_tips_desc: "Jadikan ini mixtape perasaanmu! Upload lagu favorit kalian, dan gunakan fitur lirik untuk menyelipkan kata-kata manis atau bagian lagu yang sangat menggambarkan hubungan kalian.",

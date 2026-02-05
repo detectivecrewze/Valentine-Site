@@ -17,7 +17,7 @@ const PAGE_TYPES = {
     },
     'music': {
         id: 'page-3',
-        name: 'Our Playlist',
+        name: 'Music Player',
         icon: 'music_note',
         required: false,
         description: 'Curated music collection'
@@ -136,7 +136,7 @@ const DEFAULT_PAGE_CONFIG = {
     pages: {
         'page-1': { id: 'page-1', name: 'Login', type: 'login', enabled: true, required: true, icon: 'lock', order: 1 },
         'page-2': { id: 'page-2', name: 'Greeting Card', type: 'greeting', enabled: true, required: false, icon: 'favorite', order: 2 },
-        'page-3': { id: 'page-3', name: 'Our Playlist', type: 'music', enabled: true, required: false, icon: 'music_note', order: 3 },
+        'page-3': { id: 'page-3', name: 'Music Player', type: 'music', enabled: true, required: false, icon: 'music_note', order: 3 },
         'page-4': { id: 'page-4', name: 'Our Vibe (Wrapped)', type: 'wrapped', enabled: true, required: false, icon: 'auto_awesome', order: 4 },
         'page-5': { id: 'page-5', name: 'Love Quiz', type: 'quiz', enabled: true, required: false, icon: 'quiz', order: 5 },
         'page-6': { id: 'page-6', name: 'Photo Gallery', type: 'gallery', enabled: true, required: false, icon: 'photo_library', order: 6 },
