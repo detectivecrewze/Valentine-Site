@@ -1032,13 +1032,15 @@
 
 
         <main id="page-7-container" class="h-full w-full relative overflow-hidden">
+            <!-- Peta diletakkan paling atas agar menjadi base layer yang bersih -->
+            <div id="map" class="h-full w-full"></div>
+
+            <!-- Semua UI diletakkan SETELAH peta di DOM -->
             <!-- Discovery Pop-up (Surprise Achievement) -->
             <div id="discovery-popup"
                 class="discovery-popup fixed inset-x-0 bottom-32 md:bottom-24 z-[1500] pointer-events-none flex justify-center px-6">
                 <div
                     class="discovery-content relative p-6 md:p-8 rounded-[2rem] max-w-sm w-full pointer-events-auto flex flex-col gap-6">
-
-                    <!-- Decorative Sparkles -->
 
                     <span class="material-symbols-outlined absolute bottom-4 -left-4 text-rose-200 sparkle-slow text-xl"
                         style="animation-delay: 2s">auto_awesome</span>
@@ -1061,7 +1063,6 @@
                     </div>
 
                     <div id="discovery-message" class="space-y-4">
-                        <!-- Stats will be injected here with beautiful formatting -->
                         <div class="animate-pulse bg-rose-50 h-16 rounded-xl w-full"></div>
                     </div>
 
@@ -1072,7 +1073,6 @@
                 </div>
             </div>
 
-            <div id="map" class="h-full w-full"></div>
 
             <!-- Map Loading Overlay -->
             <div id="map-loading-overlay"
@@ -1122,9 +1122,9 @@
                 </div>
             </div>
 
-            <div id="map" class="h-full w-full"></div>
 
             <!-- Map Overlay Info -->
+
             <div id="map-card"
                 class="absolute top-0 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-8 z-[1000] w-[90%] md:w-auto max-w-sm pointer-events-none transition-all duration-300">
                 <div
@@ -1290,7 +1290,7 @@
 
                                     <!-- White bottom border with handwritten caption -->
                                     <div class="polaroid-caption">
-                                        <span class="handwritten-text" id="letter-polaroid-caption">Us, 2024 ♡</span>
+                                        <span class="handwritten-text" id="letter-polaroid-caption">Us ♡</span>
                                     </div>
                                 </div>
 

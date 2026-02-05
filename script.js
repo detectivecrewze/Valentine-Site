@@ -2282,8 +2282,13 @@ async function initMap() {
 
         mapInstance = L.map('map', {
             zoomControl: false,
-            attributionControl: false
+            attributionControl: false,
+            tap: false // Recommended for mobile touch issues in Leaflet
         }).setView(defaultCenter, 13);
+
+
+
+
 
         // Use Standard OpenStreetMap for original colors
         const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -2459,8 +2464,7 @@ async function initMap() {
             // Create popup content
             let popupContent = `
                 <div class="font-sans p-2">
-                    <h3 class="font-display text-deep-red font-bold text-lg mb-1">${loc.title}</h3>
-                    <p class="text-xs text-rose-400 font-semibold mb-2 uppercase tracking-wider">${loc.date}</p>`;
+                    <h3 class="font-display text-deep-red font-bold text-lg mb-1">${loc.title}</h3>`;
 
             if (loc.imageSrc && loc.imageSrc.trim() !== '') {
                 popupContent += `
@@ -2530,13 +2534,227 @@ async function initMap() {
         setTimeout(() => showMapDiscoveryPopUp(), 1000);
     }
 
-    // Add Zoom control to bottom left if missing
+    // Add Zoom control if missing
     if (!document.querySelector('.leaflet-control-zoom') && mapInstance) {
-        L.control.zoom({
-            position: 'bottomleft'
-        }).addTo(mapInstance);
+        L.control.zoom({ position: 'bottomleft' }).addTo(mapInstance);
     }
+
+    // === REFINED MAP MOBILE FIX - v3.0 ===
+    setTimeout(() => {
+        console.log('[MapFix] Applying refined mobile fixes v3.0...');
+
+        const mapElement = document.getElementById('map');
+
+        if (!mapElement) return;
+
+        // FIX 1: Set map z-index and touch-action explicitly
+        mapElement.style.zIndex = '10';
+        mapElement.style.touchAction = 'pan-x pan-y pinch-zoom';
+        mapElement.style.pointerEvents = 'auto';
+
+        // FIX 2: Disable global blocking overlays
+        const globalOverlays = document.querySelectorAll('body > .grain-overlay, body > #particle-container');
+        globalOverlays.forEach(el => {
+            el.style.pointerEvents = 'none';
+            el.style.zIndex = '0';
+        });
+
+        // FIX 3: Force enable Leaflet handlers (just in case)
+        if (mapInstance) {
+            if (mapInstance.dragging) mapInstance.dragging.enable();
+            if (mapInstance.touchZoom) mapInstance.touchZoom.enable();
+            if (mapInstance.doubleClickZoom) mapInstance.doubleClickZoom.enable();
+
+            // Re-apply invalidated size to fix centering
+            mapInstance.invalidateSize();
+        }
+
+        // FIX 4: Ensure loading overlay is NUKED
+        const loadingOverlay = document.getElementById('map-loading-overlay');
+        if (loadingOverlay && loadingOverlay.classList.contains('hidden')) {
+            loadingOverlay.style.display = 'none';
+            loadingOverlay.style.pointerEvents = 'none';
+        }
+
+        console.log('[MapFix] ✅ v3.0 Refined fixes applied');
+
+        // 6. CRITICAL: Jalankan juga fix v4.0 untuk memastikan mobile works
+        fixMobileMapInteraction();
+    }, 1500);
 }
+
+// ==========================================
+// CRITICAL FIX: Mobile Map Interaction - v4.0
+// Fix spesifik untuk masalah peta tidak bisa 
+// di-zoom/di-pan di mobile devices
+// ==========================================
+
+/**
+ * Fungsi utama untuk memperbaiki interaksi peta di mobile
+ * Dipanggil setiap kali page-7 menjadi visible
+ */
+function fixMobileMapInteraction() {
+    console.log('[MapFix v4.0] Applying critical mobile fixes...');
+
+    const mapElement = document.getElementById('map');
+    const page7 = document.getElementById('page-7');
+
+    if (!mapElement || !page7) {
+        console.warn('[MapFix v4.0] Map or page-7 element not found');
+        return;
+    }
+
+    // 1. CRITICAL: Reset touch-action di semua parent container
+    let parent = mapElement.parentElement;
+    while (parent && parent !== document.body) {
+        const computedStyle = window.getComputedStyle(parent);
+
+        // Hapus touch-action: none yang bisa memblokir
+        if (computedStyle.touchAction === 'none') {
+            console.log('[MapFix v4.0] Removing touch-action:none from:', parent.id || parent.className);
+            parent.style.touchAction = 'pan-x pan-y pinch-zoom';
+        }
+
+        // Pastikan pointer-events tidak none
+        if (computedStyle.pointerEvents === 'none') {
+            console.log('[MapFix v4.0] Fixing pointer-events on:', parent.id || parent.className);
+            parent.style.pointerEvents = 'auto';
+        }
+
+        parent = parent.parentElement;
+    }
+
+    // 2. CRITICAL: Re-initialize Leaflet interaction handlers
+    if (mapInstance) {
+        // Enable semua handler secara eksplisit
+        if (mapInstance.dragging && !mapInstance.dragging.enabled()) {
+            mapInstance.dragging.enable();
+            console.log('[MapFix v4.0] Dragging enabled');
+        }
+
+        if (mapInstance.touchZoom && !mapInstance.touchZoom.enabled()) {
+            mapInstance.touchZoom.enable();
+            console.log('[MapFix v4.0] Touch zoom enabled');
+        }
+
+        if (mapInstance.doubleClickZoom && !mapInstance.doubleClickZoom.enabled()) {
+            mapInstance.doubleClickZoom.enable();
+            console.log('[MapFix v4.0] Double click zoom enabled');
+        }
+
+        if (mapInstance.scrollWheelZoom && !mapInstance.scrollWheelZoom.enabled()) {
+            mapInstance.scrollWheelZoom.enable();
+        }
+
+        // 3. CRITICAL: Invalidate size dengan multiple attempts
+        // Timing berbeda untuk memastikan DOM settled
+        setTimeout(() => mapInstance.invalidateSize(), 100);
+        setTimeout(() => mapInstance.invalidateSize(), 500);
+        setTimeout(() => mapInstance.invalidateSize(), 1000);
+    }
+
+    // 4. CRITICAL: Discovery popup tidak boleh block saat tidak aktif
+    const discoveryPopup = document.getElementById('discovery-popup');
+    if (discoveryPopup && !discoveryPopup.classList.contains('show')) {
+        discoveryPopup.style.pointerEvents = 'none';
+        discoveryPopup.style.zIndex = '-1';
+    }
+
+    // 5. CRITICAL: Pastikan loading overlay benar-benar hilang
+    const loadingOverlay = document.getElementById('map-loading-overlay');
+    if (loadingOverlay) {
+        loadingOverlay.classList.add('hidden');
+        loadingOverlay.style.display = 'none';
+        loadingOverlay.style.pointerEvents = 'none';
+        loadingOverlay.style.zIndex = '-9999';
+    }
+
+    // 6. CRITICAL: Tambahkan event listener untuk touch events
+    // Ini memastikan browser tahu elemen ini menerima touch
+    mapElement.addEventListener('touchstart', function onTouchStart(e) {
+        // Stop propagation untuk mencegah parent menangkap event
+        e.stopPropagation();
+    }, { passive: true, capture: false });
+
+    console.log('[MapFix v4.0] ✅ Critical mobile fixes applied');
+}
+
+/**
+ * Observer untuk memantau visibility page-7
+ * Setiap kali page-7 muncul, jalankan fix
+ */
+(function setupPage7Observer() {
+    const page7 = document.getElementById('page-7');
+    if (!page7) return;
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                const isHidden = page7.classList.contains('hidden');
+
+                if (!isHidden) {
+                    // Page-7 baru saja muncul, jalankan fix
+                    console.log('[Page7 Observer] Page 7 visible, applying mobile fixes...');
+
+                    // Multiple attempts dengan timing berbeda
+                    setTimeout(fixMobileMapInteraction, 100);
+                    setTimeout(fixMobileMapInteraction, 500);
+                    setTimeout(fixMobileMapInteraction, 1500);
+                    setTimeout(fixMobileMapInteraction, 3000);
+                }
+            }
+        });
+    });
+
+    observer.observe(page7, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+
+    console.log('[Page7 Observer] Setup complete');
+})();
+
+/**
+ * Fix saat orientation change atau resize
+ * Penting untuk mobile yang sering rotate
+ */
+window.addEventListener('resize', () => {
+    const page7 = document.getElementById('page-7');
+    if (page7 && !page7.classList.contains('hidden')) {
+        console.log('[Resize] Page 7 resize detected, reapplying fixes...');
+        setTimeout(fixMobileMapInteraction, 300);
+    }
+});
+
+// Orientation change spesific
+window.addEventListener('orientationchange', () => {
+    const page7 = document.getElementById('page-7');
+    if (page7 && !page7.classList.contains('hidden')) {
+        console.log('[Orientation] Change detected, reapplying fixes...');
+        setTimeout(fixMobileMapInteraction, 500);
+        setTimeout(fixMobileMapInteraction, 1500);
+    }
+});
+
+/**
+ * Fungsi untuk debug touch events
+ * Hanya untuk development, bisa dihapus di production
+ */
+function debugMapTouch() {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return;
+
+    mapElement.addEventListener('touchstart', (e) => {
+        console.log('[Debug] Touch start on map:', e.touches.length, 'fingers');
+    }, { passive: true });
+
+    mapElement.addEventListener('touchmove', (e) => {
+        console.log('[Debug] Touch move on map');
+    }, { passive: true });
+
+    console.log('[Debug] Touch event listeners added to map');
+}
+
 
 // ==========================================
 // NEW: Discovery Pop-up & Stats Logic (Cumulative Exploration)
@@ -2614,6 +2832,15 @@ function showMapDiscoveryPopUp() {
     // Set message with new structure
     messageEl.innerHTML = stats.html;
 
+    // CRITICAL FIX: Reset style sebelum show (hapus style inline yang mungkin block)
+    popup.style.pointerEvents = '';
+    popup.style.zIndex = '';
+
+    const content = popup.querySelector('.discovery-content');
+    if (content) {
+        content.style.pointerEvents = '';
+    }
+
     // Show popup
     popup.classList.add('show');
 
@@ -2622,13 +2849,29 @@ function showMapDiscoveryPopUp() {
     window.discoveryTimeout = setTimeout(() => {
         hideDiscoveryPopUp();
     }, 10000);
+
+    console.log('[DiscoveryPopup] Shown');
 }
 
 function hideDiscoveryPopUp() {
     const popup = document.getElementById('discovery-popup');
     if (popup) {
         popup.classList.remove('show');
+
+        // CRITICAL FIX: Reset pointer-events dan z-index saat popup ditutup
+        // Ini memastikan popup tidak memblokir peta saat tidak terlihat
+        popup.style.pointerEvents = 'none';
+        popup.style.zIndex = '-1';
+
+        // Reset juga untuk content
+        const content = popup.querySelector('.discovery-content');
+        if (content) {
+            content.style.pointerEvents = 'none';
+        }
+
         if (window.discoveryTimeout) clearTimeout(window.discoveryTimeout);
+
+        console.log('[DiscoveryPopup] Hidden and disabled pointer events');
     }
 }
 

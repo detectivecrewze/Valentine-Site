@@ -2692,3 +2692,227 @@ body {
     text-align: center;
 }
 
+/* ========================================
+   CRITICAL MAP MOBILE FIX - v2.0 (AGGRESSIVE)
+   Solusi Ultimate untuk Touch Interaction
+   ======================================== */
+
+#page-7,
+#page-7-container {
+    overflow: hidden !important;
+    touch-action: auto !important;
+    /* Allow touch to start */
+}
+
+#page-7 #map {
+    touch-action: pan-x pan-y pinch-zoom !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+    /* High enough to be over any subtle page overlays */
+    position: relative !important;
+}
+
+#page-7 .leaflet-container {
+    touch-action: pan-x pan-y pinch-zoom !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+}
+
+/* Ensure ALL leaflet layers are interactive */
+#page-7 .leaflet-pane,
+#page-7 .leaflet-map-pane,
+#page-7 .leaflet-tile-pane,
+#page-7 .leaflet-overlay-pane,
+#page-7 .leaflet-marker-pane,
+#page-7 .leaflet-popup-pane,
+#page-7 .leaflet-control-zoom {
+    pointer-events: auto !important;
+    z-index: 100 !important;
+}
+
+#page-7 .leaflet-tile {
+    pointer-events: none !important;
+    /* Tiles should never block */
+}
+
+/* Force markers to be clickable */
+#page-7 .leaflet-marker-icon,
+#page-7 .custom-div-icon,
+#page-7 .leaflet-interactive {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* ALL OVERLAYS MUST GO BEHIND OR BE NON-BLOCKING */
+#page-7 .grain-overlay,
+#page-7 #particle-container,
+.grain-overlay,
+#particle-container {
+    pointer-events: none !important;
+}
+
+/* If on Page 7, ensure global overlays are at z-0 */
+#page-7 .grain-overlay,
+#page-7 #particle-container {
+    z-index: 0 !important;
+}
+
+/* Disable blocking for all absolute elements except recognized UI */
+#page-7 .absolute:not(.leaflet-control):not(.leaflet-popup):not(.nav-bottom-grid):not(.nav-camera-btn):not(.discovery-popup):not(.discovery-content):not(#map-card) {
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+/* Special handling for map-card and discovery-popup to ensure they don't block the WHOLE screen */
+#map-card,
+#discovery-popup {
+    pointer-events: none !important;
+    /* Container should not block */
+}
+
+#map-card>div,
+#discovery-popup>div,
+.discovery-content {
+    pointer-events: auto !important;
+    /* Only the content blocks */
+}
+
+@media (max-width: 768px) {
+    #page-7 .leaflet-control-zoom a {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 22px !important;
+    }
+}
+
+/* ============================================
+   CRITICAL FIX: Mobile Map Interaction
+   Tambahan fix untuk memastikan peta bisa 
+   di-zoom dan di-pan di mobile devices
+   ============================================ */
+
+/* 1. Pastikan map container selalu bisa menerima touch */
+#page-7 {
+    touch-action: none !important;
+    /* Page 7 tidak scroll, hanya peta yang interaktif */
+}
+
+#page-7-container {
+    touch-action: none !important;
+    position: relative !important;
+}
+
+/* 2. Force z-index layer untuk Leaflet - CRITICAL */
+#page-7 .leaflet-container {
+    z-index: 1 !important;
+}
+
+#page-7 .leaflet-map-pane {
+    z-index: 2 !important;
+}
+
+#page-7 .leaflet-tile-pane {
+    z-index: 3 !important;
+}
+
+#page-7 .leaflet-overlay-pane {
+    z-index: 4 !important;
+}
+
+#page-7 .leaflet-shadow-pane {
+    z-index: 5 !important;
+}
+
+#page-7 .leaflet-marker-pane {
+    z-index: 6 !important;
+}
+
+#page-7 .leaflet-tooltip-pane {
+    z-index: 7 !important;
+}
+
+#page-7 .leaflet-popup-pane {
+    z-index: 8 !important;
+}
+
+#page-7 .leaflet-control-container {
+    z-index: 9 !important;
+}
+
+/* 3. Pastikan tile container tidak block gesture */
+#page-7 .leaflet-tile-container {
+    pointer-events: none !important;
+}
+
+/* 4. CRITICAL: Leaflet drag surface harus di atas semua */
+#page-7 .leaflet-overlay-pane svg {
+    pointer-events: none !important;
+}
+
+#page-7 .leaflet-overlay-pane svg path.leaflet-interactive {
+    pointer-events: stroke !important;
+}
+
+/* 5. Pastikan marker bisa diklik */
+#page-7 .leaflet-marker-pane img {
+    pointer-events: auto !important;
+}
+
+/* 6. Discovery popup - saat tidak aktif jangan block apapun */
+#discovery-popup:not(.show) {
+    pointer-events: none !important;
+    z-index: -1 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+#discovery-popup.show {
+    pointer-events: none !important;
+    z-index: 1500 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#discovery-popup.show .discovery-content {
+    pointer-events: auto !important;
+}
+
+/* 7. Pastikan tidak ada elemen yang menutupi peta di mobile */
+@media (max-width: 768px) {
+    #page-7 .absolute:not(.leaflet-container):not(.leaflet-pane):not(#map):not(.leaflet-control) {
+        pointer-events: none !important;
+    }
+    
+    /* Exception untuk UI yang memang harus interaktif */
+    #page-7 #map-card,
+    #page-7 #map-card>div,
+    #page-7 .nav-bottom-grid,
+    #page-7 .leaflet-control,
+    #page-7 .leaflet-popup,
+    #page-7 .discovery-content {
+        pointer-events: auto !important;
+    }
+}
+
+/* 8. Fix untuk touch events di iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    #page-7 #map {
+        cursor: grab !important;
+        cursor: -webkit-grab !important;
+    }
+    
+    #page-7 #map:active {
+        cursor: grabbing !important;
+        cursor: -webkit-grabbing !important;
+    }
+}
+
+/* 9. Pastikan loading overlay tidak block setelah hidden */
+#map-loading-overlay.hidden {
+    display: none !important;
+    pointer-events: none !important;
+    z-index: -9999 !important;
+}
