@@ -385,6 +385,39 @@ const renderers = {
                 ${this.createPreviewButton('page-1')}
             </div>
 
+            <!-- Page Presets Section -->
+            <div class="mb-8">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">${t('pageman_presets')}</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button type="button" onclick="state.applyPagePreset('heartfelt')" 
+                        class="group flex flex-col p-4 bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100 rounded-2xl text-left transition-all hover:shadow-md hover:scale-[1.02] active:scale-95">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-rose-500 mb-3 shadow-sm group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">auto_stories</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">${t('preset_heartfelt')}</h3>
+                        <p class="text-[10px] text-gray-500 leading-snug">${t('preset_heartfelt_desc')}</p>
+                    </button>
+
+                    <button type="button" onclick="state.applyPagePreset('storyteller')" 
+                        class="group flex flex-col p-4 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl text-left transition-all hover:shadow-md hover:scale-[1.02] active:scale-95">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-500 mb-3 shadow-sm group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">menu_book</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">${t('preset_storyteller')}</h3>
+                        <p class="text-[10px] text-gray-500 leading-snug">${t('preset_storyteller_desc')}</p>
+                    </button>
+
+                    <button type="button" onclick="state.applyPagePreset('playful')" 
+                        class="group flex flex-col p-4 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl text-left transition-all hover:shadow-md hover:scale-[1.02] active:scale-95">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-amber-500 mb-3 shadow-sm group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">videogame_asset</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">${t('preset_playful')}</h3>
+                        <p class="text-[10px] text-gray-500 leading-snug">${t('preset_playful_desc')}</p>
+                    </button>
+                </div>
+            </div>
+
             <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-8">
                 <div class="flex gap-3">
                     <span class="material-symbols-outlined text-indigo-400">info</span>
@@ -396,6 +429,12 @@ const renderers = {
 
             <div id="page-list" class="space-y-3">
                 ${pagesHtml}
+            </div>
+
+            <div class="mt-6 p-4 bg-rose-50 border border-rose-100 rounded-xl">
+                <p class="text-xs text-rose-800 leading-relaxed font-medium">
+                    ${t('pageman_ending_tip')}
+                </p>
             </div>
         `;
     },

@@ -87,6 +87,14 @@ const translations = {
         pageman_disabled: "Disabled",
         pageman_hint: "Enable or disable pages to customize your story flow.",
         pageman_required: "Required",
+        pageman_presets: "Quick Page Presets",
+        preset_heartfelt: "Heartfelt Journey",
+        preset_heartfelt_desc: "Music, Wrapped, Gallery, Letter, Infinity",
+        preset_storyteller: "The Full Storyteller",
+        preset_storyteller_desc: "Enable all available chapters",
+        preset_playful: "Interactive Fun",
+        preset_playful_desc: "Quiz, Map, and Infinity Scroll",
+        pageman_ending_tip: "✨ Tip: You can only choose one special ending (Love Lock OR Infinity Scroll). We highly recommend Infinity Scroll for the best emotional impact!",
 
         // Specific Pages
         // Specific Pages
@@ -301,6 +309,14 @@ const translations = {
         pageman_disabled: "Nonaktif",
         pageman_hint: "Aktifkan atau nonaktifkan halaman untuk mengatur alur ceritamu.",
         pageman_required: "Wajib",
+        pageman_presets: "Pilihan Paket Halaman",
+        preset_heartfelt: "Perjalanan Spesial",
+        preset_heartfelt_desc: "Musik, Wrapped, Galeri, Surat, Infinity",
+        preset_storyteller: "Cerita Lengkap",
+        preset_storyteller_desc: "Aktifkan semua bab yang tersedia",
+        preset_playful: "Seru & Interaktif",
+        preset_playful_desc: "Kuis, Peta, dan Infinity Scroll",
+        pageman_ending_tip: "✨ Tips: Kamu hanya bisa memilih satu penutup spesial (Love Lock ATAU Infinity Scroll). Kami sangat menyarankan Infinity Scroll untuk kesan emosional terbaik!",
 
         // Specific Pages
         page_greeting_title: "Kartu Sapaan Awal",

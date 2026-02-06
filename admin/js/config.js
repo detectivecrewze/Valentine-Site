@@ -131,7 +131,6 @@ const THEME_PRESETS = {
     }
 };
 
-// Default page configuration
 const DEFAULT_PAGE_CONFIG = {
     pages: {
         'page-1': { id: 'page-1', name: 'Login', type: 'login', enabled: true, required: true, icon: 'lock', order: 1 },
@@ -142,8 +141,33 @@ const DEFAULT_PAGE_CONFIG = {
         'page-6': { id: 'page-6', name: 'Photo Gallery', type: 'gallery', enabled: true, required: false, icon: 'photo_library', order: 6 },
         'page-7': { id: 'page-7', name: 'Memory Map', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
         'page-8': { id: 'page-8', name: 'Love Letter', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
-        'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: true, required: false, icon: 'lock_person', order: 9 },
+        'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: false, required: false, icon: 'lock_person', order: 9 },
         'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: true, required: false, icon: 'all_inclusive', order: 10 }
+    }
+};
+
+// Quick Page Presets (Goal-Oriented)
+const PAGE_PRESETS = {
+    'heartfelt': {
+        id: 'heartfelt',
+        name: 'Heartfelt Journey',
+        icon: 'auto_stories',
+        pages: ['page-1', 'page-3', 'page-4', 'page-6', 'page-8', 'page-9'],
+        description: 'A focused journey ending with a Love Letter and Final Lock.'
+    },
+    'storyteller': {
+        id: 'storyteller',
+        name: 'Full Storyteller',
+        icon: 'menu_book',
+        pages: ['page-1', 'page-2', 'page-3', 'page-4', 'page-5', 'page-6', 'page-7', 'page-8', 'page-9'],
+        description: 'The maximum experience ending with the Final Lock.'
+    },
+    'playful': {
+        id: 'playful',
+        name: 'Fun & Playful',
+        icon: 'videogame_asset',
+        pages: ['page-1', 'page-2', 'page-5', 'page-7', 'page-10'],
+        description: 'Interactive games and maps ending with the Infinity Scroll.'
     }
 };
 

@@ -841,15 +841,14 @@ const app = {
         if (CONFIG.pageConfig && CONFIG.pageConfig.pages && CONFIG.pageConfig.pages[pageId]) {
             CONFIG.pageConfig.pages[pageId].enabled = isEnabled;
 
-            // Mutually exclusive logic for Lock (page-9) and Infinity (page-10)
-            if (pageId === 'page-9' && isEnabled) {
-                if (CONFIG.pageConfig.pages['page-10']) {
-                    CONFIG.pageConfig.pages['page-10'].enabled = false;
-                }
-            } else if (pageId === 'page-10' && isEnabled) {
-                if (CONFIG.pageConfig.pages['page-9']) {
-                    CONFIG.pageConfig.pages['page-9'].enabled = false;
-                }
+            // Mutually exclusive logic for Final Lock (page-9) and Infinity Scroll (page-10)
+            const endingPages = ['page-9', 'page-10'];
+            if (endingPages.includes(pageId) && isEnabled) {
+                endingPages.forEach(id => {
+                    if (id !== pageId && CONFIG.pageConfig.pages[id]) {
+                        CONFIG.pageConfig.pages[id].enabled = false;
+                    }
+                });
             }
 
             // Re-render page manager to show updated toggles

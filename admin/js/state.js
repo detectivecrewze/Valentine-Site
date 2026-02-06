@@ -714,6 +714,46 @@ const state = {
             app.updateHeader();
         }
         console.log(`[State] Language changed to: ${lang}`);
+    },
+
+    // ✅ NEW: Apply Goal-Oriented Page Preset
+    applyPagePreset(presetId) {
+        const preset = PAGE_PRESETS[presetId];
+        if (!preset) return;
+
+        console.log(`[State] Applying Page Preset: ${presetId}`);
+
+        // 1. Reset all non-required pages to disabled
+        Object.keys(this.configData.pageConfig.pages).forEach(id => {
+            const p = this.configData.pageConfig.pages[id];
+            if (!p.required) {
+                p.enabled = false;
+            }
+        });
+
+        // 2. Enable pages from preset and assign order
+        preset.pages.forEach((pageId, index) => {
+            const p = this.configData.pageConfig.pages[pageId];
+            if (p) {
+                p.enabled = true;
+                p.order = index + 1;
+            }
+        });
+
+        // 3. Keep required pages at the top if not in preset (just in case)
+        Object.keys(this.configData.pageConfig.pages).forEach(id => {
+            const p = this.configData.pageConfig.pages[id];
+            if (p.required && !preset.pages.includes(id)) {
+                p.order = 0; // Highest priority
+            }
+        });
+
+        // 4. Save & Refresh
+        this.save();
+        this.syncToPreview();
+        if (window.app) {
+            app.renderCurrentStep();
+        }
     }
 };
 
