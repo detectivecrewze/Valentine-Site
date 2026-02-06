@@ -1332,6 +1332,28 @@ async function fetchMediaBlob(url) {
     }
 }
 
+/**
+ * Helper to format ISO date strings to human-readable format
+ */
+function formatDate(dateString) {
+    if (!dateString) return '';
+    try {
+        // If it's already in a human-readable format (e.g. "05 Februari 2026")
+        if (dateString.match(/[a-zA-Z]/)) return dateString;
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    } catch (e) {
+        return dateString;
+    }
+}
+
+
 // ============================================================
 // FIX 3: Improved loadSong - Robust against all URL types
 // ============================================================
@@ -2462,21 +2484,35 @@ async function initMap() {
             });
 
             // Create popup content
+            const formattedDate = formatDate(loc.date);
             let popupContent = `
-                <div class="font-sans p-2">
-                    <h3 class="font-display text-deep-red font-bold text-lg mb-1">${loc.title}</h3>`;
+                <div class="map-popup-premium p-1">
+                    <div class="map-popup-header text-center mb-2">
+                        <h3 class="font-display font-bold uppercase">${loc.title}</h3>
+                    </div>`;
 
             if (loc.imageSrc && loc.imageSrc.trim() !== '') {
                 popupContent += `
-                    <div class="mb-3 rounded-lg overflow-hidden shadow-md">
-                        <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-32 object-cover" referrerpolicy="no-referrer">
+                    <div class="map-popup-image-container relative">
+                        <div class="map-popup-image-frame overflow-hidden rounded-xl shadow-md">
+                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-40 object-cover" referrerpolicy="no-referrer">
+                        </div>
                     </div>`;
             }
 
             popupContent += `
-                    <p class="text-rose-900/80 text-sm leading-relaxed italic">"${loc.memory}"</p>
+                    <div class="map-popup-body mt-2 text-center">
+                         <p class="italic px-2">"${loc.memory}"</p>
+                    </div>
+                    <div class="map-popup-footer flex justify-end pr-1 mt-1">
+                        ${formattedDate ? `<span class="map-popup-date">${formattedDate}</span>` : ''}
+                    </div>
                 </div>
             `;
+
+
+
+
 
             // DELAY for animation feel
             if (!mapJourneyCompleted) {
