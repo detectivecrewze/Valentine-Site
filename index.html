@@ -1178,11 +1178,34 @@
                             <span>Back</span>
                         </button>
                     </div>
+
+                    <!-- 🛸 Compact Drone Control - Pin Navigator (replaces screenshot button) -->
                     <div class="flex justify-center">
-                        <button onclick="captureMap()" class="nav-camera-btn">
-                            <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                        </button>
+                        <div id="map-pin-navigator"
+                            class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-full px-2 py-1.5 md:px-3 md:py-2 shadow-lg flex items-center gap-2 md:gap-3 pointer-events-auto">
+                            <!-- Previous Pin Button -->
+                            <button id="map-prev-pin" onclick="glideToPrevPin()"
+                                class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-rose-100/80 hover:bg-rose-200 flex items-center justify-center text-rose-700 transition-all hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
+                                <span class="material-symbols-outlined text-lg md:text-xl">chevron_left</span>
+                            </button>
+
+                            <!-- Pin Counter -->
+                            <div class="flex flex-col items-center min-w-[40px] md:min-w-[50px]">
+                                <span id="map-pin-counter"
+                                    class="font-sans font-black text-sm md:text-base text-rose-900 tracking-tight leading-none">0
+                                    / 0</span>
+                                <span
+                                    class="text-[6px] md:text-[7px] uppercase tracking-widest text-rose-400 font-bold">Memory</span>
+                            </div>
+
+                            <!-- Next Pin Button -->
+                            <button id="map-next-pin" onclick="glideToNextPin()"
+                                class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-rose-500 to-primary hover:from-rose-600 hover:to-rose-800 flex items-center justify-center text-white shadow-md shadow-rose-500/30 transition-all hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
+                                <span class="material-symbols-outlined text-lg md:text-xl">chevron_right</span>
+                            </button>
+                        </div>
                     </div>
+
                     <div class="flex justify-end">
                         <button onclick="goNextPage()" class="nav-btn-standard">
                             <span>Next</span>

@@ -2239,6 +2239,170 @@ let totalTilesToLoad = 0;
 let tilesLoadedCount = 0;
 let tilesLoaded = false;
 
+// 🛸 Drone Camera Navigation State
+let currentMapPinIndex = 0; // 0 = Ground Zero (overview), 1+ = actual pins
+let isGliding = false; // Prevent spam clicks during flight
+
+/**
+ * Update the pin counter display (e.g., "0 / 3")
+ */
+function updateMapPinCounter() {
+    const CONFIG = safeGetConfig();
+    const counter = document.getElementById('map-pin-counter');
+    const prevBtn = document.getElementById('map-prev-pin');
+    const nextBtn = document.getElementById('map-next-pin');
+
+    if (!counter || !CONFIG || !CONFIG.map || !CONFIG.map.locations) return;
+
+    const totalPins = CONFIG.map.locations.length;
+    counter.textContent = `${currentMapPinIndex} / ${totalPins}`;
+
+    // Disable prev button at ground zero
+    if (prevBtn) {
+        prevBtn.disabled = currentMapPinIndex === 0 || isGliding;
+    }
+
+    // Disable next button at last pin
+    if (nextBtn) {
+        nextBtn.disabled = currentMapPinIndex >= totalPins || isGliding;
+    }
+}
+
+/**
+ * Glide (fly) to a specific pin index with cinematic animation
+ * @param {number} pinIndex - 0 for overview, 1+ for actual pins
+ */
+async function glideToPin(pinIndex) {
+    const CONFIG = safeGetConfig();
+    if (!mapInstance || !CONFIG || !CONFIG.map || !CONFIG.map.locations) return;
+    if (isGliding) return; // Prevent overlapping flights
+
+    const locations = CONFIG.map.locations;
+    const totalPins = locations.length;
+
+    // Validate index
+    if (pinIndex < 0) pinIndex = 0;
+    if (pinIndex > totalPins) pinIndex = totalPins;
+
+    isGliding = true;
+    currentMapPinIndex = pinIndex;
+    updateMapPinCounter();
+
+    // Add gliding animation class
+    const navElement = document.getElementById('map-pin-navigator');
+    if (navElement) navElement.classList.add('is-gliding');
+
+    // Close any open popups first
+    mapInstance.closePopup();
+
+    if (pinIndex === 0) {
+        // 🌍 Ground Zero: Zoom out to show all markers
+        console.log('[Drone] Flying to Ground Zero (overview)...');
+
+        if (mapMarkers.length > 0) {
+            const group = new L.featureGroup(mapMarkers);
+            mapInstance.flyToBounds(group.getBounds(), {
+                padding: [50, 50],
+                duration: 2.0,
+                easeLinearity: 0.25
+            });
+        }
+
+        // Wait for animation to complete
+        await new Promise(resolve => setTimeout(resolve, 2200));
+    } else {
+        // 📍 Fly to specific pin
+        const loc = locations[pinIndex - 1]; // pinIndex is 1-based for actual pins
+        if (!loc || !loc.coordinates) {
+            console.warn('[Drone] Invalid location for pin', pinIndex);
+            isGliding = false;
+            updateMapPinCounter();
+            return;
+        }
+
+        console.log(`[Drone] Flying to Pin ${pinIndex}: ${loc.title}...`);
+
+        // 🧠 SMART ZOOM OFFSET: Position pin in lower portion of screen
+        // This leaves room for the popup to appear above without being blocked by brand card
+        const targetZoom = 15;
+        const targetLatLng = L.latLng(loc.coordinates[0], loc.coordinates[1]);
+
+        // Calculate offset: We want the pin to appear ~60% down from top of viewport
+        // So we need to offset the center point upward (negative latitude offset in Northern hemisphere concept)
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            const containerHeight = mapContainer.clientHeight;
+            // Offset by ~25% of viewport height upward (so pin appears lower)
+            const offsetPixels = containerHeight * 0.20; // 20% offset
+
+            // Convert pixel offset to lat/lng at target zoom level
+            const targetPoint = mapInstance.project(targetLatLng, targetZoom);
+            const offsetPoint = L.point(targetPoint.x, targetPoint.y - offsetPixels);
+            const offsetLatLng = mapInstance.unproject(offsetPoint, targetZoom);
+
+            // Fly to the offset position
+            mapInstance.flyTo(offsetLatLng, targetZoom, {
+                duration: 2.0,
+                easeLinearity: 0.25
+            });
+        } else {
+            // Fallback: fly to exact coordinates
+            mapInstance.flyTo(loc.coordinates, targetZoom, {
+                duration: 2.0,
+                easeLinearity: 0.25
+            });
+        }
+
+        // Wait for flight to complete
+        await new Promise(resolve => setTimeout(resolve, 2200));
+
+        // 🪄 Auto-Popup: Open the marker popup automatically
+        if (mapMarkers[pinIndex - 1]) {
+            mapMarkers[pinIndex - 1].openPopup();
+            console.log(`[Drone] Auto-opened popup for: ${loc.title}`);
+        }
+    }
+
+    isGliding = false;
+    updateMapPinCounter();
+
+    // Remove gliding animation class
+    if (navElement) navElement.classList.remove('is-gliding');
+
+    console.log('[Drone] Flight complete!');
+}
+
+/**
+ * Go to the next pin (called by Next button)
+ */
+function glideToNextPin() {
+    const CONFIG = safeGetConfig();
+    if (!CONFIG || !CONFIG.map || !CONFIG.map.locations) return;
+
+    const totalPins = CONFIG.map.locations.length;
+    if (currentMapPinIndex < totalPins) {
+        glideToPin(currentMapPinIndex + 1);
+    }
+}
+
+/**
+ * Go to the previous pin (called by Previous button)
+ */
+function glideToPrevPin() {
+    if (currentMapPinIndex > 0) {
+        glideToPin(currentMapPinIndex - 1);
+    }
+}
+
+/**
+ * Initialize the drone navigator UI
+ */
+function initMapPinNavigator() {
+    currentMapPinIndex = 0; // Always start at Ground Zero
+    updateMapPinCounter();
+    console.log('[Drone] Pin Navigator initialized at Ground Zero');
+}
+
 async function initMap() {
     // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
@@ -2494,8 +2658,8 @@ async function initMap() {
             if (loc.imageSrc && loc.imageSrc.trim() !== '') {
                 popupContent += `
                     <div class="map-popup-image-container relative">
-                        <div class="map-popup-image-frame overflow-hidden rounded-xl shadow-md">
-                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-40 object-cover" referrerpolicy="no-referrer">
+                        <div class="map-popup-image-frame overflow-hidden rounded-lg shadow-md">
+                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-24 object-cover" referrerpolicy="no-referrer">
                         </div>
                     </div>`;
             }
@@ -2570,10 +2734,7 @@ async function initMap() {
         setTimeout(() => showMapDiscoveryPopUp(), 1000);
     }
 
-    // Add Zoom control if missing
-    if (!document.querySelector('.leaflet-control-zoom') && mapInstance) {
-        L.control.zoom({ position: 'bottomleft' }).addTo(mapInstance);
-    }
+    // Zoom control removed - users navigate via pin navigator only
 
     // === REFINED MAP MOBILE FIX - v3.0 ===
     setTimeout(() => {
@@ -2617,6 +2778,9 @@ async function initMap() {
         // 6. CRITICAL: Jalankan juga fix v4.0 untuk memastikan mobile works
         fixMobileMapInteraction();
     }, 1500);
+
+    // 🛸 Initialize the Drone Navigator
+    initMapPinNavigator();
 }
 
 // ==========================================
