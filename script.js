@@ -522,9 +522,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 syncPageVisibility();
 
                 // Refresh current page
-                const activePage = document.querySelector('.page:not(.hidden)');
-                if (activePage) {
-                    const pageId = activePage.id;
+                const activePageId = currentPageId;
+                if (activePageId) {
+                    const pageId = activePageId;
                     if (pageId === 'page-3' && typeof loadSong === 'function') {
                         loadSong(currentSongIndex, true); // Force reload on config change
                     }
@@ -553,6 +553,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentPageId !== targetId && typeof MapsTo === 'function') {
                 console.log(`🚀 Manual Sync: Navigating to ${targetId} (Forced: true)`);
                 MapsTo(currentPageId, targetId, true);
+
+                // ✅ FIX: Aggressively ensure iframes load when eye-button is clicked
+                if (targetId === 'page-10' || targetId === 'page-11') {
+                    const frameId = targetId === 'page-10' ? 'infinity-frame' : 'invitation-frame';
+                    const iframe = document.getElementById(frameId);
+                    if (iframe) {
+                        console.log(`[Preview] Re-waking iframe: ${frameId}`);
+                        iframe.contentWindow.location.reload();
+                    }
+                }
             }
         }
 
@@ -816,6 +826,7 @@ function MapsTo(fromId, toId, force = false) {
         // Start Animation
         fromPage.classList.add('page-flip-exit');
         toPage.classList.remove('hidden');
+        toPage.style.display = ''; // ✅ FIX: Clear inline display:none from sync
         toPage.classList.add('page-flip-enter');
 
         // Cleanup fromPage specific state
@@ -844,6 +855,7 @@ function MapsTo(fromId, toId, force = false) {
         if (fromPage) fromPage.classList.add('hidden');
         if (toPage) {
             toPage.classList.remove('hidden');
+            toPage.style.display = ''; // ✅ FIX: Clear inline display:none from sync
             updatePageIndicator(toId);
         }
         currentPageId = toId;
