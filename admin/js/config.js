@@ -70,6 +70,13 @@ const PAGE_TYPES = {
         icon: 'all_inclusive',
         required: false,
         description: 'Endless reasons I love you'
+    },
+    'invitation': {
+        id: 'page-11',
+        name: 'Valentine Invitation',
+        icon: 'favorite_border',
+        required: false,
+        description: 'Interactive Yes/No bear page'
     }
 };
 
@@ -142,7 +149,8 @@ const DEFAULT_PAGE_CONFIG = {
         'page-7': { id: 'page-7', name: 'Memory Map', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
         'page-8': { id: 'page-8', name: 'Love Letter', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
         'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: false, required: false, icon: 'lock_person', order: 9 },
-        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: true, required: false, icon: 'all_inclusive', order: 10 }
+        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: true, required: false, icon: 'all_inclusive', order: 10 },
+        'page-11': { id: 'page-11', name: 'Valentine Invitation', type: 'invitation', enabled: false, required: false, icon: 'favorite_border', order: 11 }
     }
 };
 

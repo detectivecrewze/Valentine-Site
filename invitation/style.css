@@ -1,0 +1,162 @@
+:root {
+    --primary: #7e0c23;
+    --rosegold: #B76E79;
+    --rose-900: #4c0519;
+    --rose-800: #9f1239;
+    --background-light: #f8f6f6;
+    --font-display: 'Cinzel', serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-dancing: 'Dancing Script', cursive;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: linear-gradient(135deg, #fadceb 0%, #fef3e2 50%, #e0e7ff 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    min-height: 100dvh;
+    /* Dynamic viewport height for mobile */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+/* Film Grain Overlay */
+.grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.04;
+    background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKGknlB-KxaIGCLnTlbc4Nl4TkEFPgcawululOaTjrPN1TjAXh5-VF4xHrr9ynM5yX31NDpYR9RHV2UmbTm20_2PelSIGaLyd6umPnVXMyK5b2UtcHLG3b7jdMErP-Ln0xg5L0HyGn5OoJ1P4RzpWNxI46kDviC-kSSVyGCXAzO7mApHsoqMZkysiUBK5Dw6oeM04dK5WKl4LGHCmneeyiRbiz0D6NcA8NpUWZPs19QE-FuTH8tKsNYadHZHpxk8bnqYdtBBXl9b34");
+}
+
+.container {
+    padding: 20px;
+    z-index: 10;
+    width: 100%;
+    max-width: 420px;
+}
+
+.invitation-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 3rem 2rem;
+    border-radius: 2rem;
+    text-align: center;
+    box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    font-family: var(--font-display);
+    color: var(--primary);
+    font-size: 2.2rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    /* Stacked buttons */
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    width: 100%;
+}
+
+.btn {
+    width: 100%;
+    max-width: 200px;
+    padding: 14px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: var(--font-sans);
+}
+
+.yes-button {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 10px 20px rgba(126, 12, 35, 0.2);
+}
+
+.yes-button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.no-button {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid rgba(126, 12, 35, 0.2);
+}
+
+.no-button:hover {
+    background-color: rgba(126, 12, 35, 0.05);
+}
+
+.bear-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.dancing-bear {
+    width: 140px;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.05));
+}
+
+.success-message {
+    font-family: var(--font-dancing);
+    color: var(--primary);
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.celebration {
+    text-align: center;
+    animation: fadeIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

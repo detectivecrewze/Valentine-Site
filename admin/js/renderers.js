@@ -347,13 +347,17 @@ const renderers = {
         const pages = state.getPages(false); // Get all pages including disabled
         const lang = state.configData.adminLang || 'en';
 
-        let pagesHtml = pages.map(page => {
+        // Separate regular pages from ending pages
+        const endingPageIds = ['page-9', 'page-10', 'page-11'];
+        const regularPages = pages.filter(p => !endingPageIds.includes(p.id));
+        const endingPages = pages.filter(p => endingPageIds.includes(p.id));
+
+        // Generate HTML for regular pages
+        let regularPagesHtml = regularPages.map(page => {
             const isDisabled = page.required ? 'disabled' : '';
             const requiredBadge = page.required ? `<span class="page-required">${t('pageman_required')}</span>` : '';
 
-            // Try to translate page name
-            const pageIdKey = page.id.replace(/-/g, '_');
-            const pageName = translations[lang][`page_${pageIdKey}_title`] || page.name;
+            const pageName = translations[lang][`page_${page.type}_title`] || page.name;
 
             return `
                 <div class="page-manager-item" data-id="${page.id}" draggable="${!page.required}">
@@ -370,6 +374,37 @@ const renderers = {
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
+            `;
+        }).join('');
+
+        // Generate HTML for ending pages (special section)
+        let endingPagesHtml = endingPages.map(page => {
+            const pageName = translations[lang][`page_${page.type}_title`] || page.name;
+            const pageDesc = translations[lang][`page_${page.type}_desc`] || '';
+
+            const iconColors = {
+                'page-9': 'text-purple-500 bg-purple-100',
+                'page-10': 'text-blue-500 bg-blue-100',
+                'page-11': 'text-pink-500 bg-pink-100'
+            };
+            const colorClass = iconColors[page.id] || 'text-gray-500 bg-gray-100';
+
+            return `
+                <label class="ending-page-option ${page.enabled ? 'active' : ''}" data-page-id="${page.id}">
+                    <input type="radio" name="ending-page" class="ending-page-radio sr-only" data-page-id="${page.id}" ${page.enabled ? 'checked' : ''}>
+                    <div class="flex items-center gap-3 p-3 rounded-xl border-2 ${page.enabled ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-white hover:border-amber-200'} cursor-pointer transition-all">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center ${colorClass}">
+                            <span class="material-symbols-outlined">${page.icon}</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-gray-800">${pageName}</div>
+                            <div class="text-[10px] text-gray-500">${pageDesc}</div>
+                        </div>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center ${page.enabled ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-300'}">
+                            <span class="material-symbols-outlined text-sm">${page.enabled ? 'check' : 'radio_button_unchecked'}</span>
+                        </div>
+                    </div>
+                </label>
             `;
         }).join('');
 
@@ -427,14 +462,27 @@ const renderers = {
                 </div>
             </div>
 
-            <div id="page-list" class="space-y-3">
-                ${pagesHtml}
+            <!-- Regular Pages Section -->
+            <div class="mb-8">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">📖 Story Chapters</label>
+                <div id="page-list" class="space-y-3">
+                    ${regularPagesHtml}
+                </div>
             </div>
 
-            <div class="mt-6 p-4 bg-rose-50 border border-rose-100 rounded-xl">
-                <p class="text-xs text-rose-800 leading-relaxed font-medium">
-                    ${t('pageman_ending_tip')}
+            <!-- Ending Pages Section (Separate Box) -->
+            <div class="ending-pages-section bg-gradient-to-br from-amber-50/50 to-rose-50/50 border-2 border-dashed border-amber-200 rounded-2xl p-5">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="material-symbols-outlined text-amber-500">auto_awesome</span>
+                    <label class="text-sm font-bold text-gray-800">✨ Choose Your Ending</label>
+                    <span class="ml-auto px-2 py-0.5 text-[9px] font-bold bg-amber-100 text-amber-700 rounded-full uppercase">Pick One</span>
+                </div>
+                <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                    Select the perfect finale for your story. Only one ending can be active at a time.
                 </p>
+                <div class="ending-pages-list space-y-2">
+                    ${endingPagesHtml}
+                </div>
             </div>
         `;
     },
@@ -463,6 +511,8 @@ const renderers = {
                 return this.renderLockStep();
             case 'infinity':
                 return this.renderInfinityStep();
+            case 'invitation':
+                return this.renderInvitationStep();
             default:
                 return '<p>Unknown page type</p>';
         }
@@ -2205,6 +2255,78 @@ const renderers = {
 
         state.save();
         state.syncToPreview();
+    },
+
+    // ========================================
+    // PAGE 11: VALENTINE INVITATION
+    // ========================================
+    renderInvitationStep() {
+        const pageData = state.findPageById('page-11') || {
+            question: 'Would you like to be my Valentine?',
+            bearDefault: 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
+            bearSuccess: 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
+            successMessage: 'Yay! ❤️'
+        };
+
+        return `
+            <div class="section-header">
+                <div class="section-icon !bg-pink-100 !text-pink-600">
+                    <span class="material-symbols-outlined">favorite_border</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-gray-900">${t('page_invitation_title')}</h2>
+                    <p class="text-sm text-gray-500 mt-1">${t('page_invitation_desc')}</p>
+                </div>
+                ${this.createPreviewButton('page-11')}
+            </div>
+
+            <div class="bg-pink-50/50 border border-pink-100 rounded-xl p-4 mb-6">
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-pink-400">info</span>
+                    <div class="text-xs text-pink-900/80 leading-relaxed">
+                        <span class="font-bold block text-pink-900 mb-1 text-sm">🐻 Interactive Bear Page!</span>
+                        This page shows a dancing bear asking "Would you be my Valentine?". When they click "No", the bear gets sad/angry and the "Yes" button grows bigger. When they finally click "Yes", there's a confetti celebration!
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_invitation_label_question')}</label>
+                    <input type="text" class="form-input" value="${pageData.question || ''}" 
+                        placeholder="Would you like to be my Valentine?"
+                        oninput="renderers.updateInvitation('question', this.value)">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_invitation_label_success_msg')}</label>
+                    <input type="text" class="form-input" value="${pageData.successMessage || ''}" 
+                        placeholder="Yay! ❤️"
+                        oninput="renderers.updateInvitation('successMessage', this.value)">
+                </div>
+            </div>
+        `;
+    },
+
+    updateInvitation(key, value) {
+        const page = state.findPageById('page-11');
+        if (!page) {
+            state.configData.pages.push({
+                pageId: 'page-11',
+                type: 'invitation',
+                question: 'Would you like to be my Valentine?',
+                bearDefault: 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
+                bearSuccess: 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
+                successMessage: 'Yay! ❤️'
+            });
+        }
+
+        const pageData = state.findPageById('page-11');
+        if (pageData) {
+            pageData[key] = value;
+            state.save();
+            state.syncToPreview();
+        }
     }
 };
 

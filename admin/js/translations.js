@@ -94,7 +94,7 @@ const translations = {
         preset_storyteller_desc: "Enable all available chapters",
         preset_playful: "Interactive Fun",
         preset_playful_desc: "Quiz, Map, and Infinity Scroll",
-        pageman_ending_tip: "✨ Tip: You can only choose one special ending (Love Lock OR Infinity Scroll). We highly recommend Infinity Scroll for the best emotional impact!",
+        pageman_ending_tip: "✨ Tip: Choose one special ending: Love Lock, Infinity Scroll, or Valentine Invitation. We recommend Infinity Scroll or Valentine Invitation for the best emotional impact!",
 
         // Specific Pages
         // Specific Pages
@@ -209,6 +209,13 @@ const translations = {
         page_infinity_label_poetic: "Poetic Reasons",
         page_infinity_btn_fill: "Fill Presets",
 
+        page_invitation_title: "Valentine Invitation",
+        page_invitation_desc: "A playful 'Will you be my Valentine?' page with interactive buttons and a dancing bear!",
+        page_invitation_label_question: "The Question",
+        page_invitation_label_bear_default: "Dancing Bear GIF (Default)",
+        page_invitation_label_bear_success: "Happy Bear GIF (After Yes)",
+        page_invitation_label_success_msg: "Success Message",
+
         // Particle Options
         part_none: "None (Clean)",
         part_hearts: "Hearts & Petals (Romantic)",
@@ -317,7 +324,7 @@ const translations = {
         preset_storyteller_desc: "Aktifkan semua bab yang tersedia",
         preset_playful: "Seru & Interaktif",
         preset_playful_desc: "Kuis, Peta, dan Infinity Scroll",
-        pageman_ending_tip: "✨ Tips: Kamu hanya bisa memilih satu penutup spesial (Love Lock ATAU Infinity Scroll). Kami sangat menyarankan Infinity Scroll untuk kesan emosional terbaik!",
+        pageman_ending_tip: "✨ Tips: Pilih satu penutup spesial: Love Lock, Infinity Scroll, atau Undangan Valentine. Kami sangat menyarankan Infinity Scroll atau Undangan Valentine untuk kesan emosional terbaik!",
 
         // Specific Pages
         page_greeting_title: "Kartu Sapaan Awal",
@@ -430,6 +437,13 @@ const translations = {
         page_infinity_label_personal: "Kenangan Pribadi",
         page_infinity_label_poetic: "Kalimat Puitis",
         page_infinity_btn_fill: "Isi Otomatis",
+
+        page_invitation_title: "Undangan Valentine",
+        page_invitation_desc: "Halaman 'Maukah kamu jadi Valentine-ku?' yang seru dengan tombol interaktif dan beruang menari!",
+        page_invitation_label_question: "Pertanyaan",
+        page_invitation_label_bear_default: "GIF Beruang Menari (Default)",
+        page_invitation_label_bear_success: "GIF Beruang Senang (Setelah Yes)",
+        page_invitation_label_success_msg: "Pesan Sukses",
 
         // Particle Options
         part_none: "Tidak Ada (Bersih)",

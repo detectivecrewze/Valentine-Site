@@ -816,12 +816,21 @@ const app = {
 
     // Attach page manager listeners
     attachPageManagerListeners() {
-        // Toggle switches
+        // Toggle switches for regular pages
         document.querySelectorAll('.page-toggle').forEach(toggle => {
             toggle.addEventListener('change', (e) => {
                 const pageId = e.target.dataset.pageId;
                 const isEnabled = e.target.checked;
                 this.togglePage(pageId, isEnabled);
+            });
+        });
+
+        // Ending page selection (radio-style)
+        document.querySelectorAll('.ending-page-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const pageId = option.dataset.pageId;
+                // Enable this ending page (will auto-disable others via togglePage logic)
+                this.togglePage(pageId, true);
             });
         });
 
@@ -841,8 +850,8 @@ const app = {
         if (CONFIG.pageConfig && CONFIG.pageConfig.pages && CONFIG.pageConfig.pages[pageId]) {
             CONFIG.pageConfig.pages[pageId].enabled = isEnabled;
 
-            // Mutually exclusive logic for Final Lock (page-9) and Infinity Scroll (page-10)
-            const endingPages = ['page-9', 'page-10'];
+            // Mutually exclusive logic for ending pages: Final Lock, Infinity Scroll, Valentine Invitation
+            const endingPages = ['page-9', 'page-10', 'page-11'];
             if (endingPages.includes(pageId) && isEnabled) {
                 endingPages.forEach(id => {
                     if (id !== pageId && CONFIG.pageConfig.pages[id]) {

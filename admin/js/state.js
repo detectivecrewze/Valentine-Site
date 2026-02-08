@@ -307,13 +307,26 @@ const state = {
             this.loadDefaultInfinityPage();
         }
 
+        // Invitation Page
+        if (CONFIG.invitation) {
+            this.configData.pages.push({
+                pageId: 'page-11',
+                type: 'invitation',
+                question: CONFIG.invitation.question || 'Would you like to be my Valentine?',
+                bearDefault: CONFIG.invitation.bearDefault || 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
+                bearSuccess: CONFIG.invitation.bearSuccess || 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
+                successMessage: CONFIG.invitation.successMessage || 'Yay! ❤️'
+            });
+        } else {
+            this.loadDefaultInvitationPage();
+        }
+
         // Load pageConfig if exists
         if (CONFIG.pageConfig) {
             this.configData.pageConfig = JSON.parse(JSON.stringify(CONFIG.pageConfig));
         }
     },
 
-    // Load default page structure
     loadDefaultPages() {
         this.configData.pages = [];
         this.loadDefaultMusicPage();
@@ -324,6 +337,7 @@ const state = {
         this.loadDefaultLetterPage();
         this.loadDefaultLockPage();
         this.loadDefaultInfinityPage();
+        this.loadDefaultInvitationPage();
     },
 
     loadDefaultMusicPage() {
@@ -467,6 +481,17 @@ const state = {
         });
     },
 
+    loadDefaultInvitationPage() {
+        this.configData.pages.push({
+            pageId: 'page-11',
+            type: 'invitation',
+            question: 'Would you like to be my Valentine?',
+            bearDefault: 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
+            bearSuccess: 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
+            successMessage: 'Yay! ❤️'
+        });
+    },
+
     // Restore state from saved configuration
     restoreFromConfig(data) {
         // Support both old and new save formats
@@ -544,6 +569,7 @@ const state = {
         const letterPage = this.configData.pages.find(p => p.type === 'letter');
         const lockPage = this.configData.pages.find(p => p.type === 'lock');
         const infinityPage = this.configData.pages.find(p => p.type === 'infinity');
+        const invitationPage = this.configData.pages.find(p => p.type === 'invitation');
 
         return {
             theme: this.configData.theme,
@@ -611,6 +637,12 @@ const state = {
                 photos: infinityPage.photos || [],
                 videoMemories: infinityPage.videoMemories || [],
                 music: infinityPage.music || {}
+            } : null,
+            invitation: invitationPage ? {
+                question: invitationPage.question || 'Would you like to be my Valentine?',
+                bearDefault: invitationPage.bearDefault || 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
+                bearSuccess: invitationPage.bearSuccess || 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
+                successMessage: invitationPage.successMessage || 'Yay! ❤️'
             } : null,
             metadata: {
                 brandName: this.configData.metadata.brandName || 'For you, Always',

@@ -512,6 +512,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const iframe = document.getElementById('infinity-frame');
                         if (iframe) iframe.contentWindow.location.reload();
                     }
+                    if (pageId === 'page-11') {
+                        const iframe = document.getElementById('invitation-frame');
+                        if (iframe) iframe.contentWindow.location.reload();
+                    }
                 }
             } catch (err) {
                 console.error("[Preview] Update failed:", err);
@@ -916,7 +920,8 @@ function MapsTo(fromId, toId) {
             if (typeof resetLetterPage === 'function') resetLetterPage();
             if (typeof initLetterPage === 'function') initLetterPage();
         } else if (toId === 'page-9') {
-            if (typeof initInvitationPage === 'function') initInvitationPage();
+            // Final Lock page - no special init needed
+            console.log('[Nav] Navigated to Final Lock page');
         } else if (toId === 'page-10') {
             console.log('[Nav] Navigated to Infinity Scroll page');
             window.isOnPage10 = true; // Flag to prevent parent music from auto-playing later
@@ -954,6 +959,19 @@ function MapsTo(fromId, toId) {
                     setTimeout(notify, 500);
                 };
             }
+        } else if (toId === 'page-11') {
+            console.log('[Nav] Navigated to Valentine Invitation page');
+            const iframe = document.getElementById('invitation-frame');
+            if (iframe) {
+                // Send config to the invitation iframe
+                const CONFIG = safeGetConfig();
+                if (CONFIG && CONFIG.invitation && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'UPDATE_CONFIG',
+                        config: CONFIG
+                    }, '*');
+                }
+            }
         }
     }
 }
@@ -978,8 +996,8 @@ function updatePageIndicator(pageId) {
         textEl.textContent = `${currentNum}/${totalNum}`;
     });
 
-    // Hide indicator on first page, Q&A (page-5), Map (page-7), infinity scroll (page-10), or if disabled
-    const hiddenPages = ['page-1', 'page-5', 'page-7', 'page-10'];
+    // Hide indicator on first page, Q&A (page-5), Map (page-7), infinity scroll (page-10), invitation (page-11), or if disabled
+    const hiddenPages = ['page-1', 'page-5', 'page-7', 'page-10', 'page-11'];
     const shouldHide = currentNum === 1 || !showIndicator || hiddenPages.includes(pageId);
 
     allIndicatorContainers.forEach(container => {

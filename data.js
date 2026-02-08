@@ -348,6 +348,15 @@ const CONFIG = {
                 "required": false,
                 "icon": "all_inclusive",
                 "order": 10
+            },
+            "page-11": {
+                "id": "page-11",
+                "name": "Valentine Invitation",
+                "type": "invitation",
+                "enabled": false,
+                "required": false,
+                "icon": "favorite_border",
+                "order": 11
             }
         }
     }
