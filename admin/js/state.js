@@ -371,15 +371,16 @@ const state = {
             title: 'Our Memories',
             subtitle: 'Scratch to reveal',
             memories: [
-                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805139619-pxnlnf.jpg', caption: 'Our Kiss That Day.', tape: 'washi-tape', rotation: 'rotate-2' },
-                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805183715-20618q.jpg', caption: "We're Dancing While Watching The Sunrise.", tape: 'washi-tape-gold', rotation: 'rotate-2' },
-                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805230987-7ty5b.jpg', caption: 'Our Trip To Berlin!', tape: 'washi-tape', rotation: 'rotate-2' },
-                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805276131-cts88.jpg', caption: "We're Getting Ready For The Dates.", tape: 'washi-tape', rotation: 'rotate-2' },
-                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805302423-nfl0um.jpg', caption: 'Watching The Swains As They Past.', tape: 'washi-tape', rotation: 'rotate-2' },
-                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805374361-oqdib.jpg', caption: 'That Night When We Go Nowhere.', tape: 'washi-tape', rotation: 'rotate-2' }
+                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805139619-pxnlnf.jpg', caption: 'Our Kiss That Day.', secretNote: '', tape: 'washi-tape', rotation: 'rotate-2' },
+                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805183715-20618q.jpg', caption: "We're Dancing While Watching The Sunrise.", secretNote: '', tape: 'washi-tape-gold', rotation: 'rotate-2' },
+                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805230987-7ty5b.jpg', caption: 'Our Trip To Berlin!', secretNote: '', tape: 'washi-tape', rotation: 'rotate-2' },
+                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805276131-cts88.jpg', caption: "We're Getting Ready For The Dates.", secretNote: '', tape: 'washi-tape', rotation: 'rotate-2' },
+                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805302423-nfl0um.jpg', caption: 'Watching The Swains As They Past.', secretNote: '', tape: 'washi-tape', rotation: 'rotate-2' },
+                { type: 'image', src: 'https://valentine-upload.aldoramadhan16.workers.dev/1769805374361-oqdib.jpg', caption: 'That Night When We Go Nowhere.', secretNote: '', tape: 'washi-tape', rotation: 'rotate-2' }
             ]
         });
     },
+
 
     loadDefaultMapPage() {
         this.configData.pages.push({

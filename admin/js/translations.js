@@ -148,6 +148,7 @@ const translations = {
         page_gallery_btn_add: "Add Photo",
         page_gallery_label_img: "Image File",
         page_gallery_label_caption: "Caption",
+        page_gallery_label_secret_note: "Secret Message (Back Side)",
         page_gallery_label_date: "Memory Date (Optional)",
         page_gallery_label_title: "Gallery Page Title",
 
@@ -369,6 +370,7 @@ const translations = {
         page_gallery_btn_add: "Tambah Foto",
         page_gallery_label_img: "File Gambar",
         page_gallery_label_caption: "Keterangan (Caption)",
+        page_gallery_label_secret_note: "Pesan Rahasia (Bagian Belakang)",
         page_gallery_label_date: "Tanggal Kenangan (Opsional)",
         page_gallery_label_title: "Judul Halaman Galeri",
 

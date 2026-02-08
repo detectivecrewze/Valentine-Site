@@ -1067,19 +1067,7 @@ const renderers = {
                 </div>
             </div>
 
-            <div class="space-y-6 mb-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('page_gallery_label_title')}</label>
-                    <input type="text" class="form-input" value="${pageData.title}" 
-                        oninput="renderers.updateGallery('title', this.value)">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('theme_subtitle')}</label>
-                    <input type="text" class="form-input" value="${pageData.subtitle}" 
-                        oninput="renderers.updateGallery('subtitle', this.value)">
-                </div>
-            </div>
+
 
             <div id="gallery-memories-list" class="space-y-4">
                 ${memoriesHtml}
@@ -1129,6 +1117,13 @@ const renderers = {
                         placeholder="A special moment..."
                         oninput="renderers.updateGalleryMemory(${idx}, 'caption', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Memory'">
                 </div>
+
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-2">${t('page_gallery_label_secret_note')}</label>
+                    <textarea class="form-input text-sm" rows="2" 
+                        placeholder="Write a secret message for the back of the card..."
+                        oninput="renderers.updateGalleryMemory(${idx}, 'secretNote', this.value)">${memory.secretNote || ''}</textarea>
+                </div>
                 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -1165,6 +1160,7 @@ const renderers = {
             type: 'image',
             src: '',
             caption: '',
+            secretNote: '',
             tape: 'washi-tape',
             rotation: 'rotate-2'
         });
@@ -1241,19 +1237,7 @@ const renderers = {
                 </div>
             </div>
 
-            <div class="space-y-6 mb-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('map_label_title')}</label>
-                    <input type="text" class="form-input" value="${pageData.title}" 
-                        oninput="renderers.updateMap('title', this.value)">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">${t('map_label_desc')}</label>
-                    <input type="text" class="form-input" value="${pageData.description}" 
-                        oninput="renderers.updateMap('description', this.value)">
-                </div>
-            </div>
+
 
             <div id="map-locations-list" class="space-y-4">
                 ${locationsHtml}
