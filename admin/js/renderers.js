@@ -402,7 +402,7 @@ const renderers = {
                         </div>
                         <button type="button" 
                             class="ending-preview-btn w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-500 hover:text-white text-gray-400 transition-all"
-                            onclick="event.stopPropagation(); app.sendMessageToPreview({ type: 'NAVIGATE_TO_PAGE', pageId: '${page.id}' }); utils.showNotification('Preview jumping to ${pageName}...', 'success', 2000);"
+                            onclick="event.stopPropagation(); app.showPreview(); app.sendMessageToPreview({ type: 'NAVIGATE_TO_PAGE', pageId: '${page.id}' }); utils.showNotification('Preview jumping to ${pageName}...', 'success', 2000);"
                             title="Preview this ending">
                             <span class="material-symbols-outlined text-sm">visibility</span>
                         </button>
