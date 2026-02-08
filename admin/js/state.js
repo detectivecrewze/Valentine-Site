@@ -61,6 +61,48 @@ const state = {
     init() {
         this.ensurePageConfig();
         this.loadFromStorage();
+        this.sanitizeState(); // ✅ NEW: Fix any corrupted types
+    },
+
+    // ✅ NEW: Force correct page types based on ID
+    sanitizeState() {
+        const pageTypes = {
+            'page-2': 'greeting',
+            'page-3': 'music',
+            'page-4': 'wrapped',
+            'page-5': 'quiz',
+            'page-6': 'gallery',
+            'page-7': 'map',
+            'page-8': 'letter',
+            'page-9': 'lock',
+            'page-10': 'infinity',
+            'page-11': 'invitation'
+        };
+
+        let changed = false;
+        this.configData.pages.forEach(page => {
+            const correctType = pageTypes[page.pageId];
+            if (correctType && page.type !== correctType) {
+                console.warn(`[State] Fixing type mismatch for ${page.pageId}: ${page.type} -> ${correctType}`);
+                page.type = correctType;
+                changed = true;
+            }
+        });
+
+        // Also fix the global pageConfig types if they are mismatched
+        if (CONFIG.pageConfig && CONFIG.pageConfig.pages) {
+            Object.keys(CONFIG.pageConfig.pages).forEach(id => {
+                const correctType = pageTypes[id];
+                if (correctType && CONFIG.pageConfig.pages[id].type !== correctType) {
+                    CONFIG.pageConfig.pages[id].type = correctType;
+                    changed = true;
+                }
+            });
+        }
+
+        if (changed) {
+            this.save();
+        }
     },
 
     // Ensure configData.pageConfig exists and is synced with global CONFIG
@@ -566,10 +608,10 @@ const state = {
                 this.configData.pages.find(p => p.pageId === id);
         };
 
-        const wrappedPage = findPage('wrapped', 'page-3');
+        const wrappedPage = findPage('wrapped', 'page-4');
         const quizPage = findPage('quiz', 'page-5');
-        const musicPage = findPage('music', 'page-2');
-        const galleryPage = findPage('gallery', 'page-4');
+        const musicPage = findPage('music', 'page-3');
+        const galleryPage = findPage('gallery', 'page-6');
         const mapPage = findPage('map', 'page-7');
         const letterPage = findPage('letter', 'page-8');
         const lockPage = findPage('lock', 'page-9');
@@ -740,10 +782,11 @@ const state = {
         } else {
             // If it's a new page being added, try to infer the type if it's one of our known pages
             const pageTypes = {
-                'page-2': 'music',
-                'page-3': 'wrapped',
-                'page-4': 'gallery',
+                'page-2': 'greeting',
+                'page-3': 'music',
+                'page-4': 'wrapped',
                 'page-5': 'quiz',
+                'page-6': 'gallery',
                 'page-7': 'map',
                 'page-8': 'letter',
                 'page-9': 'lock',
