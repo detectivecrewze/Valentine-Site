@@ -359,7 +359,7 @@ const translations = {
         page_wrapped_label_vibe: "Tipe Vibe Kita",
         page_wrapped_label_vibe_desc: "Biodata Singkat Vibe",
 
-        page_quiz_title: "Kuis Kenangan (Penting!)",
+        page_quiz_title: "Kuis Kenangan",
         page_quiz_desc: "Tes seberapa ingat pasanganmu tentang momen kalian berdua.",
         page_quiz_tips: "Bikin Sebanyak Mungkin!",
         page_quiz_tips_desc: "Nggak ada batasan jumlah pertanyaan, lho! Kamu bebas bikin berapa aja. Tapi rekomendasi kami sih **5-10 pertanyaan** biar seru dan nggak terlalu panjang.",
