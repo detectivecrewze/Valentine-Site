@@ -344,7 +344,7 @@ async function initializeApp() {
 
         // Now initialize the app
         startApp();
-        
+
         // ✅ CRITICAL FIX: Initialize letter page AFTER config is confirmed loaded
         // This ensures the letter uses the latest config from API, not defaults
         initLetterPage();
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof loadGallery === 'function') loadGallery(); // 🚀 Sync gallery
                 if (typeof loadQuiz === 'function') loadQuiz();       // 🚀 Sync quiz
                 if (typeof initMap === 'function') initMap();         // 🚀 Sync map
-                if (typeof loadLetter === 'function') loadLetter();   // 🚀 Sync letter
+                if (typeof initLetterPage === 'function') initLetterPage();   // 🚀 Sync letter
                 syncPageVisibility();
 
                 // Refresh current page
@@ -3458,13 +3458,13 @@ function initLetterPage() {
     // ✅ CRITICAL FIX: Always get FRESH config from the reactive source
     // This ensures we get the latest config from API, not cached/stale data
     const CONFIG = safeGetConfig();
-    
+
     console.log('[Letter] initLetterPage called, CONFIG.letter exists:', !!CONFIG.letter);
     if (CONFIG.letter) {
         console.log('[Letter] Message length:', CONFIG.letter.message?.length || 0);
         console.log('[Letter] Recipient:', CONFIG.letter.recipient);
     }
-    
+
     // Initialize floating dust particles
     initFloatingDust();
 
@@ -3592,14 +3592,14 @@ function smoothScrollToLetter() {
 async function startLetterTyping() {
     // ✅ CRITICAL FIX: Always get FRESH config from API/local source
     const CONFIG = safeGetConfig();
-    
+
     console.log('[Letter Typing] Starting with CONFIG:', {
         hasLetter: !!CONFIG.letter,
         hasMessage: !!CONFIG.letter?.message,
         messageLength: CONFIG.letter?.message?.length || 0,
         messagePreview: CONFIG.letter?.message?.substring(0, 50) || 'EMPTY'
     });
-    
+
     // ✅ FIX: If already typed, update content with latest config and show button
     if (letterTyped) {
         console.log('[Letter Typing] Already typed, updating content...');
