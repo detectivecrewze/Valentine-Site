@@ -92,6 +92,7 @@ const CONFIG = {
                 "type": "image",
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770248455711-q51q1s.jpg",
                 "caption": "Our Kiss That Day.",
+                "secretNote": "P.S. I was so nervous picking this spot, but your smile made everything perfect. ❤️",
                 "tape": "washi-tape",
                 "rotation": "rotate-2",
                 "date": "05 Februari 2026"
@@ -100,6 +101,7 @@ const CONFIG = {
                 "type": "image",
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284239980-05097k.jpg",
                 "caption": "We're Dancing While Watching The Sunrise.",
+                "secretNote": "The sunrise was beautiful, but I couldn't keep my eyes off you. Let's do this again soon!",
                 "tape": "washi-tape-gold",
                 "rotation": "rotate-2"
             },
@@ -107,6 +109,7 @@ const CONFIG = {
                 "type": "image",
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284260646-pwst3j.jpg",
                 "caption": "Our Trip To Berlin!",
+                "secretNote": "Best trip ever! Remember the little cafe we found by accident? I miss their coffee and you.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             },
@@ -114,6 +117,7 @@ const CONFIG = {
                 "type": "image",
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284269260-3nun3.jpg",
                 "caption": "We're Getting Ready For The Dates.",
+                "secretNote": "I love how you steal my hoodies. You looked so cute that night.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             },
@@ -121,6 +125,7 @@ const CONFIG = {
                 "type": "image",
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284284621-yrtguu.jpg",
                 "caption": "Watching The Swains As They Past.",
+                "secretNote": "It was so peaceful. Just being next to you is my favorite place in the world.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             },
@@ -128,6 +133,7 @@ const CONFIG = {
                 "type": "image",
                 "src": "https://valentine-upload.aldoramadhan16.workers.dev/1770284302091-b9srf.jpg",
                 "caption": "That Night When We Go Nowhere.",
+                "secretNote": "Even 'nowhere' is a special destination when I'm with you. Love you always.",
                 "tape": "washi-tape",
                 "rotation": "rotate-2"
             }

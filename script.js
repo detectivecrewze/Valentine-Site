@@ -1841,7 +1841,14 @@ function loadGallery() {
 
         CONFIG.gallery.memories.forEach((mem, index) => {
             const card = document.createElement('div');
-            card.className = `polaroid-frame bg-white p-3 shadow-2xl relative ${mem.rotation} group`;
+
+            // Staggered falling delay
+            const fallDelay = index * 0.15; // 150ms between each card
+
+            // We use relative positioning and group for hover effects, plus our flip classes
+            card.className = `polaroid-frame bg-white p-3 shadow-2xl relative ${mem.rotation} group polaroid-falling`;
+            card.style.animationDelay = `${fallDelay}s`;
+            card.dataset.index = index;
 
             // We handle the media asynchronously to not block the grid rendering
             const renderCardContent = async () => {
@@ -1863,19 +1870,47 @@ function loadGallery() {
                     mediaHTML = `<img alt="Memory" class="w-full h-full object-cover" src="${mem.src}" referrerpolicy="no-referrer" />`;
                 }
 
+                const secretNote = mem.secretNote || "You found the secret message! I love you so much. ❤️";
+
                 card.innerHTML = `
-                    <div class="${mem.tape} absolute -top-3 ${mem.rotation.includes('-') ? '-left-4' : '-right-3'} w-14 h-6 z-10"></div>
-                    <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100 ${revealedMemories[index] ? 'shadow-inner' : ''}"
-                         onclick="if(revealedMemories[${index}]) openLightbox(${index})">
-                        ${mediaHTML}
-                        ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
-                    </div>
-                    <div class="pt-5 pb-6 px-3 text-center">
-                        <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
-                            ${mem.caption}
-                        </p>
+                    <div class="polaroid-flipper h-full w-full">
+                        <!-- FRONT SIDE -->
+                        <div class="polaroid-front h-full w-full flex flex-col relative">
+                            <div class="${mem.tape} absolute -top-3 ${mem.rotation.includes('-') ? '-left-4' : '-right-3'} w-14 h-6 z-10 transition-opacity group-[.is-flipped]:opacity-0"></div>
+                            <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100 ${revealedMemories[index] ? 'shadow-inner' : ''}">
+                                ${mediaHTML}
+                                ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
+                            </div>
+                            <div class="pt-5 pb-6 px-3 text-center">
+                                <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
+                                    ${mem.caption}
+                                </p>
+                            </div>
+                            <div id="flip-hint-${index}" class="flip-hint ${revealedMemories[index] ? '' : 'opacity-0'}">flip to reveal</div>
+                        </div>
+
+                        <!-- BACK SIDE -->
+                        <div class="polaroid-back">
+                            <div class="secret-note-wrapper">
+                                <p class="secret-note-text">${secretNote}</p>
+                                <div class="secret-note-heart material-symbols-outlined">favorite</div>
+                            </div>
+                        </div>
                     </div>
                 `;
+
+                // Add flip interaction
+                card.addEventListener('click', (e) => {
+                    // Only flip if it's already revealed and not clicking on canvas
+                    if (revealedMemories[index] && e.target.tagName !== 'CANVAS') {
+                        card.classList.toggle('is-flipped');
+
+                        // Optional flip sound
+                        const flipAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2560/2560-preview.mp3');
+                        flipAudio.volume = 0.2;
+                        flipAudio.play().catch(() => { });
+                    }
+                });
 
                 // If it's a video and already revealed, play it
                 if (revealedMemories[index]) {
@@ -2006,9 +2041,16 @@ function initScratchCard(index) {
             canvas.style.opacity = '0';
             canvas.style.pointerEvents = 'none'; // Ensure it doesn't block future clicks while fading
             setTimeout(() => canvas.remove(), 1500);
+
             if (caption) {
                 caption.classList.remove('opacity-0');
                 caption.classList.add('opacity-100');
+            }
+
+            const flipHint = document.getElementById(`flip-hint-${index}`);
+            if (flipHint) {
+                flipHint.classList.remove('opacity-0');
+                flipHint.classList.add('opacity-100');
             }
 
             // Add capability
