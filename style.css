@@ -287,7 +287,7 @@ body {
 
 @media (max-width: 768px) {
     .polaroid-caption {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
     }
 }
 
@@ -3093,13 +3093,20 @@ body {
 
 .secret-note-text {
     font-family: 'Dancing Script', cursive;
-    font-size: 0.95rem;
-    /* Slightly smaller for safety */
+    font-size: 1.15rem;
+    /* Increased for better mobile readability */
     color: #374151;
     line-height: 1.4;
     word-wrap: break-word;
     max-width: 100%;
     margin-bottom: 10px;
+}
+
+@media (min-width: 1024px) {
+    .secret-note-text {
+        font-size: 1.4rem;
+        line-height: 1.5;
+    }
 }
 
 .secret-note-heart {
@@ -3114,11 +3121,19 @@ body {
     bottom: 1px;
     right: 5px;
     font-family: 'Lobster', cursive;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
     color: rgba(0, 0, 0, 0.4);
     pointer-events: none;
     transition: opacity 1.2s ease;
     z-index: 40;
+}
+
+@media (min-width: 1024px) {
+    .flip-hint {
+        font-size: 1.15rem;
+        bottom: 5px;
+        right: 10px;
+    }
 }
 
 
