@@ -551,8 +551,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!targetId) return;
 
             if (currentPageId !== targetId && typeof MapsTo === 'function') {
-                console.log(`🚀 Manual Sync: Navigating to ${targetId}`);
-                MapsTo(currentPageId, targetId);
+                console.log(`🚀 Manual Sync: Navigating to ${targetId} (Forced: true)`);
+                MapsTo(currentPageId, targetId, true);
             }
         }
 
@@ -775,12 +775,12 @@ function loadGoogleFont(fontFamily) {
 }
 
 // Helper Function: MapsTo
-function MapsTo(fromId, toId) {
+function MapsTo(fromId, toId, force = false) {
     if (isNavigating || fromId === toId) return;
     isNavigating = true;
 
     // Check if target page is enabled
-    if (!isPageEnabled(toId)) {
+    if (!force && !isPageEnabled(toId)) {
         console.warn(`⚠️ Page ${toId} is disabled, finding alternative...`);
         const currentConf = getPageConfig(fromId);
         const targetConf = getPageConfig(toId);

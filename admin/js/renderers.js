@@ -400,6 +400,12 @@ const renderers = {
                             <div class="font-bold text-sm text-gray-800">${pageName}</div>
                             <div class="text-[10px] text-gray-500">${pageDesc}</div>
                         </div>
+                        <button type="button" 
+                            class="ending-preview-btn w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-500 hover:text-white text-gray-400 transition-all"
+                            onclick="event.stopPropagation(); app.sendMessageToPreview({ type: 'NAVIGATE_TO_PAGE', pageId: '${page.id}' }); utils.showNotification('Preview jumping to ${pageName}...', 'success', 2000);"
+                            title="Preview this ending">
+                            <span class="material-symbols-outlined text-sm">visibility</span>
+                        </button>
                         <div class="w-6 h-6 rounded-full flex items-center justify-center ${page.enabled ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-300'}">
                             <span class="material-symbols-outlined text-sm">${page.enabled ? 'check' : 'radio_button_unchecked'}</span>
                         </div>
