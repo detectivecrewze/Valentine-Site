@@ -1811,32 +1811,23 @@ function nextQuestion() {
 // --- Gallery Logic ---
 // --- Gallery Logic with Real scratching ---
 function loadGallery() {
-    // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
     console.log("Loading Gallery...");
     if (!CONFIG.gallery || !CONFIG.gallery.memories) return;
 
-    // ✅ FIX: Initialize revealedMemories array if empty or wrong size
+    // Initialize revealedMemories array if empty or wrong size
     if (revealedMemories.length === 0) {
-        console.log('[Gallery] Initializing revealedMemories array...');
         revealedMemories = new Array(CONFIG.gallery.memories.length).fill(false);
     } else if (revealedMemories.length !== CONFIG.gallery.memories.length) {
-        // Resize array if memories count changed
         const newArray = new Array(CONFIG.gallery.memories.length).fill(false);
-        // Copy existing values
         for (let i = 0; i < Math.min(revealedMemories.length, newArray.length); i++) {
             newArray[i] = revealedMemories[i];
         }
         revealedMemories = newArray;
-        console.log('[Gallery] Resized revealedMemories to:', revealedMemories.length);
     }
 
-    // ✅ FIX: Auto-reveal all in preview mode so admin can see images
-    const isPreview = getPreviewMode() !== null;
-    if (isPreview) {
-        console.log('[Gallery] Preview mode detected - auto-revealing all images');
-        revealedMemories = revealedMemories.map(() => true);
-    }
+    // Disable auto-reveal in preview to allow testing the scratch effect
+    // const isPreview = getPreviewMode() !== null;
 
     const titleEl = document.getElementById('gallery-title');
     const subtitleEl = document.getElementById('gallery-subtitle');
@@ -1848,55 +1839,58 @@ function loadGallery() {
     if (gridEl) {
         gridEl.innerHTML = '';
 
-        CONFIG.gallery.memories.forEach(async (mem, index) => {
-
+        CONFIG.gallery.memories.forEach((mem, index) => {
             const card = document.createElement('div');
             card.className = `polaroid-frame bg-white p-3 shadow-2xl relative ${mem.rotation} group`;
 
-            // Determine media HTML based on type
-            let mediaHTML = "";
-            if (mem.type === "video") {
-                const blobUrl = await fetchMediaBlob(mem.src);
-                mediaHTML = `
-                    <div class="relative w-full h-full">
-                        <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="auto">
-                            <source src="${blobUrl}" type="video/mp4">
-                        </video>
-                        <!-- IDM Shield for Gallery Video -->
-                        <div class="absolute inset-0 z-20 bg-transparent"></div>
-                    </div>`;
-            } else {
-                // handles "image" and default
-                mediaHTML = `<img alt="Memory" class="w-full h-full object-cover" src="${mem.src}" referrerpolicy="no-referrer" />`;
-            }
-
-            card.innerHTML = `
-                <div class="${mem.tape} absolute -top-3 ${mem.rotation.includes('-') ? '-left-4' : '-right-3'} w-14 h-6 z-10"></div>
-                <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100 ${revealedMemories[index] ? 'shadow-inner' : ''}"
-                     onclick="if(revealedMemories[${index}]) openLightbox(${index})">
-                    ${mediaHTML}
-                    ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
-                </div>
-                <div class="pt-5 pb-6 px-3 text-center">
-                    <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
-                        ${mem.caption}
-                    </p>
-                </div>
-            `;
-            gridEl.appendChild(card);
-
-            // Force play video if already revealed (uncovered)
-            if (revealedMemories[index]) {
-                const video = card.querySelector('video');
-                if (video) {
-                    video.play().catch(e => console.log("Manual play block:", e));
+            // We handle the media asynchronously to not block the grid rendering
+            const renderCardContent = async () => {
+                let mediaHTML = "";
+                if (mem.type === "video") {
+                    try {
+                        const blobUrl = await fetchMediaBlob(mem.src);
+                        mediaHTML = `
+                            <div class="relative w-full h-full">
+                                <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="auto">
+                                    <source src="${blobUrl}" type="video/mp4">
+                                </video>
+                                <div class="absolute inset-0 z-20 bg-transparent"></div>
+                            </div>`;
+                    } catch (err) {
+                        mediaHTML = `<div class="w-full h-full bg-gray-200 flex items-center justify-center">Error</div>`;
+                    }
+                } else {
+                    mediaHTML = `<img alt="Memory" class="w-full h-full object-cover" src="${mem.src}" referrerpolicy="no-referrer" />`;
                 }
-            }
 
-            // Initialize the canvas only if it exists
-            if (!revealedMemories[index]) {
-                setTimeout(() => initScratchCard(index), 50);
-            }
+                card.innerHTML = `
+                    <div class="${mem.tape} absolute -top-3 ${mem.rotation.includes('-') ? '-left-4' : '-right-3'} w-14 h-6 z-10"></div>
+                    <div class="aspect-[3/4] w-full relative overflow-hidden bg-gray-100 ${revealedMemories[index] ? 'shadow-inner' : ''}"
+                         onclick="if(revealedMemories[${index}]) openLightbox(${index})">
+                        ${mediaHTML}
+                        ${revealedMemories[index] ? '' : `<canvas id="scratch-canvas-${index}" class="absolute inset-0 w-full h-full cursor-crosshair z-30"></canvas>`}
+                    </div>
+                    <div class="pt-5 pb-6 px-3 text-center">
+                        <p id="caption-${index}" class="polaroid-caption ${revealedMemories[index] ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000">
+                            ${mem.caption}
+                        </p>
+                    </div>
+                `;
+
+                // If it's a video and already revealed, play it
+                if (revealedMemories[index]) {
+                    const video = card.querySelector('video');
+                    if (video) video.play().catch(e => { });
+                }
+
+                // Initialize scratch card if not revealed
+                if (!revealedMemories[index]) {
+                    setTimeout(() => initScratchCard(index), 100);
+                }
+            };
+
+            gridEl.appendChild(card);
+            renderCardContent();
         });
     }
 }
@@ -2659,7 +2653,7 @@ async function initMap() {
                 popupContent += `
                     <div class="map-popup-image-container relative">
                         <div class="map-popup-image-frame overflow-hidden rounded-lg shadow-md">
-                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-24 object-cover" referrerpolicy="no-referrer">
+                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-32 object-cover" referrerpolicy="no-referrer">
                         </div>
                     </div>`;
             }

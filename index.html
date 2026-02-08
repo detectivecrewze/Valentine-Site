@@ -804,23 +804,24 @@
             <!-- Navigation Buttons (Fixed Bottom) -->
             <div class="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-6 px-4 md:px-8">
                 <div class="nav-bottom-grid max-w-2xl mx-auto">
-                    <!-- Back Button Container -->
-                    <div class="flex justify-start">
+                    <!-- Back Button Container with Camera Button Above -->
+                    <div class="relative flex justify-start items-center">
+                        <button id="screenshot-btn" onclick="captureWrappedCard()"
+                            class="absolute bottom-full mb-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-rose-800 border border-white/40 hover:bg-white/60 transition-all pointer-events-auto shadow-sm">
+                            <span class="material-symbols-outlined text-xl">photo_camera</span>
+                        </button>
                         <button onclick="goPrevPage()" class="nav-btn-standard">
                             <span class="material-symbols-outlined text-lg">arrow_back_ios</span>
                             <span>Previous</span>
                         </button>
                     </div>
 
-                    <!-- Camera/Screenshot Button -->
+                    <!-- Center Empty -->
                     <div class="flex justify-center">
-                        <button id="screenshot-btn" onclick="captureWrappedCard()" class="nav-camera-btn">
-                            <span class="material-symbols-outlined text-2xl">photo_camera</span>
-                        </button>
+                        <!-- Empty space -->
                     </div>
 
-                    <!-- Next Button -->
-                    <!-- Next Button -->
+                    <!-- Next Button with Share Button Above -->
                     <div class="relative flex justify-end items-center">
                         <button onclick="shareWrapped()"
                             class="absolute bottom-full mb-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-rose-800 border border-white/40 hover:bg-white/60 transition-all pointer-events-auto shadow-sm">
