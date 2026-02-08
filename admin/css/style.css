@@ -98,9 +98,8 @@ html {
     margin: 0 auto;
     width: 100%;
     padding: 1.5rem;
-    height: calc(100vh - 180px);
-    /* Adjust for header/footer */
-    overflow: hidden;
+    /* Removed fixed height and overflow hidden to allow sticky to work */
+    min-height: 0;
 }
 
 @media (max-width: 1023px) {
@@ -221,7 +220,7 @@ html {
 .wizard-content {
     flex: 1;
     min-width: 0;
-    overflow-y: auto;
+    /* Removed individual scroll to allow parent/page scroll */
     padding-right: 0.5rem;
 }
 
@@ -315,13 +314,12 @@ html {
 .wizard-preview {
     width: 400px;
     position: sticky;
-    top: 20px;
-    /* Starts near top when header scrolls away */
+    top: 2rem;
+    /* Will stick to the top of the viewport when scrolling */
     height: fit-content;
-    max-height: calc(100vh - 40px);
-    /* Prevent overflow */
+    max-height: calc(100vh - 4rem);
     align-self: flex-start;
-    /* Stick to top of container */
+    z-index: 30;
 }
 
 @media (max-width: 1023px) {
