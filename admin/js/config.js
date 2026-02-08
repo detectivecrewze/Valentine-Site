@@ -149,8 +149,8 @@ const DEFAULT_PAGE_CONFIG = {
         'page-7': { id: 'page-7', name: 'Memory Map', type: 'map', enabled: true, required: false, icon: 'map', order: 7 },
         'page-8': { id: 'page-8', name: 'Love Letter', type: 'letter', enabled: true, required: false, icon: 'mail', order: 8 },
         'page-9': { id: 'page-9', name: 'The Final Lock', type: 'lock', enabled: false, required: false, icon: 'lock_person', order: 9 },
-        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: true, required: false, icon: 'all_inclusive', order: 10 },
-        'page-11': { id: 'page-11', name: 'Valentine Invitation', type: 'invitation', enabled: false, required: false, icon: 'favorite_border', order: 11 }
+        'page-10': { id: 'page-10', name: 'Infinity Scroll', type: 'infinity', enabled: false, required: false, icon: 'all_inclusive', order: 10 },
+        'page-11': { id: 'page-11', name: 'Valentine Invitation', type: 'invitation', enabled: true, required: false, icon: 'favorite_border', order: 11 }
     }
 };
 
@@ -174,8 +174,8 @@ const PAGE_PRESETS = {
         id: 'playful',
         name: 'Fun & Playful',
         icon: 'videogame_asset',
-        pages: ['page-1', 'page-2', 'page-5', 'page-7', 'page-10'],
-        description: 'Interactive games and maps ending with the Infinity Scroll.'
+        pages: ['page-1', 'page-2', 'page-5', 'page-7', 'page-11'],
+        description: 'Interactive games and maps ending with the Valentine Invitation.'
     }
 };
 
