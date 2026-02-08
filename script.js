@@ -20,8 +20,14 @@ if (!window._CONFIG_DATA) {
  * Priority: _CONFIG_DATA (from API) > window.CONFIG (from data.js) > ORIGINAL_CONFIG (backup)
  */
 function safeGetConfig() {
-    const result = window._CONFIG_DATA || window.CONFIG || ORIGINAL_CONFIG;
-    console.log('[safeGetConfig] Returning config with keys:', Object.keys(result || {}).length);
+    // Priority: _CONFIG_DATA (from API) > window.CONFIG (from data.js) > ORIGINAL_CONFIG (backup)
+    const current = window._CONFIG_DATA || window.CONFIG || ORIGINAL_CONFIG;
+
+    // Ensure we always return an object even if all sources are null
+    const result = current && typeof current === 'object' ? current : {};
+
+    // Debug logging only if keys found or special debug flag set
+    // console.log('[safeGetConfig] Returning config with keys:', Object.keys(result).length);
     return result;
 }
 
@@ -29,19 +35,23 @@ function safeGetConfig() {
  * Safe setter for CONFIG - updates internal storage and dispatches events
  */
 function safeSetConfig(value) {
-    if (!value) return;
+    if (!value || typeof value !== 'object') {
+        console.warn('[CONFIG] ⚠️ Attempted to set invalid config:', value);
+        return;
+    }
+
     window._CONFIG_DATA = value;
 
     // Attempt to keep window.CONFIG in sync for iframes and legacy scripts
     try {
-        // We set it as a property if possible
+        // We set it as a property if possible (works if window.CONFIG was let/var or property)
         window.CONFIG = value;
     } catch (e) {
         // Expected if 'const CONFIG' exists in data.js
-        // In this case, window.CONFIG is already defined by the browser
+        console.log('[CONFIG] ℹ️ Stale const CONFIG detected, updates will use safeGetConfig()');
     }
 
-    console.log('[CONFIG] ✅ Global CONFIG updated reactively');
+    console.log('[CONFIG] ✅ Global CONFIG updated reactively (Keys:', Object.keys(value).length, ')');
 
     // Dispatch custom event for reactivity
     if (typeof CustomEvent !== 'undefined') {
@@ -200,6 +210,12 @@ async function loadConfig() {
             const data = await response.json();
             console.log('[Config] ✅ Successfully loaded config from API');
             console.log('[Config] Config keys:', Object.keys(data));
+            console.log('[Config] Letter data:', {
+                hasLetter: !!data.letter,
+                hasMessage: !!data.letter?.message,
+                messageLength: data.letter?.message?.length || 0,
+                messagePreview: data.letter?.message?.substring(0, 100) || 'EMPTY'
+            });
             return data;
 
         } catch (error) {
@@ -328,6 +344,10 @@ async function initializeApp() {
 
         // Now initialize the app
         startApp();
+        
+        // ✅ CRITICAL FIX: Initialize letter page AFTER config is confirmed loaded
+        // This ensures the letter uses the latest config from API, not defaults
+        initLetterPage();
     } catch (error) {
         console.error('[Config] ❌ Initialization failed:', error);
         // Even if error, try to use local config
@@ -336,6 +356,7 @@ async function initializeApp() {
             console.warn('[Config] Emergency fallback back to local data.js after error');
             safeSetConfig(localConf);
             startApp();
+            initLetterPage();
         } else {
             console.error('[Config] ❌ No config available even after fallback');
             showConfigError('Unknown', 'No configuration available');
@@ -395,6 +416,8 @@ function startApp() {
     initMusicPlayer();
     loadGallery();
     loadQuiz();
+    // ✅ FIX: initLetterPage() is called here for preview mode support
+    // and also at the end of initializeApp() to ensure API config is ready
     initLetterPage();
     syncPageVisibility();
 
@@ -457,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof CONFIG !== 'undefined') {
             safeSetConfig(CONFIG);
             startApp();
+            initLetterPage(); // ✅ FIX: Ensure letter is initialized in preview mode
             showLoadingScreen(false); // 🚀 Ensure loader is hidden in preview
         }
     } else {
@@ -623,8 +647,8 @@ async function preloadFirstSong() {
 
 // Update SEO/OG Settings
 function updateSEO() {
-    // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
+    // ✅ FIX: Use window.CONFIG explicitly
     if (!CONFIG || !CONFIG.seo) return;
 
     const { title, description, image } = CONFIG.seo;
@@ -659,8 +683,8 @@ function updateSEO() {
 
 // Particle System
 function initParticles() {
-    // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
+    // ✅ FIX: Use window.CONFIG explicitly
     const container = document.getElementById('particle-container');
     if (!container || !CONFIG || !CONFIG.theme || !CONFIG.theme.particles || CONFIG.theme.particles === 'none') return;
 
@@ -697,8 +721,8 @@ function initParticles() {
 
 // Apply Theme Settings
 function applyTheme() {
-    // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
+    // ✅ FIX: Use window.CONFIG explicitly
 
     if (!CONFIG || !CONFIG.theme) {
         console.warn('[Theme] No theme config available');
@@ -978,6 +1002,7 @@ function MapsTo(fromId, toId) {
 // --- Navigation UI & Swipe Support ---
 
 function updatePageIndicator(pageId) {
+    const CONFIG = safeGetConfig();
     // Get ALL page indicator elements (now one per page)
     const allIndicatorContainers = document.querySelectorAll('.page-indicator-container');
     const allIndicatorTexts = document.querySelectorAll('.page-indicator-text');
@@ -1050,6 +1075,7 @@ document.addEventListener('touchend', e => {
 }, false);
 
 function handleSwipe() {
+    const CONFIG = safeGetConfig();
     // Respect configuration
     if (CONFIG.navigation && CONFIG.navigation.enableSwipe === false) return;
 
@@ -1243,11 +1269,15 @@ function loadDynamicContent() {
         const polaroidImg = document.getElementById('letter-polaroid-img');
         const polaroidCaption = document.getElementById('letter-polaroid-caption');
 
-        if (signatureEl) signatureEl.textContent = '';
-        if (bodyEl) bodyEl.innerHTML = '';
+        // ✅ FIX: Only clear if not already typed - prevents wiping content during config updates
+        // The letterTyped flag is set when typing animation completes
+        if (!letterTyped) {
+            if (signatureEl) signatureEl.textContent = '';
+            if (bodyEl) bodyEl.innerHTML = '';
+        }
 
-        // Apply immediate content (non-animated)
-        if (recipientEl) {
+        // ✅ FIX: Always update recipient from latest config
+        if (recipientEl && CONFIG.letter.recipient !== undefined) {
             const name = CONFIG.letter.recipient || 'Dearest Love';
             const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
             recipientEl.textContent = `${greeting},`;
@@ -2191,6 +2221,7 @@ function openLightbox(index) {
 
 // FUNCTION: Preload tiles untuk semua marker locations
 async function preloadAllLocationTiles(loadingTextElement) {
+    const CONFIG = safeGetConfig();
     if (!CONFIG.map || !CONFIG.map.locations || !mapInstance) return;
 
     console.log('🗺️ Preloading tiles for all locations...');
@@ -3424,8 +3455,16 @@ let letterTyped = false;
 let isDustAnimationActive = false;
 
 function initLetterPage() {
-    // ✅ FIX: Use window.CONFIG explicitly
+    // ✅ CRITICAL FIX: Always get FRESH config from the reactive source
+    // This ensures we get the latest config from API, not cached/stale data
     const CONFIG = safeGetConfig();
+    
+    console.log('[Letter] initLetterPage called, CONFIG.letter exists:', !!CONFIG.letter);
+    if (CONFIG.letter) {
+        console.log('[Letter] Message length:', CONFIG.letter.message?.length || 0);
+        console.log('[Letter] Recipient:', CONFIG.letter.recipient);
+    }
+    
     // Initialize floating dust particles
     initFloatingDust();
 
@@ -3434,12 +3473,22 @@ function initLetterPage() {
     initLetterParallax();
     initPremiumCursor();
 
-    // Set Letter Content from CONFIG
+    // ✅ FIX: Always update Letter Content from CONFIG (not cached values)
     const recipientEl = document.getElementById('letter-recipient');
-    if (recipientEl) {
+    if (recipientEl && CONFIG.letter?.recipient !== undefined) {
         const name = CONFIG.letter.recipient || 'Dearest Love';
         const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
         recipientEl.textContent = `${greeting},`;
+    }
+
+    // ✅ FIX: Apply message immediately if already typed (ensures live updates)
+    const bodyEl = document.getElementById('letter-body');
+    if (bodyEl && CONFIG.letter?.message) {
+        if (letterTyped) {
+            // If already animated, just update the content directly
+            bodyEl.innerHTML = CONFIG.letter.message;
+        }
+        // If not yet typed, the typing animation will handle it when triggered
     }
 
 
@@ -3541,8 +3590,26 @@ function smoothScrollToLetter() {
 
 // ===== PREMIUM TYPEWRITER EFFECT =====
 async function startLetterTyping() {
+    // ✅ CRITICAL FIX: Always get FRESH config from API/local source
+    const CONFIG = safeGetConfig();
+    
+    console.log('[Letter Typing] Starting with CONFIG:', {
+        hasLetter: !!CONFIG.letter,
+        hasMessage: !!CONFIG.letter?.message,
+        messageLength: CONFIG.letter?.message?.length || 0,
+        messagePreview: CONFIG.letter?.message?.substring(0, 50) || 'EMPTY'
+    });
+    
+    // ✅ FIX: If already typed, update content with latest config and show button
     if (letterTyped) {
-        // Already typed: ensure button is visible
+        console.log('[Letter Typing] Already typed, updating content...');
+        const bodyEl = document.getElementById('letter-body');
+        // Update with latest message if available
+        if (bodyEl && CONFIG.letter?.message) {
+            console.log('[Letter Typing] Updating body with new message');
+            bodyEl.innerHTML = CONFIG.letter.message;
+        }
+        // Ensure button is visible
         const finaleNextBtn = document.getElementById('finale-next-btn');
         if (finaleNextBtn) {
             finaleNextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
@@ -3553,7 +3620,13 @@ async function startLetterTyping() {
 
     letterTyped = true;
     const bodyEl = document.getElementById('letter-body');
-    if (!bodyEl || !CONFIG.letter.message) return;
+    if (!bodyEl || !CONFIG.letter?.message) {
+        console.error('[Letter Typing] ❌ Cannot start - missing body or message:', {
+            hasBody: !!bodyEl,
+            hasMessage: !!CONFIG.letter?.message
+        });
+        return;
+    }
 
     // Play gentle typing ambient (if available)
     playAmbientTyping(true);
@@ -3587,8 +3660,10 @@ async function startLetterTyping() {
     // Type signature with flourish
     await sleep(400);
     const signatureEl = document.getElementById('letter-signature');
-    if (signatureEl && letterTyped && CONFIG.letter.signature) {
-        await typeTargetPremium(signatureEl, CONFIG.letter.signature, 60); // Slower for cursive
+    // ✅ FIX: Get fresh config to ensure signature is up-to-date
+    const freshConfig = safeGetConfig();
+    if (signatureEl && letterTyped && freshConfig.letter?.signature) {
+        await typeTargetPremium(signatureEl, freshConfig.letter.signature, 60); // Slower for cursive
 
         // Add ink bleed effect after signature
         setTimeout(() => {
@@ -4067,8 +4142,8 @@ function unlockFinale() {
 let countdownInterval = null; // Global to allow clearing
 
 function initCountdown() {
-    // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
+    // ✅ FIX: Use window.CONFIG explicitly
     if (!CONFIG || !CONFIG.countdown || !CONFIG.countdown.targetDate) {
         console.warn("[Countdown] No target date in CONFIG");
         return;

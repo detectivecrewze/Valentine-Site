@@ -80,27 +80,51 @@ const state = {
         };
 
         let changed = false;
+
+        // 1. Sanitize the main configData.pages array (used for per-page content)
+        const uniquePages = new Map();
+        const filteredPages = [];
+
         this.configData.pages.forEach(page => {
+            // Fix type mismatch based on ID
             const correctType = pageTypes[page.pageId];
             if (correctType && page.type !== correctType) {
-                console.warn(`[State] Fixing type mismatch for ${page.pageId}: ${page.type} -> ${correctType}`);
+                console.warn(`[State] Fixing content type mismatch for ${page.pageId}: ${page.type} -> ${correctType}`);
                 page.type = correctType;
+                changed = true;
+            }
+
+            // Detect and fix duplicates
+            if (!uniquePages.has(page.pageId)) {
+                uniquePages.set(page.pageId, page);
+                filteredPages.push(page);
+            } else {
+                console.warn(`[State] Duplicate content entry detected for ${page.pageId}. Removing...`);
                 changed = true;
             }
         });
 
-        // Also fix the global pageConfig types if they are mismatched
-        if (CONFIG.pageConfig && CONFIG.pageConfig.pages) {
-            Object.keys(CONFIG.pageConfig.pages).forEach(id => {
+        if (changed) {
+            this.configData.pages = filteredPages;
+        }
+
+        // 2. Sanitize the pageConfig (used for menu/ordering/enabled status)
+        // Since they are unified, this.configData.pageConfig and CONFIG.pageConfig are the same
+        const pConfig = this.configData.pageConfig;
+        if (pConfig && pConfig.pages) {
+            Object.keys(pConfig.pages).forEach(id => {
+                const page = pConfig.pages[id];
                 const correctType = pageTypes[id];
-                if (correctType && CONFIG.pageConfig.pages[id].type !== correctType) {
-                    CONFIG.pageConfig.pages[id].type = correctType;
+                if (correctType && page.type !== correctType) {
+                    console.warn(`[State] Fixing meta type mismatch for ${id}: ${page.type} -> ${correctType}`);
+                    page.type = correctType;
                     changed = true;
                 }
             });
         }
 
         if (changed) {
+            console.log('[State] ✅ Sanitization complete. Issues resolved.');
             this.save();
         }
     },
@@ -111,15 +135,16 @@ const state = {
             window.CONFIG = {};
         }
 
-        // Initialize internal pageConfig if missing
+        // 1. Initialize internal pageConfig if missing
         if (!this.configData.pageConfig) {
             this.configData.pageConfig = JSON.parse(JSON.stringify(DEFAULT_PAGE_CONFIG));
         }
 
-        // Keep global CONFIG in sync for other components
-        if (!CONFIG.pageConfig) {
-            CONFIG.pageConfig = this.configData.pageConfig;
-        }
+        // 2. UNIFY REFERENCES: Force global CONFIG.pageConfig to refer to internal storage
+        // This ensures all UI logic (like toggles) directly modifies our persistent state
+        CONFIG.pageConfig = this.configData.pageConfig;
+
+        console.log('[State] 🔗 PageConfig unified with global CONFIG');
     },
 
     // ✅ IMPROVED: Load data from localStorage or CONFIG, merging with defaults
@@ -764,7 +789,11 @@ const state = {
     },
 
     getPages(enabledOnly = true) {
-        const pages = Object.values(CONFIG.pageConfig.pages)
+        // ALWAYS use our internal source of truth
+        const pConfig = this.configData.pageConfig || CONFIG.pageConfig;
+        if (!pConfig || !pConfig.pages) return [];
+
+        const pages = Object.values(pConfig.pages)
             .sort((a, b) => a.order - b.order);
         return enabledOnly ? pages.filter(p => p.enabled) : pages;
     },
@@ -775,10 +804,15 @@ const state = {
     },
 
     updatePageData(pageId, data) {
+        // Ensure sanitization happens before update if needed
         const index = this.configData.pages.findIndex(p => p.pageId === pageId);
         if (index !== -1) {
             // Keep existing metadata like 'type' if it's not provided in the new data
             this.configData.pages[index] = { ...this.configData.pages[index], ...data };
+
+            // CRITICAL: Check for any other duplicates of this page and remove them
+            const firstFoundIndex = index;
+            this.configData.pages = this.configData.pages.filter((p, i) => p.pageId !== pageId || i === firstFoundIndex);
         } else {
             // If it's a new page being added, try to infer the type if it's one of our known pages
             const pageTypes = {

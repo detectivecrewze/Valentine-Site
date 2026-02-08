@@ -554,6 +554,14 @@ const app = {
         btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Publishing...';
 
         try {
+            // ✅ CRITICAL FIX: Sync Quill editor content before publishing
+            // This ensures the latest letter message is included in the config
+            if (renderers.quill) {
+                const html = renderers.quill.root.innerHTML;
+                console.log('[Publish] Syncing Quill content, length:', html.length);
+                renderers.updateLetter('message', html);
+            }
+
             const config = state.getConfig();
 
             // ✅ FIX: Validate config before sending
@@ -568,7 +576,10 @@ const app = {
                 configSize: JSON.stringify(config).length + ' bytes',
                 hasMusic: !!(config.music && config.music.length),
                 hasGallery: !!(config.gallery && config.gallery.memories),
-                hasMap: !!(config.map && config.map.locations)
+                hasMap: !!(config.map && config.map.locations),
+                hasLetter: !!config.letter,
+                letterMessageLength: config.letter?.message?.length || 0,
+                letterMessagePreview: config.letter?.message?.substring(0, 100) || 'EMPTY'
             });
 
             const response = await fetch(`${API_URL}/save-config?id=${encodeURIComponent(customerId)}`, {
