@@ -560,16 +560,21 @@ const state = {
 
     // ✅ CRITICAL FIX: Get config from STATE, not DOM
     getConfig() {
-        // Extract page data from state
-        const wrappedPage = this.configData.pages.find(p => p.type === 'wrapped');
-        const quizPage = this.configData.pages.find(p => p.type === 'quiz');
-        const musicPage = this.configData.pages.find(p => p.type === 'music');
-        const galleryPage = this.configData.pages.find(p => p.type === 'gallery');
-        const mapPage = this.configData.pages.find(p => p.type === 'map');
-        const letterPage = this.configData.pages.find(p => p.type === 'letter');
-        const lockPage = this.configData.pages.find(p => p.type === 'lock');
-        const infinityPage = this.configData.pages.find(p => p.type === 'infinity');
-        const invitationPage = this.configData.pages.find(p => p.type === 'invitation');
+        // Extract page data from state with robust fallback (Type first, then ID)
+        const findPage = (type, id) => {
+            return this.configData.pages.find(p => p.type === type) ||
+                this.configData.pages.find(p => p.pageId === id);
+        };
+
+        const wrappedPage = findPage('wrapped', 'page-3');
+        const quizPage = findPage('quiz', 'page-5');
+        const musicPage = findPage('music', 'page-2');
+        const galleryPage = findPage('gallery', 'page-4');
+        const mapPage = findPage('map', 'page-7');
+        const letterPage = findPage('letter', 'page-8');
+        const lockPage = findPage('lock', 'page-9');
+        const infinityPage = findPage('infinity', 'page-10');
+        const invitationPage = findPage('invitation', 'page-11');
 
         return {
             theme: this.configData.theme,
@@ -730,9 +735,23 @@ const state = {
     updatePageData(pageId, data) {
         const index = this.configData.pages.findIndex(p => p.pageId === pageId);
         if (index !== -1) {
+            // Keep existing metadata like 'type' if it's not provided in the new data
             this.configData.pages[index] = { ...this.configData.pages[index], ...data };
         } else {
-            this.configData.pages.push({ pageId, ...data });
+            // If it's a new page being added, try to infer the type if it's one of our known pages
+            const pageTypes = {
+                'page-2': 'music',
+                'page-3': 'wrapped',
+                'page-4': 'gallery',
+                'page-5': 'quiz',
+                'page-7': 'map',
+                'page-8': 'letter',
+                'page-9': 'lock',
+                'page-10': 'infinity',
+                'page-11': 'invitation'
+            };
+            const type = data.type || pageTypes[pageId] || '';
+            this.configData.pages.push({ pageId, type, ...data });
         }
         this.save();
         this.syncToPreview();

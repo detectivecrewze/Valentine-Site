@@ -1240,10 +1240,33 @@ function loadDynamicContent() {
         const recipientEl = document.getElementById('letter-recipient');
         const bodyEl = document.getElementById('letter-body');
         const signatureEl = document.getElementById('letter-signature');
+        const polaroidImg = document.getElementById('letter-polaroid-img');
+        const polaroidCaption = document.getElementById('letter-polaroid-caption');
 
         if (signatureEl) signatureEl.textContent = '';
         if (bodyEl) bodyEl.innerHTML = '';
-        console.log('[LoadContent] ✅ Letter section prepared');
+
+        // Apply immediate content (non-animated)
+        if (recipientEl) {
+            const name = CONFIG.letter.recipient || 'Dearest Love';
+            const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
+            recipientEl.textContent = `${greeting},`;
+        }
+
+        if (polaroidCaption && CONFIG.letter.polaroidCaption) {
+            polaroidCaption.textContent = CONFIG.letter.polaroidCaption;
+        }
+
+        if (polaroidImg && CONFIG.letter.polaroidSrc) {
+            polaroidImg.src = CONFIG.letter.polaroidSrc;
+            polaroidImg.classList.remove('hidden');
+            const polaroidGradient = document.getElementById('letter-polaroid-gradient');
+            const polaroidSilhouette = document.getElementById('letter-polaroid-silhouette');
+            if (polaroidGradient) polaroidGradient.classList.add('hidden');
+            if (polaroidSilhouette) polaroidSilhouette.classList.add('hidden');
+        }
+
+        console.log('[LoadContent] ✅ Letter section content applied');
     }
 
     // Page 9: Love Lock
