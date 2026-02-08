@@ -2444,7 +2444,7 @@ async function glideToPin(pinIndex) {
 
         // 🧠 SMART ZOOM OFFSET: Position pin in lower portion of screen
         // This leaves room for the popup to appear above without being blocked by brand card
-        const targetZoom = 15;
+        const targetZoom = 16;
         const targetLatLng = L.latLng(loc.coordinates[0], loc.coordinates[1]);
 
         // Calculate offset: We want the pin to appear ~60% down from top of viewport
@@ -2663,7 +2663,7 @@ async function initMap() {
             if (e.originalEvent.target.id === 'map' || e.originalEvent.target.classList.contains('leaflet-container')) {
                 if (mapMarkers.length > 0) {
                     const group = new L.featureGroup(mapMarkers);
-                    mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true });
+                    mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: true });
                 } else {
                     mapInstance.setView(defaultCenter, 13, { animate: true, duration: 1.0 });
                 }
@@ -2674,7 +2674,7 @@ async function initMap() {
         mapInstance.on('popupclose', () => {
             if (mapMarkers.length > 0) {
                 const group = new L.featureGroup(mapMarkers);
-                mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: true });
+                mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: true });
             }
         });
     } else {
@@ -2844,7 +2844,7 @@ async function initMap() {
         if (mapMarkers.length > 0) {
             if (!mapJourneyCompleted) await new Promise(resolve => setTimeout(resolve, 2000));
             const group = new L.featureGroup(mapMarkers);
-            mapInstance.fitBounds(group.getBounds(), { padding: [50, 50], animate: !mapJourneyCompleted, duration: 2.5 });
+            mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: !mapJourneyCompleted, duration: 2.5 });
         }
 
         // Mark journey as completed after first time
