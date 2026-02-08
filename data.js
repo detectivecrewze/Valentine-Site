@@ -198,7 +198,7 @@ const CONFIG = {
     },
     "letter": {
         "recipient": "Dearest Lisa",
-        "message": "<p>Please help me somebody, i might kms today</p>",
+        "message": "<p>Please help me somebody, i might love myself today.</p>",
         "signature": "Your Favorite Person",
         "stampSrc": "assets/stamp.png",
         "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283993044-a3q2v.jpg",
@@ -260,13 +260,13 @@ const CONFIG = {
         "question": "Would you like to be my Valentine?",
         "bearDefault": "https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif",
         "bearSuccess": "https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif",
-        "successMessage": "Yay! ❤️"
+        "successMessage": "Yay! Thank you for everyhing dear.❤️"
     },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-08T12:19:28.865Z"
+        "generatedAt": "2026-02-08T17:24:52.786Z"
     },
     "adminLang": "id",
     "currentStep": 9,

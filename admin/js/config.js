@@ -160,8 +160,8 @@ const PAGE_PRESETS = {
         id: 'heartfelt',
         name: 'Heartfelt Journey',
         icon: 'auto_stories',
-        pages: ['page-1', 'page-3', 'page-4', 'page-6', 'page-8', 'page-9'],
-        description: 'A focused journey ending with a Love Letter and Final Lock.'
+        pages: ['page-1', 'page-3', 'page-4', 'page-6', 'page-7', 'page-8', 'page-11'],
+        description: 'A focused journey ending with the Valentine Invitation.'
     },
     'storyteller': {
         id: 'storyteller',
