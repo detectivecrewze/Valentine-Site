@@ -81,6 +81,13 @@ const CONFIG = {
             "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770248408961-cuso7h.mp3",
             "coverSrc": "assets/cover2.jpg",
             "lyrics": "I thought that I was dreaming when you said that you loves me.."
+        },
+        {
+            "songTitle": "Always With Me",
+            "artist": "Spirited Away",
+            "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770553088928-s6qcwn.mp3",
+            "coverSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770553125267-jo9dnp.jpg",
+            "lyrics": ""
         }
     ],
     "musicSectionTitle": "",
@@ -191,12 +198,12 @@ const CONFIG = {
     },
     "letter": {
         "recipient": "Dearest Lisa",
-        "message": "I find myself sitting here, thinking about all the moments we've shared... and it feels like I’m watching the most beautiful movie play out in my mind. It’s not just the big milestones or the dates on the calendar that stick with me; it’s the quiet spaces in between. It’s the way you look at me when you think I’m not noticing, the sound of your laugh filling a room, and the comfort of sitting in silence with you and feeling completely understood.\n\nLooking back, I realize how much you have colored my world. Before you, things were just ordinary. Now, everything seems to have more depth, more meaning. You’ve become the first person I want to tell when something good happens, and the only person I want to hold when the world feels heavy. You are my safe harbor, the place where I can finally just breathe and be myself without fear or pretense.",
+        "message": "<p>Please help me somebody, i might kms today</p>",
         "signature": "Your Favorite Person",
         "stampSrc": "assets/stamp.png",
         "polaroidSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770283993044-a3q2v.jpg",
         "polaroidCaption": "Love You.",
-        "finaleChoice": "choice"
+        "finaleChoice": "invitation"
     },
     "lock": {
         "initials": "A + B",
@@ -249,11 +256,17 @@ const CONFIG = {
             "audioSrc": "https://valentine-upload.aldoramadhan16.workers.dev/1770284156537-7axsz9.mp3"
         }
     },
+    "invitation": {
+        "question": "Would you like to be my Valentine?",
+        "bearDefault": "https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif",
+        "bearSuccess": "https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif",
+        "successMessage": "Yay! ❤️"
+    },
     "metadata": {
         "brandName": "For you, Always",
         "brandIcon": "diamond",
         "customerName": "",
-        "generatedAt": "2026-02-05T12:17:45.185Z"
+        "generatedAt": "2026-02-08T12:19:28.865Z"
     },
     "adminLang": "id",
     "currentStep": 9,
@@ -288,7 +301,7 @@ const CONFIG = {
             },
             "page-4": {
                 "id": "page-4",
-                "name": "Our Wrapped",
+                "name": "Our Vibe (Wrapped)",
                 "type": "wrapped",
                 "enabled": true,
                 "required": false,
@@ -333,7 +346,7 @@ const CONFIG = {
             },
             "page-9": {
                 "id": "page-9",
-                "name": "Love Lock",
+                "name": "The Final Lock",
                 "type": "lock",
                 "enabled": false,
                 "required": false,
@@ -344,7 +357,7 @@ const CONFIG = {
                 "id": "page-10",
                 "name": "Infinity Scroll",
                 "type": "infinity",
-                "enabled": true,
+                "enabled": false,
                 "required": false,
                 "icon": "all_inclusive",
                 "order": 10
@@ -353,7 +366,7 @@ const CONFIG = {
                 "id": "page-11",
                 "name": "Valentine Invitation",
                 "type": "invitation",
-                "enabled": false,
+                "enabled": true,
                 "required": false,
                 "icon": "favorite_border",
                 "order": 11
