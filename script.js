@@ -83,6 +83,8 @@ let transitionTimeout = null;
 let musicLoadingPromise = null;
 let loadingTargetIndex = null;
 let isMusicLoading = false;
+let isMapInitializing = false;
+let mapAnimationStarted = false;
 
 const bgMusic = new Audio();
 window.bgMusic = bgMusic;
@@ -416,7 +418,8 @@ function startApp() {
     initMusicPlayer();
     loadGallery();
     loadQuiz();
-    // ✅ FIX: initLetterPage() is called here for preview mode support
+    // ✅ initMap is handled by navigate-to-page or global sync if active
+    // FIX: initLetterPage() is called here for preview mode support
     // and also at the end of initializeApp() to ensure API config is ready
     initLetterPage();
     syncPageVisibility();
@@ -505,21 +508,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
+                // ✅ CRITICAL: Persist to storage so safeGetConfig() sees the update
+                if (typeof safeSetConfig === 'function') {
+                    safeSetConfig(CONFIG);
+                }
+
                 // Clear music cache when music changes
                 if (newConfig.music) {
                     musicLoadingPromise = null;
                     loadingTargetIndex = -1;
                 }
 
-                // Re-initialize components
+                // Re-initialize global components
                 if (typeof applyTheme === 'function') applyTheme();
                 if (typeof updateSEO === 'function') updateSEO();
                 if (typeof loadDynamicContent === 'function') loadDynamicContent();
                 if (typeof initCountdown === 'function') initCountdown();
-                if (typeof loadGallery === 'function') loadGallery(); // 🚀 Sync gallery
-                if (typeof loadQuiz === 'function') loadQuiz();       // 🚀 Sync quiz
-                if (typeof initMap === 'function') initMap();         // 🚀 Sync map
-                if (typeof initLetterPage === 'function') initLetterPage();   // 🚀 Sync letter
+
+                // initLetterPage is lightweight and handles its own re-load safety
+                if (typeof initLetterPage === 'function') initLetterPage();
+
                 syncPageVisibility();
 
                 // Refresh current page
@@ -2254,7 +2262,10 @@ async function preloadAllLocationTiles(loadingTextElement) {
 
     // Start zooming INTO the first location immediately to avoid overview zoom-out
     if (CONFIG.map.locations.length > 0) {
-        mapInstance.setView(CONFIG.map.locations[0].coordinates, 16, { animate: false });
+        const firstCoords = [parseFloat(CONFIG.map.locations[0].coordinates[0]), parseFloat(CONFIG.map.locations[0].coordinates[1])];
+        if (!isNaN(firstCoords[0]) && !isNaN(firstCoords[1])) {
+            mapInstance.setView(firstCoords, 16, { animate: false });
+        }
     } else {
         mapInstance.fitBounds(bounds, {
             padding: [50, 50],
@@ -2531,7 +2542,12 @@ function initMapPinNavigator() {
 async function initMap() {
     // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
-    console.log("Initializing Map with Journey Animation...");
+    console.log("[Map] Starting initMap. Journey completed:", mapJourneyCompleted, "Locations:", CONFIG.map?.locations?.length);
+
+    if (!CONFIG.map || !CONFIG.map.locations || CONFIG.map.locations.length === 0) {
+        console.warn("[Map] No locations found in config. Skipping map initialization.");
+        return;
+    }
 
     // Cancel any previous initialization
     if (mapInitController) {
@@ -2591,11 +2607,19 @@ async function initMap() {
         if (!mapJourneyCompleted && loadingText) loadingText.textContent = 'Setting up map canvas...';
         if (!mapJourneyCompleted) await new Promise(resolve => setTimeout(resolve, 700));
 
-        mapInstance = L.map('map', {
-            zoomControl: false,
-            attributionControl: false,
-            tap: false // Recommended for mobile touch issues in Leaflet
-        }).setView(defaultCenter, 13);
+        try {
+            mapInstance = L.map('map', {
+                zoomControl: false,
+                attributionControl: false,
+                tap: false // Recommended for mobile touch issues in Leaflet
+            }).setView(defaultCenter, 13);
+        } catch (err) {
+            console.warn('[Map] Container already initialized or init error:', err);
+            // If it's already initialized but we lost mapInstance reference (unlikely but possible), 
+            // Leaflet doesn't provide an easy "get current instance" but we can try to proceed
+            // if we have some other way. For now, just catch to avoid crash.
+            if (!mapInstance) return;
+        }
 
 
 
@@ -2864,11 +2888,18 @@ async function initMap() {
         // NEW: Trigger Discovery Pop-up with stats
         setTimeout(() => showMapDiscoveryPopUp(), 1000);
 
-        // FINAL FIX: Invalidate size one last time to ensure pins are rendered correctly
-        // especially important if initialized during transition hidden -> visible
+        // FINAL FIX: Invalidate size multiple times to ensure pins are rendered correctly
+        // especially important if initialized during transition hidden -> visible or in an iframe
+        setTimeout(() => {
+            if (mapInstance) {
+                mapInstance.invalidateSize();
+                console.log("[Map] Final size invalidation triggered");
+            }
+        }, 500);
+
         setTimeout(() => {
             if (mapInstance) mapInstance.invalidateSize();
-        }, 500);
+        }, 1500);
     }
 
     // Zoom control removed - users navigate via pin navigator only
