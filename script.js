@@ -397,7 +397,7 @@ function startApp() {
     }).catch(err => console.warn('[App] Printer SFX failed:', err));
 
     // Initialize Scratch SFX
-    fetchMediaBlob('assets/scratching.mp3').then(blobUrl => {
+    fetchMediaBlob('assets/scratching.dat').then(blobUrl => {
         scratchSfx.src = blobUrl;
         scratchSfx.loop = true;
         console.log('[App] Scratch SFX initialized');

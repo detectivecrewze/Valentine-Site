@@ -14,7 +14,7 @@ const renderers = {
     createPreviewButton(pageId) {
         return `
             <button type="button" 
-                    onclick="app.showPreview(); app.sendMessageToPreview({type: 'NAVIGATE_TO_PAGE', pageId: '${pageId}'});"
+                    onclick="app.showPreview('${pageId}');"
                     class="flex items-center gap-2 px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-xl font-semibold text-sm transition-all shadow-sm border border-rose-200"
                     title="Preview this page">
                 <span class="material-symbols-outlined text-lg">visibility</span>
@@ -370,7 +370,8 @@ const renderers = {
                         ${requiredBadge}
                     </div>
                     <label class="toggle-switch">
-                        <input type="checkbox" class="page-toggle" data-page-id="${page.id}" ${page.enabled ? 'checked' : ''} ${isDisabled}>
+                        <input type="checkbox" class="page-toggle" data-page-id="${page.id}" ${page.enabled ? 'checked' : ''} ${isDisabled}
+                            onchange="app.togglePage('${page.id}', this.checked)">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -391,7 +392,8 @@ const renderers = {
 
             return `
                 <label class="ending-page-option ${page.enabled ? 'active' : ''}" data-page-id="${page.id}">
-                    <input type="radio" name="ending-page" class="ending-page-radio sr-only" data-page-id="${page.id}" ${page.enabled ? 'checked' : ''}>
+                    <input type="radio" name="ending-page" class="ending-page-radio sr-only" data-page-id="${page.id}" ${page.enabled ? 'checked' : ''}
+                        onchange="if(this.checked) app.togglePage('${page.id}', true)">
                     <div class="flex items-center gap-3 p-3 rounded-xl border-2 ${page.enabled ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-white hover:border-amber-200'} cursor-pointer transition-all">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center ${colorClass}">
                             <span class="material-symbols-outlined">${page.icon}</span>
@@ -402,7 +404,7 @@ const renderers = {
                         </div>
                         <button type="button" 
                             class="ending-preview-btn w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-500 hover:text-white text-gray-400 transition-all"
-                            onclick="event.stopPropagation(); if(window.innerWidth < 1024) app.showPreview(); app.sendMessageToPreview({ type: 'NAVIGATE_TO_PAGE', pageId: '${page.id}' }); utils.showNotification('Preview jumping to ${pageName}...', 'success', 2000);"
+                            onclick="event.stopPropagation(); app.showPreview('${page.id}'); utils.showNotification('Preview jumping to ${pageName}...', 'success', 2000);"
                             title="Preview this ending">
                             <span class="material-symbols-outlined text-sm">visibility</span>
                         </button>

@@ -750,7 +750,7 @@ const state = {
             console.log('[State] Syncing to preview...');
 
             const iframe = document.getElementById('previewIframe');
-            if (iframe && iframe.contentWindow && iframe.getAttribute('src')) {
+            if (iframe && iframe.contentWindow && iframe.dataset.ready === 'true') {
                 iframe.contentWindow.postMessage({
                     type: 'UPDATE_CONFIG',
                     config: config
@@ -758,7 +758,7 @@ const state = {
             }
 
             const modalIframe = document.getElementById('previewModalIframe');
-            if (modalIframe && modalIframe.contentWindow && modalIframe.getAttribute('src')) {
+            if (modalIframe && modalIframe.contentWindow && modalIframe.dataset.ready === 'true') {
                 modalIframe.contentWindow.postMessage({
                     type: 'UPDATE_CONFIG',
                     config: config
@@ -772,7 +772,7 @@ const state = {
         console.log('[State] Immediate sync to preview');
 
         const iframe = document.getElementById('previewIframe');
-        if (iframe && iframe.contentWindow && iframe.getAttribute('src')) {
+        if (iframe && iframe.contentWindow && iframe.dataset.ready === 'true') {
             iframe.contentWindow.postMessage({
                 type: 'UPDATE_CONFIG',
                 config: config
@@ -780,7 +780,7 @@ const state = {
         }
 
         const modalIframe = document.getElementById('previewModalIframe');
-        if (modalIframe && modalIframe.contentWindow && modalIframe.getAttribute('src')) {
+        if (modalIframe && modalIframe.contentWindow && modalIframe.dataset.ready === 'true') {
             modalIframe.contentWindow.postMessage({
                 type: 'UPDATE_CONFIG',
                 config: config

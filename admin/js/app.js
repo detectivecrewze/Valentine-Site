@@ -51,7 +51,44 @@ const app = {
         // Populate sidebar
         this.updateSidebar();
 
+        // Listen for messages from preview iframes
+        window.addEventListener('message', (e) => this.handleMessage(e));
+
+        // **NEW: Initialize preview based on device screen**
+        this.initializePreview();
+
+        // **NEW: Handle screen resize for preview visibility**
+        window.addEventListener('resize', utils.debounce(() => this.initializePreview(), 500));
+
         console.log('[App] Wizard initialized with', this.wizardSteps.length, 'steps');
+    },
+
+    // Handle incoming messages from iframes
+    handleMessage(event) {
+        if (event.data && event.data.type === 'PREVIEW_READY') {
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                if (iframe.contentWindow === event.source) {
+                    console.log('[App] Preview iframe is READY, syncing now...');
+                    iframe.dataset.ready = 'true';
+
+                    // Sync state immediately
+                    state.syncToPreviewImmediate();
+
+                    // Navigate to pending page OR current step's page
+                    if (this.pendingNavigation) {
+                        console.log('[App] Executing pending navigation to:', this.pendingNavigation);
+                        this.sendMessageToPreview({
+                            type: 'NAVIGATE_TO_PAGE',
+                            pageId: this.pendingNavigation
+                        });
+                        this.pendingNavigation = null;
+                    } else {
+                        this.scrollPreviewToCurrentPage();
+                    }
+                }
+            });
+        }
     },
 
     // Recalculate wizard steps based on enabled pages
@@ -147,19 +184,17 @@ const app = {
         });
     },
 
-    // **NEW: Send message to preview iframes**
+    // Send message to all active preview iframes
     sendMessageToPreview(message) {
-        // Main preview iframe
-        const iframe = document.getElementById('previewIframe');
-        if (iframe && iframe.contentWindow && iframe.getAttribute('src')) {
-            iframe.contentWindow.postMessage(message, '*');
-        }
-
-        // Modal preview iframe
-        const modalIframe = document.getElementById('previewModalIframe');
-        if (modalIframe && modalIframe.contentWindow && modalIframe.getAttribute('src')) {
-            modalIframe.contentWindow.postMessage(message, '*');
-        }
+        const iframes = ['previewIframe', 'previewModalIframe'];
+        iframes.forEach(id => {
+            const iframe = document.getElementById(id);
+            if (iframe && iframe.contentWindow && iframe.getAttribute('src') && iframe.getAttribute('src') !== 'about:blank') {
+                if (iframe.dataset.ready === 'true') {
+                    iframe.contentWindow.postMessage(message, '*');
+                }
+            }
+        });
     },
 
     // Sidebar logic
@@ -174,6 +209,38 @@ const app = {
         const main = document.getElementById('wizardMain');
         if (main) {
             main.classList.toggle('is-preview-hidden');
+            // If we are unhiding it, make sure it's initialized
+            if (!main.classList.contains('is-preview-hidden')) {
+                this.initializePreview();
+            }
+        }
+    },
+
+    // **NEW: Performance & Audio Fix - Initialize sidebar preview only on large screens**
+    initializePreview() {
+        const iframe = document.getElementById('previewIframe');
+        if (!iframe) return;
+
+        const isDesktop = window.innerWidth >= 1024;
+        const main = document.getElementById('wizardMain');
+        const isHidden = main ? main.classList.contains('is-preview-hidden') : false;
+
+        // On desktop + not hidden, ensure src is set
+        if (isDesktop && !isHidden) {
+            const currentSrc = iframe.getAttribute('src');
+            if (!currentSrc || currentSrc === 'about:blank' || currentSrc === '') {
+                console.log('[App] Loading sidebar preview (Desktop detected)');
+                iframe.dataset.ready = 'false'; // Reset ready state
+                iframe.setAttribute('src', "../index.html?preview=side");
+            }
+        } else {
+            // On mobile or hidden, clear src to stop music/resources
+            const currentSrc = iframe.getAttribute('src');
+            if (currentSrc && currentSrc !== 'about:blank' && currentSrc !== '') {
+                console.log('[App] Clearing sidebar preview (Mobile/Hidden detected)');
+                iframe.dataset.ready = 'false';
+                iframe.setAttribute('src', "about:blank"); // This stops the iframe completely
+            }
         }
     },
 
@@ -727,37 +794,76 @@ const app = {
         document.body.appendChild(modal);
     },
 
-    // Show/hide preview modal (mobile)
-    showPreview() {
+    // Show/hide preview modal (mobile or explicit)
+    showPreview(targetPageId) {
+        const isDesktop = window.innerWidth >= 1024;
+        const sidebarIframe = document.getElementById('previewIframe');
+        const main = document.getElementById('wizardMain');
+        const isSidebarHidden = main ? main.classList.contains('is-preview-hidden') : true;
+
+        // On desktop + sidebar visible, just navigate the sidebar
+        if (isDesktop && sidebarIframe && !isSidebarHidden && sidebarIframe.dataset.ready === 'true') {
+            console.log('[App] Desktop sidebar active, navigating directly to:', targetPageId || 'current');
+            if (targetPageId) {
+                this.sendMessageToPreview({
+                    type: 'NAVIGATE_TO_PAGE',
+                    pageId: targetPageId
+                });
+            } else {
+                this.scrollPreviewToCurrentPage();
+            }
+            return;
+        }
+
+        // Otherwise (Mobile or Sidebar Hidden), use the Modal
         const modal = document.getElementById('previewModal');
         const modalIframe = document.getElementById('previewModalIframe');
 
         if (modal && modalIframe) {
-            // Load source if missing
-            if (!modalIframe.src || modalIframe.src === 'about:blank' || modalIframe.getAttribute('src') === '') {
-                modalIframe.src = "../index.html?preview=modal";
+            // Set pending navigation if provided
+            if (targetPageId) {
+                this.pendingNavigation = targetPageId;
+            }
+
+            // Load source if missing or blank
+            const currentSrc = modalIframe.getAttribute('src');
+            if (!currentSrc || currentSrc === 'about:blank' || currentSrc === '') {
+                console.log('[App] Loading modal preview...');
+                modalIframe.dataset.ready = 'false'; // Reset ready state
+                modalIframe.setAttribute('src', "../index.html?preview=modal");
+                // The sync and navigation will happen in handleMessage when PREVIEW_READY is received
+            } else {
+                // If already loaded and ready, sync and navigate
+                if (modalIframe.dataset.ready === 'true') {
+                    state.syncToPreviewImmediate();
+                    if (targetPageId) {
+                        this.sendMessageToPreview({
+                            type: 'NAVIGATE_TO_PAGE',
+                            pageId: targetPageId
+                        });
+                        this.pendingNavigation = null;
+                    } else {
+                        this.scrollPreviewToCurrentPage();
+                    }
+                }
             }
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-
-            // Force immediate sync
-            setTimeout(() => {
-                if (state.syncToPreviewImmediate) {
-                    state.syncToPreviewImmediate();
-                } else {
-                    state.syncToPreview();
-                }
-                this.scrollPreviewToCurrentPage();
-            }, 100);
         }
     },
 
     closePreview() {
         const modal = document.getElementById('previewModal');
+        const modalIframe = document.getElementById('previewModalIframe');
         if (modal) {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+
+            // Stop activities/audio in the modal iframe
+            if (modalIframe) {
+                modalIframe.setAttribute('src', 'about:blank');
+            }
         }
     },
 
@@ -825,26 +931,8 @@ const app = {
         });
     },
 
-    // Attach page manager listeners
+    // Attach page manager listeners (Remaining: Drag & Drop)
     attachPageManagerListeners() {
-        // Toggle switches for regular pages
-        document.querySelectorAll('.page-toggle').forEach(toggle => {
-            toggle.addEventListener('change', (e) => {
-                const pageId = e.target.dataset.pageId;
-                const isEnabled = e.target.checked;
-                this.togglePage(pageId, isEnabled);
-            });
-        });
-
-        // Ending page selection (radio-style)
-        document.querySelectorAll('.ending-page-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                const pageId = option.dataset.pageId;
-                // Enable this ending page (will auto-disable others via togglePage logic)
-                this.togglePage(pageId, true);
-            });
-        });
-
         // Drag and drop
         document.querySelectorAll('.page-manager-item').forEach(item => {
             item.draggable = true;
