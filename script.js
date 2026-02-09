@@ -465,8 +465,9 @@ function getPreviewMode() {
 
 function shouldMuteAudio() {
     const mode = getPreviewMode();
-    // Only mute in modal preview to avoid dual audio
-    return mode === 'modal';
+    // Mute the sidebar preview only to prevent overlap. 
+    // Live site and Modal preview (Eye icon) should play audio.
+    return mode === 'side';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
