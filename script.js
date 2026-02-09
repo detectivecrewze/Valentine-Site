@@ -439,7 +439,7 @@ function startApp() {
     // Set muted state for preview mode
     if (shouldMuteAudio()) {
         bgMusic.muted = true;
-        console.log('🤫 [App] Background music will be muted (modal preview)');
+        console.log('🤫 [App] Background music is muted for this preview mode');
     }
 
     console.log('[App] Initialization complete');
@@ -468,9 +468,9 @@ function getPreviewMode() {
 
 function shouldMuteAudio() {
     const mode = getPreviewMode();
-    // Mute the sidebar preview only to prevent overlap. 
-    // Live site and Modal preview (Eye icon) should play audio.
-    return mode === 'side';
+    // Use to be: return mode === 'side';
+    // But users prefer it unmuted on PC too.
+    return false;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -3343,11 +3343,11 @@ function playMusic() {
     const shouldMute = shouldMuteAudio();
     if (shouldMute) {
         bgMusic.muted = true;
-        console.log('🤫 [Music] Muted (modal preview mode)');
+        console.log('🤫 [Music] Muted (preview mode)');
     } else {
         bgMusic.muted = false;
         bgMusic.volume = 0.7; // Ensure volume is up
-        console.log('🔊 [Music] Unmuted (normal or side preview mode)');
+        console.log('🔊 [Music] Unmuted');
     }
 
     // ✅ CRITICAL FIX: Only load if ABSOLUTELY necessary
