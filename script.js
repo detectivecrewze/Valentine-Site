@@ -2240,7 +2240,11 @@ async function preloadAllLocationTiles(loadingTextElement) {
     console.log('🗺️ Preloading tiles for all locations...');
 
     // Calculate bounds that include ALL locations
-    const allCoords = CONFIG.map.locations.map(loc => loc.coordinates);
+    const allCoords = CONFIG.map.locations.map(loc => {
+        return [parseFloat(loc.coordinates[0]), parseFloat(loc.coordinates[1])];
+    }).filter(coord => !isNaN(coord[0]) && !isNaN(coord[1]));
+
+    if (allCoords.length === 0) return;
     const bounds = L.latLngBounds(allCoords);
 
     // Wait for these tiles to load - RESET BEFORE fitBounds
@@ -2578,7 +2582,7 @@ async function initMap() {
     if (CONFIG.map && CONFIG.map.locations && CONFIG.map.locations.length > 0) {
         const first = CONFIG.map.locations[0];
         if (first.coordinates && Array.isArray(first.coordinates) && first.coordinates.length >= 2) {
-            defaultCenter = first.coordinates;
+            defaultCenter = [parseFloat(first.coordinates[0]), parseFloat(first.coordinates[1])];
         }
     }
 
@@ -2757,12 +2761,17 @@ async function initMap() {
             const loc = CONFIG.map.locations[i];
             if (!loc.coordinates || !Array.isArray(loc.coordinates) || loc.coordinates.length < 2) continue;
 
-            routeCoords.push(loc.coordinates);
+            const numericCoords = [parseFloat(loc.coordinates[0]), parseFloat(loc.coordinates[1])];
+            if (isNaN(numericCoords[0]) || isNaN(numericCoords[1])) continue;
+
+            routeCoords.push(numericCoords);
 
             // Custom Icon per location or default to heart
             const iconName = loc.icon || 'favorite';
             const markerIcon = L.divIcon({
-                html: `<span class="material-symbols-outlined heart-marker animate-bounce-short" style="font-variation-settings: 'FILL' 1">${iconName}</span>`,
+                html: `<div class="flex items-center justify-center" style="width:32px; height:32px;">
+                           <span class="material-symbols-outlined heart-marker animate-bounce" style="font-variation-settings: 'FILL' 1; font-size: 32px; display: block;">${iconName}</span>
+                       </div>`,
                 className: 'custom-div-icon',
                 iconSize: [32, 32],
                 iconAnchor: [16, 32]
@@ -2795,47 +2804,48 @@ async function initMap() {
                 </div>
             `;
 
-
-
-
-
             // DELAY for animation feel
             if (!mapJourneyCompleted) {
-                await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 2500));
+                // Reduced delay for better UX on mobile
+                await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 1800));
             }
 
-            const marker = L.marker(loc.coordinates, { icon: markerIcon })
-                .bindPopup(popupContent, {
-                    className: 'rose-popup',
-                    maxWidth: 250
-                }).addTo(mapInstance);
+            try {
+                const marker = L.marker(numericCoords, { icon: markerIcon })
+                    .bindPopup(popupContent, {
+                        className: 'rose-popup',
+                        maxWidth: 250
+                    }).addTo(mapInstance);
 
-            mapMarkers.push(marker);
+                mapMarkers.push(marker);
 
-            // 3. Update Polyline
-            if (routeCoords.length > 1) {
-                if (mapPolyline) mapInstance.removeLayer(mapPolyline);
-                mapPolyline = L.polyline(routeCoords, {
-                    color: '#f43f5e',
-                    weight: 2,
-                    opacity: 0.6,
-                    dashArray: '5, 10',
-                    lineJoin: 'round'
-                }).addTo(mapInstance);
-            }
+                // 3. Update Polyline
+                if (routeCoords.length > 1) {
+                    if (mapPolyline) mapInstance.removeLayer(mapPolyline);
+                    mapPolyline = L.polyline(routeCoords, {
+                        color: '#f43f5e',
+                        weight: 2,
+                        opacity: 0.6,
+                        dashArray: '5, 10',
+                        lineJoin: 'round'
+                    }).addTo(mapInstance);
+                }
 
-            // Pan to marker (Classic smooth movement)
-            if (!mapJourneyCompleted) {
-                mapInstance.panTo(loc.coordinates, { animate: true, duration: 2.0 });
-            }
+                // Pan to marker (Classic smooth movement)
+                if (!mapJourneyCompleted) {
+                    mapInstance.panTo(numericCoords, { animate: true, duration: 1.5 });
+                }
 
-            // Interaction
-            marker.on('click', function () {
-                mapInstance.setView(loc.coordinates, 15, {
-                    animate: true,
-                    duration: 2.0
+                // Interaction
+                marker.on('click', function () {
+                    mapInstance.setView(numericCoords, 15, {
+                        animate: true,
+                        duration: 1.5
+                    });
                 });
-            });
+            } catch (err) {
+                console.error(`[Map] Failed to add marker ${i}:`, err);
+            }
         }
 
         // Final check before zoom out
@@ -2853,6 +2863,12 @@ async function initMap() {
 
         // NEW: Trigger Discovery Pop-up with stats
         setTimeout(() => showMapDiscoveryPopUp(), 1000);
+
+        // FINAL FIX: Invalidate size one last time to ensure pins are rendered correctly
+        // especially important if initialized during transition hidden -> visible
+        setTimeout(() => {
+            if (mapInstance) mapInstance.invalidateSize();
+        }, 500);
     }
 
     // Zoom control removed - users navigate via pin navigator only
