@@ -130,33 +130,67 @@ var index_default = {
 
             try {
                 const body = await request.json();
-                const configSize = JSON.stringify(body).length;
 
-                console.log(`[KV] Saving config for: ${id} (${configSize} bytes)`);
-                console.log(`[KV] Config contents:`, {
-                    hasLogin: !!body.login,
-                    hasGreeting: !!body.greeting,
-                    hasMusic: !!(body.music && body.music.length),
-                    hasGallery: !!(body.gallery && body.gallery.memories),
-                    hasMap: !!(body.map && body.map.locations),
-                    hasLetter: !!body.letter,
-                    hasInfinity: !!body.infinityScroll
-                });
+                // Add internal metadata
+                body._server_metadata = {
+                    lastSaved: new Date().toISOString(),
+                    ip: request.headers.get("cf-connecting-ip") || "unknown"
+                };
 
                 await env.VALENTINE_DATA.put(id, JSON.stringify(body));
 
-                console.log(`[KV] ✅ Successfully saved config for: ${id}`);
+                // 🔔 NOTIFY TELEGRAM: Project Published
+                const customer = body.metadata?.customerName || id;
+                const photoCount = (body.gallery?.memories?.length || 0) + (body.map?.locations?.length || 0);
+                const notification = `🚀 *Project Published!*\n\n👤 *Customer:* ${customer}\n🆔 *ID:* \`${id}\` \n📸 *Photos:* ${photoCount}\n🎵 *Music:* ${body.music?.length || 0} songs\n\n🔗 [View Project](https://valentine-site-sigma.vercel.app/?to=${id})`;
+
+                await sendSimpleTelegram(notification, env);
+
                 return new Response(JSON.stringify({
                     success: true,
-                    message: "Configuration saved! Note: It may take 10-30 seconds to propagate globally.",
+                    message: "Configuration saved!",
                     id: id,
-                    size: configSize,
                     previewUrl: `https://valentine-site-sigma.vercel.app/?to=${id}`
                 }), {
                     headers: { ...corsHeaders, "Content-Type": "application/json" }
                 });
             } catch (error) {
-                console.error(`[KV] ❌ Error saving config: ${error.message}`);
+                return new Response(JSON.stringify({ error: error.message }), {
+                    status: 500,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+        }
+
+        // ============================================================
+        // ROUTE 5: ADMIN LOGIN - Secure Auth + Notification
+        // ============================================================
+        if (request.method === "POST" && url.pathname === "/login") {
+            try {
+                const { password, userAgent } = await request.json();
+                const expected = env.ADMIN_PASSWORD || "12345"; // Default if not set
+
+                if (password !== expected) {
+                    return new Response(JSON.stringify({ success: false, error: "Invalid password" }), {
+                        status: 401,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" }
+                    });
+                }
+
+                // 🔔 NOTIFY TELEGRAM: Admin Login
+                const country = request.cf?.country || "Unknown";
+                const city = request.cf?.city || "Unknown";
+                const loginMsg = `🚨 *Admin Access Detected*\n\n📍 *Location:* ${city}, ${country}\n📱 *Device:* ${userAgent || 'Unknown'}\n⏰ *Time:* ${new Date().toLocaleString()}`;
+
+                await sendSimpleTelegram(loginMsg, env);
+
+                return new Response(JSON.stringify({
+                    success: true,
+                    token: btoa(password + Date.now()) // Simple session token
+                }), {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            } catch (error) {
                 return new Response(JSON.stringify({ error: error.message }), {
                     status: 500,
                     headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -312,6 +346,29 @@ async function handleTelegramSubmit(request, env, corsHeaders) {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
+    }
+}
+
+/**
+ * Helper to send simple text notification to Telegram
+ */
+async function sendSimpleTelegram(message, env) {
+    const chatId = env.TELEGRAM_CHAT_ID;
+    const botToken = env.TELEGRAM_BOT_TOKEN;
+    if (!chatId || !botToken) return;
+
+    try {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: "Markdown"
+            })
+        });
+    } catch (e) {
+        console.error("Telegram notify failed:", e);
     }
 }
 

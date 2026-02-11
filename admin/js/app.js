@@ -11,6 +11,9 @@ const app = {
     init() {
         console.log('[App] Initializing wizard...');
 
+        // ✅ NEW: Check authentication before anything else
+        if (!this.checkAuth()) return;
+
         // Initialize state
         state.init();
 
@@ -130,6 +133,70 @@ const app = {
         });
 
         console.log('[App] Recalculated steps:', this.wizardSteps.map(s => s.name));
+    },
+
+    // ============================================================
+    // 🔐 AUTHENTICATION LOGIC
+    // ============================================================
+    checkAuth() {
+        const sessionToken = sessionStorage.getItem('admin_session');
+        const overlay = document.getElementById('adminLoginOverlay');
+
+        if (!sessionToken) {
+            console.log('[Auth] No session found, showing login overlay');
+            if (overlay) overlay.classList.remove('hidden');
+            return false;
+        }
+
+        if (overlay) overlay.classList.add('hidden');
+        return true;
+    },
+
+    async handleLogin(event) {
+        event.preventDefault();
+        const password = document.getElementById('adminPassword').value;
+        const btn = document.getElementById('btnLoginSubmit');
+        const errorMsg = document.getElementById('loginError');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Authenticating...';
+        errorMsg.classList.add('hidden');
+
+        try {
+            const WORKER_URL = 'https://valentine-upload.aldoramadhan16.workers.dev/login';
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    password: password,
+                    userAgent: navigator.userAgent
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                sessionStorage.setItem('admin_session', result.token);
+
+                // Hide overlay and re-run init
+                document.getElementById('adminLoginOverlay').classList.add('hidden');
+                utils.showNotification('Welcome back, Admin!', 'success');
+                this.init();
+            } else {
+                throw new Error('Invalid password');
+            }
+        } catch (err) {
+            console.error('[Auth] Login failed:', err);
+            errorMsg.classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerHTML = 'Unlock Workspace';
+        }
+    },
+
+    logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            sessionStorage.removeItem('admin_session');
+            window.location.reload();
+        }
     },
 
     // Render current step
