@@ -428,16 +428,36 @@ const utils = {
     },
 
     // Convert GDrive share link to direct link
-    convertGDriveLink(url) {
+    // Convert GDrive or Dropbox share link to direct link
+    convertMusicLink(url) {
         if (!url) return '';
-        if (url.includes('drive.google.com')) {
-            const match = url.match(/\/d\/([^\/]+)/);
+
+        let processedUrl = url.trim();
+
+        // Handle Google Drive
+        if (processedUrl.includes('drive.google.com')) {
+            const match = processedUrl.match(/\/d\/([^\/]+)/);
             if (match && match[1]) {
-                const id = match[1];
-                return `https://drive.google.com/uc?export=download&id=${id}`;
+                return `https://drive.google.com/uc?export=download&id=${match[1]}`;
             }
         }
-        return url;
+
+        // Handle Dropbox
+        if (processedUrl.includes('dropbox.com')) {
+            // Replace ?dl=0 with ?raw=1 or ?dl=1
+            processedUrl = processedUrl.replace(/\?dl=0$/, '?raw=1');
+            if (!processedUrl.includes('?')) {
+                processedUrl += '?raw=1';
+            }
+            return processedUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+        }
+
+        return processedUrl;
+    },
+
+    // Kept for backward compatibility
+    convertGDriveLink(url) {
+        return this.convertMusicLink(url);
     },
 
     // Debounce function

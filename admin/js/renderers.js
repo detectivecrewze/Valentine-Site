@@ -732,7 +732,20 @@ const renderers = {
     updateSong(idx, key, value) {
         const page = state.findPageById('page-3');
         if (page && page.music && page.music[idx]) {
-            page.music[idx][key] = value;
+            // Auto-convert if it's the audio source
+            let finalValue = value;
+            if (key === 'audioSrc') {
+                finalValue = utils.convertMusicLink(value);
+            }
+
+            page.music[idx][key] = finalValue;
+
+            // Update the input field value if it was converted
+            if (key === 'audioSrc' && finalValue !== value) {
+                const input = document.getElementById(`audio-input-${idx}`);
+                if (input) input.value = finalValue;
+            }
+
             state.save();
             state.syncToPreview();
         }
