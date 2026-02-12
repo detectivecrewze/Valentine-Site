@@ -215,67 +215,92 @@ const utils = {
                 console.log('[Utils] Non-image file detected, skipping compression:', file.type);
             }
 
-            // 2. Prepare Form Data
+            // 2. Check File Size (Warning for large files)
+            const MAX_SIZE = 25 * 1024 * 1024; // 25MB limit (Cloudflare Worker free limit is usually around here)
+            if (fileToUpload.size > MAX_SIZE) {
+                throw new Error(`File is too large (${(fileToUpload.size / (1024 * 1024)).toFixed(1)}MB). Max limit is 25MB.`);
+            }
+
+            // 3. Prepare Form Data
             const formData = new FormData();
             formData.append('file', fileToUpload);
 
-            // 3. Upload to Cloudflare via Worker
+            // 4. Upload to Cloudflare via Worker with Timeout
             const WORKER_URL = 'https://valentine-upload.aldoramadhan16.workers.dev/upload';
             console.log('[Utils] Uploading to:', WORKER_URL);
 
-            const response = await fetch(WORKER_URL, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({ error: 'Unknown server error' }));
-                throw new Error(errData.error || `Upload failed (${response.status})`);
+            if (targetInput && !file.type.startsWith('image/')) {
+                targetInput.value = 'Uploading (Song may take 1-2 mins)...';
             }
 
-            const result = await response.json();
+            // Create a timeout controller
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
 
-            if (!result.success) {
-                throw new Error(result.error || 'Upload failed');
-            }
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
 
-            // 4. Update Input with Public URL
-            if (targetInput) {
-                targetInput.value = result.url;
-                targetInput.disabled = false;
+                clearTimeout(timeoutId);
 
-                // Trigger events to update state and UI
-                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-                targetInput.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-
-            // 5. Update Preview (Images or Audio)
-            // Try various naming conventions for preview elements
-            const previewIds = [
-                'prev_' + targetInputId,
-                targetInputId.replace('-input', '-img'),
-                targetInputId.replace('-input', '-preview'),
-                targetInputId.replace('-input', ''),
-                targetInputId.replace('input-', ''),
-                targetInputId.replace('-src', '-preview'),
-                targetInputId.replace('-src', '-img'),
-                targetInputId.replace('-src', ''),
-                'preview-' + targetInputId
-            ];
-
-            for (const pid of previewIds) {
-                const previewEl = document.getElementById(pid);
-                if (previewEl) {
-                    this.updatePreview(pid, result.url, file.type);
-                    break;
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ error: 'Unknown server error' }));
+                    throw new Error(errData.error || `Upload failed (${response.status})`);
                 }
-            }
 
-            // 6. Finalize
-            state.save();
-            state.syncToPreview();
-            console.log('[Utils] Upload successful:', result.url);
-            utils.showNotification('File uploaded successfully!', 'success');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Upload failed');
+                }
+
+                // 4. Update Input with Public URL
+                if (targetInput) {
+                    targetInput.value = result.url;
+                    targetInput.disabled = false;
+
+                    // Trigger events to update state and UI
+                    targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                // 5. Update Preview (Images or Audio)
+                const previewIds = [
+                    'prev_' + targetInputId,
+                    targetInputId.replace('-input', '-img'),
+                    targetInputId.replace('-input', '-preview'),
+                    targetInputId.replace('-input', ''),
+                    targetInputId.replace('input-', ''),
+                    targetInputId.replace('-src', '-preview'),
+                    targetInputId.replace('-src', '-img'),
+                    targetInputId.replace('-src', ''),
+                    'preview-' + targetInputId
+                ];
+
+                for (const pid of previewIds) {
+                    const previewEl = document.getElementById(pid);
+                    if (previewEl) {
+                        this.updatePreview(pid, result.url, file.type);
+                        break;
+                    }
+                }
+
+                // 6. Finalize
+                state.save();
+                state.syncToPreview();
+                console.log('[Utils] Upload successful:', result.url);
+                utils.showNotification('File uploaded successfully!', 'success');
+
+            } catch (error) {
+                clearTimeout(timeoutId);
+                if (error.name === 'AbortError') {
+                    throw new Error('Upload timed out. The file might be too large or your connection is slow.');
+                }
+                throw error;
+            }
 
         } catch (error) {
             console.error('[Utils] Upload failed:', error);
