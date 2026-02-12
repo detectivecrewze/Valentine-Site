@@ -433,6 +433,11 @@ body {
     }
 }
 
+.map-popup-header {
+    padding: 0 20px;
+    /* Reserve space for close button */
+}
+
 .map-popup-header h3 {
     font-family: var(--font-display), 'Cinzel', serif;
     letter-spacing: 0.05em;
@@ -441,6 +446,7 @@ body {
     /* Small at top */
     margin: 0 !important;
     line-height: 1.2;
+    word-break: break-word;
 }
 
 .map-popup-date {
