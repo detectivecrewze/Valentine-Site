@@ -654,7 +654,7 @@ const renderers = {
                             oninput="renderers.updateSong(${idx}, 'audioSrc', this.value)">
                         <label class="cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center hover:bg-gray-50 shadow-sm transition-colors">
                             <span class="material-symbols-outlined text-gray-400 text-base">audiotrack</span>
-                            <input type="file" class="hidden" accept="audio/*" 
+                            <input type="file" class="hidden" accept="audio/*,.mp3,.wav,.m4a,.ogg" 
                                 onchange="renderers.handleAudioUpload(${idx}, this)">
                         </label>
                     </div>
