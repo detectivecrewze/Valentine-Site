@@ -224,97 +224,90 @@ const state = {
         }
     },
 
-    // ✅ NEW: Load from existing CONFIG (preserves user data from data.js)
-    loadFromExistingConfig() {
-        // Merge existing CONFIG values into configData
-        if (CONFIG.theme) {
-            this.configData.theme = { ...this.configData.theme, ...CONFIG.theme };
-        }
-        if (CONFIG.navigation) {
-            this.configData.navigation = { ...this.configData.navigation, ...CONFIG.navigation };
-        }
-        if (CONFIG.login) {
-            this.configData.login = { ...this.configData.login, ...CONFIG.login };
-        }
-        if (CONFIG.countdown) {
-            this.configData.countdown = { ...this.configData.countdown, ...CONFIG.countdown };
-        }
-        if (CONFIG.greeting) {
-            this.configData.greeting = { ...this.configData.greeting, ...CONFIG.greeting };
-        }
-        if (CONFIG.metadata) {
-            this.configData.metadata = { ...this.configData.metadata, ...CONFIG.metadata };
-            // Ensure brand defaults if not in CONFIG
+    // ✅ NEW: Unified logic to apply a CONFIG object to the admin state
+    applyConfigToState(config) {
+        if (!config) return;
+
+        // 1. Merge core categories
+        if (config.theme) this.configData.theme = { ...this.configData.theme, ...config.theme };
+        if (config.navigation) this.configData.navigation = { ...this.configData.navigation, ...config.navigation };
+        if (config.login) this.configData.login = { ...this.configData.login, ...config.login };
+        if (config.countdown) this.configData.countdown = { ...this.configData.countdown, ...config.countdown };
+        if (config.greeting) this.configData.greeting = { ...this.configData.greeting, ...config.greeting };
+
+        if (config.metadata) {
+            this.configData.metadata = { ...this.configData.metadata, ...config.metadata };
+            // Ensure brand defaults
             if (!this.configData.metadata.brandName) this.configData.metadata.brandName = 'For you, Always';
             if (!this.configData.metadata.brandIcon) this.configData.metadata.brandIcon = 'diamond';
         }
 
-        if (CONFIG.adminLang) {
-            this.configData.adminLang = CONFIG.adminLang;
+        if (config.adminLang) {
+            this.configData.adminLang = config.adminLang;
         }
 
-        // Load pages from CONFIG
+        // 2. Reconstruct Pages from CONFIG
         this.configData.pages = [];
 
         // Music Page
-        if (CONFIG.music && CONFIG.music.length > 0) {
+        if (config.music && config.music.length > 0) {
             this.configData.pages.push({
                 pageId: 'page-3',
                 type: 'music',
-                songTitle: CONFIG.musicSectionTitle || '',
-                music: CONFIG.music
+                songTitle: config.musicSectionTitle || '',
+                music: config.music
             });
         } else {
             this.loadDefaultMusicPage();
         }
 
         // Wrapped Page
-        if (CONFIG.wrapped) {
+        if (config.wrapped) {
             this.configData.pages.push({
                 pageId: 'page-4',
                 type: 'wrapped',
-                ...CONFIG.wrapped
+                ...config.wrapped
             });
         } else {
             this.loadDefaultWrappedPage();
         }
 
         // Quiz Page
-        if (CONFIG.quiz) {
+        if (config.quiz) {
             this.configData.pages.push({
                 pageId: 'page-5',
                 type: 'quiz',
-                title: CONFIG.quiz.title || 'How Well Do You Know Me?',
-                resultMessage: CONFIG.quiz.resultMessage || 'You know me so well! ❤️',
-                questions: CONFIG.quiz.questions || []
+                title: config.quiz.title || 'How Well Do You Know Me?',
+                resultMessage: config.quiz.resultMessage || 'You know me so well! ❤️',
+                questions: config.quiz.questions || []
             });
         } else {
             this.loadDefaultQuizPage();
         }
 
         // Gallery Page
-        if (CONFIG.gallery) {
+        if (config.gallery) {
             this.configData.pages.push({
                 pageId: 'page-6',
                 type: 'gallery',
-                title: CONFIG.gallery.title || 'Our Memories',
-                subtitle: CONFIG.gallery.subtitle || 'Scratch to reveal',
-                memories: CONFIG.gallery.memories || []
+                title: config.gallery.title || 'Our Memories',
+                subtitle: config.gallery.subtitle || 'Scratch to reveal',
+                memories: config.gallery.memories || []
             });
         } else {
             this.loadDefaultGalleryPage();
         }
 
         // Map Page
-        if (CONFIG.map) {
+        if (config.map) {
             this.configData.pages.push({
                 pageId: 'page-7',
                 type: 'map',
-                title: CONFIG.map.title || 'The Atlas of Us',
-                description: CONFIG.map.description || '',
-                locations: (CONFIG.map.locations || []).map(loc => ({
-                    lat: loc.coordinates[0],
-                    lng: loc.coordinates[1],
+                title: config.map.title || 'The Atlas of Us',
+                description: config.map.description || '',
+                locations: (config.map.locations || []).map(loc => ({
+                    lat: loc.coordinates ? loc.coordinates[0] : (loc.lat || 0),
+                    lng: loc.coordinates ? loc.coordinates[1] : (loc.lng || 0),
                     title: loc.title || '',
                     memory: loc.memory || '',
                     date: loc.date || '',
@@ -327,72 +320,87 @@ const state = {
         }
 
         // Letter Page
-        if (CONFIG.letter) {
+        if (config.letter) {
             this.configData.pages.push({
                 pageId: 'page-8',
                 type: 'letter',
-                recipient: CONFIG.letter.recipient || CONFIG.letter.recipientName || 'Dearest Love',
-                message: CONFIG.letter.message || '',
-                signature: CONFIG.letter.signature || 'Your Favorite Person',
-                stampSrc: CONFIG.letter.stampSrc || 'assets/stamp.png',
-                polaroidSrc: CONFIG.letter.polaroidSrc || '',
-                polaroidCaption: CONFIG.letter.polaroidCaption || 'Us, 2024 ♡',
-                finaleChoice: CONFIG.letter.finaleChoice || 'choice'
+                recipient: config.letter.recipient || config.letter.recipientName || 'Dearest Love',
+                message: config.letter.message || '',
+                signature: config.letter.signature || 'Your Favorite Person',
+                stampSrc: config.letter.stampSrc || 'assets/stamp.png',
+                polaroidSrc: config.letter.polaroidSrc || '',
+                polaroidCaption: config.letter.polaroidCaption || 'Us, 2024 ♡',
+                finaleChoice: config.letter.finaleChoice || 'choice'
             });
         } else {
             this.loadDefaultLetterPage();
         }
 
         // Lock Page
-        if (CONFIG.lock) {
+        if (config.lock) {
             this.configData.pages.push({
                 pageId: 'page-9',
                 type: 'lock',
-                initials: CONFIG.lock.initials || 'A + B',
-                instruction: CONFIG.lock.instruction || 'Click to lock our love forever...',
-                finalMessage: CONFIG.lock.finalMessage || 'Safely locked in my heart. Always.'
+                initials: config.lock.initials || 'A + B',
+                instruction: config.lock.instruction || 'Click to lock our love forever...',
+                finalMessage: config.lock.finalMessage || 'Safely locked in my heart. Always.'
             });
         } else {
             this.loadDefaultLockPage();
         }
 
         // Infinity Scroll Page
-        if (CONFIG.infinityScroll) {
+        if (config.infinityScroll) {
             this.configData.pages.push({
                 pageId: 'page-10',
                 type: 'infinity',
-                headerTitle: CONFIG.infinityScroll.headerTitle || 'I love you because...',
-                headerSubtitle: CONFIG.infinityScroll.headerSubtitle || 'An endless collection of reasons',
-                reasons_generic: CONFIG.infinityScroll.reasons?.generic || [],
-                reasons_personal: CONFIG.infinityScroll.reasons?.personal || [],
-                reasons_poetic: CONFIG.infinityScroll.reasons?.poetic || [],
-                photos: CONFIG.infinityScroll.photos || [],
-                videoMemories: CONFIG.infinityScroll.videoMemories || [],
-                music: CONFIG.infinityScroll.music || {}
+                headerTitle: config.infinityScroll.headerTitle || 'I love you because...',
+                headerSubtitle: config.infinityScroll.headerSubtitle || 'An endless collection of reasons',
+                reasons_generic: config.infinityScroll.reasons?.generic || [],
+                reasons_personal: config.infinityScroll.reasons?.personal || [],
+                reasons_poetic: config.infinityScroll.reasons?.poetic || [],
+                photos: config.infinityScroll.photos || [],
+                videoMemories: config.infinityScroll.videoMemories || [],
+                music: config.infinityScroll.music || {}
             });
         } else {
             this.loadDefaultInfinityPage();
         }
 
         // Invitation Page
-        if (CONFIG.invitation) {
+        if (config.invitation) {
             this.configData.pages.push({
                 pageId: 'page-11',
                 type: 'invitation',
-                question: CONFIG.invitation.question || 'Would you like to be my Valentine?',
-                bearDefault: CONFIG.invitation.bearDefault || 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
-                bearSuccess: CONFIG.invitation.bearSuccess || 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
-                successMessage: CONFIG.invitation.successMessage || 'Yay! ❤️'
+                question: config.invitation.question || 'Would you like to be my Valentine?',
+                bearDefault: config.invitation.bearDefault || 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
+                bearSuccess: config.invitation.bearSuccess || 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
+                successMessage: config.invitation.successMessage || 'Yay! ❤️'
             });
         } else {
             this.loadDefaultInvitationPage();
         }
 
-        // Load pageConfig if exists
-        if (CONFIG.pageConfig) {
-            this.configData.pageConfig = JSON.parse(JSON.stringify(CONFIG.pageConfig));
+        // 3. Sync pageConfig (Menu enabled status and order)
+        if (config.pageConfig) {
+            this.configData.pageConfig = JSON.parse(JSON.stringify(config.pageConfig));
+            if (typeof CONFIG !== 'undefined') {
+                CONFIG.pageConfig = this.configData.pageConfig;
+            }
         }
     },
+
+    // ✅ REFACTORED: Now uses applyConfigToState
+    loadFromExistingConfig() {
+        if (typeof CONFIG !== 'undefined') {
+            this.applyConfigToState(CONFIG);
+            console.log('[State] 📊 Baseline loaded from data.js');
+        } else {
+            this.loadDefaultPages();
+            console.log('[State] ⚠️ No data.js found, using hardcoded defaults');
+        }
+    },
+
 
     loadDefaultPages() {
         this.configData.pages = [];
@@ -561,35 +569,44 @@ const state = {
 
     // Restore state from saved configuration
     restoreFromConfig(data) {
+        if (!data) return;
+
         // Support both old and new save formats
         const config = data.config || data;
         const pages = data.pages;
 
+        // 1. If explicit 'pages' array exists (Full Admin Export), use it
         if (pages && Array.isArray(pages) && pages.length > 0) {
-            // Migration: Strip '-section' from older types
             this.configData.pages = pages.map(p => ({
                 ...p,
                 type: p.type ? p.type.replace('-section', '') : p.type
             }));
+
+            // Still restore core categories from config
+            if (config.theme) this.configData.theme = { ...this.configData.theme, ...config.theme };
+            if (config.navigation) this.configData.navigation = { ...this.configData.navigation, ...config.navigation };
+            if (config.login) this.configData.login = { ...this.configData.login, ...config.login };
+            if (config.countdown) this.configData.countdown = { ...this.configData.countdown, ...config.countdown };
+            if (config.greeting) this.configData.greeting = { ...this.configData.greeting, ...config.greeting };
+            if (config.metadata) this.configData.metadata = { ...this.configData.metadata, ...config.metadata };
+            if (config.pageConfig) {
+                this.configData.pageConfig = config.pageConfig;
+                if (typeof CONFIG !== 'undefined') {
+                    CONFIG.pageConfig = config.pageConfig;
+                }
+            }
+        }
+        // 2. If NO 'pages' array (Public Site Link), reconstruct from the 'config' object
+        else if (config) {
+            console.log('[State] 🧩 Reconstruction mode: Building pages from config object');
+            this.applyConfigToState(config);
         }
 
-        // ✅ RESTORE ALL CATEGORIES
-        if (config.theme) this.configData.theme = { ...this.configData.theme, ...config.theme };
-        if (config.navigation) this.configData.navigation = { ...this.configData.navigation, ...config.navigation };
-        if (config.login) this.configData.login = { ...this.configData.login, ...config.login };
-        if (config.countdown) this.configData.countdown = { ...this.configData.countdown, ...config.countdown };
-        if (config.greeting) this.configData.greeting = { ...this.configData.greeting, ...config.greeting };
-        if (config.metadata) this.configData.metadata = { ...this.configData.metadata, ...config.metadata };
-
-        // Restore top-level state
+        // Restore other metadata
         if (config.adminLang) this.configData.adminLang = config.adminLang;
         if (config.currentStep !== undefined) this.currentStep = config.currentStep;
-
-        if (config.pageConfig) {
-            this.configData.pageConfig = config.pageConfig;
-            CONFIG.pageConfig = config.pageConfig;
-        }
     },
+
 
     // Save current state to localStorage
     save() {
