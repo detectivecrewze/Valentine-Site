@@ -2203,6 +2203,7 @@ function initScratchCard(index) {
 }
 
 function openLightbox(index) {
+    const CONFIG = safeGetConfig();
     const mem = CONFIG.gallery.memories[index];
     if (!mem) return;
 
