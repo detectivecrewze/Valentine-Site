@@ -2813,8 +2813,8 @@ async function initMap() {
             if (loc.imageSrc && loc.imageSrc.trim() !== '') {
                 popupContent += `
                     <div class="map-popup-image-container relative">
-                        <div class="map-popup-image-frame overflow-hidden rounded-lg shadow-md">
-                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-32 object-cover" referrerpolicy="no-referrer">
+                        <div class="map-popup-image-frame overflow-hidden rounded-lg shadow-md bg-gray-50">
+                            <img src="${loc.imageSrc}" alt="${loc.title}" class="w-full h-auto max-h-[220px] object-contain block mx-auto" referrerpolicy="no-referrer">
                         </div>
                     </div>`;
             }
