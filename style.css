@@ -1303,15 +1303,20 @@ body {
 .letter-body-text {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.25rem;
-    line-height: 2.2;
+    line-height: 1.8;
     color: #3f1b25;
     text-align: justify;
     hyphens: auto;
 }
 
 .letter-body-text p {
-    margin-bottom: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 0.8rem;
     position: relative;
+}
+
+.letter-body-text p:last-child {
+    margin-bottom: 0;
 }
 
 
