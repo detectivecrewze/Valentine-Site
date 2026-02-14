@@ -2370,7 +2370,6 @@ let mapPolyline = null;
 let markerCluster = null;
 let mapInitController = null;
 let mapJourneyCompleted = false; // Flag to track if the journey has been shown once
-let isMapJourneySkipped = false; // Flag to skip animation
 
 // Tile Loading State
 let totalTilesToLoad = 0;
@@ -2542,7 +2541,6 @@ function initMapPinNavigator() {
 }
 
 async function initMap() {
-    isMapJourneySkipped = false; // Reset skip flag
     // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
     console.log("[Map] Starting initMap. Journey completed:", mapJourneyCompleted, "Locations:", CONFIG.map?.locations?.length);
@@ -2767,15 +2765,6 @@ async function initMap() {
         }
     }
 
-    // Show map skip button if journey is not completed
-    const skipContainer = document.getElementById('map-skip-container');
-    if (!mapJourneyCompleted && skipContainer) {
-        skipContainer.classList.remove('hidden');
-        setTimeout(() => {
-            skipContainer.classList.remove('opacity-0', 'translate-y-4');
-        }, 100);
-    }
-
     // ==========================================
     // FASE 3: PIN ANIMATION DIMULAI
     // ==========================================
@@ -2841,15 +2830,9 @@ async function initMap() {
             `;
 
             // DELAY for animation feel
-            if (!mapJourneyCompleted && !isMapJourneySkipped) {
+            if (!mapJourneyCompleted) {
                 // Reduced delay for better UX on mobile
                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 1800));
-            }
-
-            // CHECK FOR SKIP AGAIN AFTER DELAY
-            if (isMapJourneySkipped) {
-                // When skipped, we want to add all markers immediately without delay
-                // and skip the flyTo animation
             }
 
             try {
@@ -2874,7 +2857,7 @@ async function initMap() {
                 }
 
                 // Cinematic Fly-to effect (Zoom In -> Zoom Out -> Zoom In)
-                if (!mapJourneyCompleted && !isMapJourneySkipped) {
+                if (!mapJourneyCompleted) {
                     mapInstance.flyTo(numericCoords, 16, {
                         animate: true,
                         duration: 2.0,
@@ -2902,12 +2885,6 @@ async function initMap() {
             if (!mapJourneyCompleted) await new Promise(resolve => setTimeout(resolve, 2000));
             const group = new L.featureGroup(mapMarkers);
             mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: !mapJourneyCompleted, duration: 2.5 });
-        }
-
-        // Hide skip button
-        if (skipContainer) {
-            skipContainer.classList.add('opacity-0', 'translate-y-4');
-            setTimeout(() => skipContainer.classList.add('hidden'), 500);
         }
 
         // Mark journey as completed after first time
@@ -2977,21 +2954,6 @@ async function initMap() {
 
     // 🛸 Initialize the Drone Navigator
     initMapPinNavigator();
-}
-
-/**
- * Skip the map journey animation and show all markers immediately
- */
-function skipMapJourneyAnimation() {
-    console.log("[Map] Skipping journey animation...");
-    isMapJourneySkipped = true;
-
-    // Stop any ongoing flyTo animation
-    if (mapInstance) {
-        mapInstance.stop();
-    }
-
-    // The loop in initMap will react to isMapJourneySkipped flag
 }
 
 // ==========================================
