@@ -732,8 +732,8 @@ const app = {
             const result = await response.json();
             console.log('[Publish] ✅ Success:', result);
 
-            // Generate the shareable link
-            const VERCEL_URL = 'https://valentine-site-sigma.vercel.app';
+            // Generate the shareable link (Updated to Custom Subdomain)
+            const VERCEL_URL = 'https://gift.for-you-always.my.id';
             const shareableUrl = `${VERCEL_URL}/?to=${customerId}`;
 
             // Show result

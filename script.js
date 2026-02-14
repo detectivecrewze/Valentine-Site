@@ -2610,10 +2610,10 @@ async function initMap() {
 
         try {
             mapInstance = L.map('map', {
-                zoomControl: false,
+                zoomControl: true,
                 attributionControl: false,
                 tap: false // Recommended for mobile touch issues in Leaflet
-            }).setView(defaultCenter, 13);
+            }).setView(defaultCenter, 14);
         } catch (err) {
             console.warn('[Map] Container already initialized or init error:', err);
             // If it's already initialized but we lost mapInstance reference (unlikely but possible), 
@@ -2856,9 +2856,13 @@ async function initMap() {
                     }).addTo(mapInstance);
                 }
 
-                // Pan to marker (Classic smooth movement)
+                // Cinematic Fly-to effect (Zoom In -> Zoom Out -> Zoom In)
                 if (!mapJourneyCompleted) {
-                    mapInstance.panTo(numericCoords, { animate: true, duration: 1.5 });
+                    mapInstance.flyTo(numericCoords, 16, {
+                        animate: true,
+                        duration: 2.0,
+                        easeLinearity: 0.25
+                    });
                 }
 
                 // Interaction

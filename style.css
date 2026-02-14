@@ -476,9 +476,9 @@ body {
 
 
 
-/* Hide Zoom Controls - users navigate via pin navigator only */
+/* Zoom Controls enabled by user request */
 .leaflet-control-zoom {
-    display: none !important;
+    display: block !important;
 }
 
 .polaroid-shadow {
