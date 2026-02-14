@@ -961,6 +961,7 @@ function MapsTo(fromId, toId, force = false) {
             if (typeof loadGallery === 'function') loadGallery();
         } else if (toId === 'page-7') {
             if (typeof initMap === 'function') initMap();
+            if (typeof showMapSkipButton === 'function') showMapSkipButton(true);
         } else if (toId === 'page-8') {
             if (typeof resetLetterPage === 'function') resetLetterPage();
             if (typeof initLetterPage === 'function') initLetterPage();
@@ -2370,6 +2371,7 @@ let mapPolyline = null;
 let markerCluster = null;
 let mapInitController = null;
 let mapJourneyCompleted = false; // Flag to track if the journey has been shown once
+let isMapJourneySkipped = false;
 
 // Tile Loading State
 let totalTilesToLoad = 0;
@@ -2540,7 +2542,11 @@ function initMapPinNavigator() {
     console.log('[Drone] Pin Navigator initialized at Ground Zero');
 }
 
+
 async function initMap() {
+    isMapJourneySkipped = false; // Reset skip flag
+    showMapSkipButton(true); // Force show button early
+
     // ✅ FIX: Use window.CONFIG explicitly
     const CONFIG = safeGetConfig();
     console.log("[Map] Starting initMap. Journey completed:", mapJourneyCompleted, "Locations:", CONFIG.map?.locations?.length);
@@ -2830,9 +2836,14 @@ async function initMap() {
             `;
 
             // DELAY for animation feel
-            if (!mapJourneyCompleted) {
+            if (!mapJourneyCompleted && !isMapJourneySkipped) {
                 // Reduced delay for better UX on mobile
                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 1800));
+            }
+
+            // CHECK FOR SKIP
+            if (isMapJourneySkipped) {
+                // Stop processing and show everything immediately
             }
 
             try {
@@ -2857,7 +2868,7 @@ async function initMap() {
                 }
 
                 // Cinematic Fly-to effect (Zoom In -> Zoom Out -> Zoom In)
-                if (!mapJourneyCompleted) {
+                if (!mapJourneyCompleted && !isMapJourneySkipped) {
                     mapInstance.flyTo(numericCoords, 16, {
                         animate: true,
                         duration: 2.0,
@@ -2885,6 +2896,17 @@ async function initMap() {
             if (!mapJourneyCompleted) await new Promise(resolve => setTimeout(resolve, 2000));
             const group = new L.featureGroup(mapMarkers);
             mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: !mapJourneyCompleted, duration: 2.5 });
+        }
+
+        // Hide skip button (Final cleanup after journey)
+        if (typeof showMapSkipButton === 'function') {
+            showMapSkipButton(false);
+        } else if (skipContainer) {
+            skipContainer.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => {
+                skipContainer.classList.add('hidden');
+                skipContainer.style.display = 'none';
+            }, 500);
         }
 
         // Mark journey as completed after first time
@@ -2955,6 +2977,58 @@ async function initMap() {
     // 🛸 Initialize the Drone Navigator
     initMapPinNavigator();
 }
+
+/**
+ * Force show/hide the skip button with animation
+ */
+function showMapSkipButton(show = true) {
+    const skipContainer = document.getElementById('map-skip-container');
+    if (!skipContainer) return;
+
+    if (show && !mapJourneyCompleted) {
+        console.log("[Map] 🚨 showMapSkipButton(true) triggered");
+        skipContainer.classList.remove('hidden');
+        skipContainer.style.display = 'flex';
+        skipContainer.style.zIndex = '9999'; // Super high priority
+
+        setTimeout(() => {
+            skipContainer.style.opacity = '1';
+            skipContainer.style.pointerEvents = 'auto';
+            skipContainer.classList.remove('opacity-0', 'translate-y-4');
+        }, 50);
+    } else {
+        console.log("[Map] 🚨 showMapSkipButton(false) triggered");
+        skipContainer.classList.add('opacity-0', 'translate-y-4');
+        skipContainer.style.pointerEvents = 'none';
+        setTimeout(() => {
+            skipContainer.classList.add('hidden');
+            skipContainer.style.display = 'none';
+        }, 500);
+    }
+}
+
+/**
+ * Skip the map journey animation and show all markers immediately
+ */
+function skipMapJourneyAnimation() {
+    console.log("[Map] Skipping journey animation via button/key...");
+    isMapJourneySkipped = true;
+
+    // Stop Leaflet animation
+    if (mapInstance) {
+        mapInstance.stop();
+    }
+
+    // Hide the button immediately
+    showMapSkipButton(false);
+}
+
+// Global listener for 'S' key to skip map journey
+document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 's' && currentPageId === 'page-7') {
+        skipMapJourneyAnimation();
+    }
+});
 
 // ==========================================
 // CRITICAL FIX: Mobile Map Interaction - v4.0
