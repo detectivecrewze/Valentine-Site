@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Generator | Valentine Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+
+    <script src="../data.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #fee2e2;
+            border-radius: 10px;
+        }
+
+        .project-row:hover {
+            background: #fff5f5;
+        }
+
+        .project-row {
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+
+<body class="bg-[#fff1f2] min-h-screen p-4 md:p-10">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div class="flex items-center gap-4">
+                <a href="index.html"
+                    class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-gray-400 hover:text-rose-500 transition-all hover:scale-110">
+                    <span class="material-symbols-outlined text-2xl">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="text-3xl font-display font-bold text-gray-900">Project Generator</h1>
+                    <p class="text-gray-500">Setup project baru & atur akses halaman customer</p>
+                </div>
+            </div>
+
+            <div id="statusBadge"
+                class="hidden px-4 py-2 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold flex items-center gap-2 border border-emerald-100 italic">
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Project Ready to Share
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- LEFT: Config Area -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Customer Name Card -->
+                <div class="glass rounded-[2rem] p-8 shadow-sm">
+                    <label
+                        class="block text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-4 ml-1">Customer
+                        Details</label>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-rose-300">person</span>
+                        <input type="text" id="customerName"
+                            class="w-full pl-14 pr-4 py-5 bg-white rounded-2xl border-2 border-transparent focus:border-rose-400 outline-none transition-all text-xl font-bold placeholder:text-gray-300"
+                            placeholder="Ketik Nama Customer..." oninput="updateUrls()">
+                    </div>
+                </div>
+
+                <!-- Password Setup Card -->
+                <div class="glass rounded-[2rem] p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="block text-[10px] font-bold text-rose-400 uppercase tracking-widest ml-1">Secret
+                            Password</label>
+                        <span
+                            class="text-[10px] bg-white px-2 py-1 rounded-full text-gray-400 font-bold italic border border-gray-100">Password
+                            login untuk customer</span>
+                    </div>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-rose-300">key</span>
+                        <input type="text" id="customerPassword"
+                            class="w-full pl-14 pr-14 py-4 bg-white rounded-2xl border-2 border-transparent focus:border-rose-400 outline-none transition-all text-base font-bold placeholder:text-gray-300 tracking-widest"
+                            placeholder="contoh: BudiSayangSiska">
+                        <button onclick="generateRandomPassword()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-rose-50 rounded-xl flex items-center justify-center text-rose-400 hover:bg-rose-100 hover:text-rose-600 transition-all"
+                            title="Generate random password">
+                            <span class="material-symbols-outlined text-lg">casino</span>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-2 ml-1 italic">Kosongkan jika ingin menggunakan password
+                        default dari template</p>
+                </div>
+
+                <!-- Page Access Selection -->
+                <div class="glass rounded-[2rem] p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <label class="block text-[10px] font-bold text-rose-400 uppercase tracking-widest ml-1">Page
+                            Accessibility</label>
+                        <span
+                            class="text-[10px] bg-white px-2 py-1 rounded-full text-gray-400 font-bold italic border border-gray-100">Toggle
+                            content yang boleh diedit oleh customer</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-3 custom-scroll"
+                        id="pageSelectionGrid">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button onclick="saveAndGenerate()" id="btnSave"
+                    class="w-full bg-rose-500 text-white py-6 rounded-[2rem] font-bold text-lg shadow-xl shadow-rose-200 hover:bg-rose-600 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                    <span class="material-symbols-outlined">auto_fix_high</span>
+                    <span>Create & Lock Settings</span>
+                </button>
+            </div>
+
+            <!-- RIGHT: Link Display -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="sticky top-10">
+                    <div class="glass rounded-[2rem] p-8 shadow-sm border-2 border-rose-100">
+                        <div class="text-center mb-8">
+                            <div
+                                class="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+                                <span class="material-symbols-outlined text-rose-500 text-3xl">link</span>
+                            </div>
+                            <h3 class="font-display font-bold text-xl">Project Links</h3>
+                            <p class="text-xs text-gray-400 mt-1">Gunakan link ini untuk dibagikan</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- Studio Link -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Link
+                                        Editor (Untuk Customer)</span>
+                                    <button onclick="copyLink('studio')"
+                                        class="text-rose-500 hover:text-rose-700 font-bold text-[10px] flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                                        <span>Copy</span>
+                                    </button>
+                                </div>
+                                <div id="studioLink"
+                                    class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-[11px] font-mono break-all text-gray-500">
+                                    -
+                                </div>
+                            </div>
+
+                            <!-- Live Link -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Link
+                                        Live (Hasil Akhir)</span>
+                                    <button onclick="copyLink('live')"
+                                        class="text-rose-500 hover:text-rose-700 font-bold text-[10px] flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                                        <span>Copy</span>
+                                    </button>
+                                </div>
+                                <div id="liveLink"
+                                    class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 text-[11px] font-mono break-all text-gray-500">
+                                    -
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini Preview of selected pages -->
+                        <div class="mt-8 pt-8 border-t border-rose-50">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Akses Halaman
+                                Aktif:</p>
+                            <div class="flex flex-wrap gap-2" id="activeBadges">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PROJECT HISTORY TABLE                         -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div class="mt-16 glass rounded-[2rem] p-8 shadow-sm">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-rose-500">folder_open</span>
+                    </div>
+                    <div>
+                        <h2 class="font-display font-bold text-xl text-gray-900">Project History</h2>
+                        <p class="text-[11px] text-gray-400">Semua project yang pernah dibuat</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-lg">search</span>
+                        <input type="text" id="searchHistory" oninput="filterHistory()"
+                            class="pl-10 pr-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm outline-none focus:border-rose-300 transition-all w-48"
+                            placeholder="Cari project...">
+                    </div>
+                    <span id="projectCount"
+                        class="text-[10px] bg-rose-50 text-rose-500 px-3 py-1.5 rounded-full font-bold border border-rose-100">0
+                        Projects</span>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto rounded-2xl border border-gray-100">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50/80">
+                            <th
+                                class="text-left py-3 px-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Customer</th>
+                            <th
+                                class="text-left py-3 px-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                ID</th>
+                            <th
+                                class="text-left py-3 px-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Password</th>
+                            <th
+                                class="text-left py-3 px-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Pages</th>
+                            <th
+                                class="text-left py-3 px-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Tanggal</th>
+                            <th
+                                class="text-center py-3 px-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center py-12 text-gray-300 text-sm italic">
+                                <span class="material-symbols-outlined text-4xl block mb-2">inventory_2</span>
+                                Belum ada project yang dibuat
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl transition-all duration-300 translate-y-20 opacity-0 pointer-events-none flex items-center gap-3 z-50">
+        <span class="material-symbols-outlined text-emerald-400" id="toastIcon">check_circle</span>
+        <span id="toastMsg">Project Created!</span>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+            <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-red-500 text-3xl">delete_forever</span>
+            </div>
+            <h3 class="font-display font-bold text-lg mb-2">Hapus Project?</h3>
+            <p class="text-sm text-gray-500 mb-6">Project <strong id="deleteTargetName"></strong> akan dihapus dari
+                riwayat. Data di cloud tetap aman.</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()"
+                    class="flex-1 py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button onclick="confirmDelete()"
+                    class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+        const HISTORY_KEY = 'valentine_project_history';
+        let allowedPageIds = ['page-1', 'page-2', 'page-3', 'page-4', 'page-5', 'page-6', 'page-7', 'page-8', 'page-9', 'page-10', 'page-11']; // Default: All pages enabled
+        let deleteTargetId = null;
+
+        // ═══════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════
+        function init() {
+            renderPageOptions();
+            updateUrls();
+            renderHistory();
+        }
+
+        // ═══════════════════════════════════════
+        // PAGE ACCESS TOGGLE
+        // ═══════════════════════════════════════
+        function renderPageOptions() {
+            const grid = document.getElementById('pageSelectionGrid');
+            const allPages = Object.values(CONFIG.pageConfig.pages).sort((a, b) => a.order - b.order);
+
+            grid.innerHTML = allPages.map(page => {
+                const isChecked = allowedPageIds.includes(page.id);
+                const isMandatory = page.id === 'page-1';
+
+                return `
+                    <div class="flex items-center justify-between p-3 rounded-xl border-2 transition-all ${isChecked ? 'bg-white border-rose-100 shadow-sm' : 'bg-gray-50/50 border-transparent opacity-60'}">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-base ${isChecked ? 'text-rose-500' : 'text-gray-400'}">${page.icon}</span>
+                            <span class="text-[11px] font-bold text-gray-700">${page.name}</span>
+                        </div>
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} ${isMandatory ? 'disabled' : ''} 
+                               onchange="togglePage('${page.id}')"
+                               class="w-4 h-4 text-rose-600 bg-gray-100 border-gray-300 rounded focus:ring-rose-500">
+                    </div>
+                `;
+            }).join('');
+
+            updateActiveBadges();
+        }
+
+        function togglePage(id) {
+            if (allowedPageIds.includes(id)) {
+                allowedPageIds = allowedPageIds.filter(x => x !== id);
+            } else {
+                allowedPageIds.push(id);
+            }
+            renderPageOptions();
+        }
+
+        function updateActiveBadges() {
+            const container = document.getElementById('activeBadges');
+            const allPages = CONFIG.pageConfig.pages;
+
+            container.innerHTML = allowedPageIds.map(id => {
+                const page = allPages[id];
+                if (!page) return '';
+                return `
+                    <span class="px-2 py-1 bg-rose-50 text-[10px] text-rose-500 rounded-lg flex items-center gap-1 font-bold border border-rose-100">
+                        <span class="material-symbols-outlined text-xs">${page.icon}</span>
+                        ${page.name}
+                    </span>
+                `;
+            }).join('') || '<span class="text-[10px] text-gray-300 italic">No pages selected</span>';
+        }
+
+        // ═══════════════════════════════════════
+        // URL & SLUG
+        // ═══════════════════════════════════════
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
+        function updateUrls() {
+            const nameInput = document.getElementById('customerName');
+            const studioLink = document.getElementById('studioLink');
+            const liveLink = document.getElementById('liveLink');
+
+            const raw = nameInput.value.trim();
+            if (!raw) {
+                studioLink.innerText = '-';
+                liveLink.innerText = '-';
+                document.getElementById('statusBadge').classList.add('hidden');
+                return;
+            }
+
+            const id = slugify(raw);
+            const base = window.location.origin;
+            studioLink.innerText = `${base}/editor/index.html?id=${id}`;
+            liveLink.innerText = `${base}/?to=${id}`;
+            document.getElementById('statusBadge').classList.remove('hidden');
+        }
+
+        // ═══════════════════════════════════════
+        // PASSWORD GENERATOR
+        // ═══════════════════════════════════════
+        function generateRandomPassword() {
+            const words = ['Cinta', 'Sayang', 'Rindu', 'Manis', 'Bunga', 'Bintang', 'Hati', 'Senyum', 'Peluk', 'Kasih'];
+            const w1 = words[Math.floor(Math.random() * words.length)];
+            const w2 = words[Math.floor(Math.random() * words.length)];
+            const num = Math.floor(Math.random() * 99) + 1;
+            document.getElementById('customerPassword').value = `${w1}${w2}${num}`;
+        }
+
+        // ═══════════════════════════════════════
+        // SAVE & GENERATE (CORE)
+        // ═══════════════════════════════════════
+        async function saveAndGenerate() {
+            const rawName = document.getElementById('customerName').value.trim();
+            if (!rawName) return alert('Masukkan Nama Customer terlebih dahulu!');
+
+            const btn = document.getElementById('btnSave');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span><span>Creating Project...</span>';
+
+            const id = slugify(rawName);
+            const password = document.getElementById('customerPassword').value.trim();
+
+            try {
+                // 1. Save Page Access Profile
+                const accessRes = await fetch(`${API_URL}/save-config?id=access-${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ allowedIds: allowedPageIds, created: new Date().toISOString() })
+                });
+
+                if (!accessRes.ok) throw new Error('Access save failed');
+
+                // 2. Save Initial Project Config (Password & Page States)
+                let projectConfig;
+                try {
+                    const existingRes = await fetch(`${API_URL}/get-config?id=${id}`);
+                    if (existingRes.ok) {
+                        projectConfig = await existingRes.json();
+                    }
+                } catch (e) { /* no existing config */ }
+
+                if (!projectConfig) {
+                    projectConfig = JSON.parse(JSON.stringify(CONFIG));
+                }
+
+                // ✅ FIX: Synchronize names, orders, and enabled status with allowedPageIds
+                // This ensures live site respects Generator choices AND factory defaults immediately
+                if (projectConfig.pageConfig && projectConfig.pageConfig.pages) {
+                    Object.keys(projectConfig.pageConfig.pages).forEach(pId => {
+                        const isEnabled = allowedPageIds.includes(pId);
+                        projectConfig.pageConfig.pages[pId].enabled = isEnabled;
+
+                        // Pull fresh name and order from factory defaults (CONFIG)
+                        if (CONFIG.pageConfig.pages[pId]) {
+                            projectConfig.pageConfig.pages[pId].name = CONFIG.pageConfig.pages[pId].name;
+                            projectConfig.pageConfig.pages[pId].order = CONFIG.pageConfig.pages[pId].order;
+                        }
+                    });
+                }
+
+                // Set the password if provided
+                if (password) {
+                    if (!projectConfig.login) projectConfig.login = {};
+                    projectConfig.login.password = password;
+                }
+
+                // Save back to cloud (MANDATORY sync)
+                await fetch(`${API_URL}/save-config?id=${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectConfig)
+                });
+
+                // 3. Save to Local History
+                saveToHistory({
+                    name: rawName,
+                    id: id,
+                    password: password || '(default)',
+                    pages: [...allowedPageIds],
+                    created: new Date().toISOString()
+                });
+
+                showToast('Project Created & Locked!');
+                renderHistory();
+
+                // Reset form
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerPassword').value = '';
+                updateUrls();
+
+            } catch (e) {
+                console.error(e);
+                showToast('Gagal menyimpan! Cek koneksi.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span><span>Project Created!</span>';
+                setTimeout(() => {
+                    btn.innerHTML = '<span class="material-symbols-outlined">auto_fix_high</span><span>Create & Lock Settings</span>';
+                }, 3000);
+            }
+        }
+
+        // ═══════════════════════════════════════
+        // PROJECT HISTORY (localStorage)
+        // ═══════════════════════════════════════
+        function getHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            } catch { return []; }
+        }
+
+        function saveToHistory(project) {
+            const history = getHistory();
+            // Update if exists, otherwise add new
+            const idx = history.findIndex(p => p.id === project.id);
+            if (idx >= 0) {
+                history[idx] = { ...history[idx], ...project, updated: new Date().toISOString() };
+            } else {
+                history.unshift(project);
+            }
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        }
+
+        function removeFromHistory(id) {
+            const history = getHistory().filter(p => p.id !== id);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        }
+
+        function renderHistory() {
+            const history = getHistory();
+            const tbody = document.getElementById('historyTableBody');
+            const countEl = document.getElementById('projectCount');
+            const searchVal = (document.getElementById('searchHistory')?.value || '').toLowerCase();
+
+            const filtered = searchVal
+                ? history.filter(p => p.name.toLowerCase().includes(searchVal) || p.id.toLowerCase().includes(searchVal))
+                : history;
+
+            countEl.textContent = `${history.length} Projects`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-12 text-gray-300 text-sm italic">
+                            <span class="material-symbols-outlined text-4xl block mb-2">inventory_2</span>
+                            ${searchVal ? 'Tidak ditemukan' : 'Belum ada project yang dibuat'}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const base = window.location.origin;
+            const allPages = CONFIG.pageConfig.pages;
+
+            tbody.innerHTML = filtered.map(p => {
+                const date = new Date(p.created);
+                const dateStr = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                const timeStr = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+                const pageBadges = (p.pages || []).map(pid => {
+                    const page = allPages[pid];
+                    if (!page) return '';
+                    return `<span class="inline-block px-1.5 py-0.5 bg-rose-50 text-[9px] text-rose-500 rounded font-bold">${page.name}</span>`;
+                }).join(' ');
+
+                return `
+                    <tr class="project-row border-t border-gray-50 cursor-default">
+                        <td class="py-3 px-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center text-rose-400">
+                                    <span class="material-symbols-outlined text-sm">person</span>
+                                </div>
+                                <span class="font-bold text-gray-800 text-sm">${p.name}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-5">
+                            <code class="text-[11px] bg-gray-100 px-2 py-1 rounded-lg text-gray-600">${p.id}</code>
+                        </td>
+                        <td class="py-3 px-5">
+                            <span class="text-xs text-gray-500 font-mono">${p.password}</span>
+                        </td>
+                        <td class="py-3 px-5">
+                            <div class="flex flex-wrap gap-1 max-w-[180px]">${pageBadges}</div>
+                        </td>
+                        <td class="py-3 px-5">
+                            <div class="text-xs text-gray-500">${dateStr}</div>
+                            <div class="text-[10px] text-gray-300">${timeStr}</div>
+                        </td>
+                        <td class="py-3 px-5">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="copyText('${base}/editor/index.html?id=${p.id}')" title="Copy Studio Link"
+                                    class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 transition-all">
+                                    <span class="material-symbols-outlined text-sm">edit</span>
+                                </button>
+                                <button onclick="copyText('${base}/?to=${p.id}')" title="Copy Live Link"
+                                    class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center hover:bg-emerald-100 transition-all">
+                                    <span class="material-symbols-outlined text-sm">share</span>
+                                </button>
+                                <button onclick="loadProjectToEditor('${p.id}')" title="Edit Page Access"
+                                    class="w-8 h-8 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-100 transition-all">
+                                    <span class="material-symbols-outlined text-sm">tune</span>
+                                </button>
+                                <button onclick="openDeleteModal('${p.id}', '${p.name}')" title="Hapus dari riwayat"
+                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100 transition-all">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterHistory() {
+            renderHistory();
+        }
+
+        // Load project settings back into the form for editing
+        function loadProjectToEditor(id) {
+            const history = getHistory();
+            const project = history.find(p => p.id === id);
+            if (!project) return;
+
+            document.getElementById('customerName').value = project.name;
+            document.getElementById('customerPassword').value = project.password === '(default)' ? '' : project.password;
+            allowedPageIds = [...(project.pages || ['page-1', 'page-3', 'page-4', 'page-7', 'page-11'])];
+
+            renderPageOptions();
+            updateUrls();
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast(`Loaded: ${project.name}`);
+        }
+
+        // ═══════════════════════════════════════
+        // DELETE MODAL
+        // ═══════════════════════════════════════
+        function openDeleteModal(id, name) {
+            deleteTargetId = id;
+            document.getElementById('deleteTargetName').textContent = name;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            deleteTargetId = null;
+        }
+
+        function confirmDelete() {
+            if (deleteTargetId) {
+                removeFromHistory(deleteTargetId);
+                renderHistory();
+                showToast('Project dihapus dari riwayat');
+            }
+            closeDeleteModal();
+        }
+
+        // ═══════════════════════════════════════
+        // UTILITIES
+        // ═══════════════════════════════════════
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMsg').innerText = msg;
+
+            icon.textContent = type === 'success' ? 'check_circle' : 'error';
+            icon.className = `material-symbols-outlined ${type === 'success' ? 'text-emerald-400' : 'text-red-400'}`;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        async function copyLink(type) {
+            const id = type === 'studio' ? 'studioLink' : 'liveLink';
+            const text = document.getElementById(id).innerText;
+            if (text === '-') return;
+            await navigator.clipboard.writeText(text);
+            showToast('Link Copied!');
+        }
+
+        async function copyText(text) {
+            await navigator.clipboard.writeText(text);
+            showToast('Link Copied!');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

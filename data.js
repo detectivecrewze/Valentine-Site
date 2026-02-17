@@ -285,7 +285,7 @@ const CONFIG = {
                 "id": "page-2",
                 "name": "Greeting Card",
                 "type": "greeting",
-                "enabled": true,
+                "enabled": false,
                 "required": false,
                 "icon": "favorite",
                 "order": 2
@@ -348,7 +348,7 @@ const CONFIG = {
                 "id": "page-9",
                 "name": "The Final Lock",
                 "type": "lock",
-                "enabled": false,
+                "enabled": true,
                 "required": false,
                 "icon": "lock_person",
                 "order": 9
@@ -357,7 +357,7 @@ const CONFIG = {
                 "id": "page-10",
                 "name": "Infinity Scroll",
                 "type": "infinity",
-                "enabled": false,
+                "enabled": true,
                 "required": false,
                 "icon": "all_inclusive",
                 "order": 10

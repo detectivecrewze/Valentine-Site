@@ -10,6 +10,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@700&family=Pacifico&family=Montserrat:wght@400;700&family=Great+Vibes&family=Cinzel:wght@700&family=Poppins:wght@300;400;600&family=Cormorant+Garamond:ital,wght@1,600&family=Lobster&family=Sacramento&display=swap"
         rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+
     <link rel="stylesheet" href="css/style.css?v=1.0.6">
 
     <!-- Leaflet Maps CSS -->
@@ -107,8 +114,12 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-
-
+                        <a href="generator.html"
+                            class="preview-btn !bg-rose-50 !text-rose-600 hover:!bg-rose-100 border border-rose-200"
+                            title="Generate Customer Links">
+                            <span class="material-symbols-outlined">magic_button</span>
+                            <span class="hidden md:inline">Link Generator</span>
+                        </a>
                         <button onclick="app.togglePreview()"
                             class="preview-btn !bg-gray-100 !text-gray-600 hover:!bg-gray-200" id="togglePreviewBtn"
                             title="Toggle Preview Pane">

@@ -11,44 +11,79 @@ let invitationConfig = {
     question: 'Would you like to be my Valentine?',
     bearDefault: 'https://media.tenor.com/63IENW605s0AAAAi/dudu-twisting-dance.gif',
     bearSuccess: 'https://media.tenor.com/0_jT8Pyszi8AAAAi/bubu-dudu-dudu-carry.gif',
-    successMessage: 'Yay! ❤️'
+    successMessage: 'Yay! ❤️',
+    yesText: 'Yes!',
+    noText: 'No'
 };
 
 // Sync with parent config if available
-function syncConfig() {
+function getLiveConfig() {
     try {
-        const parentConfig = window.parent.CONFIG;
+        // Try to get the absolute latest from parent window
+        const parentConfig = (window.parent && window.parent.CONFIG) ? window.parent.CONFIG : null;
         if (parentConfig && parentConfig.invitation) {
-            invitationConfig = { ...invitationConfig, ...parentConfig.invitation };
-            applyConfig();
+            console.log('[Invitation] Merging parent config with local:', parentConfig.invitation.question);
+            // ✅ FIX: Parent config should strictly win over template defaults.
+            // Local invitationConfig is only used if parent is missing.
+            return { ...invitationConfig, ...parentConfig.invitation };
         }
     } catch (e) {
         console.log('[Invitation] Could not access parent config:', e);
     }
+    return invitationConfig;
 }
 
-function applyConfig() {
-    if (questionText) questionText.textContent = invitationConfig.question;
-    if (bearImg) bearImg.src = invitationConfig.bearDefault;
-    if (successText) successText.textContent = invitationConfig.successMessage;
+function applyConfig(sourceConfig = null) {
+    const config = sourceConfig || getLiveConfig();
+    const isEditor = window.isEditorMode || (window.parent && window.parent.isEditorMode);
+
+    console.log('[Invitation] Applying config:', config.question);
+
+    const safeUpdate = (el, text) => {
+        if (!el) return;
+        // If in editor and focused, don't touch it to prevent revert/cursor jump
+        if (isEditor && document.activeElement === el) return;
+
+        if (el.textContent !== text) {
+            el.textContent = text;
+        }
+    };
+
+    if (questionText) safeUpdate(questionText, config.question);
+    if (bearImg) bearImg.src = config.bearDefault;
+    if (successText) safeUpdate(successText, config.successMessage);
+
     // Update celebration bear if it exists
     const celebrationBear = document.getElementById('success-bear-img');
-    if (celebrationBear) celebrationBear.src = invitationConfig.bearSuccess;
+    if (celebrationBear) celebrationBear.src = config.bearSuccess;
+
+    if (yesBtn) safeUpdate(yesBtn, config.yesText || 'Yes!');
+    if (noBtn) safeUpdate(noBtn, config.noText || 'No');
 }
 
-// Initial sync
-syncConfig();
-
-// Listen for direct parent messages for faster updates
+// Listen for updates from Studio/Parent
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'UPDATE_CONFIG') {
         const config = event.data.config;
         if (config && config.invitation) {
+            console.log('[Invitation] Receive UPDATE_CONFIG message:', config.invitation.question);
+            // Update our local reference then apply
             invitationConfig = { ...invitationConfig, ...config.invitation };
-            applyConfig();
+            applyConfig(invitationConfig);
         }
     }
 });
+
+// Initial load
+applyConfig();
+
+// Notify parent editor that we are on the invitation page (mapped to page-11)
+if (window.parent) {
+    window.parent.postMessage({
+        type: 'PAGE_CHANGED',
+        pageId: 'page-11'
+    }, '*');
+}
 
 let scale = 1;
 const noMessages = [

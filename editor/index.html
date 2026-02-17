@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Design Studio</title>
+    <link rel="stylesheet" href="editor.css">
+    <link rel="stylesheet" href="editor-ux.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            25% {
+                transform: translateX(-10px)
+            }
+
+            75% {
+                transform: translateX(10px)
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 🔒 Studio Login Gate -->
+    <div id="studioLoginOverlay" class="hidden" style="
+        position:fixed; inset:0; z-index:9999;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        display:flex; align-items:center; justify-content:center;
+        font-family:'Inter',sans-serif;
+    ">
+        <div style="
+            background:white; border-radius:24px; padding:48px 40px; width:100%; max-width:400px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align:center;
+        ">
+            <!-- Icon -->
+            <div style="
+                width:64px; height:64px; border-radius:16px; margin:0 auto 20px;
+                background:linear-gradient(135deg,#ff4d6d,#ff758f); display:flex; align-items:center; justify-content:center;
+            ">
+                <span class="material-symbols-outlined" style="color:white;font-size:32px;">edit_square</span>
+            </div>
+
+            <h2 style="font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">Valentine Studio</h2>
+            <p style="font-size:13px;color:#9ca3af;margin-bottom:28px;">Enter your password to start editing</p>
+
+            <form id="studioLoginForm" onsubmit="return false;">
+                <div style="position:relative;margin-bottom:12px;">
+                    <span class="material-symbols-outlined"
+                        style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#d1d5db;font-size:20px;">key</span>
+                    <input type="password" id="studioPasswordInput" placeholder="Enter password..." autocomplete="off"
+                        style="
+                            width:100%; padding:14px 48px 14px 44px; font-size:14px; border-radius:12px;
+                            border:2px solid #e5e7eb; outline:none; font-family:inherit;
+                            transition:border-color 0.2s; box-sizing:border-box;
+                        " onfocus="this.style.borderColor='#ff4d6d'" onblur="this.style.borderColor='#e5e7eb'">
+                    <button type="button" id="studioTogglePwd" style="
+                        position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                        background:none;border:none;cursor:pointer;padding:4px;color:#9ca3af;display:flex;align-items:center;
+                    ">
+                        <span class="material-symbols-outlined" style="font-size:20px;">visibility</span>
+                    </button>
+                </div>
+
+                <p id="studioLoginError"
+                    style="display:none;font-size:12px;color:#ef4444;font-weight:600;margin-bottom:12px;">
+                    ❌ Incorrect password. Please try again.
+                </p>
+
+                <button type="submit" id="studioLoginBtn" style="
+                    width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer;
+                    background:linear-gradient(135deg,#ff4d6d,#ff758f); color:white; font-size:15px; font-weight:700;
+                    font-family:inherit; transition:all 0.2s; box-shadow:0 4px 15px rgba(255,77,109,0.3);
+                " onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(255,77,109,0.4)'"
+                    onmouseout="this.style.transform='';this.style.boxShadow='0 4px 15px rgba(255,77,109,0.3)'">
+                    <span class="material-symbols-outlined"
+                        style="font-size:18px;vertical-align:middle;margin-right:6px;">lock_open</span>
+                    Unlock Editor
+                </button>
+            </form>
+
+            <p style="font-size:11px;color:#d1d5db;margin-top:20px;">
+                Password diberikan oleh admin saat project dibuat
+            </p>
+        </div>
+    </div>
+
+    <div class="studio-app">
+        <!-- Top Toolbar -->
+        <header class="studio-header">
+            <div class="header-left">
+                <div class="studio-logo">
+                    <span class="material-symbols-outlined logo-icon">favorite</span>
+                    <span class="logo-text">Valentine Studio</span>
+                </div>
+                <div class="project-info">
+                    <span class="project-name" contenteditable="true">My Romantic Surprise</span>
+                    <div class="save-status">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Synced to Cloud</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Undo/Redo Buttons -->
+            <div class="ux-undo-group">
+                <button class="ux-undo-btn" id="ux-undo-btn" onclick="EditorUX.undo()" disabled
+                    data-tooltip="Undo (Ctrl+Z)" data-tooltip-pos="bottom">
+                    <span class="material-symbols-outlined">undo</span>
+                </button>
+                <button class="ux-undo-btn" id="ux-redo-btn" onclick="EditorUX.redo()" disabled
+                    data-tooltip="Redo (Ctrl+Y)" data-tooltip-pos="bottom">
+                    <span class="material-symbols-outlined">redo</span>
+                </button>
+                <div class="ux-undo-divider"></div>
+            </div>
+
+            <div class="header-center" id="element-toolbar">
+                <!-- Dynamic Toolbar for selected elements (Canva style) -->
+                <div class="toolbar-group hidden" id="text-tools">
+                    <select class="tool-btn font-selector">
+                        <option>Playfair Display</option>
+                        <option>Inter</option>
+                        <option>Dancing Script</option>
+                    </select>
+                    <div class="divider"></div>
+                    <button class="tool-btn"><span class="material-symbols-outlined">format_size</span></button>
+                    <button class="tool-btn"><span class="material-symbols-outlined">palette</span></button>
+                    <div class="divider"></div>
+                    <button class="tool-btn"><span class="material-symbols-outlined">format_bold</span></button>
+                    <button class="tool-btn"><span class="material-symbols-outlined">format_italic</span></button>
+                </div>
+
+                <div class="toolbar-group hidden" id="image-tools">
+                    <button class="tool-btn" id="replace-image-btn">
+                        <span class="material-symbols-outlined">image</span>
+                        <span>URL</span>
+                    </button>
+                    <button class="tool-btn" id="upload-image-btn">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        <span>Upload</span>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="tool-btn" id="flip-card-btn">
+                        <span class="material-symbols-outlined">flip_to_back</span>
+                        <span>Flip Card</span>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="tool-btn"><span class="material-symbols-outlined">filter</span></button>
+                    <button class="tool-btn"><span class="material-symbols-outlined">crop</span></button>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="btn-secondary" onclick="StudioState.copyDataJS()"
+                    data-tooltip="Copy config as data.js code" data-tooltip-pos="bottom">
+                    <span class="material-symbols-outlined">content_copy</span>
+                    Copy Data
+                </button>
+                <button class="btn-secondary" onclick="StudioState.downloadDataJS()"
+                    data-tooltip="Download config as data.js file" data-tooltip-pos="bottom">
+                    <span class="material-symbols-outlined">download</span>
+                    Download
+                </button>
+                <button class="btn-secondary" onclick="StudioState.openFullPreview()"
+                    data-tooltip="View live site in new tab" data-tooltip-pos="bottom">
+                    <span class="material-symbols-outlined">visibility</span>
+                    Preview
+                </button>
+                <button class="btn-primary" id="publish-btn" data-tooltip="Save changes to cloud"
+                    data-tooltip-pos="bottom">
+                    <span class="material-symbols-outlined">rocket_launch</span>
+                    Publish
+                </button>
+                <div class="user-profile">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User">
+                </div>
+            </div>
+        </header>
+
+        <!-- Hidden File Input -->
+        <input type="file" id="studio-file-input" accept="image/*" class="hidden">
+
+        <main class="studio-main">
+            <!-- Sidebar -->
+            <aside class="studio-sidebar">
+                <nav class="sidebar-tabs">
+                    <button class="tab-item active" data-tab="pages">
+                        <span class="material-symbols-outlined">auto_stories</span>
+                        <span>Pages</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                    <button class="tab-item" data-tab="uploads">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        <span>Uploads</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                    <!-- Themes tab removed as per request -->
+                    <button class="tab-item" data-tab="music">
+                        <span class="material-symbols-outlined">music_note</span>
+                        <span>Music</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                    <button class="tab-item" data-tab="settings">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span>Settings</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                </nav>
+
+                <div class="sidebar-content">
+                    <!-- Pages Tab -->
+                    <div class="tab-pane active" id="pane-pages">
+                        <h3>Story Chapters</h3>
+                        <div class="page-list" id="story-pages">
+                            <!-- Pages will be injected here -->
+                        </div>
+                        <div class="sidebar-divider"></div>
+                        <button class="btn-secondary w-full text-xs opacity-60 hover:opacity-100"
+                            id="reset-defaults-btn">
+                            <span class="material-symbols-outlined text-sm">restart_alt</span>
+                            <span>Reset Flow to Defaults</span>
+                        </button>
+                    </div>
+
+                    <!-- Uploads Tab -->
+                    <div class="tab-pane hidden" id="pane-uploads">
+                        <div class="upload-area" id="sidebar-upload-area">
+                            <span class="material-symbols-outlined">upload</span>
+                            <p>Click to upload photos</p>
+                        </div>
+                        <h3>Your Gallery</h3>
+                        <div class="media-grid" id="sidebar-media-grid">
+                            <div class="media-item"><img src="../assets/cover1.jpg"></div>
+                            <div class="media-item"><img src="../assets/cover2.jpg"></div>
+                            <div class="media-item add-btn" id="sidebar-add-btn"><span
+                                    class="material-symbols-outlined">add</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Themes pane removed as per request -->
+
+                    <!-- Music Tab -->
+                    <div class="tab-pane hidden" id="pane-music">
+                        <h3>Your Soundtrack</h3>
+                        <div id="sidebar-music-list" class="space-y-3">
+                            <!-- Songs will be listed here -->
+                        </div>
+                        <button class="btn-secondary w-full mt-4" id="sidebar-add-song">
+                            <span class="material-symbols-outlined">library_music</span>
+                            <span>Add New Song</span>
+                        </button>
+
+                        <div class="sidebar-divider"></div>
+
+                        <h3>Romantic Library</h3>
+                        <p class="text-xs text-gray-400 mb-3">Click to add curated favorites</p>
+                        <div id="romantic-library-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                            <!-- Preset library songs here -->
+                        </div>
+
+                        <div class="sidebar-divider"></div>
+                        <div class="px-1 mt-4">
+                            <button id="music-save-btn"
+                                class="w-full bg-rose-500 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-100 hover:bg-rose-600 transition-all active:scale-[0.98]">
+                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                <span>Simpan Perubahan</span>
+                            </button>
+                            <p class="text-[10px] text-gray-400 mt-3 text-center italic">Klik untuk menyimpan playlist
+                                ke cloud.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane hidden" id="pane-settings">
+                        <h3>Site Settings</h3>
+                        <p class="text-xs text-gray-400 mb-6">Customize how your site is accessed and displayed</p>
+
+                        <div class="space-y-6">
+                            <!-- Password Setting -->
+                            <div class="setting-item">
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">🔑
+                                    Login Password</label>
+                                <div class="relative">
+                                    <input type="text" id="setting-login-password"
+                                        class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm font-bold outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all placeholder:text-gray-300"
+                                        placeholder="e.g. BudiSayang123">
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-2">Ini adalah password yang harus diisi
+                                    pasanganmu saat membuka websitenya.</p>
+                            </div>
+
+                            <div class="sidebar-divider"></div>
+
+                            <!-- Title Setting -->
+                            <div class="setting-item">
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">🏷️
+                                    Project Name</label>
+                                <input type="text" id="setting-project-name"
+                                    class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all placeholder:text-gray-300"
+                                    placeholder="e.g. My Romantic Surprise">
+                            </div>
+
+                            <div class="sidebar-divider"></div>
+
+                            <!-- Import Data Setting -->
+                            <div class="setting-item">
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">📥
+                                    Import from ID</label>
+                                <button onclick="StudioState.importFromID()"
+                                    class="w-full px-4 py-3 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 text-xs font-bold hover:bg-blue-100 transition-all flex items-center justify-center gap-2 active:scale-95">
+                                    <span class="material-symbols-outlined text-base">cloud_download</span>
+                                    <span>Import dari Live Site</span>
+                                </button>
+                                <p class="text-[10px] text-gray-400 mt-2 italic">Copy data dari project ID lain
+                                    (misalnya project lama yang sudah live).</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-4 bg-blue-50 rounded-2xl border border-blue-100 mb-6">
+                            <div class="flex gap-3">
+                                <span class="material-symbols-outlined text-blue-500 text-lg">info</span>
+                                <p class="text-xs text-blue-700 leading-relaxed">Jangan lupa simpan perubahanmu ke cloud
+                                    agar bisa diakses oleh pasanganmu.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button id="settings-save-btn"
+                            class="w-full bg-rose-500 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-100 hover:bg-rose-600 transition-all active:scale-[0.98]">
+                            <span class="material-symbols-outlined text-lg">check_circle</span>
+                            <span>Simpan Perubahan</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <section class="studio-canvas">
+                <div class="canvas-viewport">
+                    <div class="viewport-wrapper">
+                        <!-- Premium Smartphone Frame -->
+                        <div class="device-bezel"></div>
+                        <div class="device-sensors"></div>
+
+                        <!-- The actual site -->
+                        <iframe id="preview-frame" src="../index.html?preview=studio" frameborder="0"></iframe>
+
+                        <!-- Overlay for Selection (Canva style) -->
+                        <div id="selection-overlay" class="selection-overlay hidden">
+                            <div class="selection-border">
+                                <div class="handle nw"></div>
+                                <div class="handle ne"></div>
+                                <div class="handle sw"></div>
+                                <div class="handle se"></div>
+                                <div class="selection-actions">
+                                    <button class="action-btn" title="Edit Content">
+                                        <span class="material-symbols-outlined">edit</span>
+                                        <span>Edit</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Action Buttons -->
+                <div class="fab-group">
+                    <button id="music-add-btn" class="fab-btn hidden" title="Add New Song">
+                        <span class="material-symbols-outlined">music_note</span>
+                        <span>Add Song</span>
+                    </button>
+                    <button id="gallery-add-btn" class="fab-btn hidden" title="Kelola Galeri Foto Momen">
+                        <span class="material-symbols-outlined">photo_library</span>
+                        <span>Edit Galeri</span>
+                    </button>
+                    <button id="map-add-btn" class="fab-btn hidden" title="Add New Location">
+                        <span class="material-symbols-outlined">add_location_alt</span>
+                        <span>Add Location</span>
+                    </button>
+                    <button id="quiz-add-btn" class="fab-btn hidden" title="Kelola Pertanyaan Kuis">
+                        <span class="material-symbols-outlined">quiz</span>
+                        <span>Edit Kuis</span>
+                    </button>
+                    <button id="wrapped-add-btn" class="fab-btn hidden" title="Edit Momen Wrapped Kita">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span>Edit Wrapped</span>
+                    </button>
+                    <button id="infinity-add-btn" class="fab-btn hidden" title="Kelola Alasan Infinity">
+                        <span class="material-symbols-outlined">all_inclusive</span>
+                        <span>Edit Infinity</span>
+                    </button>
+                    <button id="letter-add-btn" class="fab-btn hidden" title="Tulis Surat Cinta">
+                        <span class="material-symbols-outlined">history_edu</span>
+                        <span>Edit Surat</span>
+                    </button>
+                    <button id="invitation-add-btn" class="fab-btn hidden" title="Edit Undangan Valentine">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span>Edit Undangan</span>
+                    </button>
+                    <button id="password-add-btn" class="fab-btn hidden" title="Ganti Password Login">
+                        <span class="material-symbols-outlined">key</span>
+                        <span>Ganti Password</span>
+                    </button>
+                </div>
+
+                <!-- Viewport Controls -->
+                <div class="viewport-controls">
+                    <button class="control-btn active" id="btn-device-mobile" title="Mobile View">
+                        <span class="material-symbols-outlined">smartphone</span>
+                    </button>
+                    <button class="control-btn" id="btn-device-desktop" title="Desktop View">
+                        <span class="material-symbols-outlined">laptop</span>
+                    </button>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="btn-zoom-out" title="Zoom Out">
+                            <span class="material-symbols-outlined">remove</span>
+                        </button>
+                        <span class="zoom-value">85%</span>
+                        <button class="zoom-btn" id="btn-zoom-in" title="Zoom In">
+                            <span class="material-symbols-outlined">add</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Map Picker Modal (Ported from Admin) -->
+    <div id="mapPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-5xl h-[90vh] max-h-[750px] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-50 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-rose-600">location_on</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">Add New Place</h3>
+                        <p class="text-xs text-gray-500">Pick a location on the map</p>
+                    </div>
+                </div>
+                <button onclick="Editor.MapPicker.close()"
+                    class="p-2 hover:bg-rose-100 rounded-full text-gray-400 hover:text-rose-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Search Area -->
+            <div class="p-4 bg-gray-50 border-b border-gray-100">
+                <div class="flex gap-2 max-w-lg mx-auto mb-3">
+                    <button id="tabSearch"
+                        class="flex-1 px-4 py-2 rounded-lg text-sm font-bold bg-rose-600 text-white shadow-sm">Search</button>
+                    <button id="tabPaste"
+                        class="flex-1 px-4 py-2 rounded-lg text-sm font-bold bg-white border border-gray-200 text-gray-500">Paste
+                        Link</button>
+                </div>
+
+                <div id="searchTabContent" class="relative max-w-lg mx-auto">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                    <input type="text" id="mapSearchInput"
+                        class="w-full pl-10 pr-24 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 outline-none"
+                        placeholder="Search factory, park, restaurant...">
+                    <button id="btnDoSearch"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-rose-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-700">Search</button>
+                    <div id="mapSearchResults"
+                        class="absolute z-[1100] left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl hidden overflow-hidden max-h-60 overflow-y-auto">
+                    </div>
+                </div>
+
+                <div id="pasteTabContent" class="relative max-w-lg mx-auto hidden">
+                    <input type="text" id="gmapsLinkInput"
+                        class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 outline-none"
+                        placeholder="Paste Google Maps URL here...">
+                </div>
+            </div>
+
+            <!-- Map View -->
+            <div class="flex-1 flex overflow-hidden min-h-0">
+                <div class="flex-1 relative">
+                    <div id="leafletPickerContainer" class="absolute inset-0"></div>
+                </div>
+
+                <div class="w-72 overflow-y-auto p-4 border-l border-gray-100 bg-gray-50/50 flex flex-col"
+                    id="mapLocationsListContainer">
+                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-2">Current Map Pins
+                    </h4>
+                    <div id="mapLocationsList" class="flex-1 space-y-2">
+                        <!-- Pins will be listed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Integrated Footer -->
+            <div
+                class="px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.05)]">
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Selected Location</p>
+                    <p id="selectedLocationText" class="text-sm font-bold text-gray-900 truncate">Click on map to
+                        pick...</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="Editor.MapPicker.close()"
+                        class="px-6 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-100 transition-all">
+                        Cancel
+                    </button>
+                    <button id="confirmLocationBtn" disabled
+                        class="whitespace-nowrap bg-rose-600 text-white px-8 py-2.5 rounded-xl text-sm font-bold hover:bg-rose-700 disabled:opacity-50 transition-all shadow-lg shadow-rose-200 disabled:shadow-none">
+                        Confirm Location
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Detail Modal (Appears after Location is Confirmed) -->
+    <div id="memoryDetailModal"
+        class="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4"
+        style="transition: opacity 0.3s">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            style="animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1)">
+
+            <!-- Header -->
+            <div class="px-6 pt-6 pb-4 text-center relative">
+                <div class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <span class="material-symbols-outlined text-rose-500 text-3xl">photo_camera</span>
+                </div>
+                <h3 class="font-bold text-gray-900 text-lg">Sempurnakan Kenanganmu 💕</h3>
+                <p class="text-xs text-gray-400 mt-1">Tambahkan foto & cerita untuk tempat ini</p>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto px-6 pb-4 space-y-5">
+
+                <!-- Photo Upload -->
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">📸 Foto
+                        Kenangan</label>
+                    <div id="memoryPhotoArea"
+                        class="relative w-full h-48 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-rose-300 hover:bg-rose-50/30 transition-all group overflow-hidden">
+                        <img id="memoryPhotoPreview" src="" alt=""
+                            class="absolute inset-0 w-full h-full object-cover rounded-2xl hidden">
+                        <div id="memoryPhotoPlaceholder" class="text-center">
+                            <span
+                                class="material-symbols-outlined text-4xl text-gray-300 group-hover:text-rose-400 transition-colors">add_a_photo</span>
+                            <p class="text-xs text-gray-400 mt-2 font-bold">Klik untuk pilih foto</p>
+                            <p class="text-[10px] text-gray-300">atau biarkan kosong</p>
+                        </div>
+                        <input type="file" id="memoryPhotoInput" accept="image/*" class="hidden">
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">✏️ Judul
+                        Kenangan</label>
+                    <input type="text" id="memoryTitle"
+                        class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm font-bold outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all placeholder:text-gray-300"
+                        placeholder="contoh: Kencan Pertama Kita">
+                </div>
+
+                <!-- Story -->
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">💬 Ceritakan
+                        Momennya</label>
+                    <textarea id="memoryStory" rows="3"
+                        class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all resize-none placeholder:text-gray-300"
+                        placeholder="Waktu itu kita pesen kopi tapi tumpah..."></textarea>
+                </div>
+
+                <!-- Date -->
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">📅
+                        Tanggal</label>
+                    <input type="date" id="memoryDate"
+                        class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all">
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="px-6 py-5 border-t border-gray-100 flex gap-3">
+                <button onclick="Editor.MapPicker.skipMemoryDetail()"
+                    class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition-all">
+                    Lewati, Nanti Saja
+                </button>
+                <button onclick="Editor.MapPicker.saveMemoryDetail()"
+                    class="flex-1 py-3.5 rounded-xl bg-rose-500 text-white font-bold text-sm hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-lg">bookmark_added</span>
+                    Simpan ke Peta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <!-- Consolidated Love Quiz Manager -->
+    <div id="quizPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col scale-in">
+
+            <!-- Header: Simple & Large -->
+            <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
+                <div class="flex items-center gap-5">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-rose-400 to-pink-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-rose-200">
+                        <span class="material-symbols-outlined text-3xl">favorite</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-gray-900 text-2xl tracking-tight">Pembuat Kuis Cinta</h3>
+                        <p class="text-sm text-gray-500 font-medium">Buat tantangan romantis untuk orang tersayang</p>
+                    </div>
+                </div>
+                <button onclick="Editor.QuizEditor.close()"
+                    class="p-3 hover:bg-rose-50 rounded-full text-gray-400 hover:text-rose-600 transition-all active:scale-90">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- 1. LEFT: Question Bank (Inspiration) -->
+                <div class="w-1/3 flex flex-col border-r border-gray-100 bg-gray-50/50">
+                    <div class="p-6 pb-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4
+                                class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">lightbulb</span> Ide Pertanyaan
+                            </h4>
+                        </div>
+
+                    </div>
+                    <div id="modal-quiz-library" class="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
+                        <!-- Presets injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. MIDDLE: Quiz Flow (Active Questions) -->
+                <div class="w-1/3 flex flex-col border-r border-gray-100 bg-white">
+                    <div class="p-6 border-b border-gray-50 flex items-center justify-between">
+                        <h4 class="text-[11px] font-bold text-gray-450 uppercase tracking-[0.15em]">Daftar Kuis Kamu
+                        </h4>
+                        <div class="flex items-center gap-2">
+                            <span id="modal-quiz-count"
+                                class="bg-rose-500 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold">0</span>
+                        </div>
+                    </div>
+
+                    <!-- NEW: Add Custom Button moved here -->
+                    <div class="px-6 pt-4">
+                        <button id="quiz-add-custom-btn"
+                            class="w-full bg-rose-50 border-2 border-dashed border-rose-200 p-3 rounded-2xl text-rose-500 font-bold text-[13px] hover:border-rose-400 hover:bg-rose-100/50 transition-all flex items-center justify-center gap-2 group">
+                            <span
+                                class="material-symbols-outlined group-hover:rotate-90 transition-transform text-lg">add_circle</span>
+                            Tulis Pertanyaan Sendiri
+                        </button>
+                    </div>
+                    <div id="modal-quiz-active-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+                        <!-- Active questions injected via JS -->
+                    </div>
+                    <div class="p-6 bg-rose-50/30 border-t border-rose-100">
+                        <button id="quiz-save-btn"
+                            class="w-full bg-rose-600 text-white py-4 rounded-[1.25rem] font-bold text-sm hover:bg-rose-700 transition-all shadow-xl shadow-rose-200 flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
+                            Simpan & Update ke HP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. RIGHT: Intuitive Editor Panel -->
+                <div class="w-1/3 flex flex-col bg-gray-50/30 relative">
+                    <div id="quiz-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center text-gray-200 mb-6 border border-gray-100">
+                            <span class="material-symbols-outlined text-4xl">edit_note</span>
+                        </div>
+                        <h5 class="font-bold text-gray-400 text-lg mb-2">Panel Edit</h5>
+                        <p class="text-sm text-gray-400">Pilih pertanyaan dari daftar di tengah untuk mengedit di sini.
+                        </p>
+                    </div>
+
+                    <div id="quiz-editor-panel" class="hidden h-full flex flex-col animate-slideInRight">
+                        <div class="p-6 border-b border-gray-100 bg-white">
+                            <h4 class="text-[11px] font-black text-rose-500 uppercase tracking-widest mb-1">Sedang
+                                Mengedit
+                            </h4>
+                            <p class="text-xs text-gray-400 italic">Ubah detail pertanyaan yang kamu pilih</p>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 space-y-8" id="question-editor-form">
+                            <!-- Better labels and inputs injected here -->
+                        </div>
+
+                        <div class="p-6 bg-white border-t border-gray-100 grid grid-cols-2 gap-4">
+                            <button onclick="Editor.QuizEditor.closeEditorPanel()"
+                                class="py-3.5 rounded-2xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100 transition-all">
+                                Batal
+                            </button>
+                            <button id="question-update-confirm-btn"
+                                class="py-3.5 rounded-2xl bg-rose-500 text-white font-bold text-sm hover:bg-rose-600 transition-all shadow-lg shadow-rose-200">
+                                Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Separate Modal removed -->
+    <style>
+        .scale-in {
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .animate-slideInRight {
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+        }
+    </style>
+
+    <!-- Music Manager Modal (Redesigned) -->
+    <div id="musicPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col scale-in">
+
+            <!-- Modal Header -->
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-rose-100 ring-4 ring-rose-50">
+                        <span class="material-symbols-outlined text-3xl">library_music</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Soundtrack Cinta Kita</h3>
+                        <p class="text-sm text-gray-400 font-medium">Atur lagu-lagu romantis yang akan diputar di
+                            website
+                            kamu</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="window.Editor.MusicEditor.saveToCloud()"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">cloud_done</span>
+                        Simpan & Update Preview
+                    </button>
+                    <button onclick="Editor.MusicEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden bg-gray-50/30">
+                <!-- Tab Sidebar -->
+                <div class="w-72 bg-white border-r border-gray-100 p-6 flex flex-col">
+                    <div id="modal-music-sidebar" class="flex-1">
+                        <!-- Menu items injected here -->
+                    </div>
+
+                    <!-- Help Box -->
+                    <div class="mt-auto p-5 bg-blue-50/50 rounded-3xl border border-blue-100/50">
+                        <div class="flex items-center gap-2 text-blue-500 mb-2">
+                            <span class="material-symbols-outlined text-lg">lightbulb</span>
+                            <span class="text-[11px] font-black uppercase tracking-widest">Tips</span>
+                        </div>
+                        <p class="text-[11px] text-blue-600/80 leading-relaxed font-medium">
+                            Gunakan lagu yang familiar agar suasana makin romantis. Hubungkan MP3 kamu via
+                            Dropbox/Worker.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Middle: List Area -->
+                <div class="w-96 overflow-y-auto p-10 bg-white border-r border-gray-100">
+                    <div id="modal-music-list-header">
+                        <!-- Header list injected here -->
+                    </div>
+                    <div id="modal-music-active-list" class="space-y-4">
+                        <!-- List injected here -->
+                    </div>
+                </div>
+
+                <!-- Right: Content Editor Area -->
+                <div class="flex-1 overflow-y-auto bg-gray-50/50 relative">
+                    <div id="music-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+                            <span class="material-symbols-outlined text-gray-200 text-5xl">music_note</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Pilih Lagu untuk Diedit</h4>
+                        <p class="text-gray-400 max-w-xs mx-auto text-sm leading-relaxed">
+                            Klik pada salah satu lagu di daftar samping untuk mulai mengubah cover, judul, artis, hingga
+                            tambah lirik lagu.
+                        </p>
+                    </div>
+
+                    <div id="music-editor-panel" class="hidden h-full flex flex-col">
+                        <div class="flex-1 p-10">
+                            <div id="music-editor-form" class="max-w-xl mx-auto">
+                                <!-- Form injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Sticky Bottom Bar for Editor -->
+                        <div
+                            class="p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center gap-4 sticky bottom-0 z-10">
+                            <button onclick="window.Editor.MusicEditor.confirmEdit()"
+                                class="bg-rose-500 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-rose-600 transition-all shadow-xl shadow-rose-200 flex items-center gap-3 active:scale-95">
+                                <span class="material-symbols-outlined text-xl">check_circle</span>
+                                Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wrapped (Vibe) Editor Modal -->
+    <div id="wrappedPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col scale-in">
+
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
+                <div class="flex items-center gap-5">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
+                        <span class="material-symbols-outlined text-3xl">auto_awesome</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-gray-900 text-2xl tracking-tight">Recap Momen Kita</h3>
+                        <p class="text-sm text-gray-500 font-medium">Atur statistik dan momen terbaik perjalanan cinta
+                            kita</p>
+                    </div>
+                </div>
+                <button onclick="Editor.WrappedEditor.close()"
+                    class="p-3 hover:bg-rose-50 rounded-full text-gray-400 hover:text-rose-600 transition-all active:scale-90">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- 1. LEFT: Vibe Presets -->
+                <div class="w-1/3 flex flex-col border-r border-gray-100 bg-gray-50/50">
+                    <div class="p-6 pb-2">
+                        <h4
+                            class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
+                            <span class="material-symbols-outlined text-sm">tips_and_updates</span> Ide Vibe Kita
+                        </h4>
+                    </div>
+                    <div id="modal-wrapped-library" class="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
+                        <!-- Presets injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. MIDDLE: Active Sections -->
+                <div class="w-1/3 flex flex-col border-r border-gray-100 bg-white">
+                    <div class="p-6 border-b border-gray-50 flex items-center justify-between">
+                        <h4 class="text-[11px] font-bold text-gray-450 uppercase tracking-[0.15em]">Isi Wrapped Kamu
+                        </h4>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="bg-indigo-500 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold">LIVE</span>
+                        </div>
+                    </div>
+
+                    <div id="modal-wrapped-active-list" class="flex-1 overflow-y-auto p-6 space-y-6">
+                        <!-- Sections: Stats, Places, Memories -->
+                    </div>
+
+                    <div class="p-6 bg-indigo-50/30 border-t border-indigo-100">
+                        <button id="wrapped-save-btn"
+                            class="w-full bg-indigo-600 text-white py-4 rounded-[1.25rem] font-bold text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
+                            Simpan & Update ke HP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. RIGHT: Editor Panel -->
+                <div class="w-1/3 flex flex-col bg-gray-50/30 relative">
+                    <div id="wrapped-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center text-gray-200 mb-6 border border-gray-100">
+                            <span class="material-symbols-outlined text-4xl">edit_note</span>
+                        </div>
+                        <h5 class="font-bold text-gray-400 text-lg mb-2">Panel Edit</h5>
+                        <p class="text-sm text-gray-400">Pilih bagian dari daftar di tengah untuk mulai mengedit.</p>
+                    </div>
+
+                    <div id="wrapped-editor-panel" class="hidden h-full flex flex-col animate-slideInRight">
+                        <div class="p-6 border-b border-gray-100 bg-white">
+                            <h4 class="text-[11px] font-black text-indigo-500 uppercase tracking-widest mb-1">Sedang
+                                Mengedit</h4>
+                            <p class="text-xs text-gray-400 italic">Personalisasikan detail recap kamu</p>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 space-y-8" id="wrapped-editor-form">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <div class="p-6 bg-white border-t border-gray-100 grid grid-cols-2 gap-4">
+                            <button onclick="Editor.WrappedEditor.closeEditorPanel()"
+                                class="py-3.5 rounded-2xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100 transition-all">
+                                Batal
+                            </button>
+                            <button id="wrapped-update-confirm-btn"
+                                class="py-3.5 rounded-2xl bg-indigo-500 text-white font-bold text-sm hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">
+                                Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Gallery Manager Modal -->
+    <div id="galleryPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col scale-in">
+
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
+                <div class="flex items-center gap-5">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-100">
+                        <span class="material-symbols-outlined text-3xl">photo_library</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-gray-900 text-2xl tracking-tight">Galeri Momen Kita</h3>
+                        <p class="text-sm text-gray-500 font-medium">Abadikan dan susun kepingan kenangan terindahmu</p>
+                    </div>
+                </div>
+                <button onclick="Editor.GalleryEditor.close()"
+                    class="p-3 hover:bg-amber-50 rounded-full text-gray-400 hover:text-amber-600 transition-all active:scale-90">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- 1. LEFT: Ideas / Presets -->
+                <div class="w-1/3 flex flex-col border-r border-gray-100 bg-gray-50/50">
+                    <div class="p-6 pb-2">
+                        <h4
+                            class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
+                            <span class="material-symbols-outlined text-sm">auto_stories</span> Ide Caption Momen
+                        </h4>
+                    </div>
+                    <div id="modal-gallery-library" class="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
+                        <!-- Presets injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. MIDDLE: Active Memories List -->
+                <div class="w-1/3 flex flex-col border-r border-gray-100 bg-white">
+                    <div class="p-6 border-b border-gray-50 flex items-center justify-between">
+                        <h4 class="text-[11px] font-bold text-gray-450 uppercase tracking-[0.15em]">Daftar Foto Kamu
+                        </h4>
+                        <div class="flex items-center gap-2">
+                            <span id="modal-gallery-count"
+                                class="bg-amber-500 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold">0</span>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pt-4">
+                        <button id="gallery-add-custom-btn"
+                            class="w-full bg-amber-50 border-2 border-dashed border-amber-200 p-3 rounded-2xl text-amber-600 font-bold text-[13px] hover:border-amber-400 hover:bg-amber-100/50 transition-all flex items-center justify-center gap-2 group">
+                            <span
+                                class="material-symbols-outlined group-hover:rotate-90 transition-transform text-lg">add_a_photo</span>
+                            Tambah Foto Baru
+                        </button>
+                    </div>
+
+                    <div id="modal-gallery-active-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+                        <!-- Memories list injected via JS -->
+                    </div>
+
+                    <div class="p-6 bg-amber-50/30 border-t border-amber-100">
+                        <button id="gallery-save-btn"
+                            class="w-full bg-amber-600 text-white py-4 rounded-[1.25rem] font-bold text-sm hover:bg-amber-700 transition-all shadow-xl shadow-amber-100 flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
+                            Simpan & Update ke HP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. RIGHT: Editor Panel -->
+                <div class="w-1/3 flex flex-col bg-gray-50/30 relative">
+                    <div id="gallery-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center text-gray-200 mb-6 border border-gray-100">
+                            <span class="material-symbols-outlined text-4xl">photo_camera</span>
+                        </div>
+                        <h5 class="font-bold text-gray-400 text-lg mb-2">Panel Edit Foto</h5>
+                        <p class="text-sm text-gray-400">Pilih foto dari daftar di tengah untuk mengganti gambar atau
+                            catatan rahasianya.</p>
+                    </div>
+
+                    <div id="gallery-editor-panel" class="hidden h-full flex flex-col animate-slideInRight">
+                        <div class="p-6 border-b border-gray-100 bg-white">
+                            <h4 class="text-[11px] font-black text-amber-500 uppercase tracking-widest mb-1">Sedang
+                                Mengedit</h4>
+                            <p class="text-xs text-gray-400 italic">Personalisaikan detail memori ini</p>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 space-y-8" id="gallery-editor-form">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <div class="p-6 bg-white border-t border-gray-100 grid grid-cols-2 gap-4">
+                            <button onclick="window.Editor.GalleryEditor.closeEditorPanel()"
+                                class="py-3.5 rounded-2xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100 transition-all">
+                                Batal
+                            </button>
+                            <button id="gallery-update-confirm-btn"
+                                class="py-3.5 rounded-2xl bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 transition-all shadow-lg shadow-amber-100">
+                                Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Valentine Invitation Manager Modal -->
+    <div id="invitationPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-2xl max-h-[90vh] rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col scale-in border border-white/20">
+
+            <!-- Header -->
+            <div class="px-10 py-8 border-b border-gray-100 flex items-center justify-between bg-white relative">
+                <div
+                    class="absolute top-0 left-10 right-10 h-1 bg-gradient-to-r from-transparent via-rose-200 to-transparent">
+                </div>
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-rose-400 to-rose-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-rose-200">
+                        <span class="material-symbols-outlined text-3xl">auto_awesome</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-gray-900 text-2xl tracking-tight">Invitation Editor</h3>
+                        <p class="text-sm text-gray-500 font-medium tracking-wide">Desain undangan Valentine spesialmu
+                        </p>
+                    </div>
+                </div>
+                <button onclick="Editor.InvitationEditor.close()"
+                    class="p-4 hover:bg-rose-50 rounded-full text-gray-300 hover:text-rose-600 transition-all active:scale-90 bg-gray-50">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto bg-gray-50/30 p-6" id="invitation-editor-container">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Footer -->
+            <div class="px-10 py-6 bg-white border-t border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-rose-400">
+                    <span class="material-symbols-outlined text-sm">favorite_heart</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Love Invitation</span>
+                </div>
+                <button id="invitation-save-btn"
+                    class="bg-rose-500 text-white px-10 py-4 rounded-2xl font-bold text-sm hover:bg-rose-600 transition-all shadow-2xl shadow-rose-200 flex items-center gap-3 active:scale-95 group">
+                    <span
+                        class="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">check_circle</span>
+                    Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Love Letter Manager Modal -->
+    <div id="letterPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-5xl h-[85vh] max-h-[800px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col scale-in">
+
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
+                <div class="flex items-center gap-5">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-rose-200">
+                        <span class="material-symbols-outlined text-3xl">history_edu</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-gray-900 text-2xl tracking-tight">Love Letter Editor</h3>
+                        <p class="text-sm text-gray-500 font-medium">Tuliskan pesan terdalammu untuknya</p>
+                    </div>
+                </div>
+                <button onclick="Editor.LetterEditor.close()"
+                    class="p-3 hover:bg-rose-50 rounded-full text-gray-400 hover:text-rose-600 transition-all active:scale-90">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- 1. LEFT: Categories -->
+                <div class="w-64 flex flex-col border-r border-gray-100 bg-gray-50/50">
+                    <div class="p-6 pb-2">
+                        <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Bagian Surat
+                        </h4>
+                    </div>
+                    <div id="modal-letter-sidebar" class="flex-1 overflow-y-auto px-4 pb-6 space-y-1">
+                        <!-- Navigation items injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. RIGHT: Editor Form -->
+                <div class="flex-1 flex flex-col bg-white relative">
+                    <div class="flex-1 overflow-y-auto p-10" id="letter-editor-container">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <div class="p-8 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                        <p class="text-[11px] text-gray-400 italic">💌 Kata-kata ini akan dikenang selamanya...</p>
+                        <div class="flex items-center gap-3">
+                            <button id="letter-save-btn"
+                                class="bg-rose-500 text-white px-8 py-3.5 rounded-2xl font-bold text-sm hover:bg-rose-600 transition-all shadow-xl shadow-rose-100 flex items-center gap-2 active:scale-95">
+                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Infinity Scroll Content Manager Modal -->
+    <div id="infinityPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col scale-in">
+
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
+                <div class="flex items-center gap-5">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-rose-100">
+                        <span class="material-symbols-outlined text-3xl">all_inclusive</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-gray-900 text-2xl tracking-tight">Infinity Reason Manager
+                        </h3>
+                        <p class="text-sm text-gray-500 font-medium">Kelola ribuan alasan kenapa kamu mencintainya</p>
+                    </div>
+                </div>
+                <button onclick="Editor.InfinityEditor.close()"
+                    class="p-3 hover:bg-rose-50 rounded-full text-gray-400 hover:text-rose-600 transition-all active:scale-90">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- 1. LEFT: Categories Sidebar -->
+                <div class="w-64 flex flex-col border-r border-gray-100 bg-gray-50/50">
+                    <div class="p-6 pb-2">
+                        <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Kategori Konten
+                        </h4>
+                    </div>
+                    <div id="modal-infinity-sidebar" class="flex-1 overflow-y-auto px-4 pb-6 space-y-1">
+                        <!-- Navigation items injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. MIDDLE: Active Items List -->
+                <div
+                    class="w-1/3 flex flex-col border-r border-gray-100 bg-white shadow-[10px_0_15px_-5px_rgba(0,0,0,0.02)] z-10">
+                    <div id="modal-infinity-list-header"
+                        class="p-6 border-b border-gray-50 flex items-center justify-between">
+                        <!-- Title and Add button injected via JS -->
+                    </div>
+
+                    <div id="modal-infinity-active-list" class="flex-1 overflow-y-auto p-6 space-y-6">
+                        <!-- List of items injected via JS -->
+                    </div>
+
+                    <div class="p-6 bg-rose-50/30 border-t border-rose-100">
+                        <button id="infinity-save-btn"
+                            class="w-full bg-rose-600 text-white py-4 rounded-[1.25rem] font-bold text-sm hover:bg-rose-700 transition-all shadow-xl shadow-rose-100 flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
+                            Simpan & Update ke HP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. RIGHT: Editor Panel -->
+                <div class="flex-1 flex flex-col bg-gray-50/30 relative">
+                    <div id="infinity-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center text-gray-200 mb-6 border border-gray-100">
+                            <span class="material-symbols-outlined text-4xl">edit_note</span>
+                        </div>
+                        <h5 class="font-bold text-gray-400 text-lg mb-2">Panel Edit Alasan</h5>
+                        <p class="text-sm text-gray-400">Pilih salah satu item di kolom tengah untuk mulai mengubah
+                            isinya.</p>
+                    </div>
+
+                    <div id="infinity-editor-panel" class="hidden h-full flex flex-col animate-slideInRight">
+                        <div class="p-6 border-b border-gray-100 bg-white">
+                            <h4 class="text-[11px] font-black text-rose-500 uppercase tracking-widest mb-1">Editor
+                                Detail</h4>
+                            <p class="text-xs text-gray-400 italic">Personalisasikan konten tak terhingga kamu</p>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 space-y-8" id="infinity-editor-form">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <div class="p-6 bg-white border-t border-gray-100 grid grid-cols-2 gap-4">
+                            <button onclick="window.Editor.InfinityEditor.closeEditorPanel()"
+                                class="py-3.5 rounded-2xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100 transition-all">
+                                Batal
+                            </button>
+                            <button id="infinity-update-confirm-btn"
+                                class="py-3.5 rounded-2xl bg-rose-500 text-white font-bold text-sm hover:bg-rose-600 transition-all shadow-lg shadow-rose-100">
+                                Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../data.js"></script>
+    <script src="studio-state.js"></script>
+    <script src="editor-ux.js"></script>
+    <script src="quiz-editor.js"></script>
+    <script src="wrapped-editor.js"></script>
+    <script src="gallery-editor.js"></script>
+    <script src="infinity-editor.js"></script>
+    <script src="letter-editor.js"></script>
+    <script src="invitation-editor.js"></script>
+    <script src="music-editor.js"></script>
+    <script src="password-editor.js"></script>
+    <script src="editor.js"></script>
+
+    <!-- Password Editor Modal -->
+    <div id="passwordPickerModal"
+        class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-scale-in">
+            <div class="p-8 text-center">
+                <div
+                    class="w-16 h-16 bg-rose-100 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                    <span class="material-symbols-outlined">lock_reset</span>
+                </div>
+                <h3 class="font-bold text-gray-900 text-xl mb-2">Ganti Password Login</h3>
+                <p class="text-sm text-gray-500 mb-6">Password ini dipakai pasanganmu untuk membuka website.</p>
+
+                <input type="text" id="password-editor-input"
+                    class="w-full px-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-center text-lg font-bold outline-none focus:border-rose-300 focus:bg-white transition-all placeholder:text-gray-300 mb-6"
+                    placeholder="Masukkan Password Baru">
+
+                <div class="flex gap-3">
+                    <button onclick="window.Editor.PasswordEditor.close()"
+                        class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-500 font-bold hover:bg-gray-200 transition-colors">
+                        Batal
+                    </button>
+                    <button id="password-save-btn" onclick="window.Editor.PasswordEditor.save()"
+                        class="flex-1 py-3.5 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">save</span>
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

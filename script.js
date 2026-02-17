@@ -1,77 +1,69 @@
 // ============================================================
-// 🔧 FIXED: Core Architecture - Reactive CONFIG System
+// 🔧 FIXED: Core Architecture - Simple & Robust Config
 // ============================================================
-// This fix prevents "Cannot redefine property: CONFIG" error
-// when data.js already declares "const CONFIG = { ... }"
 
-// Store original CONFIG if it exists (from data.js)
-const ORIGINAL_CONFIG = typeof CONFIG !== 'undefined' ? { ...CONFIG } : {};
-console.log('[BOOT] Script loaded. ORIGINAL_CONFIG keys:', Object.keys(ORIGINAL_CONFIG));
-console.log('[BOOT] window.CONFIG exists:', typeof window.CONFIG !== 'undefined');
-console.log('[BOOT] typeof CONFIG:', typeof CONFIG);
+// 1. Emergency Failsafe: Hide loader if stuck
+setTimeout(() => {
+    const loader = document.getElementById('config-loader');
+    if (loader && !loader.classList.contains('hidden')) {
+        console.warn('[Failsafe] Loader timeout - forcing hide.');
+        loader.classList.add('fade-out');
+        setTimeout(() => loader.remove(), 500);
+    }
+}, 8000);
 
-// Create reactive storage for CONFIG updates
-if (!window._CONFIG_DATA) {
-    window._CONFIG_DATA = null;
+// Store original CONFIG safely
+const ORIG_OBJ = typeof CONFIG !== 'undefined' ? CONFIG : (window.CONFIG || {});
+const ORIGINAL_CONFIG = JSON.parse(JSON.stringify(ORIG_OBJ));
+
+// 2. Ensure CONFIG exists safely
+if (typeof window.CONFIG === 'undefined' && typeof CONFIG !== 'undefined') {
+    window.CONFIG = CONFIG;
+}
+if (!window.CONFIG) {
+    window.CONFIG = {};
+    console.warn('[BOOT] CONFIG was missing, initialized empty object.');
 }
 
-/**
- * Safe getter for CONFIG - works regardless of property definition
- * Priority: _CONFIG_DATA (from API) > window.CONFIG (from data.js) > ORIGINAL_CONFIG (backup)
- */
+// 3. Simple Safe Getter
 function safeGetConfig() {
-    // Priority: _CONFIG_DATA (from API) > window.CONFIG (from data.js) > ORIGINAL_CONFIG (backup)
-    const current = window._CONFIG_DATA || window.CONFIG || ORIGINAL_CONFIG;
-
-    // Ensure we always return an object even if all sources are null
-    const result = current && typeof current === 'object' ? current : {};
-
-    // Debug logging only if keys found or special debug flag set
-    // console.log('[safeGetConfig] Returning config with keys:', Object.keys(result).length);
-    return result;
+    return window.CONFIG || {};
 }
 
-/**
- * Safe setter for CONFIG - updates internal storage and dispatches events
- */
-function safeSetConfig(value) {
-    if (!value || typeof value !== 'object') {
-        console.warn('[CONFIG] ⚠️ Attempted to set invalid config:', value);
-        return;
-    }
+// 4. Safe Setter (updates window.CONFIG and dispatches event)
+function safeSetConfig(newConfig) {
+    if (!newConfig) return;
 
-    window._CONFIG_DATA = value;
-
-    // Attempt to keep window.CONFIG in sync for iframes and legacy scripts
+    // Update global reference
     try {
-        // We set it as a property if possible (works if window.CONFIG was let/var or property)
-        window.CONFIG = value;
+        // If CONFIG is a const from data.js, this might throw in strict mode, but we try anyway
+        // or we just update properties if it's an object
+        if (window.CONFIG && typeof window.CONFIG === 'object') {
+            Object.assign(window.CONFIG, newConfig);
+        } else {
+            window.CONFIG = newConfig;
+        }
     } catch (e) {
-        // Expected if 'const CONFIG' exists in data.js
-        console.log('[CONFIG] ℹ️ Stale const CONFIG detected, updates will use safeGetConfig()');
+        console.warn('[Config] Could not reassign window.CONFIG (likely const), patching properties instead.');
+        if (window.CONFIG && typeof window.CONFIG === 'object') {
+            Object.assign(window.CONFIG, newConfig);
+        }
     }
 
-    console.log('[CONFIG] ✅ Global CONFIG updated reactively (Keys:', Object.keys(value).length, ')');
-
-    // Dispatch custom event for reactivity
-    if (typeof CustomEvent !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('config-updated', {
-            detail: { config: value }
-        }));
-    }
+    // Trigger update event
+    window.dispatchEvent(new CustomEvent('config-updated', { detail: { config: newConfig } }));
 }
 
-// Initialize with original CONFIG if available
-if (ORIGINAL_CONFIG && Object.keys(ORIGINAL_CONFIG).length > 0) {
-    console.log('[CONFIG] Initializing with ORIGINAL_CONFIG from data.js');
-    safeSetConfig(ORIGINAL_CONFIG);
-} else {
-    console.warn('[CONFIG] ORIGINAL_CONFIG is empty at boot time!');
-    // Try to get from window.CONFIG directly (might be available even if const wasn't captured)
-    if (typeof window.CONFIG !== 'undefined' && window.CONFIG && Object.keys(window.CONFIG).length > 0) {
-        console.log('[CONFIG] Found window.CONFIG, using that instead');
-        safeSetConfig(window.CONFIG);
+// 5. Helper: Deep Merge (Only used when explicitly needed, not on every get)
+function deepMerge(target, source) {
+    if (!source) return target;
+    for (const key of Object.keys(source)) {
+        if (source[key] instanceof Object && key in target) {
+            Object.assign(source[key], deepMerge(target[key], source[key]));
+        }
     }
+    Object.assign(target || {}, source);
+    return target;
 }
 
 let isNavigating = false;
@@ -168,6 +160,13 @@ async function loadConfig() {
         if (!localConfig || Object.keys(localConfig).length === 0) {
             console.error('[Config] ❌ CRITICAL: Local config is empty!');
             console.error('[Config] ORIGINAL_CONFIG keys:', Object.keys(ORIGINAL_CONFIG).length);
+        }
+        // Check for local dev password override
+        const localPwd = localStorage.getItem('valentine_local_dev_password');
+        if (localPwd) {
+            console.log('[Config] Applying local dev password override:', localPwd);
+            if (!localConfig.login) localConfig.login = {};
+            localConfig.login.password = localPwd;
         }
         return localConfig;
     }
@@ -387,6 +386,14 @@ function startApp() {
     // Create local CONFIG reference for this function
     const CONFIG = activeConfig;
 
+    // LOCAL DEV BRIDGE: If user set password in editor but uses local file://, override it here
+    const localDevPwd = localStorage.getItem('valentine_local_dev_password');
+    if (localDevPwd && !getCustomerId()) {
+        console.log('[Dev] Overriding local password with Editor value:', localDevPwd);
+        if (!CONFIG.login) CONFIG.login = {};
+        CONFIG.login.password = localDevPwd;
+    }
+
     updateSEO();
     applyTheme();
     initParticles();
@@ -407,7 +414,6 @@ function startApp() {
 
     loadDynamicContent();
     initLogin();
-    initCountdown();
 
     // ✅ DEBUG: Check music before init
     console.log('[App] Music config before initMusicPlayer:', {
@@ -480,6 +486,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewMode = getPreviewMode();
     if (previewMode) {
         console.log(`[App] Running in preview mode: ${previewMode}`);
+
+        // 🟢 SET EDITOR MODE FLAG
+        if (previewMode === 'studio') {
+            window.isEditorMode = true;
+            console.log('[App] Visual Editor Mode Enabled');
+        }
+
         // In preview mode, use local CONFIG directly (for admin panel live preview)
         if (typeof CONFIG !== 'undefined') {
             safeSetConfig(CONFIG);
@@ -499,19 +512,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newConfig = event.data.config;
                 console.log("[Preview] UPDATE_CONFIG received");
 
-                // Shallow merge
+                // Get current config safely
+                const currentConfig = safeGetConfig();
+
+                // Shallow merge into a NEW object
+                const mergedConfig = { ...currentConfig };
                 for (let key in newConfig) {
                     if (typeof newConfig[key] === 'object' && newConfig[key] !== null && !Array.isArray(newConfig[key])) {
-                        CONFIG[key] = { ...CONFIG[key], ...newConfig[key] };
+                        mergedConfig[key] = { ...mergedConfig[key], ...newConfig[key] };
                     } else {
-                        CONFIG[key] = newConfig[key];
+                        mergedConfig[key] = newConfig[key];
                     }
                 }
 
-                // ✅ CRITICAL: Persist to storage so safeGetConfig() sees the update
-                if (typeof safeSetConfig === 'function') {
-                    safeSetConfig(CONFIG);
-                }
+                // Update global state safely
+                safeSetConfig(mergedConfig);
 
                 // Clear music cache when music changes
                 if (newConfig.music) {
@@ -541,14 +556,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (pageId === 'page-6' && typeof loadGallery === 'function') loadGallery();
                     if (pageId === 'page-7' && typeof initMap === 'function') initMap();
                     if (pageId === 'page-8' && typeof resetLetterPage === 'function') resetLetterPage();
-                    if (pageId === 'page-10') {
-                        const iframe = document.getElementById('infinity-frame');
-                        if (iframe) iframe.contentWindow.location.reload();
-                    }
-                    if (pageId === 'page-11') {
-                        const iframe = document.getElementById('invitation-frame');
-                        if (iframe) iframe.contentWindow.location.reload();
-                    }
+                    // 🛑 REMOVED: Automatic iframe reloads for page-10 and page-11
+                    // These iframes handle their own live updates via postMessage, 
+                    // so reloading them only causes race conditions and resets user input.
                 }
             } catch (err) {
                 console.error("[Preview] Update failed:", err);
@@ -572,6 +582,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         iframe.contentWindow.location.reload();
                     }
                 }
+            }
+        }
+
+        // Handle REINIT_MAP from Studio Editor
+        if (event.data && event.data.type === 'REINIT_MAP') {
+            const index = event.data.index;
+            console.log(`[Preview] REINIT_MAP received for index ${index}, re-initializing map...`);
+            if (typeof initMap === 'function') {
+                setTimeout(() => initMap(index), 200);
             }
         }
 
@@ -690,6 +709,26 @@ function updateSEO() {
     if (ogImage) ogImage.setAttribute('content', image);
 
     // Update Twitter
+    // Helper for Deep Merge
+    const deepMerge = (target, source) => {
+        if (!source) return target;
+        const output = { ...target };
+        if (target && typeof target === 'object' && source && typeof source === 'object') {
+            Object.keys(source).forEach(key => {
+                if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                    if (!(key in target)) {
+                        Object.assign(output, { [key]: source[key] });
+                    } else {
+                        output[key] = deepMerge(target[key], source[key]);
+                    }
+                } else {
+                    Object.assign(output, { [key]: source[key] });
+                }
+            });
+        }
+        return output;
+    };
+
     const twTitle = document.querySelector('meta[name="twitter:title"]');
     if (twTitle) twTitle.setAttribute('content', title);
 
@@ -832,6 +871,9 @@ function MapsTo(fromId, toId, force = false) {
         currentPageId = toId; // Update global state immediately
         updatePageIndicator(toId);
 
+        // 🔄 SYNC EDITOR: Notify parent about page change
+        window.parent.postMessage({ type: 'PAGE_CHANGED', pageId: toId }, '*');
+
         // Start Animation
         fromPage.classList.add('page-flip-exit');
         toPage.classList.remove('hidden');
@@ -878,7 +920,12 @@ function MapsTo(fromId, toId, force = false) {
         }
 
         // Page-Specific Logic
-        if (toId === 'page-4') {
+        if (toId === 'page-5') {
+            console.log('[Nav] Entering Quiz page, initializing...');
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            loadQuiz();
+        } else if (toId === 'page-4') {
             const printerComp = document.getElementById('printer-comp');
             const printerDevice = document.getElementById('printer-device');
             const printerLed = document.getElementById('printer-led');
@@ -1123,23 +1170,23 @@ function handleSwipe() {
 
 // Dynamic Content Loader
 function loadDynamicContent() {
-    // ✅ FIX: Use window.CONFIG explicitly to avoid shadowing
     const CONFIG = safeGetConfig();
-
-    console.log('[LoadContent] Starting with CONFIG:', {
-        configExists: !!CONFIG,
-        configIsObject: typeof CONFIG === 'object',
-        hasLogin: !!(CONFIG && CONFIG.login),
-        hasGreeting: !!(CONFIG && CONFIG.greeting),
-        hasMusic: !!(CONFIG && CONFIG.music && CONFIG.music.length),
-        hasGallery: !!(CONFIG && CONFIG.gallery && CONFIG.gallery.memories),
-        hasWrapped: !!(CONFIG && CONFIG.wrapped)
-    });
+    const isEditor = window.isEditorMode || (window.parent && window.parent.isEditorMode);
 
     if (!CONFIG) {
         console.error('[LoadContent] ❌ CONFIG is undefined! Cannot load content.');
         return;
     }
+
+    // Helper: Prevent overwriting what user is currently typing
+    const safeUpdate = (el, text) => {
+        if (!el) return;
+        if (text === undefined) return;
+        if (isEditor && document.activeElement === el) return;
+        if (el.textContent !== text) {
+            el.textContent = text;
+        }
+    };
 
     // Page 1: Login
     const p1Subtitle = document.getElementById('p1-subtitle');
@@ -1148,139 +1195,85 @@ function loadDynamicContent() {
     const loginInput = document.getElementById('login-input');
 
     if (CONFIG.login) {
-        if (p1Subtitle) {
-            p1Subtitle.textContent = CONFIG.login.collectionText;
-            console.log('[LoadContent] Updated p1-subtitle:', CONFIG.login.collectionText);
-        }
-        if (p1Title) {
-            p1Title.textContent = CONFIG.login.title;
-            console.log('[LoadContent] Updated p1-title:', CONFIG.login.title);
-        }
-        if (p1Instruction) {
-            p1Instruction.textContent = CONFIG.login.instruction;
-        }
-        if (loginInput) {
+        safeUpdate(p1Subtitle, CONFIG.login.collectionText);
+        safeUpdate(p1Title, CONFIG.login.title);
+        safeUpdate(p1Instruction, CONFIG.login.instruction);
+
+        if (loginInput && CONFIG.login.placeholder !== undefined) {
             loginInput.placeholder = CONFIG.login.placeholder;
         }
-        console.log('[LoadContent] ✅ Login section loaded');
-    } else {
-        console.warn('[LoadContent] CONFIG.login missing!');
     }
 
     // Music Section
     if (CONFIG.music && CONFIG.music.length > 0) {
         const musicTitle = document.getElementById('music-section-title');
         if (musicTitle && CONFIG.musicSectionTitle !== undefined) {
-            musicTitle.textContent = CONFIG.musicSectionTitle;
+            safeUpdate(musicTitle, CONFIG.musicSectionTitle);
             if (CONFIG.musicSectionTitle.trim() === "") {
                 musicTitle.classList.add('hidden');
             } else {
                 musicTitle.classList.remove('hidden');
             }
         }
-        console.log('[LoadContent] ✅ Music section updated, songs:', CONFIG.music.length);
     }
 
     // Page 4: Wrapped
     if (CONFIG.wrapped) {
-        console.log('[LoadContent] Loading Wrapped with data:', CONFIG.wrapped);
-
         const minutesEl = document.getElementById('minutes-together');
         const vibeEl = document.getElementById('vibe-text');
         const wrappedImg = document.getElementById('wrapped-image');
         const topPlacesList = document.getElementById('top-places-list');
         const coreMemoriesList = document.getElementById('core-memories-list');
 
-        // Section labels
         const topPlacesLabel = document.getElementById('top-places-label');
         const coreMemoriesLabel = document.getElementById('core-memories-label');
         const hoursTogetherLabel = document.getElementById('minutes-together-label');
         const vibeLabel = document.getElementById('vibe-label');
 
-        // Populate labels
-        if (topPlacesLabel && CONFIG.wrapped.topPlacesLabel) {
-            topPlacesLabel.textContent = CONFIG.wrapped.topPlacesLabel;
-        }
-        if (coreMemoriesLabel && CONFIG.wrapped.coreMemoriesLabel) {
-            coreMemoriesLabel.textContent = CONFIG.wrapped.coreMemoriesLabel;
-        }
-        if (hoursTogetherLabel && CONFIG.wrapped.HoursTogetherLabel) {
-            hoursTogetherLabel.textContent = CONFIG.wrapped.HoursTogetherLabel;
-        }
-        if (vibeLabel && CONFIG.wrapped.vibeLabel) {
-            vibeLabel.textContent = CONFIG.wrapped.vibeLabel;
-        }
+        safeUpdate(topPlacesLabel, CONFIG.wrapped.topPlacesLabel);
+        safeUpdate(coreMemoriesLabel, CONFIG.wrapped.coreMemoriesLabel);
+        safeUpdate(hoursTogetherLabel, CONFIG.wrapped.HoursTogetherLabel);
+        safeUpdate(vibeLabel, CONFIG.wrapped.vibeLabel);
 
-        // Populate data
-        if (minutesEl) {
-            minutesEl.textContent = CONFIG.wrapped.HoursTogether;
-            console.log('[LoadContent] Updated minutes-together:', CONFIG.wrapped.HoursTogether);
-        }
-        if (vibeEl) {
-            vibeEl.textContent = CONFIG.wrapped.vibe;
-            console.log('[LoadContent] Updated vibe-text:', CONFIG.wrapped.vibe);
-        }
+        safeUpdate(minutesEl, CONFIG.wrapped.HoursTogether);
+        safeUpdate(vibeEl, CONFIG.wrapped.vibe);
 
         if (wrappedImg && CONFIG.wrapped.imageSrc) {
             wrappedImg.src = CONFIG.wrapped.imageSrc;
             wrappedImg.onerror = function () {
                 this.src = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=400&auto=format&fit=crop";
-                console.warn("Wrapped image failed to load, using fallback.");
             };
         }
 
         if (topPlacesList && CONFIG.wrapped.topPlaces && Array.isArray(CONFIG.wrapped.topPlaces)) {
-            topPlacesList.innerHTML = CONFIG.wrapped.topPlaces.map(place => `<li>${place}</li>`).join('');
-            console.log('[LoadContent] Updated top places:', CONFIG.wrapped.topPlaces.length, 'items');
+            // Only update list if not actively editing the group
+            if (!isEditor || !document.activeElement || !document.activeElement.closest('#wrapped-places-group')) {
+                topPlacesList.innerHTML = CONFIG.wrapped.topPlaces.map(place => `<li>${place}</li>`).join('');
+            }
         }
 
         if (coreMemoriesList && CONFIG.wrapped.coreMemories && Array.isArray(CONFIG.wrapped.coreMemories)) {
-            coreMemoriesList.innerHTML = CONFIG.wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
-            console.log('[LoadContent] Updated core memories:', CONFIG.wrapped.coreMemories.length, 'items');
+            if (!isEditor || !document.activeElement || !document.activeElement.closest('#wrapped-memories-group')) {
+                coreMemoriesList.innerHTML = CONFIG.wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
+            }
         }
-
-        console.log('[LoadContent] ✅ Wrapped section loaded');
-    } else {
-        console.warn('[LoadContent] CONFIG.wrapped missing!');
     }
 
     // Page 2: Greeting Card
     if (CONFIG.greeting) {
-        const p3Title = document.getElementById('p3-title');
-        const p3Message = document.getElementById('p3-message');
-        const p3Image = document.getElementById('p3-image');
-        const p3Signature = document.getElementById('p3-signature');
-        const p3Footer = document.getElementById('p3-footer');
+        safeUpdate(document.getElementById('p3-title'), CONFIG.greeting.title);
+        safeUpdate(document.getElementById('p3-message'), CONFIG.greeting.message);
+        safeUpdate(document.getElementById('p3-signature'), CONFIG.greeting.signature);
+        safeUpdate(document.getElementById('p3-footer'), CONFIG.greeting.footerText);
 
-        if (p3Title) {
-            p3Title.textContent = CONFIG.greeting.title;
-            console.log('[LoadContent] Updated p3-title:', CONFIG.greeting.title);
-        }
-        if (p3Message) {
-            p3Message.textContent = CONFIG.greeting.message;
-        }
-        if (p3Image && CONFIG.greeting.imageSrc) {
-            p3Image.src = CONFIG.greeting.imageSrc;
-        }
-        if (p3Signature) {
-            p3Signature.textContent = CONFIG.greeting.signature || "With Love";
-        }
-        if (p3Footer) {
-            p3Footer.textContent = CONFIG.greeting.footerText;
-        }
-        console.log('[LoadContent] ✅ Greeting section loaded');
-    } else {
-        console.warn('[LoadContent] CONFIG.greeting missing!');
+        const p3Image = document.getElementById('p3-image');
+        if (p3Image && CONFIG.greeting.imageSrc) p3Image.src = CONFIG.greeting.imageSrc;
     }
 
     // Page 7: Map
     if (CONFIG.map) {
-        const mapTitle = document.getElementById('map-title');
-        const mapDesc = document.getElementById('map-description');
-
-        if (mapTitle && CONFIG.map.title) mapTitle.textContent = CONFIG.map.title;
-        if (mapDesc && CONFIG.map.description) mapDesc.textContent = CONFIG.map.description;
-        console.log('[LoadContent] ✅ Map section loaded');
+        safeUpdate(document.getElementById('map-title'), CONFIG.map.title);
+        safeUpdate(document.getElementById('map-description'), CONFIG.map.description);
     }
 
     // Page 8: Letter
@@ -1291,46 +1284,34 @@ function loadDynamicContent() {
         const polaroidImg = document.getElementById('letter-polaroid-img');
         const polaroidCaption = document.getElementById('letter-polaroid-caption');
 
-        // ✅ FIX: Only clear if not already typed - prevents wiping content during config updates
-        // The letterTyped flag is set when typing animation completes
         if (!letterTyped) {
-            if (signatureEl) signatureEl.textContent = '';
-            if (bodyEl) bodyEl.innerHTML = '';
+            safeUpdate(signatureEl, '');
+            if (bodyEl && !bodyEl.contains(document.activeElement)) bodyEl.innerHTML = '';
         }
 
-        // ✅ FIX: Always update recipient from latest config
         if (recipientEl && CONFIG.letter.recipient !== undefined) {
             const name = CONFIG.letter.recipient || 'Dearest Love';
             const greeting = name.toLowerCase().includes('dearest') ? name : `Dearest ${name}`;
-            recipientEl.textContent = `${greeting},`;
+            safeUpdate(recipientEl, `${greeting},`);
         }
 
-        if (polaroidCaption && CONFIG.letter.polaroidCaption) {
-            polaroidCaption.textContent = CONFIG.letter.polaroidCaption;
-        }
+        safeUpdate(polaroidCaption, CONFIG.letter.polaroidCaption);
 
         if (polaroidImg && CONFIG.letter.polaroidSrc) {
             polaroidImg.src = CONFIG.letter.polaroidSrc;
             polaroidImg.classList.remove('hidden');
-            const polaroidGradient = document.getElementById('letter-polaroid-gradient');
-            const polaroidSilhouette = document.getElementById('letter-polaroid-silhouette');
-            if (polaroidGradient) polaroidGradient.classList.add('hidden');
-            if (polaroidSilhouette) polaroidSilhouette.classList.add('hidden');
+            const pg = document.getElementById('letter-polaroid-gradient');
+            const ps = document.getElementById('letter-polaroid-silhouette');
+            if (pg) pg.classList.add('hidden');
+            if (ps) ps.classList.add('hidden');
         }
-
-        console.log('[LoadContent] ✅ Letter section content applied');
     }
 
     // Page 9: Love Lock
     if (CONFIG.lock) {
-        const lockInitials = document.getElementById('lock-initials');
-        const lockInstr = document.getElementById('lock-instruction');
-        const lockFinal = document.getElementById('lock-final-message');
-
-        if (lockInitials) lockInitials.textContent = CONFIG.lock.initials || "A + B";
-        if (lockInstr) lockInstr.textContent = CONFIG.lock.instruction || "Click to lock our love forever...";
-        if (lockFinal) lockFinal.textContent = CONFIG.lock.finalMessage || "Safely locked in my heart. Always.";
-        console.log('[LoadContent] ✅ Lock section loaded');
+        safeUpdate(document.getElementById('lock-initials'), CONFIG.lock.initials);
+        safeUpdate(document.getElementById('lock-instruction'), CONFIG.lock.instruction);
+        safeUpdate(document.getElementById('lock-final-message'), CONFIG.lock.finalMessage);
     }
 
     // Global Brand Identity
@@ -1338,19 +1319,14 @@ function loadDynamicContent() {
         const brandName = CONFIG.metadata.brandName || "For you, Always";
         const brandIcon = CONFIG.metadata.brandIcon || "diamond";
 
-        document.querySelectorAll('.brand-name').forEach(el => {
-            el.textContent = brandName;
-        });
-
+        document.querySelectorAll('.brand-name').forEach(el => safeUpdate(el, brandName));
         document.querySelectorAll('.brand-logo').forEach(el => {
-            el.textContent = brandIcon;
+            if (el.textContent !== brandIcon) el.textContent = brandIcon;
         });
-        console.log('[LoadContent] ✅ Metadata loaded');
     }
 
     console.log('[LoadContent] ✅ All content successfully updated!');
 }
-
 
 // ============================================================
 // FIX 1: Improved fetchMediaBlob - Handles data: URLs correctly
@@ -1363,19 +1339,33 @@ async function fetchMediaBlob(url) {
             return url;
         }
 
+        // 🚀 DROPBOX AUTO-FIXER: Convert share links to direct stream links
+        let targetUrl = url;
+        if (targetUrl.includes('dropbox.com')) {
+            targetUrl = targetUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com')
+                .replace(/\?dl=[01]$/, '')
+                .replace(/&dl=[01]$/, '');
+            console.log('[Media] Dropbox link optimized for streaming');
+        } else if (targetUrl.toLowerCase().endsWith('.mp3')) {
+            targetUrl = targetUrl.replace(/\.mp3$/i, '.dat');
+            console.log(`[Media] Extension shielded: .mp3 -> .dat`);
+        }
+
         // ✅ Add retry logic for unreliable R2 connections
         const maxRetries = 3;
         let lastError;
 
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                const shieldedUrl = url + (url.includes('?') ? '&' : '?') + 'shield=' + Date.now();
-                console.log(`[Media] Attempt ${attempt}/${maxRetries}:`, url.substring(0, 60) + '...');
+                // Add shield param to prevent IDM sniffing and bypass cache
+                const shieldedUrl = targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'shield=' + Date.now();
+                console.log(`[Media] Attempt ${attempt}/${maxRetries}:`, shieldedUrl.substring(0, 60) + '...');
 
                 const response = await fetch(shieldedUrl, {
                     method: 'GET',
                     headers: {
-                        'Accept': '*/*'
+                        'Accept': '*/*',
+                        'X-Requested-With': 'XMLHttpRequest' // 🚀 Extra layer of IDM confusion
                     }
                 });
 
@@ -1385,11 +1375,11 @@ async function fetchMediaBlob(url) {
 
                 const blob = await response.blob();
 
-                // Force MIME type to audio/mp3 if it's one of our renamed .dat files
-                const type = url.endsWith('.dat') ? 'audio/mpeg' : blob.type;
+                // 🚀 DEEP MIME FIX: Force audio/mpeg for our dat files
+                const type = targetUrl.toLowerCase().endsWith('.dat') ? 'audio/mpeg' : blob.type;
                 const audioBlob = new Blob([blob], { type: type });
 
-                console.log('[Media] ✅ Successfully fetched');
+                console.log(`[Media] ✅ Successfully fetched (${type})`);
                 return URL.createObjectURL(audioBlob);
 
             } catch (err) {
@@ -1446,6 +1436,160 @@ function formatDate(dateString) {
     }
 }
 
+// Global config object (initialized from window.CONFIG or default)
+let globalConfig = null;
+
+// Helper to safely get the current configuration, ensuring it's always valid
+function safeGetConfig() {
+    if (!globalConfig) {
+        // Attempt to load from window.CONFIG first
+        const factoryConfig = window.CONFIG || {};
+
+        // 🛡️ DEEP REPAIR: Use deep merge to fill in the gaps
+        // Assuming a default structure for CONFIG if window.CONFIG is empty or partial
+        const defaultConfig = {
+            login: {},
+            greeting: {},
+            music: [],
+            wrapped: {},
+            map: {},
+            letter: {},
+            lock: {},
+            metadata: {},
+            theme: {},
+            navigation: {}
+        };
+        globalConfig = deepMerge(defaultConfig, factoryConfig);
+        console.log('[App] Initial config loaded and deep-repaired:', globalConfig);
+    }
+    return globalConfig;
+}
+
+// Helper to safely set the global configuration
+function safeSetConfig(newConfig) {
+    globalConfig = newConfig;
+}
+
+/**
+ * Helper to get page configuration by ID
+ */
+function getPageConfig(pageId) {
+    const CONFIG = safeGetConfig();
+    const pageMap = {
+        'page-1': CONFIG.login,
+        'page-2': CONFIG.greeting,
+        'page-3': CONFIG.music,
+        'page-4': CONFIG.wrapped,
+        'page-5': CONFIG.quiz,
+        'page-6': CONFIG.gallery,
+        'page-7': CONFIG.map,
+        'page-8': CONFIG.letter,
+        'page-9': CONFIG.lock,
+        'page-10': CONFIG.infinityScroll,
+        'page-11': CONFIG.invitation
+    };
+    return pageMap[pageId];
+}
+
+/**
+ * Helper to check if a page is enabled based on its config
+ */
+function isPageEnabled(pageId) {
+    const CONFIG = safeGetConfig();
+    const pageConfig = getPageConfig(pageId);
+
+    // Special handling for pages that are enabled if their config exists and is not explicitly disabled
+    switch (pageId) {
+        case 'page-1': // Login page is always enabled if login config exists
+            return !!CONFIG.login;
+        case 'page-2': // Greeting card is enabled if greeting config exists
+            return !!CONFIG.greeting;
+        case 'page-3': // Music page is enabled if music array has items
+            return CONFIG.music && CONFIG.music.length > 0;
+        case 'page-4': // Wrapped page is enabled if wrapped config exists
+            return !!CONFIG.wrapped;
+        case 'page-5': // Quiz page is enabled if quiz config exists
+            return !!CONFIG.quiz;
+        case 'page-6': // Gallery page is enabled if gallery config exists and has memories
+            return CONFIG.gallery && CONFIG.gallery.memories && CONFIG.gallery.memories.length > 0;
+        case 'page-7': // Map page is enabled if map config exists
+            return !!CONFIG.map;
+        case 'page-8': // Letter page is enabled if letter config exists
+            return !!CONFIG.letter;
+        case 'page-9': // Lock page is enabled if lock config exists
+            return !!CONFIG.lock;
+        case 'page-10': // Infinity Scroll page is enabled if infinityScroll config exists
+            return !!CONFIG.infinityScroll;
+        case 'page-11': // Invitation page is enabled if invitation config exists
+            return !!CONFIG.invitation;
+        default:
+            return false;
+    }
+}
+
+/**
+ * Get the next enabled page ID in sequence
+ */
+function getNextPage(currentPageId) {
+    const CONFIG = safeGetConfig();
+    const pageOrder = CONFIG.navigation && CONFIG.navigation.pageOrder ? CONFIG.navigation.pageOrder : [
+        'page-1', 'page-2', 'page-3', 'page-4', 'page-5', 'page-6', 'page-7', 'page-8', 'page-9', 'page-10', 'page-11'
+    ];
+
+    const currentIndex = pageOrder.indexOf(currentPageId);
+    if (currentIndex === -1) return null;
+
+    for (let i = currentIndex + 1; i < pageOrder.length; i++) {
+        if (isPageEnabled(pageOrder[i])) {
+            return pageOrder[i];
+        }
+    }
+    return null; // No next enabled page
+}
+
+/**
+ * Get the previous enabled page ID in sequence
+ */
+function getPreviousPage(currentPageId) {
+    const CONFIG = safeGetConfig();
+    const pageOrder = CONFIG.navigation && CONFIG.navigation.pageOrder ? CONFIG.navigation.pageOrder : [
+        'page-1', 'page-2', 'page-3', 'page-4', 'page-5', 'page-6', 'page-7', 'page-8', 'page-9', 'page-10', 'page-11'
+    ];
+
+    const currentIndex = pageOrder.indexOf(currentPageId);
+    if (currentIndex === -1) return null;
+
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        if (isPageEnabled(pageOrder[i])) {
+            return pageOrder[i];
+        }
+    }
+    return null; // No previous enabled page
+}
+
+/**
+ * Get the current page number among enabled pages
+ */
+function getCurrentPageNumber(currentPageId) {
+    const CONFIG = safeGetConfig();
+    const pageOrder = CONFIG.navigation && CONFIG.navigation.pageOrder ? CONFIG.navigation.pageOrder : [
+        'page-1', 'page-2', 'page-3', 'page-4', 'page-5', 'page-6', 'page-7', 'page-8', 'page-9', 'page-10', 'page-11'
+    ];
+    const enabledPages = pageOrder.filter(id => isPageEnabled(id));
+    const index = enabledPages.indexOf(currentPageId);
+    return index !== -1 ? index + 1 : 0;
+}
+
+/**
+ * Get the total number of enabled pages
+ */
+function getTotalEnabledPages() {
+    const CONFIG = safeGetConfig();
+    const pageOrder = CONFIG.navigation && CONFIG.navigation.pageOrder ? CONFIG.navigation.pageOrder : [
+        'page-1', 'page-2', 'page-3', 'page-4', 'page-5', 'page-6', 'page-7', 'page-8', 'page-9', 'page-10', 'page-11'
+    ];
+    return pageOrder.filter(id => isPageEnabled(id)).length;
+}
 
 // ============================================================
 // FIX 3: Improved loadSong - Robust against all URL types
@@ -2543,7 +2687,7 @@ function initMapPinNavigator() {
 }
 
 
-async function initMap() {
+async function initMap(focusIndex = -1) {
     isMapJourneySkipped = false; // Reset skip flag
     showMapSkipButton(true); // Force show button early
 
@@ -2697,6 +2841,12 @@ async function initMap() {
         // Zoom out when clicking the background
         mapInstance.on('click', (e) => {
             if (e.originalEvent.target.id === 'map' || e.originalEvent.target.classList.contains('leaflet-container')) {
+                // 🛑 NEW: Skip auto-zoom-out in Studio mode to avoid user frustration
+                if (window.isEditorMode) {
+                    mapInstance.closePopup();
+                    return;
+                }
+
                 if (mapMarkers.length > 0) {
                     const group = new L.featureGroup(mapMarkers);
                     mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: true });
@@ -2708,11 +2858,24 @@ async function initMap() {
         });
 
         mapInstance.on('popupclose', () => {
+            // 🛑 NEW: Skip auto-zoom-out in Studio mode to avoid user frustration
+            if (window.isEditorMode) {
+                window.parent.postMessage({ type: 'MAP_POPUP_CLOSED' }, '*');
+                return;
+            }
+
             if (mapMarkers.length > 0) {
                 const group = new L.featureGroup(mapMarkers);
                 mapInstance.fitBounds(group.getBounds(), { padding: [30, 30], animate: true });
             }
         });
+
+        // 🟢 Editor Sync: Notify parent when map moves to update overlay position
+        if (window.isEditorMode) {
+            mapInstance.on('movestart move moveend zoom zoomend drag dragend', () => {
+                window.parent.postMessage({ type: 'MAP_MOVE' }, '*');
+            });
+        }
     } else {
         setTimeout(() => {
             mapInstance.invalidateSize();
@@ -2811,7 +2974,7 @@ async function initMap() {
             // Create popup content
             const formattedDate = formatDate(loc.date);
             let popupContent = `
-                <div class="map-popup-premium p-1">
+                <div class="map-popup-premium p-1" data-index="${i}">
                     <div class="map-popup-header text-center mb-2">
                         <h3 class="font-display font-bold uppercase">${loc.title}</h3>
                     </div>`;
@@ -2836,7 +2999,7 @@ async function initMap() {
             `;
 
             // DELAY for animation feel
-            if (!mapJourneyCompleted && !isMapJourneySkipped) {
+            if (!mapJourneyCompleted && !isMapJourneySkipped && !window.isEditorMode) {
                 // Reduced delay for better UX on mobile
                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 1800));
             }
@@ -2853,6 +3016,13 @@ async function initMap() {
                         maxWidth: 250
                     }).addTo(mapInstance);
 
+                // 🟢 Editor Sync: Refresh overlay when popup opens
+                if (window.isEditorMode) {
+                    marker.on('popupopen', () => {
+                        window.parent.postMessage({ type: 'MAP_MOVE' }, '*');
+                    });
+                }
+
                 mapMarkers.push(marker);
 
                 // 3. Update Polyline
@@ -2868,7 +3038,7 @@ async function initMap() {
                 }
 
                 // Cinematic Fly-to effect (Zoom In -> Zoom Out -> Zoom In)
-                if (!mapJourneyCompleted && !isMapJourneySkipped) {
+                if (!mapJourneyCompleted && !isMapJourneySkipped && !window.isEditorMode) {
                     mapInstance.flyTo(numericCoords, 16, {
                         animate: true,
                         duration: 2.0,
@@ -2913,7 +3083,21 @@ async function initMap() {
         mapJourneyCompleted = true;
 
         // NEW: Trigger Discovery Pop-up with stats
-        setTimeout(() => showMapDiscoveryPopUp(), 1000);
+        // ✅ BUGFIX: Don't show summary if we are focusing on a specific new pin
+        if (focusIndex < 0) {
+            setTimeout(() => showMapDiscoveryPopUp(), 1000);
+        } else {
+            // Focus on the specific pin instead
+            setTimeout(() => {
+                if (mapMarkers[focusIndex]) {
+                    console.log(`[Map] Auto-focusing on pin index: ${focusIndex}`);
+                    const marker = mapMarkers[focusIndex];
+                    const latlng = marker.getLatLng();
+                    mapInstance.flyTo(latlng, 17, { animate: true, duration: 1.5 });
+                    marker.openPopup();
+                }
+            }, 1200);
+        }
 
         // FINAL FIX: Invalidate size multiple times to ensure pins are rendered correctly
         // especially important if initialized during transition hidden -> visible or in an iframe
@@ -3513,9 +3697,17 @@ function initLogin() {
     const errorMsg = document.getElementById('error-message');
 
     function validateLogin() {
-        const val = loginInput.value.trim().toLowerCase();
+        // ALWAYS refetch config to ensure we have the absolute latest version
+        // This fixes the issue where customer updates password in Editor but main site still uses old 123
+        const currentConfig = safeGetConfig();
+        const val = loginInput.value.trim();
+        const correctPassword = (currentConfig.login && currentConfig.login.password ? currentConfig.login.password : "123").toString().trim();
 
-        if (val === CONFIG.login.password) {
+        console.log('[Login] Checking password:', { input: val, expected: correctPassword });
+
+        // ✅ LDR_FIX: Case-insensitive match to prevent "only 123 works" bug 
+        // (Previously it forced input to lowercase but compared to mixed-case config)
+        if (val.toLowerCase() === correctPassword.toLowerCase()) {
             const btn = document.getElementById('login-btn');
             if (btn) {
                 createHeartExplosion(btn);
@@ -3557,6 +3749,8 @@ function initLogin() {
                 goNextPage();
             }, 800);
         } else {
+            console.warn(`[Login] Failed. Input: "${val}", Expected: "${correctPassword}" (from ${getCustomerId() ? 'API' : 'Local'})`);
+
             if (errorMsg) {
                 errorMsg.classList.remove('opacity-0');
                 errorMsg.textContent = CONFIG.login.errorMessage;
@@ -3620,17 +3814,58 @@ function initLetterPage() {
         recipientEl.textContent = `${greeting},`;
     }
 
-    // ✅ FIX: Apply message immediately if already typed (ensures live updates)
-    const bodyEl = document.getElementById('letter-body');
-    if (bodyEl && CONFIG.letter?.message) {
-        if (letterTyped) {
-            // If already animated, just update the content directly
+    // ✅ NEW: Auto-open and Skip Typing in Studio Editor for easier editing
+    if (window.isEditorMode) {
+        console.log('[Letter] Studio Mode: Skipping envelope animation and typing...');
+        const envelope = document.getElementById('envelope-main');
+        const bodyEl = document.getElementById('letter-body');
+        const closingEl = document.getElementById('letter-closing');
+        const signatureEl = document.getElementById('letter-signature');
+        const heartOrn = document.getElementById('letter-heart-ornament');
+        const polaroid = document.querySelector('.polaroid-photo');
+        const nextBtn = document.getElementById('finale-next-btn');
+
+        if (envelope) {
+            envelope.classList.remove('is-sealed');
+            envelope.classList.add('is-opened'); // Ensure it's visually open
+            envelope.style.pointerEvents = 'auto'; // Allow clicking internal elements
+        }
+
+        letterTyped = true; // Mark as typed to allow direct updates
+
+        if (bodyEl && CONFIG.letter?.message) {
             bodyEl.innerHTML = CONFIG.letter.message;
         }
-        // If not yet typed, the typing animation will handle it when triggered
+        if (closingEl) {
+            closingEl.textContent = CONFIG.letter?.closing || "With all my love,";
+        }
+        if (signatureEl && CONFIG.letter?.signature) {
+            signatureEl.textContent = CONFIG.letter.signature;
+        }
+        if (heartOrn) {
+            heartOrn.classList.remove('opacity-0');
+            heartOrn.classList.add('opacity-100', 'animate-heartbeat');
+        }
+        if (polaroid) {
+            polaroid.style.display = '';
+            polaroid.classList.remove('opacity-0', 'pointer-events-none');
+            polaroid.style.opacity = '1';
+        }
+        if (nextBtn) {
+            nextBtn.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
+            nextBtn.classList.add('opacity-100', 'pointer-events-auto');
+        }
+    } else {
+        // ✅ FIX: Apply message immediately if already typed (ensures live updates)
+        const bodyEl = document.getElementById('letter-body');
+        if (bodyEl && CONFIG.letter?.message) {
+            if (letterTyped) {
+                // If already animated, just update the content directly
+                bodyEl.innerHTML = CONFIG.letter.message;
+            }
+            // If not yet typed, the typing animation will handle it when triggered
+        }
     }
-
-
 
     // Set Polaroid Content
     const polaroidImg = document.getElementById('letter-polaroid-img');
@@ -3793,7 +4028,8 @@ async function startLetterTyping() {
     await sleep(500);
     const closingEl = document.getElementById('letter-closing');
     if (closingEl && letterTyped) {
-        await typeTargetPremium(closingEl, "With all my love,");
+        const closingText = CONFIG.letter?.closing || "With all my love,";
+        await typeTargetPremium(closingEl, closingText);
     }
 
     // Type signature with flourish
@@ -4277,75 +4513,6 @@ function unlockFinale() {
     }
 }
 
-// --- Countdown Timer Logic ---
-let countdownInterval = null; // Global to allow clearing
-
-function initCountdown() {
-    const CONFIG = safeGetConfig();
-    // ✅ FIX: Use window.CONFIG explicitly
-    if (!CONFIG || !CONFIG.countdown || !CONFIG.countdown.targetDate) {
-        console.warn("[Countdown] No target date in CONFIG");
-        return;
-    }
-
-    console.log("[Countdown] Initializing with:", CONFIG.countdown.targetDate);
-
-    // Clear existing interval if re-initializing
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
-        countdownInterval = null;
-    }
-
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
-    const counterDiv = document.getElementById('valentine-countdown');
-    const labelEl = document.getElementById('countdown-label');
-
-    if (!counterDiv) return;
-
-    function updateTimer() {
-        // Re-read target date from CONFIG every time (to support live updates)
-        const targetDate = new Date(CONFIG.countdown.targetDate).getTime();
-        const now = new Date().getTime();
-        const distance = targetDate - now;
-
-        if (distance < 0) {
-            // Timer expired
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
-            if (counterDiv) counterDiv.innerHTML = `<span class="text-3xl font-display font-bold text-primary dark:text-rose-100 animate-pulse">${CONFIG.countdown.finishMessage}</span>`;
-            if (labelEl) labelEl.textContent = CONFIG.countdown.finishLabel;
-            return;
-        }
-
-        // Calculations
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        // Update DOM with zero-padding
-        if (daysEl) daysEl.textContent = days.toString().padStart(2, '0');
-        if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
-        if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
-        if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
-
-        // Update Label if it contains date info
-        if (labelEl && CONFIG.countdown.targetDate) {
-            const d = new Date(CONFIG.countdown.targetDate);
-            const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            labelEl.textContent = `Counting down to ${d.toLocaleDateString('en-US', options)}`;
-        }
-    }
-
-    // Run immediately then interval
-    updateTimer();
-    countdownInterval = setInterval(updateTimer, 1000);
-}
 
 // --- LOVE-LOCK FINALE LOGIC ---
 function lockTheHeart() {
@@ -4610,6 +4777,28 @@ if (typeof window !== 'undefined') {
         if (typeof applyTheme === 'function') {
             console.log('[Event] Auto-applying theme...');
             applyTheme();
+        }
+    });
+
+    // Handle Studio Editor updates via postMessage
+    // NOTE: Primary UPDATE_CONFIG handler is in the DOMContentLoaded block for better state mgmt.
+    window.addEventListener('message', (event) => {
+        const data = event.data;
+        // Handle direct element selection requests from editor
+        if (data && data.type === 'SELECT_PAGE') {
+            if (typeof MapsTo === 'function') {
+                MapsTo(currentPageId, data.pageId);
+            }
+        }
+        if (data && data.type === 'QUIZ_REFRESH') {
+            console.log('[Studio] Quiz refresh requested');
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            const gameplay = document.getElementById('quiz-gameplay');
+            const result = document.getElementById('quiz-result');
+            if (gameplay) gameplay.classList.remove('hidden');
+            if (result) result.classList.add('hidden');
+            if (typeof loadQuiz === 'function') loadQuiz();
         }
     });
 }

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Page Access | Valentine Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+
+    <script src="../data.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-[#f8fafc] min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-4">
+                <a href="index.html"
+                    class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-400 hover:text-rose-500 transition-colors">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-display font-bold text-gray-900">Master Page Access</h1>
+                    <p class="text-sm text-gray-500">Kontrol fitur mana yang muncul di Editor pelanggan secara global
+                    </p>
+                </div>
+            </div>
+            <button onclick="saveMasterSettings()" id="saveBtn"
+                class="bg-rose-500 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-rose-200 hover:bg-rose-600 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined">save</span>
+                <span>Simpan Perubahan</span>
+            </button>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-8 flex items-start gap-3">
+            <span class="material-symbols-outlined text-amber-500">warning</span>
+            <p class="text-xs text-amber-800 leading-relaxed">
+                <strong>Perhatian:</strong> Perubahan di sini akan langsung berdampak pada <strong>semua Studio
+                    Editor</strong> pelanggan.
+                Halaman yang dinonaktifkan tidak akan bisa dilihat atau dinyalakan kembali oleh pelanggan dari sidebar
+                mereka.
+            </p>
+        </div>
+
+        <!-- Page List Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pageGrid">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl transition-all duration-300 translate-y-20 opacity-0 pointer-events-none flex items-center gap-3">
+        <span class="material-symbols-outlined text-green-400" id="toastIcon">check_circle</span>
+        <span id="toastMsg">Pengaturan Tersimpan!</span>
+    </div>
+
+    <script>
+        const API_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+        const MASTER_ID = 'system-page-access';
+        let currentAllowed = ['page-1', 'page-3', 'page-4', 'page-7', 'page-11']; // Default awal
+
+        async function init() {
+            // Load from cloud if exists
+            try {
+                const res = await fetch(`${API_URL}/get-config?id=${MASTER_ID}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.allowedIds) {
+                        currentAllowed = data.allowedIds;
+                    }
+                }
+            } catch (e) { console.error('Cloud load failed', e); }
+
+            renderPages();
+        }
+
+        function renderPages() {
+            const grid = document.getElementById('pageGrid');
+            const allPages = Object.values(CONFIG.pageConfig.pages).sort((a, b) => a.order - b.order);
+
+            grid.innerHTML = allPages.map(page => {
+                const isChecked = currentAllowed.includes(page.id);
+                const isMandatory = page.id === 'page-1'; // Login always mandatory
+
+                return `
+                    <div class="glass p-5 rounded-2xl flex items-center justify-between border-2 ${isChecked ? 'border-rose-100 bg-white' : 'border-transparent bg-gray-50/50'} transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center ${isChecked ? 'bg-rose-50 text-rose-500' : 'bg-gray-100 text-gray-400'}">
+                                <span class="material-symbols-outlined">${page.icon}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900">${page.name}</h3>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${page.type}</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer ${isMandatory ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <input type="checkbox" class="sr-only peer" ${isChecked ? 'checked' : ''} ${isMandatory ? 'disabled' : ''} onchange="toggleId('${page.id}')">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                        </label>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleId(id) {
+            if (currentAllowed.includes(id)) {
+                currentAllowed = currentAllowed.filter(x => x !== id);
+            } else {
+                currentAllowed.push(id);
+            }
+            renderPages();
+        }
+
+        async function saveMasterSettings() {
+            const btn = document.getElementById('saveBtn');
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span><span>Saving...</span>';
+
+            try {
+                const res = await fetch(`${API_URL}/save-config?id=${MASTER_ID}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ allowedIds: currentAllowed, updated: new Date().toISOString() })
+                });
+
+                if (res.ok) {
+                    showToast('Pengaturan Master Berhasil Disimpan!');
+                } else { throw new Error('Failed'); }
+            } catch (e) {
+                showToast('Gagal menyimpan ke Cloud!', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = original;
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMsg').innerText = msg;
+
+            icon.innerText = type === 'success' ? 'check_circle' : 'error';
+            icon.className = `material-symbols-outlined ${type === 'success' ? 'text-green-400' : 'text-rose-400'}`;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
