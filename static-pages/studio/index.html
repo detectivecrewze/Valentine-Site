@@ -310,62 +310,78 @@
           </div>
         </div>
         <div class="section-body block">
-          <div class="section-body-inner">
-            <p class="section-hint mb-4">Foto utama Wrapped (Card polaroid besar).</p>
-            <div id="wrapped-photo-dropzone"
-              class="mb-6 border-2 border-dashed border-gray-100 rounded-2xl p-8 text-center transition-all hover:bg-white hover:border-[#d4a373] cursor-pointer bg-gray-50/50">
-              <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-medium">Upload Foto Utama</p>
-            </div>
-            <input type="file" id="file-wrapped-photo" accept="image/*" class="hidden" />
+          <div class="section-body-inner space-y-4">
 
-            <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-2">Tanggal
-              Spesial</label>
-            <input id="input-wrapped-date" type="date" class="input-minimal" />
-            <p class="section-hint mt-2 mb-4">💡 <strong>Tips:</strong> Masukkan tanggal jadian/pertemuan. Sistem akan
-              otomatis menghitung kebersamaan kalian dalam menit.</p>
+            <!-- Tile 1: Media & Identity -->
+            <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+              <div class="px-4 pt-4 pb-1 border-b border-gray-50">
+                <p class="text-[8px] uppercase tracking-[0.25em] text-[#d4a373] font-bold">Media & Identity</p>
+              </div>
+              <div class="p-4 space-y-4">
+                <!-- Photo dropzone compact -->
+                <div id="wrapped-photo-dropzone" class="border border-dashed border-gray-200 rounded-xl p-5 text-center transition-all hover:bg-gray-50 hover:border-[#d4a373] cursor-pointer bg-gray-50/30">
+                  <p class="text-[9px] uppercase tracking-[0.25em] text-gray-400 font-bold">Upload Foto Utama</p>
+                  <p class="text-[9px] text-gray-300 mt-1">Foto ini tampil sebagai polaroid di halaman Wrapped</p>
+                </div>
+                <input type="file" id="file-wrapped-photo" accept="image/*" class="hidden" />
 
-            <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-2">Our Vibe</label>
-            <input id="input-wrapped-vibe" type="text" placeholder="e.g. Beauty & Beast" class="input-minimal mb-2" />
-            <p class="section-hint mb-6">💡 <strong>Tips:</strong> Masukkan vibes yang unik buat kalian, seperti tokoh
-              fiksi, artis, atau hobi favorit.</p>
-
-            <div class="border-t border-gray-100 mt-4 pt-6"></div>
-
-            <!-- Top Places -->
-            <div class="flex items-center justify-between mb-3">
-              <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold">Top Places</label>
-              <button id="btn-add-place"
-                class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap">+
-                Tambah Tempat</button>
-            </div>
-            <p class="section-hint mb-3">💡 <strong>Tips:</strong> Tulis tempat kencan favorit kalian dengan singkat
-              agar pas di tampilan (Maks 5).</p>
-            <div id="wrapped-places-container" class="space-y-2 mb-6">
-              <!-- Injected by JS -->
-            </div>
-            <div id="wrapped-places-empty"
-              class="text-center p-6 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50/50 mb-6">
-              <p class="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-bold">Belum ada tempat</p>
+                <!-- Date + Vibe 2-col grid -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-1.5">Tanggal Spesial</label>
+                    <input id="input-wrapped-date" type="date" class="input-minimal text-[11px]" />
+                    <p class="text-[9px] text-gray-300 mt-1 leading-relaxed">Dihitung otomatis jadi menit kebersamaan.</p>
+                  </div>
+                  <div>
+                    <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-1.5">Our Vibe</label>
+                    <input id="input-wrapped-vibe" type="text" placeholder="e.g. Beauty & Beast" class="input-minimal text-[11px]" />
+                    <p class="text-[9px] text-gray-300 mt-1 leading-relaxed">Tokoh, artis, atau hobi favorit kalian.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Core Memories -->
-            <div class="flex items-center justify-between mb-3">
-              <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold">Core Memories</label>
-              <button id="btn-add-memory"
-                class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap">+
-                Tambah Kenangan</button>
+            <!-- Tile 2: Top Places -->
+            <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+              <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-50">
+                <div>
+                  <p class="text-[8px] uppercase tracking-[0.25em] text-[#d4a373] font-bold">Top Places</p>
+                  <p class="text-[9px] text-gray-300 mt-0.5">Singkat agar pas di tampilan — maks 5</p>
+                </div>
+                <button id="btn-add-place" class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap flex-shrink-0">+ Tambah</button>
+              </div>
+              <div class="p-4">
+                <div id="wrapped-places-container" class="space-y-2">
+                  <!-- Injected by JS -->
+                </div>
+                <div id="wrapped-places-empty" class="text-center py-6">
+                  <p class="text-[9px] uppercase tracking-[0.2em] text-gray-300 font-bold">Belum ada tempat</p>
+                </div>
+              </div>
             </div>
-            <p class="section-hint mb-3">💡 <strong>Tips:</strong> Tulis momen-momen terbaik kalian dengan singkat (Maks
-              5).</p>
-            <div id="wrapped-memories-container" class="space-y-2">
-              <!-- Injected by JS -->
+
+            <!-- Tile 3: Core Memories -->
+            <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+              <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-50">
+                <div>
+                  <p class="text-[8px] uppercase tracking-[0.25em] text-[#d4a373] font-bold">Core Memories</p>
+                  <p class="text-[9px] text-gray-300 mt-0.5">Momen terbaik kalian — maks 5</p>
+                </div>
+                <button id="btn-add-memory" class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap flex-shrink-0">+ Tambah</button>
+              </div>
+              <div class="p-4">
+                <div id="wrapped-memories-container" class="space-y-2">
+                  <!-- Injected by JS -->
+                </div>
+                <div id="wrapped-memories-empty" class="text-center py-6">
+                  <p class="text-[9px] uppercase tracking-[0.2em] text-gray-300 font-bold">Belum ada kenangan</p>
+                </div>
+              </div>
             </div>
-            <div id="wrapped-memories-empty"
-              class="text-center p-6 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50/50">
-              <p class="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-bold">Belum ada kenangan</p>
-            </div>
+
           </div>
         </div>
+
       </section>
 
       <!-- 5. Surat Cinta -->

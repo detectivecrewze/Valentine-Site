@@ -107,9 +107,11 @@ const AppManager = (() => {
         if (isCollapsed) {
           body.classList.remove('collapsed');
           btn.classList.remove('collapsed');
+          section.classList.remove('is-collapsed');
         } else {
           body.classList.add('collapsed');
           btn.classList.add('collapsed');
+          section.classList.add('is-collapsed');
         }
       });
     });
