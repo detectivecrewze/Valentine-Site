@@ -8,8 +8,9 @@ const Publisher = (() => {
 
   function init() {
     document.getElementById('submit-btn')?.addEventListener('click', _handlePreSubmit);
-    document.getElementById('btn-confirm-publish')?.addEventListener('click', _handlePublish);
-    document.getElementById('btn-cancel-publish')?.addEventListener('click', () => _toggleModal('modal-publish-confirm', false));
+    document.getElementById('submit-btn')?.addEventListener('click', _handlePreSubmit);
+    document.getElementById('btn-confirm-name')?.addEventListener('click', _handlePublish);
+    document.getElementById('btn-cancel-name')?.addEventListener('click', () => _toggleModal('modal-name', false));
     document.getElementById('btn-copy-link')?.addEventListener('click', _handleCopyLink);
     document.getElementById('btn-close-success')?.addEventListener('click', () => _toggleModal('modal-success', false));
   }
@@ -28,7 +29,7 @@ const Publisher = (() => {
       return;
     }
 
-    const songArr = Music.getSongArray();
+    const songArr = Music.getPlaylistArray();
     if (songArr.length === 0) {
       Studio.showToast('Minimal 1 lagu harus diupload.');
       return;
@@ -54,18 +55,17 @@ const Publisher = (() => {
     // Build payload
     _validatedPayload = Autosave.buildState();
 
-    // Tampilkan preview link di modal konfirmasi
+    // Tampilkan token slug di input
     const token = Auth.getToken();
-    const previewUrl = `${window.location.origin.replace('/studio', '')}/loves/?to=${token}`;
-    const urlPreview = document.getElementById('modal-gift-url-preview');
-    if (urlPreview) urlPreview.textContent = previewUrl;
+    const inputName = document.getElementById('input-gift-name');
+    if (inputName && token) inputName.value = token;
 
-    _toggleModal('modal-publish-confirm', true);
+    _toggleModal('modal-name', true);
   }
 
   async function _handlePublish() {
     if (!_validatedPayload) return;
-    _toggleModal('modal-publish-confirm', false);
+    _toggleModal('modal-name', false);
 
     const btn = document.getElementById('submit-btn');
     const textSpan = btn?.querySelector('.submit-text');
@@ -127,7 +127,54 @@ const Publisher = (() => {
       }, 100);
     }
 
+    // Bind Download QR Button
+    const downloadBtn = document.getElementById('btn-download-qr');
+    if (downloadBtn) {
+      const newBtn = downloadBtn.cloneNode(true);
+      downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
+      newBtn.addEventListener('click', _handleDownloadQR);
+    }
+
     _toggleModal('modal-success', true);
+  }
+
+  async function _handleDownloadQR() {
+    const exportNode = document.getElementById('qr-export-container');
+    const btn = document.getElementById('btn-download-qr');
+
+    if (!exportNode || typeof html2canvas === 'undefined') {
+      Studio.showToast('Fitur download belum siap. Silakan screenshot manual.');
+      return;
+    }
+
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Menyiapkan...';
+    btn.style.opacity = '0.7';
+
+    try {
+      const canvas = await html2canvas(exportNode, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: '#fff',
+        logging: false
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `Loves_QR_${Math.floor(Date.now() / 1000)}.png`;
+      link.href = imgData;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error generating QR PNG:', err);
+      Studio.showToast('Gagal mendownload barcode.');
+    } finally {
+      requestAnimationFrame(() => {
+        btn.innerHTML = originalText;
+        btn.style.opacity = '1';
+      });
+    }
   }
 
   function _handleCopyLink() {

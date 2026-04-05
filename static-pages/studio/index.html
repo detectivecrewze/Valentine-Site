@@ -462,15 +462,12 @@
         </div>
       </section>
 
-      <!-- Preview Button -->
-      <div class="text-center mt-6 mb-4">
-        <button id="btn-preview-loves"
-          class="text-[9px] uppercase tracking-widest font-bold border border-gray-200 px-6 py-2.5 rounded-full text-gray-600 hover:border-black hover:text-black transition-all">👁
-          Preview Kado</button>
-      </div>
-
       <!-- Floating Action -->
-      <div id="publish-container" class="text-center mt-4 pb-12">
+      <div id="publish-container" class="text-center mt-12 pb-12">
+        <button id="btn-preview-loves"
+          class="w-full py-3 mb-3 text-[11px] uppercase tracking-widest font-bold bg-white text-black border border-gray-200 rounded-full hover:bg-gray-50 hover:border-black transition-all shadow-sm flex items-center justify-center gap-2 focus:outline-none">
+          <span>👁 Lihat Live Preview</span>
+        </button>
         <button id="submit-btn" class="btn-premium w-full shadow-lg">
           <span class="submit-text">Publikasikan Kado ❤️</span>
         </button>
@@ -481,67 +478,104 @@
     </div>
   </main>
 
-  <!-- MODAL: Konfirmasi Publish -->
-  <div id="modal-publish-confirm"
-    class="hidden fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-6">
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
-      onclick="document.getElementById('modal-publish-confirm').classList.add('hidden')"></div>
-    <div class="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
-      <div class="px-6 pt-6 pb-4 border-b border-gray-100">
-        <h3 class="text-sm font-bold text-gray-800">Publikasikan Kado? 🎁</h3>
-        <p class="text-[9px] uppercase tracking-widest text-gray-400 mt-1">Kado akan bisa diakses oleh penerimanya</p>
+  <!-- Name Input Modal (Publish Confirm) -->
+  <div id="modal-name" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-6">
+    <div class="absolute inset-0 bg-white/95 backdrop-blur-md"></div>
+    <div class="relative max-w-sm w-full">
+      <h2 class="text-3xl text-serif italic mb-2 text-center">Publikasikan Kado</h2>
+      <p
+        class="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold mb-4 text-center text-balance leading-relaxed">
+        Kado akan dipublish dengan nama link berikut:</p>
+      <p class="text-[9px] text-gray-500 mb-12 text-center hidden">(Ditetapkan otomatis)</p>
+
+      <div class="mb-10">
+        <input id="input-gift-name" type="text" readonly
+          class="input-minimal text-center lowercase pointer-events-none opacity-50" autocomplete="off" />
+        <p id="name-error" class="text-[9px] text-rose-500 mt-2 text-center hidden">Gunakan huruf, angka, dan tanda
+          hubung saja.</p>
       </div>
-      <div class="px-6 py-5">
-        <p class="text-[11px] text-gray-600 mb-3">Link kado yang akan dibagikan:</p>
-        <p id="modal-gift-url-preview"
-          class="text-[10px] text-[#d4a373] font-mono break-all bg-[#fcfaf7] rounded-lg p-3"></p>
+
+      <!-- Helper Hint for Recipient -->
+      <div class="border border-[#d4a373]/20 bg-[#fcfaf7] rounded-xl p-5 mb-6 text-center shadow-sm">
+        <h3 class="font-bold text-[#b58756] text-[9px] mb-2 uppercase tracking-[0.2em]">
+          Catatan Penting
+        </h3>
+        <p class="text-[9.5px] text-gray-500 leading-relaxed italic">
+          Kado The Loves Edition ini sangat interaktif. Sangat disarankan bagi pasanganmu untuk membukanya via
+          <strong>Komputer / Laptop</strong> atau browser <strong>Google Chrome</strong> di HP untuk pengalaman
+          maksimal.
+        </p>
       </div>
-      <div class="flex gap-3 px-6 pb-6">
-        <button id="btn-cancel-publish"
-          class="flex-1 py-3 text-[9px] uppercase tracking-widest font-bold border border-gray-200 rounded-full text-gray-600 hover:border-black transition-all">Batal</button>
-        <button id="btn-confirm-publish"
-          class="flex-1 py-3 text-[9px] uppercase tracking-widest font-bold bg-[#d4a373] text-white rounded-full hover:bg-[#c4956a] transition-all shadow-sm">✓
-          Publish Sekarang</button>
+
+      <div class="flex flex-col gap-4">
+        <button id="btn-confirm-name" class="btn-premium w-full text-center">Lanjutkan & Publish</button>
+        <button id="btn-cancel-name"
+          class="text-[10px] uppercase tracking-widest text-gray-600 font-bold py-2 hover:bg-transparent">Batal</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Sukses + QR Code -->
-  <div id="modal-success" class="hidden fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-6">
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-    <div
-      class="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-      <div class="px-6 pt-6 pb-4 border-b border-gray-100 flex-shrink-0">
-        <h3 class="text-sm font-bold text-gray-800">Kado Berhasil Dipublish! 🎉</h3>
-        <p class="text-[9px] uppercase tracking-widest text-gray-400 mt-1">Bagikan link ini kepada penerimanya</p>
-      </div>
-      <div class="px-6 py-6 overflow-y-auto flex-1">
-        <!-- QR Code -->
-        <div class="flex justify-center mb-5">
-          <div id="qr-code-box" class="w-32 h-32 flex items-center justify-end"></div>
+  <div id="modal-success" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-6 overflow-y-auto">
+    <div class="absolute inset-0 bg-white/95 backdrop-blur-md"></div>
+    <div class="relative max-w-sm w-full text-center py-8">
+      <h2 class="text-3xl text-serif italic mb-2">Kado Tercipta</h2>
+      <p class="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold mb-8">Siap untuk dikirimkan</p>
+
+      <!-- ═══ Aesthetic QR Code Polaroid Card ═══ -->
+      <div class="flex justify-center mb-8">
+        <div id="qr-export-container"
+          style="background: linear-gradient(160deg, #fffaf5 0%, #fff8f0 50%, #f5efe6 100%); padding: 28px 24px 20px; border-radius: 16px; border: 1px solid rgba(212,174,106,0.2); box-shadow: 0 20px 50px -15px rgba(0,0,0,0.12), 0 4px 12px rgba(212,174,106,0.08); position: relative; max-width: 220px; width: 100%;">
+          <!-- Top accent line -->
+          <div
+            style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: linear-gradient(90deg, transparent, #d4a373, transparent); border-radius: 0 0 4px 4px;">
+          </div>
+          <!-- Title -->
+          <p
+            style="font-family: serif; font-style: italic; font-size: 22px; color: #1a1a1a; margin-bottom: 2px; letter-spacing: -0.02em;">
+            For You</p>
+          <p
+            style="font-size: 7px; text-transform: uppercase; letter-spacing: 0.35em; color: #d4a373; font-weight: 600; margin-bottom: 16px;">
+            ✦ scan to open your gift ✦</p>
+          <!-- QR Code -->
+          <div id="qr-code-box"
+            style="background: white; border-radius: 10px; padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 148px; width: 148px; margin: 0 auto; border: 1px solid rgba(0,0,0,0.04); box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);">
+          </div>
+          <!-- Bottom branding -->
+          <p
+            style="font-size: 6px; text-transform: uppercase; letter-spacing: 0.4em; color: #c4b49a; margin-top: 14px; text-align: center;">
+            loves edition</p>
         </div>
-        <!-- Gift URL -->
-        <div class="bg-[#fcfaf7] rounded-xl p-4 mb-5 border border-gray-100">
-          <p class="text-[8px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Link Kado</p>
-          <p id="modal-gift-url" class="text-[11px] text-gray-800 font-mono break-all leading-relaxed"></p>
-        </div>
-        <!-- Action Buttons -->
-        <div class="space-y-3">
-          <button id="btn-copy-link"
-            class="w-full py-3 text-[9px] uppercase tracking-widest font-bold border border-gray-200 rounded-full text-gray-600 hover:border-black hover:text-black transition-all">SALIN
-            LINK</button>
-          <a id="btn-share-whatsapp" href="#" target="_blank"
-            class="block w-full py-3 text-[9px] uppercase tracking-widest font-bold bg-[#25D366] text-white rounded-full text-center hover:bg-[#1da851] transition-all shadow-sm">📱
-            Bagikan via WhatsApp</a>
-          <a id="btn-view-gift" href="#" target="_blank"
-            class="block w-full py-3 text-[9px] uppercase tracking-widest font-bold bg-gray-900 text-white rounded-full text-center hover:bg-black transition-all">🎁
-            Lihat Kado</a>
-        </div>
       </div>
-      <div class="px-6 pb-6 border-t border-gray-100 pt-4 flex-shrink-0">
-        <button id="btn-close-success"
-          class="w-full py-3 text-[9px] uppercase tracking-widest font-bold border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">Tutup</button>
+
+      <!-- Download Barcode Button -->
+      <button id="btn-download-qr"
+        class="w-full mb-6 py-3.5 text-[9px] uppercase tracking-[0.2em] font-bold rounded-lg transition-all flex items-center justify-center gap-2"
+        style="background: linear-gradient(135deg, #d4a373 0%, #c4956a 100%); color: white; border: none; box-shadow: 0 4px 14px rgba(212,174,106,0.35);">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Download Barcode
+      </button>
+
+      <div class="bg-white border border-gray-100 p-4 mb-6 rounded-lg">
+        <span id="modal-gift-url" class="text-[10px] font-mono text-gray-600 font-bold break-all select-all"></span>
       </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-8">
+        <button id="btn-copy-link"
+          class="text-[9px] uppercase tracking-widest font-bold border border-black py-3.5 rounded-lg hover:bg-black hover:text-white transition-all">Salin
+          Link</button>
+        <a id="btn-share-whatsapp" href="#" target="_blank"
+          class="text-[9px] uppercase tracking-widest font-bold bg-green-500 text-white py-3.5 rounded-lg flex items-center justify-center hover:bg-green-600 transition-all">WhatsApp</a>
+      </div>
+
+      <a id="btn-view-gift" href="#" target="_blank"
+        class="w-full inline-flex justify-center items-center py-4 text-[10px] uppercase tracking-widest font-extrabold bg-[#1a1a1a] text-white rounded-lg hover:bg-black transition-all shadow-md mt-2">
+        Lihat Hasil
+      </a>
+      
+      <button id="btn-close-success" class="w-full mt-4 py-3 text-[9px] uppercase tracking-widest font-bold border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">Tutup</button>
     </div>
   </div>
 
@@ -633,7 +667,8 @@
     class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] bg-white text-black px-6 py-3 rounded-full shadow-2xl border border-gray-100 text-[9px] uppercase tracking-[0.2em] font-bold text-center min-w-[200px] max-w-[90vw] whitespace-nowrap transition-all">
   </div>
 
-  <!-- QR Code Library -->
+  <!-- QR Code Library + html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <!-- Studio JS Modules (urutan penting!) -->
