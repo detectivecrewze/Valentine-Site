@@ -1,0 +1,69 @@
+    <section id="page-wrapped" class="spa-page">
+        <main class="page-wrapped-main">
+            <div id="printer-comp" class="printer-container">
+                <div id="printer-device" class="printer-device">
+                    <div class="led-group">
+                        <div id="printer-led" class="led led-green led-pulse"></div>
+                        <div class="led led-orange"></div>
+                    </div>
+                    <div class="printer-label">FOR YOU, ALWAYS</div>
+                    <div class="printer-slot">
+                        <div class="printer-slot-inner"></div>
+                    </div>
+                    <div class="printer-slot-shadow"></div>
+                </div>
+
+                <div class="printer-slot-wrapper">
+                    <article class="story-card">
+                        <div class="swirl-bg"></div>
+                        <div class="card-recap-header">
+                            <span class="material-symbols-outlined" style="font-size:16px;">favorite</span>
+                            <span>RECAP</span>
+                        </div>
+                        <div class="card-photo-wrapper">
+                            <div class="photo-frame">
+                                <img id="wrapped-image" src="" alt="Wrapped Memory" referrerpolicy="no-referrer" />
+                            </div>
+                        </div>
+                        <div class="card-lists">
+                            <div class="list-col">
+                                <h3 id="top-places-label" class="list-label">Top Places</h3>
+                                <ol id="top-places-list" class="custom-list"></ol>
+                            </div>
+                            <div class="list-col">
+                                <h3 id="core-memories-label" class="list-label">Core Memories</h3>
+                                <ol id="core-memories-list" class="custom-list"></ol>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="stats-row">
+                                <div class="stat-col">
+                                    <span id="minutes-together-label" class="stat-label">Minutes Together</span>
+                                    <span id="minutes-together" class="stat-val-minutes"></span>
+                                </div>
+                                <div class="stat-col text-right">
+                                    <span id="vibe-label" class="stat-label">Our Vibe</span>
+                                    <span id="vibe-text" class="stat-val-vibe"></span>
+                                </div>
+                            </div>
+                            <div class="barcode-wrapper">
+                                <div class="barcode-strip"></div>
+                                <div class="barcode-text">Scanned with Love</div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </main>
+        
+        <nav class="nav-bar">
+            <button class="nav-btn" onclick="navigateTo('gallery')">
+                <span class="material-symbols-outlined">arrow_back_ios</span>
+                <span>Gallery</span>
+            </button>
+            <button class="nav-btn" onclick="navigateTo('surat')">
+                <span>Surat</span>
+                <span class="material-symbols-outlined">arrow_forward_ios</span>
+            </button>
+        </nav>
+    </section>

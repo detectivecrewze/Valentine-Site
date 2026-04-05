@@ -1,0 +1,419 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #1a0f0a;
+}
+
+/* ── Background ── */
+.room-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: url('bg.webp') no-repeat center center / cover;
+}
+
+.ambient-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 200, 120, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, rgba(26, 15, 10, 0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Petals ── */
+.drifting-petals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  top: -10px;
+  background: linear-gradient(135deg, #ffb8c8, #ffd0d8);
+  border-radius: 50% 0 50% 0;
+  opacity: 0.55;
+  animation: petalDrift linear infinite;
+  pointer-events: none;
+}
+
+@keyframes petalDrift {
+  0% {
+    transform: translateY(-10px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.55;
+  }
+
+  90% {
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(380deg) translateX(50px);
+    opacity: 0;
+  }
+}
+
+/* ── Room Container ── */
+.room-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+}
+
+/* ── Journal Book ── */
+.journal-book {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  max-height: 82vh;
+  background: #fdf6e8;
+  border-radius: 4px 10px 10px 4px;
+  box-shadow:
+    -4px 0 12px rgba(0, 0, 0, 0.15),
+    0 20px 60px rgba(0, 0, 0, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 0 80px rgba(212, 163, 115, 0.06);
+  overflow: hidden;
+  animation: bookOpen 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes bookOpen {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateY(-6deg) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+}
+
+/* Paper grain */
+.journal-book::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Book Spine ── */
+.book-spine {
+  flex-shrink: 0;
+  width: 18px;
+  background: linear-gradient(180deg, #c49a6c 0%, #a67c52 40%, #c49a6c 100%);
+  box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.15), inset 2px 0 4px rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+/* Stitching on spine */
+.book-spine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  background: repeating-linear-gradient(180deg,
+      rgba(255, 255, 255, 0.3) 0px,
+      rgba(255, 255, 255, 0.3) 6px,
+      transparent 6px,
+      transparent 12px);
+}
+
+/* ── Journal Inner ── */
+.journal-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 32px 28px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ruled lines background */
+.journal-inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 46px;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(180deg,
+      transparent 0px,
+      transparent 31px,
+      rgba(212, 163, 115, 0.12) 31px,
+      rgba(212, 163, 115, 0.12) 32px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Red margin line */
+.journal-inner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 44px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(220, 100, 100, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Journal Header ── */
+.journal-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+}
+
+.header-eyebrow {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #c4a47c;
+  letter-spacing: 0.15em;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+.header-title {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.8rem, 5vw, 2.2rem);
+  font-weight: 700;
+  color: #3d2008;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+.header-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.rule-line {
+  flex: 1;
+  max-width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4a373);
+}
+
+.rule-line:last-child {
+  background: linear-gradient(90deg, #d4a373, transparent);
+}
+
+.rule-ornament {
+  font-size: 0.6rem;
+  color: #d4a373;
+  opacity: 0.7;
+}
+
+/* ── List Container ── */
+.list-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 163, 115, 0.3) transparent;
+}
+
+.list-container::-webkit-scrollbar {
+  width: 3px;
+}
+
+.list-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list-container::-webkit-scrollbar-thumb {
+  background: rgba(212, 163, 115, 0.35);
+  border-radius: 10px;
+}
+
+/* ── Bucket Item ── */
+.bucket-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  cursor: pointer;
+  border-bottom: 1px dashed rgba(212, 163, 115, 0.2);
+  transition: background 0.2s ease;
+  border-radius: 4px;
+  padding-left: 4px;
+  opacity: 0;
+  animation: itemSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes itemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.bucket-item:last-child {
+  border-bottom: none;
+}
+
+.bucket-item:hover {
+  background: rgba(212, 163, 115, 0.06);
+}
+
+/* ── Item Left (circle + line) ── */
+.item-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.check-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #d4a373;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  flex-shrink: 0;
+}
+
+.bucket-item.completed .check-circle {
+  background: linear-gradient(135deg, #f0c8a0, #d4a373);
+  border-color: #c4913a;
+  box-shadow: 0 2px 8px rgba(212, 163, 115, 0.4);
+}
+
+.check-icon {
+  font-size: 11px;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.item-line {
+  flex: 1;
+  width: 1px;
+  min-height: 8px;
+  background: rgba(212, 163, 115, 0.2);
+  margin-top: 3px;
+}
+
+.bucket-item:last-child .item-line {
+  display: none;
+}
+
+/* ── Item Body ── */
+.item-body {
+  flex: 1;
+  padding-bottom: 8px;
+}
+
+.item-number {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #c4a47c;
+  opacity: 0.6;
+  margin-bottom: 2px;
+}
+
+.item-text {
+  font-family: 'Caveat', cursive;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #3d2008;
+  line-height: 1.3;
+  transition: all 0.35s ease;
+}
+
+/* ── Completed state ── */
+.bucket-item.completed .item-text {
+  text-decoration: line-through;
+  text-decoration-color: rgba(150, 100, 60, 0.5);
+  color: #9e8070;
+  opacity: 0.55;
+}
+
+.bucket-item.completed .item-number {
+  opacity: 0.35;
+}
+
+/* ── Loading ── */
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: #c4a47c;
+  opacity: 0.6;
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .journal-inner {
+    padding: 24px 20px 16px;
+  }
+
+  .header-title {
+    font-size: 1.7rem;
+  }
+
+  .item-text {
+    font-size: 1.1rem;
+  }
+
+  .book-spine {
+    width: 14px;
+  }
+}
