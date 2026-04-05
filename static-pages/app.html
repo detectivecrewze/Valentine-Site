@@ -1355,7 +1355,10 @@
                         canvas.classList.add('revealed');
                         const rect = canvas.getBoundingClientRect();
                         spawnGlitter(rect.left + rect.width / 2, rect.top + rect.height / 2);
-                        // Hint after scratch removed as requested.
+                        
+                        // Show caption when revealed
+                        cap.style.opacity = '1';
+                        cap.style.transform = 'rotate(-1.5deg) translateY(0)';
                     }
                 }
 
@@ -1372,6 +1375,12 @@
                 const cap = document.createElement('span');
                 cap.className = 'polaroid-caption-text';
                 cap.textContent = memory.caption || '';
+                
+                // Hide initially for a surprise effect
+                cap.style.opacity = '0';
+                cap.style.transform = 'rotate(-1.5deg) translateY(10px)';
+                cap.style.transition = 'all 1s ease 0.3s';
+                
                 frame.appendChild(cap);
                 // Date display removed as requested.
 
