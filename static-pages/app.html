@@ -643,6 +643,45 @@
         '06-invitation': 'invitation'
     };
 
+    // ── Dynamic Navigation ──────────────────────────────────────────────
+    // Runs after pages are loaded. Wires up [data-nav] buttons based on
+    // which pages are actually active — no text labels, just arrows.
+    function initDynamicNavigation(loadedPageFolders) {
+        const shortIds = loadedPageFolders.map(f => PAGE_KEY_MAP[f]).filter(Boolean);
+        // 'login' has no nav-bar — skip it
+        const navPages = shortIds.filter(k => k !== 'login');
+
+        navPages.forEach((pageKey, idx) => {
+            const section = document.getElementById('page-' + pageKey);
+            if (!section) return;
+
+            const prevBtn = section.querySelector('[data-nav="prev"]');
+            const nextBtn = section.querySelector('[data-nav="next"]');
+
+            if (prevBtn) {
+                if (idx === 0) {
+                    prevBtn.style.visibility = 'hidden';
+                    prevBtn.onclick = null;
+                } else {
+                    prevBtn.style.visibility = 'visible';
+                    const prevKey = navPages[idx - 1];
+                    prevBtn.onclick = () => window.navigateTo(prevKey);
+                }
+            }
+
+            if (nextBtn) {
+                if (idx === navPages.length - 1) {
+                    nextBtn.style.visibility = 'hidden';
+                    nextBtn.onclick = null;
+                } else {
+                    nextBtn.style.visibility = 'visible';
+                    const nextKey = navPages[idx + 1];
+                    nextBtn.onclick = () => window.navigateTo(nextKey);
+                }
+            }
+        });
+    }
+
     async function loadValentinePages() {
         const container = document.getElementById('pages-container');
         const loadingEl = document.getElementById('app-loading');
@@ -671,6 +710,7 @@
             }
             if (typeof initializeValentineApp === 'function') {
                 initializeValentineApp();
+                initDynamicNavigation(PAGE_ORDER);
                 const pages = document.querySelectorAll('.spa-page');
                 if (pages.length > 0) {
                     pages.forEach(p => p.classList.remove('active'));
@@ -718,6 +758,7 @@
 
             if (typeof initializeValentineApp === 'function') {
                 initializeValentineApp();
+                initDynamicNavigation(pagesToLoad);
                 const pages = document.querySelectorAll('.spa-page');
                 if (pages.length > 0) {
                     pages.forEach(p => p.classList.remove('active'));
