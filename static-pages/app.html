@@ -1088,6 +1088,25 @@
         const audio = new Audio();
         audio.volume = 0.8;
         let currentIndex = 0;
+        let lyricsTicker;
+
+        function typeLyrics(text) {
+            const el = document.getElementById('song-lyrics');
+            if (!el) return;
+            
+            clearTimeout(lyricsTicker);
+            el.textContent = '';
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    el.textContent += text.charAt(i);
+                    i++;
+                    lyricsTicker = setTimeout(type, 40);
+                }
+            }
+            type();
+        }
 
         function loadSong(index) {
             currentIndex = ((index % songs.length) + songs.length) % songs.length;
@@ -1103,7 +1122,10 @@
             document.getElementById('music-cover').src = song.coverSrc || '';
             document.getElementById('song-title').textContent = song.songTitle || '—';
             document.getElementById('artist-name').textContent = song.artist || '—';
-            document.getElementById('song-lyrics').textContent = song.lyrics || '♪ ♪ ♪';
+            
+            // Typewriter effect for lyrics
+            typeLyrics(song.lyrics || '♪ ♪ ♪');
+
             audio.src = song.audioSrc;
             audio.load();
             updateDots();
