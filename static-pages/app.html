@@ -569,7 +569,7 @@
     .photo-frame img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
     .card-lists { position: relative; z-index: 10; padding-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 1.5rem; }
     .list-col { flex: 1; min-width: 120px; }
-    .list-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; color: var(--primary); opacity: 0.7; margin-bottom: 0.5rem; }
+    .list-label { font-size: 11px; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.25em; font-weight: 800; color: var(--primary); opacity: 0.9; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(126,12,35,0.15); padding-bottom: 0.25rem; display: inline-block; }
     .card-footer { position: relative; z-index: 10; margin-top: auto; border-top: 1px solid #fecdd3; padding-top: 1.25rem; padding-bottom: 0.5rem; }
     .stats-row { display: flex; flex-wrap: nowrap; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
     .stat-col { display: flex; flex-direction: column; min-width: 0; }
@@ -799,7 +799,9 @@
                 HoursTogether:  c.wrapped?.minutesTogether || '',
                 vibe:           c.wrapped?.vibe            || '',
                 topPlaces:      c.wrapped?.topPlaces       || [],
-                coreMemories:   c.wrapped?.coreMemories    || []
+                coreMemories:   c.wrapped?.coreMemories    || [],
+                topPlacesLabel: c.wrapped?.topPlacesLabel  || '',
+                coreMemoriesLabel: c.wrapped?.coreMemoriesLabel || ''
             },
             letter: {
                 recipient:    c.surat?.to          || '',
@@ -846,7 +848,9 @@
                 HoursTogether: '525,600',
                 vibe: 'Chaotic Good',
                 topPlaces: ['Kopikalyan', 'GOR Golf', 'Pantai Indah'],
-                coreMemories: ['Nonton horor bareng', 'Hujan-hujanan', 'Masak malam minggu']
+                coreMemories: ['Nonton horor bareng', 'Hujan-hujanan', 'Masak malam minggu'],
+                topPlacesLabel: 'Top Places',
+                coreMemoriesLabel: 'Core Memories'
             },
             letter: {
                 recipient: 'Dearest,',

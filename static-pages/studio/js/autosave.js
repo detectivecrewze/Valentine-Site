@@ -111,6 +111,8 @@ const Autosave = (() => {
         vibe:            document.getElementById('input-wrapped-vibe')?.value.trim() || '',
         topPlaces:       WrappedItems.getPlaces(),
         coreMemories:    WrappedItems.getMemories(),
+        topPlacesLabel:  document.getElementById('select-top-places-label')?.value || 'Top Places',
+        coreMemoriesLabel: document.getElementById('select-core-memories-label')?.value || 'Core Memories',
       },
 
       surat: {

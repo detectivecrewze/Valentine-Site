@@ -59,6 +59,19 @@ const Studio = (() => {
     }
     _setVal('input-wrapped-date', config.wrapped?.minutesTogether);
     _setVal('input-wrapped-vibe', config.wrapped?.vibe);
+    
+    // Set labels
+    const tpLabel = config.wrapped?.topPlacesLabel || 'Top Places';
+    const cmLabel = config.wrapped?.coreMemoriesLabel || 'Core Memories';
+    _setVal('select-top-places-label', tpLabel);
+    _setVal('select-core-memories-label', cmLabel);
+    
+    // Update displays
+    const tpDisp = document.getElementById('label-display-top-places');
+    const cmDisp = document.getElementById('label-display-core-memories');
+    if (tpDisp) tpDisp.textContent = tpLabel;
+    if (cmDisp) cmDisp.textContent = cmLabel;
+
     // Places & memories handled by WrappedItems module
 
     // SURAT
@@ -77,10 +90,60 @@ const Studio = (() => {
   }
 
   function _bindGlobalInputs() {
-    // Semua input teks & textarea di editor → trigger autosave
-    document.querySelectorAll('#editor-panel input:not([type="file"]):not([type="checkbox"]), #editor-panel textarea').forEach(el => {
+    // Semua input teks, textarea, & select di editor → trigger autosave
+    document.querySelectorAll('#editor-panel input:not([type="file"]):not([type="checkbox"]), #editor-panel textarea, #editor-panel select').forEach(el => {
       el.addEventListener('input', Autosave.trigger);
+      el.addEventListener('change', Autosave.trigger);
     });
+
+    // ── Label Selector Logic ──
+    const labelModal = document.getElementById('modal-label-selector');
+    const labelModalTitle = document.getElementById('label-modal-title');
+    const optionsContainer = document.getElementById('label-options-container');
+    const closeBtn = document.getElementById('btn-close-label-modal');
+
+    const labelSets = {
+      'top-places': ['Top Places', 'Bucket List', 'Top Activities'],
+      'core-memories': ['Core Memories', 'Top Song', 'Favorite Movie']
+    };
+
+    document.querySelectorAll('.btn-change-label').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target; // 'top-places' or 'core-memories'
+        const options = labelSets[target];
+        
+        labelModalTitle.textContent = target === 'top-places' ? 'Ganti Judul Top Places' : 'Ganti Judul Core Memories';
+        optionsContainer.innerHTML = '';
+        
+        options.forEach(opt => {
+          const optBtn = document.createElement('button');
+          optBtn.className = 'w-full py-4 px-6 text-[10px] uppercase tracking-widest font-bold bg-[#fdf9f4] border border-[#d4a373]/20 text-[#b58756] rounded-2xl hover:bg-[#d4a373] hover:text-white transition-all text-left shadow-sm flex items-center justify-between group';
+          optBtn.innerHTML = `<span>${opt}</span><span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>`;
+          
+          optBtn.onclick = () => {
+            // Update hidden input
+            const hiddenInput = document.getElementById(`select-${target}-label`);
+            if (hiddenInput) hiddenInput.value = opt;
+            
+            // Update UI display
+            const display = document.getElementById(`label-display-${target}`);
+            if (display) display.textContent = opt;
+            
+            // Refresh placeholders
+            WrappedItems.refresh();
+            
+            // Close & Save
+            labelModal.classList.add('hidden');
+            Autosave.trigger();
+          };
+          optionsContainer.appendChild(optBtn);
+        });
+
+        labelModal.classList.remove('hidden');
+      });
+    });
+
+    closeBtn?.addEventListener('click', () => labelModal.classList.add('hidden'));
   }
 
   // ── Toast Notification ────────────────────────────────────────────────
