@@ -1,5 +1,5 @@
 /**
- * uploader.js — Photo Upload & Management (Direct to R2)
+ * uploader.js — Photo & Video Upload & Management (Direct to R2)
  * Loves Edition Studio
  *
  * Alur:
@@ -8,9 +8,12 @@
  */
 
 const Uploader = (() => {
-  const MAX_PHOTOS = 12;
-  const MAX_SIZE = 10 * 1024 * 1024; // 10MB
-  let _photos = []; // [{ id, url, caption, uploading }]
+  const MAX_ITEMS = 12;
+  const MAX_IMAGE_SIZE = 10 * 1024 * 1024;  // 10MB
+  const MAX_VIDEO_SIZE = 50 * 1024 * 1024;  // 50MB
+  const ACCEPTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+
+  let _photos = []; // [{ id, url, caption, uploading, isVideo }]
   let _uploadingCount = 0;
 
   function init(existingPhotos) {
@@ -19,11 +22,20 @@ const Uploader = (() => {
         id: Math.random().toString(36).substr(2, 9),
         url: typeof p === 'string' ? p : (p.url || ''),
         caption: typeof p === 'object' ? (p.caption || '') : '',
+        isVideo: _isVideoUrl(typeof p === 'string' ? p : (p.url || '')),
         uploading: false
       }));
     }
     _bindEvents();
     _renderGrid();
+  }
+
+  function _isVideoUrl(url) {
+    return /\.(mp4|webm|ogg|mov|qt)(\?|$)/i.test(url);
+  }
+
+  function _isVideoFile(file) {
+    return ACCEPTED_VIDEO_TYPES.includes(file.type);
   }
 
   function _bindEvents() {
@@ -56,24 +68,32 @@ const Uploader = (() => {
   }
 
   async function _handleFiles(fileList) {
-    const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-    const remaining = MAX_PHOTOS - _photos.length;
-    if (remaining <= 0) { Studio.showToast('Maksimal 12 foto!'); return; }
+    const files = Array.from(fileList).filter(f =>
+      f.type.startsWith('image/') || _isVideoFile(f)
+    );
+    const remaining = MAX_ITEMS - _photos.length;
+    if (remaining <= 0) { Studio.showToast('Maksimal 12 foto/video!'); return; }
 
     for (const file of files.slice(0, remaining)) {
-      if (file.size > MAX_SIZE) {
-        Studio.showToast(`${file.name} terlalu besar (maks 10MB)`);
+      const isVideo = _isVideoFile(file);
+      const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+      const label = isVideo ? 'video' : 'foto';
+
+      if (file.size > maxSize) {
+        Studio.showToast(`${file.name} terlalu besar (maks ${isVideo ? '50' : '10'}MB untuk ${label})`);
         continue;
       }
-      await _uploadPhoto(file);
+      await _uploadItem(file, isVideo);
     }
   }
 
-  async function _uploadPhoto(file) {
+  async function _uploadItem(file, isVideo) {
+    const localUrl = URL.createObjectURL(file);
     const placeholder = {
       id: Math.random().toString(36).substr(2, 9),
-      url: URL.createObjectURL(file),
+      url: localUrl,
       caption: '',
+      isVideo,
       uploading: true
     };
     _photos.push(placeholder);
@@ -89,7 +109,7 @@ const Uploader = (() => {
     } catch (err) {
       _photos = _photos.filter(p => p !== placeholder);
       _renderGrid();
-      Studio.showToast('Gagal upload foto: ' + err.message);
+      Studio.showToast(`Gagal upload ${isVideo ? 'video' : 'foto'}: ` + err.message);
     }
     _uploadingCount--;
   }
@@ -100,17 +120,22 @@ const Uploader = (() => {
     if (!grid) return;
 
     grid.innerHTML = '';
-    const hasPhotos = _photos.length > 0;
-    dropzone?.classList.toggle('hidden', hasPhotos);
+    const hasItems = _photos.length > 0;
+    dropzone?.classList.toggle('hidden', hasItems);
 
     _photos.forEach((photo, i) => {
       const item = document.createElement('div');
       item.className = 'relative group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm';
       item.dataset.id = photo.id;
 
+      const mediaEl = photo.isVideo
+        ? `<video src="${photo.url}" class="w-full h-full object-cover" muted playsinline loop preload="metadata"></video>
+           <div class="absolute bottom-2 left-2 bg-black/50 text-white text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-full font-bold">Video</div>`
+        : `<img src="${photo.url}" class="w-full h-full object-cover" alt="Photo ${i+1}" loading="lazy">`;
+
       item.innerHTML = `
         <div class="aspect-square relative overflow-hidden bg-gray-50">
-          <img src="${photo.url}" class="w-full h-full object-cover" alt="Photo ${i+1}" loading="lazy">
+          ${mediaEl}
           ${photo.uploading ? `
             <div class="absolute inset-0 bg-white/80 flex items-center justify-center">
               <div class="w-5 h-5 border-2 border-gray-200 border-t-[#d4a373] rounded-full animate-spin"></div>
@@ -126,10 +151,17 @@ const Uploader = (() => {
       grid.appendChild(item);
     });
 
+    // Play video on hover for preview
+    grid.querySelectorAll('video').forEach(vid => {
+      const wrapper = vid.closest('.aspect-square');
+      wrapper?.addEventListener('mouseenter', () => vid.play().catch(() => {}));
+      wrapper?.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
+    });
+
     grid.querySelectorAll('.btn-remove-photo').forEach(btn => {
       btn.addEventListener('click', e => {
         e.stopPropagation();
-        if (!confirm('Hapus foto ini?')) return;
+        if (!confirm('Hapus item ini?')) return;
         _photos = _photos.filter(p => p.id !== btn.dataset.id);
         _renderGrid();
         Autosave.trigger();
@@ -145,7 +177,11 @@ const Uploader = (() => {
   }
 
   function getPhotos() {
-    return _photos.filter(p => !p.uploading).map(p => ({ url: p.url, caption: p.caption || '' }));
+    return _photos.filter(p => !p.uploading).map(p => ({
+      url: p.url,
+      caption: p.caption || '',
+      type: p.isVideo ? 'video' : 'image'
+    }));
   }
 
   function isUploading() { return _uploadingCount > 0; }

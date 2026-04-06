@@ -1262,10 +1262,12 @@
                 const sw = document.createElement('div');
                 sw.className = 'scratch-wrapper';
 
-                const isVideo = memory.src && memory.src.match(/\.(mp4|webm|ogg)$/i);
+                const mediaSrc = memory.url || memory.src || '';
+                const isVideo = mediaSrc.match(/\.(mp4|webm|ogg|mov|qt)(\?|$)/i) ||
+                                (memory.type === 'video');
                 const img = document.createElement(isVideo ? 'video' : 'img');
                 img.className = 'scratch-image';
-                img.src = memory.src || '';
+                img.src = mediaSrc;
                 if (isVideo) {
                     img.autoplay = true; img.loop = true;
                     img.muted = true; img.playsInline = true;

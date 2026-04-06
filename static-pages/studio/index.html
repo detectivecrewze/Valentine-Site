@@ -206,7 +206,7 @@
             </button>
           </div>
         </div>
-        <div class="section-body block">
+        <div class="section-body">
           <div class="section-body-inner">
             <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-2">Password
               Akses</label>
@@ -243,7 +243,7 @@
             </button>
           </div>
         </div>
-        <div class="section-body block">
+        <div class="section-body">
           <div class="section-body-inner">
             <div id="music-slots-container" class="space-y-12">
               <div class="text-center py-10 opacity-50">
@@ -261,6 +261,8 @@
           <div class="flex-1 min-w-0">
             <h2 class="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold mb-1">Moments (Gallery)</h2>
             <p class="text-[7px] text-[#d4a373] uppercase tracking-[0.2em] font-bold truncate">✨ Kenangan Indah</p>
+            <p class="text-[8px] text-gray-400 mt-1 lowercase tracking-wide font-medium italic">video pendek 1-10 detik,
+              video akan otomatis tanpa suara.</p>
           </div>
           <div class="flex items-center gap-2 flex-shrink-0">
             <button
@@ -268,7 +270,7 @@
               data-preview-page="page-gallery">👁 Preview</button>
             <button id="btn-add-moment"
               class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap">+
-              Tambah Foto</button>
+              Tambah Foto / Video</button>
             <button class="section-collapse-btn">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -277,15 +279,17 @@
             </button>
           </div>
         </div>
-        <div class="section-body block">
+        <div class="section-body">
           <div class="section-body-inner">
             <div id="photo-dropzone"
               class="border-2 border-dashed border-gray-100 rounded-2xl p-12 text-center transition-all hover:bg-white hover:border-[#d4a373] cursor-pointer bg-gray-50/50">
-              <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-medium">Klik atau letakkan foto di sini
+              <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-medium">Klik atau letakkan foto / video
+                di sini
               </p>
             </div>
             <div id="photo-grid" class="mt-6 grid grid-cols-2 gap-3"></div>
-            <input id="file-gallery" type="file" multiple accept="image/*" class="hidden" />
+            <input id="file-gallery" type="file" multiple
+              accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime" class="hidden" />
           </div>
         </div>
       </section>
@@ -309,7 +313,7 @@
             </button>
           </div>
         </div>
-        <div class="section-body block">
+        <div class="section-body">
           <div class="section-body-inner space-y-4">
 
             <!-- Tile 1: Media & Identity -->
@@ -319,7 +323,8 @@
               </div>
               <div class="p-4 space-y-4">
                 <!-- Photo dropzone compact -->
-                <div id="wrapped-photo-dropzone" class="border border-dashed border-gray-200 rounded-xl p-5 text-center transition-all hover:bg-gray-50 hover:border-[#d4a373] cursor-pointer bg-gray-50/30">
+                <div id="wrapped-photo-dropzone"
+                  class="border border-dashed border-gray-200 rounded-xl p-5 text-center transition-all hover:bg-gray-50 hover:border-[#d4a373] cursor-pointer bg-gray-50/30">
                   <p class="text-[9px] uppercase tracking-[0.25em] text-gray-400 font-bold">Upload Foto Utama</p>
                   <p class="text-[9px] text-gray-300 mt-1">Foto ini tampil sebagai polaroid di halaman Wrapped</p>
                 </div>
@@ -328,13 +333,17 @@
                 <!-- Date + Vibe 2-col grid -->
                 <div class="grid grid-cols-2 gap-3">
                   <div>
-                    <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-1.5">Tanggal Spesial</label>
+                    <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-1.5">Tanggal
+                      Spesial</label>
                     <input id="input-wrapped-date" type="date" class="input-minimal text-[11px]" />
-                    <p class="text-[9px] text-gray-300 mt-1 leading-relaxed">Dihitung otomatis jadi menit kebersamaan.</p>
+                    <p class="text-[9px] text-gray-300 mt-1 leading-relaxed">Dihitung otomatis jadi menit kebersamaan.
+                    </p>
                   </div>
                   <div>
-                    <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-1.5">Our Vibe</label>
-                    <input id="input-wrapped-vibe" type="text" placeholder="e.g. Beauty & Beast" class="input-minimal text-[11px]" />
+                    <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-1.5">Our
+                      Vibe</label>
+                    <input id="input-wrapped-vibe" type="text" placeholder="e.g. Beauty & Beast"
+                      class="input-minimal text-[11px]" />
                     <p class="text-[9px] text-gray-300 mt-1 leading-relaxed">Tokoh, artis, atau hobi favorit kalian.</p>
                   </div>
                 </div>
@@ -348,7 +357,9 @@
                   <p class="text-[8px] uppercase tracking-[0.25em] text-[#d4a373] font-bold">Top Places</p>
                   <p class="text-[9px] text-gray-300 mt-0.5">Singkat agar pas di tampilan — maks 5</p>
                 </div>
-                <button id="btn-add-place" class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap flex-shrink-0">+ Tambah</button>
+                <button id="btn-add-place"
+                  class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap flex-shrink-0">+
+                  Tambah</button>
               </div>
               <div class="p-4">
                 <div id="wrapped-places-container" class="space-y-2">
@@ -367,7 +378,9 @@
                   <p class="text-[8px] uppercase tracking-[0.25em] text-[#d4a373] font-bold">Core Memories</p>
                   <p class="text-[9px] text-gray-300 mt-0.5">Momen terbaik kalian — maks 5</p>
                 </div>
-                <button id="btn-add-memory" class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap flex-shrink-0">+ Tambah</button>
+                <button id="btn-add-memory"
+                  class="text-[8px] uppercase tracking-[0.1em] px-3 py-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-sm whitespace-nowrap flex-shrink-0">+
+                  Tambah</button>
               </div>
               <div class="p-4">
                 <div id="wrapped-memories-container" class="space-y-2">
@@ -403,7 +416,7 @@
             </button>
           </div>
         </div>
-        <div class="section-body block">
+        <div class="section-body">
           <div class="section-body-inner">
             <input id="input-letter-to" type="text" placeholder="Penerima (e.g. Dearest Cella,)"
               class="input-minimal mb-4" />
@@ -449,7 +462,7 @@
             </button>
           </div>
         </div>
-        <div class="section-body block">
+        <div class="section-body">
           <div class="section-body-inner">
             <label class="text-[7px] uppercase tracking-widest text-gray-400 font-bold block mb-2">Pertanyaan</label>
             <input id="input-inv-question" type="text" placeholder="e.g. Will you be my valentine?"
@@ -574,8 +587,9 @@
         class="w-full inline-flex justify-center items-center py-4 text-[10px] uppercase tracking-widest font-extrabold bg-[#1a1a1a] text-white rounded-lg hover:bg-black transition-all shadow-md mt-2">
         Lihat Hasil
       </a>
-      
-      <button id="btn-close-success" class="w-full mt-4 py-3 text-[9px] uppercase tracking-widest font-bold border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">Tutup</button>
+
+      <button id="btn-close-success"
+        class="w-full mt-4 py-3 text-[9px] uppercase tracking-widest font-bold border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">Tutup</button>
     </div>
   </div>
 

@@ -13,7 +13,7 @@
 
 export default {
   async fetch(request, env) {
-    const CDN_URL = env.CDN_URL || 'https://loves-edition.aldoramadhan16.workers.dev/files';
+    const CDN_URL = env.CDN_URL || 'https://arcade-assets.for-you-always.my.id';
     const DOMAIN = 'https://for-you-always.my.id';
 
     const corsHeaders = {
@@ -230,7 +230,7 @@ ATURAN WAJIB:
 5. Langsung isi pesan tanpa ada ucapan pengantar.`;
 
         const qwenPayload = {
-          model: "qwen-plus", 
+          model: "qwen-plus",
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: `[INSTRUKSI/TEMA DARI PENGGUNA:]\n${userPrompt.trim()}` }
@@ -243,7 +243,7 @@ ATURAN WAJIB:
           "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
           {
             method: "POST",
-            headers: { 
+            headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${apiKey}`
             },
