@@ -1427,6 +1427,141 @@
             if (coreMemoriesList && Array.isArray(wrapped.coreMemories)) {
                 coreMemoriesList.innerHTML = wrapped.coreMemories.map(mem => `<li>${mem}</li>`).join('');
             }
+
+            // ── Camera Button Logic ──────────────────────────────
+            const camBtn = document.getElementById('wrapped-download-btn');
+            if (camBtn) {
+                // Desktop Hover
+                camBtn.addEventListener('mouseenter', () => {
+                    camBtn.style.transform = 'scale(1.12)';
+                    camBtn.style.boxShadow = '0 6px 22px rgba(126,12,35,0.22)';
+                });
+                camBtn.addEventListener('mouseleave', () => {
+                    camBtn.style.transform = 'scale(1)';
+                    camBtn.style.boxShadow = '0 4px 16px rgba(126,12,35,0.12)';
+                });
+
+                // Mobile Touch
+                camBtn.addEventListener('touchstart', () => {
+                    camBtn.style.transform = 'scale(0.92)';
+                }, { passive: true });
+                camBtn.addEventListener('touchend', () => {
+                    camBtn.style.transform = 'scale(1)';
+                }, { passive: true });
+
+                const doCapture = async () => {
+                    const card = document.querySelector('#page-wrapped .story-card');
+                    const imgEl = document.getElementById('wrapped-image');
+                    if (!card) return;
+
+                    camBtn.style.opacity = '0.5';
+                    camBtn.style.pointerEvents = 'none';
+
+                    // Load html2canvas if needed
+                    if (typeof html2canvas === 'undefined') {
+                        try {
+                            await new Promise((resolve, reject) => {
+                                const s = document.createElement('script');
+                                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                                s.onload = resolve;
+                                s.onerror = reject;
+                                document.head.appendChild(s);
+                            });
+                        } catch(e) {
+                            camBtn.style.opacity = '1';
+                            camBtn.style.pointerEvents = 'auto';
+                            return;
+                        }
+                    }
+
+                    const originalSrc = imgEl ? imgEl.src : '';
+                    const originalObjectFit = imgEl ? imgEl.style.objectFit : '';
+                    let captureDataUrl = null;
+
+                    // Proxy CDN image → draw manually with object-fit:cover math
+                    // so html2canvas gets a same-origin data URL with correct cropping
+                    if (imgEl && originalSrc && originalSrc.includes('arcade-assets.for-you-always.my.id')) {
+                        try {
+                            const cdnBase = 'https://arcade-assets.for-you-always.my.id/';
+                            const key = originalSrc.replace(cdnBase, '');
+                            const proxyUrl = `${LOVES_WORKER_URL}/files/${key}`;
+                            const res = await fetch(proxyUrl);
+                            if (res.ok) {
+                                const blob = await res.blob();
+                                const blobUrl = URL.createObjectURL(blob);
+
+                                // Load proxy image to get natural dimensions
+                                const proxyImg = new Image();
+                                await new Promise((resolve) => {
+                                    proxyImg.onload = resolve;
+                                    proxyImg.onerror = resolve; // continue even if error
+                                    proxyImg.src = blobUrl;
+                                });
+
+                                // Get the rendered frame dimensions (the 1:1 box on screen)
+                                const frame = imgEl.closest('.photo-frame');
+                                const frameW = frame ? frame.offsetWidth : imgEl.offsetWidth;
+                                const frameH = frame ? frame.offsetHeight : imgEl.offsetHeight;
+                                const natW = proxyImg.naturalWidth || imgEl.naturalWidth;
+                                const natH = proxyImg.naturalHeight || imgEl.naturalHeight;
+
+                                // Replicate object-fit:cover math
+                                const scale = Math.max(frameW / natW, frameH / natH);
+                                const renderW = natW * scale;
+                                const renderH = natH * scale;
+                                const offsetX = (frameW - renderW) / 2;
+                                const offsetY = (frameH - renderH) / 2;
+
+                                // Draw onto a temp canvas with correct crop
+                                const tmpCanvas = document.createElement('canvas');
+                                tmpCanvas.width = frameW;
+                                tmpCanvas.height = frameH;
+                                const ctx = tmpCanvas.getContext('2d');
+                                ctx.drawImage(proxyImg, offsetX, offsetY, renderW, renderH);
+                                captureDataUrl = tmpCanvas.toDataURL('image/jpeg', 0.95);
+
+                                URL.revokeObjectURL(blobUrl);
+                            }
+                        } catch(e) {
+                            console.warn('Image proxy/crop failed, proceeding without:', e);
+                        }
+                    }
+
+                    // Temporarily swap img src to the pre-cropped data URL
+                    // and set objectFit=fill so html2canvas doesn't re-crop
+                    if (captureDataUrl && imgEl) {
+                        imgEl.src = captureDataUrl;
+                        imgEl.style.objectFit = 'fill';
+                        await new Promise(r => setTimeout(r, 150));
+                    }
+
+                    try {
+                        const canvas = await html2canvas(card, {
+                            scale: 2,
+                            useCORS: true,
+                            allowTaint: true,
+                            backgroundColor: null,
+                            logging: false
+                        });
+                        const link = document.createElement('a');
+                        link.download = 'my-memory.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    } catch (e) {
+                        console.error('Capture failed:', e);
+                    } finally {
+                        // Restore original image src and object-fit
+                        if (imgEl && originalSrc) {
+                            imgEl.src = originalSrc;
+                            imgEl.style.objectFit = originalObjectFit;
+                        }
+                        camBtn.style.opacity = '1';
+                        camBtn.style.pointerEvents = 'auto';
+                    }
+                };
+
+                camBtn.addEventListener('click', doCapture);
+            }
         })();
 
         // ── Init Surat ───────────────────────────────────────────
