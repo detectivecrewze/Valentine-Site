@@ -939,10 +939,13 @@
                 const val = input.value.trim();
                 const correct = loginCfg.password || '123';
                 if (val === correct) {
-                    lockIcon.textContent = 'lock';
-                    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\'FILL\' 1;font-size:1.5rem;color:white">check_circle</span>';
-                    btn.style.background = '#16a34a';
-                    setTimeout(() => navigateTo('music'), 650);
+                    lockIcon.textContent = 'lock_open';
+                    lockIcon.style.color = '#d4a373';
+                    btn.innerHTML = '<span class="material-symbols-outlined" style="font-weight: 600; font-size:1.5rem; color:white">check</span>';
+                    btn.style.background = 'linear-gradient(135deg, #d4a373, #b58756)';
+                    btn.style.boxShadow = '0 8px 25px rgba(212, 163, 115, 0.4)';
+                    btn.style.transform = 'scale(1.1)';
+                    setTimeout(() => navigateTo('music'), 800);
                 } else {
                     errMsg.textContent = loginCfg.errorMessage || 'Password salah, coba lagi!';
                     errMsg.classList.add('visible');
